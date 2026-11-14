@@ -235,3 +235,4 @@ examples/zarr-onnx-duckdb/public/dna.zarr/
 examples/zarr-onnx-duckdb/public/threshold.onnx
 examples/zarr-onnx-duckdb/expected-mask.json
 examples/zarr-onnx-duckdb/cp_anywhere_features.parquet
+/CP-Anywhere-Implementation-Plan.md
