@@ -6,6 +6,9 @@ import json
 import subprocess
 from pathlib import Path
 
+import numpy as np
+import tifffile
+
 ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = ROOT / "fixtures/synthetic/touching_gradient"
 TOTAL_FEATURE_COLUMNS = 119  # spec/compatibility.md's declared scope
@@ -60,9 +63,6 @@ def test_cli_measures_saved_arrays_to_json(tmp_path: Path) -> None:
 
 def test_cli_measures_tiff_images_to_json(tmp_path: Path) -> None:
     """The CLI also accepts ordinary TIFF image files, not just NPY."""
-    import numpy as np
-    import tifffile
-
     dna_path = tmp_path / "dna.tif"
     actin_path = tmp_path / "actin.tif"
     tifffile.imwrite(dna_path, np.load(FIXTURE / "DNA.npy"))

@@ -15,6 +15,8 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
 ]
 dynamic = [ "version" ]
 dependencies = [
@@ -89,48 +91,61 @@ lint.select = [
 ]
 # Ignore `F401` (unused imports) for `__init__.py` file
 lint.per-file-ignores."__init__.py" = [ "F401" ]
+# Ignore `PLC0415`: this M2 comparison script imports `cp_measure` lazily
+# because it is not a project dependency -- it only exists in the
+# separate, isolated comparison environment this script is run inside.
+lint.per-file-ignores."scripts/parity/compare_cp_measure.py" = [ "PLC0415" ]
+# Ignore `PLC0415` (deferred skimage import, kept out of the reference
+# generator's module scope since it's a reference-environment-only
+# dependency) and `PLR0917` (measure() intentionally threads every golden
+# fixture's inputs through as named positional values matching the
+# original CellProfiler Workspace construction, not a function to shrink)
+# for the reference generator script.
+lint.per-file-ignores."scripts/reference/generate.py" = [ "PLC0415", "PLR0917" ]
 # Ignore `PLC0415` (import not at top-level) for `api.py`, which defers the
 # native extension import so the pure-Python package stays importable.
 lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415" ]
+# Ignore `PLC0415` for `io.py`, which defers `tifffile`/`PIL`/`pandas`
+# imports so loading one file format doesn't require the others, and
+# `measure_files` stays usable without pandas imported at module load.
+lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
 
-[tool.pytest.ini_options]
-pythonpath = [ "." ]
-addopts = [
+[tool.vulture]
+paths = [ "src/cp_anywhere", "tests" ]
+min_confidence = 90
+
+[tool.pytest]
+ini_options.pythonpath = [ "." ]
+ini_options.addopts = [
   "--cov=cp_anywhere",
   "--cov-report=term-missing",
   "--cov-report=xml",
 ]
 
-[tool.coverage.run]
-branch = true
-source = [ "src/cp_anywhere" ]
+[tool.coverage]
+run.source = [ "src/cp_anywhere" ]
+run.branch = true
+report.skip_covered = true
+report.show_missing = true
 
-[tool.coverage.report]
-show_missing = true
-skip_covered = true
-
-[tool.poe.tasks]
+[tool.poe]
 # tasks for development environments
 # build the native extension into the active environment
-develop.shell = """
+tasks.develop.shell = """
 maturin develop --uv
 """
 # run the Rust unit tests
-rust-test.shell = """
+tasks.rust-test.shell = """
 cargo test
 """
 # rebuild the extension, then run the Python tests
-test.shell = """
+tasks.test.shell = """
 maturin develop --uv && pytest
 """
-lint.shell = """
+tasks.lint.shell = """
 pre-commit run --all-files
 """
 # full local pipeline: Rust tests, native build, linting, Python tests
-pipeline.shell = """
+tasks.pipeline.shell = """
 cargo test && maturin develop --uv && pre-commit run --all-files && pytest
 """
-
-[tool.vulture]
-min_confidence = 90
-paths = [ "src/cp_anywhere", "tests" ]
