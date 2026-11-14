@@ -1,0 +1,23 @@
+{
+  "guide_threshold": 0.31640625,
+  "image_id": "synthetic_adaptive_three_class_foreground_True",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 6,
+    "assign_middle_to_foreground": true,
+    "threshold_method": "otsu_three_class",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_three_class_foreground_True/labels.npy": "ac0681b0118c3376dc292dc250bdc5363405defe08f162452406cd4130cda035",
+    "fixtures/segmentation/synthetic_adaptive_three_class_foreground_True/pixels.npy": "3164a08bb4d1c13fe870f44da9611ef6a155d3f4df0bbd110f2d4d4503d8b8e1",
+    "fixtures/segmentation/synthetic_adaptive_three_class_foreground_True/small_removed_labels.npy": "ac0681b0118c3376dc292dc250bdc5363405defe08f162452406cd4130cda035",
+    "fixtures/segmentation/synthetic_adaptive_three_class_foreground_True/threshold_map.npy": "bdeaec9b135da9cbffe1944775d6384b05634b1acfedfbb0c8fe6fef15acb1b4"
+  },
+  "shape": [
+    30,
+    42
+  ],
+  "threshold": 0.30835263897271176
+}

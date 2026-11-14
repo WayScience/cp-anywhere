@@ -1,0 +1,20 @@
+{
+  "image_id": "synthetic_threshold_smoothing_manual",
+  "object_count": 5,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "manual",
+    "threshold_smoothing_scale": 2.0,
+    "threshold_value": 0.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_threshold_smoothing_manual/labels.npy": "dad73be34830d35d5919859249e9c0ccbeadf485f15e9c181a78914a957cee1d",
+    "fixtures/segmentation/synthetic_threshold_smoothing_manual/pixels.npy": "58cfae59e0bddbac73eba7c2802c344ec09c8b74e88a0510d6682e92cc2ef1fe",
+    "fixtures/segmentation/synthetic_threshold_smoothing_manual/small_removed_labels.npy": "dad73be34830d35d5919859249e9c0ccbeadf485f15e9c181a78914a957cee1d"
+  },
+  "shape": [
+    20,
+    20
+  ],
+  "threshold": 0.5
+}

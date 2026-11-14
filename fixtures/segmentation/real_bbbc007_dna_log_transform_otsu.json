@@ -1,0 +1,19 @@
+{
+  "image_id": "real_bbbc007_dna_log_transform_otsu",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "log_transform": true,
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_log_transform_otsu/labels.npy": "1591b66efed1eba0406307520675180948111215d0add87ed8189679a716f620",
+    "fixtures/segmentation/real_bbbc007_dna_log_transform_otsu/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_log_transform_otsu/small_removed_labels.npy": "1591b66efed1eba0406307520675180948111215d0add87ed8189679a716f620"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.027315272800162375
+}

@@ -1,0 +1,30 @@
+{
+  "guide_threshold": 0.65,
+  "image_id": "synthetic_adaptive_robust_background_log_False_range_0.65",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 4,
+    "log_transform": false,
+    "threshold_correction_factor": 0.5,
+    "threshold_method": "robust_background",
+    "threshold_range": [
+      0.65,
+      0.7
+    ],
+    "threshold_scope": "adaptive",
+    "threshold_smoothing_scale": 1.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65/labels.npy": "c575564c1ec2aed8c2b3cd0b671e8c3fefba583ed3fad3091daa38848fe77366",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65/mask.npy": "fff4d011c39a6dfe159addfc4018055b44f6d220544ff5e626d612dd0629e1d3",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65/pixels.npy": "6029c96f5438ff9b90ab8097fd97b59826178218655c0ae6eb88e060ddf18037",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65/small_removed_labels.npy": "c575564c1ec2aed8c2b3cd0b671e8c3fefba583ed3fad3091daa38848fe77366",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65/threshold_map.npy": "fa22581eaa1fe610c879f1689990e593bddee6b7dd29d8a9bff2bc372eabfa54"
+  },
+  "shape": [
+    19,
+    27
+  ],
+  "threshold": 0.6512050409082364
+}

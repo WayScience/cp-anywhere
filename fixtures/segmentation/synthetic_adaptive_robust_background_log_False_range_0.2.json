@@ -1,0 +1,30 @@
+{
+  "guide_threshold": 0.35,
+  "image_id": "synthetic_adaptive_robust_background_log_False_range_0.2",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 4,
+    "log_transform": false,
+    "threshold_correction_factor": 1.3,
+    "threshold_method": "robust_background",
+    "threshold_range": [
+      0.2,
+      0.35
+    ],
+    "threshold_scope": "adaptive",
+    "threshold_smoothing_scale": 1.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2/labels.npy": "cceffc5e297ca2ac84c8ca18689ea9d2ddbf1c50cd92ceb5c7a90afcb7ad08f2",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2/mask.npy": "fff4d011c39a6dfe159addfc4018055b44f6d220544ff5e626d612dd0629e1d3",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2/pixels.npy": "6029c96f5438ff9b90ab8097fd97b59826178218655c0ae6eb88e060ddf18037",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2/small_removed_labels.npy": "cceffc5e297ca2ac84c8ca18689ea9d2ddbf1c50cd92ceb5c7a90afcb7ad08f2",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2/threshold_map.npy": "875b30b0b0afe25e1dc137e6444caac0de7a9717b652ce242343a55e2d20c0c1"
+  },
+  "shape": [
+    19,
+    27
+  ],
+  "threshold": 0.34795321637426896
+}

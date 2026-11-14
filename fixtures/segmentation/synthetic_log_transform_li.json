@@ -1,0 +1,19 @@
+{
+  "image_id": "synthetic_log_transform_li",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "log_transform": true,
+    "threshold_method": "li"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_log_transform_li/labels.npy": "4253c23bb91372f0e075e48b9662499c99860c14d94d582126bf1359817a41fb",
+    "fixtures/segmentation/synthetic_log_transform_li/pixels.npy": "8ca03627cc9e331d1ccb83c7175459a0df09ef428af9dd066d5a535a60ee69ce",
+    "fixtures/segmentation/synthetic_log_transform_li/small_removed_labels.npy": "4253c23bb91372f0e075e48b9662499c99860c14d94d582126bf1359817a41fb"
+  },
+  "shape": [
+    10,
+    10
+  ],
+  "threshold": 0.10339596744948397
+}

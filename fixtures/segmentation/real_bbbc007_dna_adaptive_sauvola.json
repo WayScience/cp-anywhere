@@ -1,0 +1,22 @@
+{
+  "guide_threshold": 0.06106869876384735,
+  "image_id": "real_bbbc007_dna_adaptive_sauvola",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 50,
+    "threshold_method": "sauvola",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_sauvola/labels.npy": "7d1072b774fe4b274a51bbc882eb05752b80ff8c61069a7af1674efc1f599c85",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_sauvola/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_sauvola/small_removed_labels.npy": "7d1072b774fe4b274a51bbc882eb05752b80ff8c61069a7af1674efc1f599c85",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_sauvola/threshold_map.npy": "29e3c69b4895336696edc30640aff30d6ae23466792b0abe1b6fdfc22ffe795e"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.04536218196153641
+}

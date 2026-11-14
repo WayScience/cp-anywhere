@@ -1,0 +1,22 @@
+{
+  "guide_threshold": 0.47285357117652893,
+  "image_id": "synthetic_adaptive_li_repeated_row",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 50,
+    "threshold_method": "li",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_li_repeated_row/labels.npy": "af4c7817dc267f413ec7921a0a493fbce496e53fed7a2d193cc026a3e4716e34",
+    "fixtures/segmentation/synthetic_adaptive_li_repeated_row/pixels.npy": "49279e6fa6fdb4e04e88dce16906418a29b26f68ebccff9d293187a521b631a8",
+    "fixtures/segmentation/synthetic_adaptive_li_repeated_row/small_removed_labels.npy": "af4c7817dc267f413ec7921a0a493fbce496e53fed7a2d193cc026a3e4716e34",
+    "fixtures/segmentation/synthetic_adaptive_li_repeated_row/threshold_map.npy": "7fb9193b607e32b05e85beb964bd928bd02d4e83ce7ef3eab1d407e0d896ea66"
+  },
+  "shape": [
+    9,
+    11
+  ],
+  "threshold": 0.5138028860092163
+}

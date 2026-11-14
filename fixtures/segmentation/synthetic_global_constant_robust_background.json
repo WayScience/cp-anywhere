@@ -1,0 +1,18 @@
+{
+  "image_id": "synthetic_global_constant_robust_background",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "robust_background"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_global_constant_robust_background/labels.npy": "45514bcb7583cad322e34f0cc6c82a713531c1dfb50cf6269eb8fc4c6cdf88d6",
+    "fixtures/segmentation/synthetic_global_constant_robust_background/pixels.npy": "e302415fcd59b4f33e68f25da0cc328369b9c42246bda3184edc94dce2680314",
+    "fixtures/segmentation/synthetic_global_constant_robust_background/small_removed_labels.npy": "45514bcb7583cad322e34f0cc6c82a713531c1dfb50cf6269eb8fc4c6cdf88d6"
+  },
+  "shape": [
+    8,
+    10
+  ],
+  "threshold": 0.375
+}

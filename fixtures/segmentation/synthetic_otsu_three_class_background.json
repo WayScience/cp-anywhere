@@ -1,0 +1,19 @@
+{
+  "image_id": "synthetic_otsu_three_class_background",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "assign_middle_to_foreground": false,
+    "threshold_method": "otsu_three_class"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_otsu_three_class_background/labels.npy": "b2759f9f888d041c517da2978fd849e58fca5638e8fb0093a2a8c6c6d518376b",
+    "fixtures/segmentation/synthetic_otsu_three_class_background/pixels.npy": "ffd0c0456175cba5f085549f3893328753099f3f65138c94dd40c911504902e3",
+    "fixtures/segmentation/synthetic_otsu_three_class_background/small_removed_labels.npy": "b2759f9f888d041c517da2978fd849e58fca5638e8fb0093a2a8c6c6d518376b"
+  },
+  "shape": [
+    50,
+    60
+  ],
+  "threshold": 0.5947303771972656
+}

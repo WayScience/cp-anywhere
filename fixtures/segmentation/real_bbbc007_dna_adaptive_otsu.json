@@ -1,0 +1,22 @@
+{
+  "guide_threshold": 0.14417892694473267,
+  "image_id": "real_bbbc007_dna_adaptive_otsu",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 50,
+    "threshold_method": "otsu",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_otsu/labels.npy": "dfc2827a0c1e60c7334948240fb4f3f2ce5bf329d7e3319558755f4cbd225712",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_otsu/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_otsu/small_removed_labels.npy": "dfc2827a0c1e60c7334948240fb4f3f2ce5bf329d7e3319558755f4cbd225712",
+    "fixtures/segmentation/real_bbbc007_dna_adaptive_otsu/threshold_map.npy": "6c2e3b2fd61f1d80a87db43fefd6825b44b7a7324597e66f4426e67a073d4f79"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.13853046256919427
+}

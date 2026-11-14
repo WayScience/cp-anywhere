@@ -1,0 +1,18 @@
+{
+  "image_id": "synthetic_li",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "li"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_li/labels.npy": "ef1213029c3de9bd3bbebbe317edf29b789e7915191a295a5df61e5bdcd81caa",
+    "fixtures/segmentation/synthetic_li/pixels.npy": "82e37aeb65ac2728058ff514edb2c18f7aeba4cdc7ce09f77e9c9d955b152a83",
+    "fixtures/segmentation/synthetic_li/small_removed_labels.npy": "ef1213029c3de9bd3bbebbe317edf29b789e7915191a295a5df61e5bdcd81caa"
+  },
+  "shape": [
+    20,
+    40
+  ],
+  "threshold": 0.3889138102531433
+}

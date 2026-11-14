@@ -1,0 +1,23 @@
+{
+  "guide_threshold": 0.37763512134552,
+  "image_id": "synthetic_adaptive_sauvola_window_7",
+  "object_count": 3,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 7,
+    "threshold_method": "sauvola",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_sauvola_window_7/labels.npy": "2ae678021116d4d474798a630ce2b026e790053f09cc1e444dff45dd7e7ffd0b",
+    "fixtures/segmentation/synthetic_adaptive_sauvola_window_7/mask.npy": "fff4d011c39a6dfe159addfc4018055b44f6d220544ff5e626d612dd0629e1d3",
+    "fixtures/segmentation/synthetic_adaptive_sauvola_window_7/pixels.npy": "6029c96f5438ff9b90ab8097fd97b59826178218655c0ae6eb88e060ddf18037",
+    "fixtures/segmentation/synthetic_adaptive_sauvola_window_7/small_removed_labels.npy": "2ae678021116d4d474798a630ce2b026e790053f09cc1e444dff45dd7e7ffd0b",
+    "fixtures/segmentation/synthetic_adaptive_sauvola_window_7/threshold_map.npy": "adcc3fb09fa23178cced14363a30e7b182e22f45d30cca80c081705157ee68d9"
+  },
+  "shape": [
+    19,
+    27
+  ],
+  "threshold": 0.3785047233104706
+}

@@ -1,0 +1,22 @@
+{
+  "guide_threshold": 1.0,
+  "image_id": "synthetic_adaptive_robust_background_repeated_row",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 50,
+    "threshold_method": "robust_background",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_robust_background_repeated_row/labels.npy": "94cbcef6e1e3ddb949d78fad6b06ed912b16e3215f4252d104d7f541928c2553",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_repeated_row/pixels.npy": "49279e6fa6fdb4e04e88dce16906418a29b26f68ebccff9d293187a521b631a8",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_repeated_row/small_removed_labels.npy": "94cbcef6e1e3ddb949d78fad6b06ed912b16e3215f4252d104d7f541928c2553",
+    "fixtures/segmentation/synthetic_adaptive_robust_background_repeated_row/threshold_map.npy": "e45e526818d41f29f6b3c753601164a11f84115eeaf18c5881ec7244fc747e21"
+  },
+  "shape": [
+    9,
+    11
+  ],
+  "threshold": 0.7545455098152161
+}

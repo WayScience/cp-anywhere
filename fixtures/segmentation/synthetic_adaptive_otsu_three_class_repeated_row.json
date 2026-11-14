@@ -1,0 +1,22 @@
+{
+  "guide_threshold": 0.30078125,
+  "image_id": "synthetic_adaptive_otsu_three_class_repeated_row",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "adaptive_window_size": 50,
+    "threshold_method": "otsu_three_class",
+    "threshold_scope": "adaptive"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_adaptive_otsu_three_class_repeated_row/labels.npy": "3e804bec2a5d05306bd11248572ba1d3cf63c8023c7607a02340a6d3001b47a0",
+    "fixtures/segmentation/synthetic_adaptive_otsu_three_class_repeated_row/pixels.npy": "49279e6fa6fdb4e04e88dce16906418a29b26f68ebccff9d293187a521b631a8",
+    "fixtures/segmentation/synthetic_adaptive_otsu_three_class_repeated_row/small_removed_labels.npy": "3e804bec2a5d05306bd11248572ba1d3cf63c8023c7607a02340a6d3001b47a0",
+    "fixtures/segmentation/synthetic_adaptive_otsu_three_class_repeated_row/threshold_map.npy": "707066016bb4ac60e6fca2f49fd938a6f47b829a95fbd98016c682eaedfb9d5f"
+  },
+  "shape": [
+    9,
+    11
+  ],
+  "threshold": 0.36715200543403625
+}

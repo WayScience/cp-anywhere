@@ -103,6 +103,23 @@ lint.per-file-ignores."scripts/parity/compare_cp_measure.py" = [ "PLC0415" ]
 # original CellProfiler Workspace construction, not a function to shrink)
 # for the reference generator script.
 lint.per-file-ignores."scripts/reference/generate.py" = [ "PLC0415", "PLR0917" ]
+# Ignore `PLC0415` (deferred CellProfiler/skimage imports, reference-
+# environment-only), `PLR0913`/`PLR0917` (configure_module/fixture
+# kwargs intentionally mirror every Threshold/IdentifyPrimaryObjects
+# setting this generator exercises), `C901`/`PLR0912`/`PLR0915` (both
+# `configure_module` and `fixture_cases` are long, branchy functions by
+# nature -- one Setting-mapping branch per threshold method, one yield
+# per fixture case -- splitting them would obscure the 1:1 correspondence
+# with CellProfiler's own Settings surface, not simplify anything) for
+# the segmentation reference generator script.
+lint.per-file-ignores."scripts/segmentation/generate_reference.py" = [
+  "C901",
+  "PLC0415",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "PLR0917",
+]
 # Ignore `PLC0415` (import not at top-level) for `api.py`, which defers the
 # native extension import so the pure-Python package stays importable.
 lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415" ]
@@ -110,6 +127,14 @@ lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415" ]
 # imports so loading one file format doesn't require the others, and
 # `measure_files` stays usable without pandas imported at module load.
 lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py), `PLR0913` (identify_primary_objects intentionally exposes
+# every IdentifyPrimaryObjects/Threshold setting this release covers as
+# a named keyword argument, matching CellProfiler's own Settings surface,
+# not a function to shrink), and `PLR0911` (_resolve_threshold's one
+# `return` per supported threshold-method name is the clearest mapping,
+# not a function to shrink) for the segmentation API.
+lint.per-file-ignores."src/cp_anywhere/segment.py" = [ "PLC0415", "PLR0911", "PLR0913" ]
 
 [tool.vulture]
 paths = [ "src/cp_anywhere", "tests" ]

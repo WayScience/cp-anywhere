@@ -42,6 +42,22 @@ entry point that returns a `MeasurementResult` instead of a `DataFrame`;
 it has matching `to_json`/`to_csv`/`to_arrow` methods
 (see `docs/src/python-api.md`).
 
+### Segmentation
+
+`cp_anywhere.identify_primary_objects(...)` segments a 2D grayscale image
+into labeled objects (CellProfiler's `IdentifyPrimaryObjects`, Global Otsu
+or a manual threshold -- see `spec/segmentation-modules.md` for the exact
+scope), and its output chains directly into `measure`:
+
+```python
+seg = cp_anywhere.identify_primary_objects(dna_image, threshold="otsu")
+result = cp_anywhere.measure({"DNA": dna_image}, {"Cells": seg.labels})
+```
+
+Verified against real CellProfiler 4.2.8, exact label-for-label, on both
+synthetic and real microscopy fixtures: `tests/segmentation/`,
+`fixtures/segmentation/`. Performance: `docs/segmentation-performance.md`.
+
 ## High-level overview
 
 This template gives you a ready-to-run Python research software project with:

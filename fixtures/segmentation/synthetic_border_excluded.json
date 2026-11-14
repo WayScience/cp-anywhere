@@ -1,0 +1,20 @@
+{
+  "image_id": "synthetic_border_excluded",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "exclude_border_objects": true,
+    "threshold_method": "manual",
+    "threshold_value": 0.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_border_excluded/labels.npy": "32bfd3564dc789b6e27cd9811322574de577060ad00c4ab9686da413fd406a58",
+    "fixtures/segmentation/synthetic_border_excluded/pixels.npy": "a5127a342eb21a5009c631a7b7f0be2f689652028fa5e6ebdf5b1825166b3e35",
+    "fixtures/segmentation/synthetic_border_excluded/small_removed_labels.npy": "ed467be770d1170544256d105aab099cc5f3a792424618ec230803fc670f361f"
+  },
+  "shape": [
+    10,
+    10
+  ],
+  "threshold": 0.5
+}

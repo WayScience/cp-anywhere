@@ -121,9 +121,14 @@ name = "cp_anywhere_python"
 version = "0.1.0"
 dependencies = [
  "cp_anywhere_core",
+ "cp_anywhere_segmentation",
  "numpy",
  "pyo3",
 ]
+
+[[package]]
+name = "cp_anywhere_segmentation"
+version = "0.1.0"
 
 [[package]]
 name = "criterion"

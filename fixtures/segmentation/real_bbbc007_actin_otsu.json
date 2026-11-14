@@ -1,0 +1,18 @@
+{
+  "image_id": "real_bbbc007_actin_otsu",
+  "object_count": 16,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_actin_otsu/labels.npy": "33bb67def275125ce6aa1245789cd9b4c6c18041568150ad8cf591342d94b906",
+    "fixtures/segmentation/real_bbbc007_actin_otsu/pixels.npy": "5ba36077ddc7c6d15ffd75f2d7406d26465659b0817894b5414ec2fd48fe9736",
+    "fixtures/segmentation/real_bbbc007_actin_otsu/small_removed_labels.npy": "33bb67def275125ce6aa1245789cd9b4c6c18041568150ad8cf591342d94b906"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.15301011502742767
+}

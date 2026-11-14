@@ -1,0 +1,552 @@
+{
+  "cases": [
+    {
+      "name": "synthetic_otsu_bimodal",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_otsu_bimodal.json",
+      "threshold": 0.11445312201976776
+    },
+    {
+      "name": "synthetic_manual_square",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_manual_square.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "synthetic_size_filter",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_size_filter.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "synthetic_empty",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_empty.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "real_cell_cc0_dna_otsu",
+      "object_count": 10,
+      "result": "fixtures/segmentation/real_cell_cc0_dna_otsu.json",
+      "threshold": 0.2509957253932953
+    },
+    {
+      "name": "real_bbbc007_dna_otsu",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "real_bbbc007_actin_otsu",
+      "object_count": 16,
+      "result": "fixtures/segmentation/real_bbbc007_actin_otsu.json",
+      "threshold": 0.15301011502742767
+    },
+    {
+      "name": "real_bbbc007_dna_otsu_size_filtered",
+      "object_count": 2,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu_size_filtered.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "synthetic_border_excluded",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_border_excluded.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "real_bbbc007_dna_otsu_border_excluded",
+      "object_count": 4,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu_border_excluded.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "synthetic_limit_erase_exceeded",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_limit_erase_exceeded.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "synthetic_limit_erase_within_bounds",
+      "object_count": 3,
+      "result": "fixtures/segmentation/synthetic_limit_erase_within_bounds.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "synthetic_fill_holes_after_declump_only",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_fill_holes_after_declump_only.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "synthetic_fill_holes_after_thresholding_and_declump",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_fill_holes_after_thresholding_and_declump.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "real_bbbc007_dna_otsu_fill_holes",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu_fill_holes.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "synthetic_threshold_smoothing_manual",
+      "object_count": 5,
+      "result": "fixtures/segmentation/synthetic_threshold_smoothing_manual.json",
+      "threshold": 0.5
+    },
+    {
+      "name": "real_bbbc007_dna_otsu_threshold_smoothing",
+      "object_count": 7,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu_threshold_smoothing.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "synthetic_otsu_three_class_foreground",
+      "object_count": 4,
+      "result": "fixtures/segmentation/synthetic_otsu_three_class_foreground.json",
+      "threshold": 0.23223039507865906
+    },
+    {
+      "name": "synthetic_otsu_three_class_background",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_otsu_three_class_background.json",
+      "threshold": 0.5947303771972656
+    },
+    {
+      "name": "real_bbbc007_dna_otsu_three_class",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_otsu_three_class.json",
+      "threshold": 0.1042892187833786
+    },
+    {
+      "name": "synthetic_li",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_li.json",
+      "threshold": 0.3889138102531433
+    },
+    {
+      "name": "real_bbbc007_dna_li",
+      "object_count": 10,
+      "result": "fixtures/segmentation/real_bbbc007_dna_li.json",
+      "threshold": 0.06106869876384735
+    },
+    {
+      "name": "synthetic_robust_background_mean_sd",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_robust_background_mean_sd.json",
+      "threshold": 1.0
+    },
+    {
+      "name": "synthetic_robust_background_median_mad",
+      "object_count": 3,
+      "result": "fixtures/segmentation/synthetic_robust_background_median_mad.json",
+      "threshold": 0.9647059142589569
+    },
+    {
+      "name": "synthetic_robust_background_mode_sd",
+      "object_count": 8,
+      "result": "fixtures/segmentation/synthetic_robust_background_mode_sd.json",
+      "threshold": 0.7574567347764969
+    },
+    {
+      "name": "synthetic_robust_background_custom_outliers",
+      "object_count": 8,
+      "result": "fixtures/segmentation/synthetic_robust_background_custom_outliers.json",
+      "threshold": 0.7548648118972778
+    },
+    {
+      "name": "real_bbbc007_dna_robust_background",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_robust_background.json",
+      "threshold": 0.07968687452375889
+    },
+    {
+      "name": "synthetic_log_transform_otsu",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_log_transform_otsu.json",
+      "threshold": 0.20313943799719755
+    },
+    {
+      "name": "synthetic_log_transform_li",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_log_transform_li.json",
+      "threshold": 0.10339596744948397
+    },
+    {
+      "name": "synthetic_log_transform_otsu_three_class",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_log_transform_otsu_three_class.json",
+      "threshold": 0.08930371282231636
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_window_1",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_window_1.json",
+      "threshold": 0.3867390751838684
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_window_7",
+      "object_count": 3,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_window_7.json",
+      "threshold": 0.3785047233104706
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_window_8",
+      "object_count": 3,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_window_8.json",
+      "threshold": 0.3767189383506775
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_window_30",
+      "object_count": 3,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_window_30.json",
+      "threshold": 0.3752312958240509
+    },
+    {
+      "name": "real_bbbc007_dna_adaptive_sauvola",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_adaptive_sauvola.json",
+      "threshold": 0.04536218196153641
+    },
+    {
+      "name": "synthetic_adaptive_otsu_zero",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_zero.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_otsu_constant",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_constant.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_adaptive_otsu_empty_mask",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_empty_mask.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_otsu_repeated_row",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_repeated_row.json",
+      "threshold": 0.4584694802761078
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_zero",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_zero.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_constant",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_constant.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_empty_mask",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_empty_mask.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_repeated_row",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_repeated_row.json",
+      "threshold": 0.36715200543403625
+    },
+    {
+      "name": "synthetic_adaptive_li_zero",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_zero.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_li_constant",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_constant.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_adaptive_li_empty_mask",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_empty_mask.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_li_repeated_row",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_repeated_row.json",
+      "threshold": 0.5138028860092163
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_zero",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_zero.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_constant",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_constant.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_empty_mask",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_empty_mask.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_repeated_row",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_repeated_row.json",
+      "threshold": 0.7545455098152161
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_zero",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_zero.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_constant",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_constant.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_empty_mask",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_empty_mask.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_repeated_row",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_repeated_row.json",
+      "threshold": 0.5138028860092163
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_False_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_False_range_0.2.json",
+      "threshold": 0.33678848529634414
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_False_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_False_range_0.65.json",
+      "threshold": 0.6500723774837027
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_False_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_False_range_0.42.json",
+      "threshold": 0.42
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_True_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_True_range_0.2.json",
+      "threshold": 0.24416051572344039
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_True_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_True_range_0.65.json",
+      "threshold": 0.6529239766081872
+    },
+    {
+      "name": "synthetic_adaptive_otsu_log_True_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_log_True_range_0.42.json",
+      "threshold": 0.42
+    },
+    {
+      "name": "synthetic_adaptive_li_log_True_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_log_True_range_0.2.json",
+      "threshold": 0.24143169634837164
+    },
+    {
+      "name": "synthetic_adaptive_li_log_True_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_log_True_range_0.65.json",
+      "threshold": 0.6520150962958106
+    },
+    {
+      "name": "synthetic_adaptive_li_log_True_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_log_True_range_0.42.json",
+      "threshold": 0.42
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_log_True_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_log_True_range_0.2.json",
+      "threshold": 0.2179121296579482
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_log_True_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_log_True_range_0.65.json",
+      "threshold": 0.651364522417154
+    },
+    {
+      "name": "synthetic_adaptive_otsu_three_class_log_True_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_three_class_log_True_range_0.42.json",
+      "threshold": 0.42
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_log_False_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.2.json",
+      "threshold": 0.34795321637426896
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_log_False_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.65.json",
+      "threshold": 0.6512050409082364
+    },
+    {
+      "name": "synthetic_adaptive_robust_background_log_False_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_background_log_False_range_0.42.json",
+      "threshold": 0.42
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_log_False_range_0.2",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_log_False_range_0.2.json",
+      "threshold": 0.34070253372192383
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_log_False_range_0.65",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_log_False_range_0.65.json",
+      "threshold": 0.6500000357627869
+    },
+    {
+      "name": "synthetic_adaptive_sauvola_log_False_range_0.42",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_adaptive_sauvola_log_False_range_0.42.json",
+      "threshold": 0.4200000464916229
+    },
+    {
+      "name": "synthetic_adaptive_li_masked_log_False",
+      "object_count": 13,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_masked_log_False.json",
+      "threshold": 0.3570152750165829
+    },
+    {
+      "name": "synthetic_adaptive_li_masked_log_True",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_li_masked_log_True.json",
+      "threshold": 0.07382852097611993
+    },
+    {
+      "name": "synthetic_adaptive_three_class_foreground_False",
+      "object_count": 49,
+      "result": "fixtures/segmentation/synthetic_adaptive_three_class_foreground_False.json",
+      "threshold": 0.6105281680735887
+    },
+    {
+      "name": "synthetic_adaptive_three_class_foreground_True",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_adaptive_three_class_foreground_True.json",
+      "threshold": 0.30835263897271176
+    },
+    {
+      "name": "synthetic_adaptive_robust_mean_sd",
+      "object_count": 48,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_mean_sd.json",
+      "threshold": 0.6131840158450289
+    },
+    {
+      "name": "synthetic_adaptive_robust_median_mad",
+      "object_count": 25,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_median_mad.json",
+      "threshold": 0.5253458768815015
+    },
+    {
+      "name": "synthetic_adaptive_robust_mode_sd",
+      "object_count": 11,
+      "result": "fixtures/segmentation/synthetic_adaptive_robust_mode_sd.json",
+      "threshold": 0.3424770166170772
+    },
+    {
+      "name": "synthetic_adaptive_otsu_window_7",
+      "object_count": 25,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_window_7.json",
+      "threshold": 0.3185720010692574
+    },
+    {
+      "name": "synthetic_adaptive_otsu_window_10",
+      "object_count": 19,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_window_10.json",
+      "threshold": 0.32898109136498077
+    },
+    {
+      "name": "synthetic_adaptive_otsu_window_14",
+      "object_count": 16,
+      "result": "fixtures/segmentation/synthetic_adaptive_otsu_window_14.json",
+      "threshold": 0.3323809546678392
+    },
+    {
+      "name": "real_bbbc007_dna_adaptive_otsu",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_adaptive_otsu.json",
+      "threshold": 0.13853046256919427
+    },
+    {
+      "name": "synthetic_global_constant_li",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_global_constant_li.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_global_empty_mask_li",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_global_empty_mask_li.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_global_constant_otsu_three_class",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_global_constant_otsu_three_class.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_global_empty_mask_otsu_three_class",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_global_empty_mask_otsu_three_class.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "synthetic_global_constant_robust_background",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_global_constant_robust_background.json",
+      "threshold": 0.375
+    },
+    {
+      "name": "synthetic_global_empty_mask_robust_background",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_global_empty_mask_robust_background.json",
+      "threshold": 0.0
+    },
+    {
+      "name": "real_bbbc007_dna_log_transform_otsu",
+      "object_count": 8,
+      "result": "fixtures/segmentation/real_bbbc007_dna_log_transform_otsu.json",
+      "threshold": 0.027315272800162375
+    }
+  ],
+  "cellprofiler_version": "4.2.8",
+  "source_commit": "2df090ff281cff80943fe679a1c3192fbda9cd6d"
+}

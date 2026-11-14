@@ -1,0 +1,20 @@
+{
+  "image_id": "synthetic_limit_erase_exceeded",
+  "object_count": 0,
+  "rescale": true,
+  "settings": {
+    "maximum_object_count": 2,
+    "threshold_method": "manual",
+    "threshold_value": 0.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_limit_erase_exceeded/labels.npy": "45d7323b6320dce9299a25b6792d55adaf0e27afb02691d0439375554ff215aa",
+    "fixtures/segmentation/synthetic_limit_erase_exceeded/pixels.npy": "9992e8afe9e5755071e5fe2425f26415fc47c6f5866eea9864224e52ce57fdaa",
+    "fixtures/segmentation/synthetic_limit_erase_exceeded/small_removed_labels.npy": "79be0e79cd81433745725528bf02abb162eaac487f0cb7d12c35c0166ddcfd1c"
+  },
+  "shape": [
+    10,
+    10
+  ],
+  "threshold": 0.5
+}

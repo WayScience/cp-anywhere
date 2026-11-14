@@ -1,0 +1,18 @@
+{
+  "image_id": "real_bbbc007_dna_li",
+  "object_count": 10,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "li"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_li/labels.npy": "ad8ef867fd8ab1c1ddcff4ce13ba8287bef260ab798683e7f64c1e30fdb53ec1",
+    "fixtures/segmentation/real_bbbc007_dna_li/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_li/small_removed_labels.npy": "ad8ef867fd8ab1c1ddcff4ce13ba8287bef260ab798683e7f64c1e30fdb53ec1"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.06106869876384735
+}

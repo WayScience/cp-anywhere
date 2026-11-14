@@ -1,0 +1,19 @@
+{
+  "image_id": "synthetic_manual_square",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "manual",
+    "threshold_value": 0.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_manual_square/labels.npy": "a5b3968a0ac9709baeac9d38498c734acf2119aedb471aa3069ed5d5c5f4969d",
+    "fixtures/segmentation/synthetic_manual_square/pixels.npy": "99646847aa91c12944cd45f4211532963b74b6146023c815e71dde4eb3db69e5",
+    "fixtures/segmentation/synthetic_manual_square/small_removed_labels.npy": "a5b3968a0ac9709baeac9d38498c734acf2119aedb471aa3069ed5d5c5f4969d"
+  },
+  "shape": [
+    8,
+    8
+  ],
+  "threshold": 0.5
+}

@@ -1,0 +1,21 @@
+{
+  "image_id": "synthetic_robust_background_custom_outliers",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "robust_background_lower_outlier_fraction": 0.1,
+    "robust_background_number_of_deviations": 1.0,
+    "robust_background_upper_outlier_fraction": 0.1,
+    "threshold_method": "robust_background"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_robust_background_custom_outliers/labels.npy": "4a1c8b0c4d1d4d22ed9de043329061f0613e91bf4f4485b60c3b5251331b8251",
+    "fixtures/segmentation/synthetic_robust_background_custom_outliers/pixels.npy": "e315da6a2be73aaa9485d0730ffcb3ea6a399966e8a2f52eaf26a91d082e4f48",
+    "fixtures/segmentation/synthetic_robust_background_custom_outliers/small_removed_labels.npy": "4a1c8b0c4d1d4d22ed9de043329061f0613e91bf4f4485b60c3b5251331b8251"
+  },
+  "shape": [
+    10,
+    8
+  ],
+  "threshold": 0.7548648118972778
+}

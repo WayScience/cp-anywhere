@@ -1,0 +1,22 @@
+{
+  "image_id": "synthetic_size_filter",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "exclude_size": true,
+    "max_diameter": 100,
+    "min_diameter": 3,
+    "threshold_method": "manual",
+    "threshold_value": 0.5
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_size_filter/labels.npy": "7317058b1ef3fb83a19f306e24226fbd4e2e554344d84f300c6130ecf099aa7a",
+    "fixtures/segmentation/synthetic_size_filter/pixels.npy": "c7c1eb3d50c74ed2bd0a6934f0ad6b32610ccf9164faac16beb0eaab7f8bfc62",
+    "fixtures/segmentation/synthetic_size_filter/small_removed_labels.npy": "28433c1dc89d8e504b68709b50984adcf7f589336770029a32038b58da55a796"
+  },
+  "shape": [
+    10,
+    12
+  ],
+  "threshold": 0.5
+}

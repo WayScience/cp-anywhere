@@ -1,0 +1,28 @@
+{
+  "native_baseline": "benchmarks/reports/segmentation-native-baseline.json",
+  "cellprofiler_baseline": "benchmarks/reports/segmentation-cellprofiler-baseline.json",
+  "comparisons": [
+    {
+      "fixture": "real_cell_cc0_dna_otsu",
+      "shape": [
+        96,
+        96
+      ],
+      "object_count": 10,
+      "cp_anywhere_median_ms": 0.149271,
+      "cellprofiler_median_ms": 7.2143755,
+      "speedup_x": 48.3
+    },
+    {
+      "fixture": "real_bbbc007_dna_otsu",
+      "shape": [
+        128,
+        128
+      ],
+      "object_count": 8,
+      "cp_anywhere_median_ms": 0.104604,
+      "cellprofiler_median_ms": 6.483416999999999,
+      "speedup_x": 62.0
+    }
+  ]
+}

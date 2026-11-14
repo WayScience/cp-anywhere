@@ -1,0 +1,18 @@
+{
+  "image_id": "synthetic_otsu_bimodal",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_otsu_bimodal/labels.npy": "e3aeb0d15df8e17a1a69dd65d9033b01a228ccaaad1c5493c848a206e67b1fbd",
+    "fixtures/segmentation/synthetic_otsu_bimodal/pixels.npy": "ffb5f1faf1b78e595f00132c775684d9573357afe0f85e52f1edb55397fd92a1",
+    "fixtures/segmentation/synthetic_otsu_bimodal/small_removed_labels.npy": "e3aeb0d15df8e17a1a69dd65d9033b01a228ccaaad1c5493c848a206e67b1fbd"
+  },
+  "shape": [
+    10,
+    10
+  ],
+  "threshold": 0.11445312201976776
+}

@@ -1,0 +1,19 @@
+{
+  "image_id": "real_bbbc007_dna_otsu_three_class",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "assign_middle_to_foreground": true,
+    "threshold_method": "otsu_three_class"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_otsu_three_class/labels.npy": "66b4dd90108f7c3540be3d6208fa5bc013eff71f250db1463deb5995d00c223a",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_three_class/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_three_class/small_removed_labels.npy": "66b4dd90108f7c3540be3d6208fa5bc013eff71f250db1463deb5995d00c223a"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.1042892187833786
+}

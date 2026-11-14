@@ -1,0 +1,20 @@
+{
+  "image_id": "synthetic_robust_background_median_mad",
+  "object_count": 3,
+  "rescale": true,
+  "settings": {
+    "robust_background_averaging_method": "median",
+    "robust_background_variance_method": "mad",
+    "threshold_method": "robust_background"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_robust_background_median_mad/labels.npy": "2b333bbf45fdd085890d001a5526dff32f175d6bfc1b494f285dfc443477d0d7",
+    "fixtures/segmentation/synthetic_robust_background_median_mad/pixels.npy": "e315da6a2be73aaa9485d0730ffcb3ea6a399966e8a2f52eaf26a91d082e4f48",
+    "fixtures/segmentation/synthetic_robust_background_median_mad/small_removed_labels.npy": "2b333bbf45fdd085890d001a5526dff32f175d6bfc1b494f285dfc443477d0d7"
+  },
+  "shape": [
+    10,
+    8
+  ],
+  "threshold": 0.9647059142589569
+}

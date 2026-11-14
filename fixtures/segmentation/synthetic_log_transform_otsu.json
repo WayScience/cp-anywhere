@@ -1,0 +1,19 @@
+{
+  "image_id": "synthetic_log_transform_otsu",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "log_transform": true,
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_log_transform_otsu/labels.npy": "396edc41120671ceace58fec6f24548358a60b3f102cfdf890d3c3d4fae71b7c",
+    "fixtures/segmentation/synthetic_log_transform_otsu/pixels.npy": "8ca03627cc9e331d1ccb83c7175459a0df09ef428af9dd066d5a535a60ee69ce",
+    "fixtures/segmentation/synthetic_log_transform_otsu/small_removed_labels.npy": "396edc41120671ceace58fec6f24548358a60b3f102cfdf890d3c3d4fae71b7c"
+  },
+  "shape": [
+    10,
+    10
+  ],
+  "threshold": 0.20313943799719755
+}

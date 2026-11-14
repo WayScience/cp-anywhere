@@ -1,0 +1,19 @@
+{
+  "image_id": "synthetic_global_empty_mask_otsu_three_class",
+  "object_count": 0,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "otsu_three_class"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_global_empty_mask_otsu_three_class/labels.npy": "336c281e1bfea9a49ee1628f30fd10e3e51886c56db785008761c32381fe90fa",
+    "fixtures/segmentation/synthetic_global_empty_mask_otsu_three_class/mask.npy": "a002b2cb2dfad11696115e840c21b4780715765885b559662516e9d364c6fc3d",
+    "fixtures/segmentation/synthetic_global_empty_mask_otsu_three_class/pixels.npy": "e482e5d9a6e5b9666ff25607c76caf938b3ff2e50a306245f096dd3829b098c9",
+    "fixtures/segmentation/synthetic_global_empty_mask_otsu_three_class/small_removed_labels.npy": "336c281e1bfea9a49ee1628f30fd10e3e51886c56db785008761c32381fe90fa"
+  },
+  "shape": [
+    8,
+    10
+  ],
+  "threshold": 0.0
+}

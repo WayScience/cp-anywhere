@@ -1,0 +1,18 @@
+{
+  "image_id": "real_cell_cc0_dna_otsu",
+  "object_count": 10,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_cell_cc0_dna_otsu/labels.npy": "713b0f9cf788c9c9bb0b080afe31cb9c8b7ee23cd7d258d94782c7c39afb5919",
+    "fixtures/segmentation/real_cell_cc0_dna_otsu/pixels.npy": "fd60c496d7b2c3c7735e6c1558a5945c00a733b59a9d7776b8b927654cc60922",
+    "fixtures/segmentation/real_cell_cc0_dna_otsu/small_removed_labels.npy": "713b0f9cf788c9c9bb0b080afe31cb9c8b7ee23cd7d258d94782c7c39afb5919"
+  },
+  "shape": [
+    96,
+    96
+  ],
+  "threshold": 0.2509957253932953
+}

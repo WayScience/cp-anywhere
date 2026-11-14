@@ -1,0 +1,19 @@
+{
+  "image_id": "real_bbbc007_dna_otsu_threshold_smoothing",
+  "object_count": 7,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "otsu",
+    "threshold_smoothing_scale": 1.5
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_otsu_threshold_smoothing/labels.npy": "2c9666a6222d1fcd41aced0339565a57b08362daa5dcfcfc8e52313cec98ed3f",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_threshold_smoothing/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_threshold_smoothing/small_removed_labels.npy": "2c9666a6222d1fcd41aced0339565a57b08362daa5dcfcfc8e52313cec98ed3f"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.14417892694473267
+}

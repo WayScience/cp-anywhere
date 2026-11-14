@@ -15,6 +15,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 cp_anywhere_core = { path = "../cp_anywhere_core" }
+cp_anywhere_segmentation = { path = "../cp_anywhere_segmentation" }
 # `abi3-py311` builds against CPython's stable ABI, so a single wheel per
 # platform works on Python 3.11 and every newer version -- no per-interpreter
 # build matrix, and forward compatibility with Python versions released after

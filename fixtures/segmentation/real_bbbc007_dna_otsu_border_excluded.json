@@ -1,0 +1,19 @@
+{
+  "image_id": "real_bbbc007_dna_otsu_border_excluded",
+  "object_count": 4,
+  "rescale": true,
+  "settings": {
+    "exclude_border_objects": true,
+    "threshold_method": "otsu"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_otsu_border_excluded/labels.npy": "be35d0733fe6437e5f2c2862dddffca266df73083e614c21526b61fdcf1234b1",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_border_excluded/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_otsu_border_excluded/small_removed_labels.npy": "775cc2ba0222bb38075406b6557c8e6205b870aae93390fd7321aa8e9226dabc"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.14417892694473267
+}

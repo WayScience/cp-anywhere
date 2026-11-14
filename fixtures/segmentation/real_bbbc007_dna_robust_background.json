@@ -1,0 +1,18 @@
+{
+  "image_id": "real_bbbc007_dna_robust_background",
+  "object_count": 8,
+  "rescale": true,
+  "settings": {
+    "threshold_method": "robust_background"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_robust_background/labels.npy": "da1d1c51faf08dc9e4bdbc190d4fed1945ad72a5bd9707e9fb66db98a7d10693",
+    "fixtures/segmentation/real_bbbc007_dna_robust_background/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_robust_background/small_removed_labels.npy": "da1d1c51faf08dc9e4bdbc190d4fed1945ad72a5bd9707e9fb66db98a7d10693"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.07968687452375889
+}
