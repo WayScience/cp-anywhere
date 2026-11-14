@@ -1,0 +1,3897 @@
+---
+cellprofiler_version: 4.2.8
+features:
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensityEdge_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensityEdge_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_LowerQuartileIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_LowerQuartileIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MADIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MADIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MassDisplacement_Actin
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MassDisplacement_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensityEdge_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensityEdge_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensityEdge_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensityEdge_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MedianIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MedianIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensityEdge_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensityEdge_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensityEdge_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensityEdge_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_UpperQuartileIntensity_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_UpperQuartileIntensity_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_X_Actin
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_X_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Y_Actin
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Y_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Z_Actin
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Z_DNA
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_X_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_X_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Y_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Y_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Z_Actin
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Z_DNA
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_AngleBetweenNeighbors_Adjacent
+    object_scope: Cells
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_FirstClosestDistance_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 0
+      mode: exact
+      rationale: Discrete ID/count
+      relative_tolerance: 0
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: int64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_FirstClosestObjectNumber_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 0
+      mode: exact
+      rationale: Discrete ID/count
+      relative_tolerance: 0
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: int64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_NumberOfNeighbors_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_PercentTouching_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_SecondClosestDistance_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 0
+      mode: exact
+      rationale: Discrete ID/count
+      relative_tolerance: 0
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: int64
+    inputs:
+      - labels
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectNeighbors
+    name: Neighbors_SecondClosestObjectNumber_Adjacent
+    object_scope: Cells
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      distance_method: Adjacent
+      neighbors: Cells
+      objects: Cells
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_excluded_objects: false
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_LowerQuartileIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_LowerQuartileIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MADIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MADIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MaxIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MaxIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MeanIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MeanIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MedianIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MedianIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MinIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_MinIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_PercentMaximal_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_PercentMaximal_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_10_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_10_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_50_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_50_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_90_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_Percentile_90_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_StdIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_StdIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 0
+      mode: exact
+      rationale: Discrete ID/count
+      relative_tolerance: 0
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: int64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_TotalArea_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 0
+      mode: exact
+      rationale: Discrete ID/count
+      relative_tolerance: 0
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: int64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_TotalArea_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_TotalIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_TotalIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_UpperQuartileIntensity_Actin
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureImageIntensity
+    name: Intensity_UpperQuartileIntensity_DNA
+    object_scope: Image
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      percentiles:
+        - 10
+        - 50
+        - 90
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+      wants_objects: false
+      wants_percentiles: true
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensityEdge_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensityEdge_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_IntegratedIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_LowerQuartileIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_LowerQuartileIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MADIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MADIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MassDisplacement_Actin
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MassDisplacement_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensityEdge_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensityEdge_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MaxIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensityEdge_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensityEdge_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MeanIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MedianIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MedianIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensityEdge_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensityEdge_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_MinIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensityEdge_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensityEdge_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_StdIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_UpperQuartileIntensity_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Intensity_UpperQuartileIntensity_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - +Infinity
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_X_Actin
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_X_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Y_Actin
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Y_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Z_Actin
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_CenterMassIntensity_Z_DNA
+    object_scope: Nuclei
+    observed_nonfinite:
+      - NaN
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_X_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_X_DNA
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Y_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Y_DNA
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Z_Actin
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+  - comparison:
+      absolute_tolerance: 1.0e-10
+      mode: numeric
+      rationale: Float64 reduction order; tighten per feature during parity
+        review
+      relative_tolerance: 1.0e-09
+    cp_measure_status: unknown_m2
+    dimensionality:
+      - 2
+      - 3
+    dtype: float64
+    inputs:
+      - image
+      - labels
+      - mask
+    missing_value_semantics: Nonfinite values use explicit JSON markers.
+      Sparse object IDs retain array positions.
+    module: MeasureObjectIntensity
+    name: Location_MaxIntensity_Z_DNA
+    object_scope: Nuclei
+    observed_nonfinite: []
+    observed_null: false
+    rust_status: not_started
+    settings:
+      images:
+        - DNA
+        - Actin
+      objects:
+        - Cells
+        - Nuclei
+      pipeline: reference/pipelines/intensity_neighbors.cppipe
+    wasm_status: not_started
+relationships:
+  - comparison: exact rows after key sort
+    direction: both directed rows
+    fields:
+      - first_image_id
+      - first_object_id
+      - second_image_id
+      - second_object_id
+    first_scope: Cells
+    module: MeasureObjectNeighbors
+    name: Neighbors
+    second_scope: Cells
+    topology: same object set, Adjacent mode
+source_commit: 2df090ff281cff80943fe679a1c3192fbda9cd6d

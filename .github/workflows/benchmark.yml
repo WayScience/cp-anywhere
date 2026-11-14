@@ -1,0 +1,51 @@
+---
+# Runs the native Rust throughput benchmark on a schedule (not on every PR)
+# to avoid gating merges on noisy single-run CI timing (plan 5.2). Uploads
+# the raw report as a build artifact for trend-watching; the regression
+# check uses a tolerance margin (scripts/benchmarks/check_regression.py)
+# rather than failing on any slowdown at all.
+name: benchmark
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # weekly, Monday 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  native_throughput:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v10.3.3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      - name: uv sync
+        run: uv sync --frozen
+      - name: Run native Rust benchmark
+        run: cargo bench --manifest-path crates/cp_anywhere_core/Cargo.toml
+      - name: Build benchmark report
+        run: uv run --frozen python scripts/benchmarks/report_native_rust.py
+      - name: Check against the throughput acceptance gate
+        run: uv run --frozen python scripts/benchmarks/check_throughput_gate.py
+      - name: Check against the committed regression baseline
+        run: uv run --frozen python scripts/benchmarks/check_regression.py
+      - name: Upload benchmark report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: native-benchmark-report
+          path: |
+            benchmarks/reports/native-rust-baseline.json
+            benchmarks/reports/native-throughput-gate.json
+          retention-days: 90

@@ -1,0 +1,471 @@
+{
+  "cellprofiler_version": "4.2.8",
+  "cp_measure_commit": "cdf693187e3dcaf3d067da7b58bdd4ab8896f91e",
+  "environment_lock": "reference/source-lock.json",
+  "feature_count": 119,
+  "fixtures": [
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "float64",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "empty_image",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/empty_image.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/empty_image/Actin.npy": "25285b3747d2ff15bf857dd83c097cdbb15242b66d154792e555ba7e4c26915b",
+        "fixtures/synthetic/empty_image/DNA.npy": "25285b3747d2ff15bf857dd83c097cdbb15242b66d154792e555ba7e4c26915b",
+        "fixtures/synthetic/empty_image/labels.npy": "705afa81b533bc5e349ff5e1f1b5f116fbe5161a9cfca2eeb8a4f92074b9aec6",
+        "fixtures/synthetic/empty_image/nuclei_labels.npy": "705afa81b533bc5e349ff5e1f1b5f116fbe5161a9cfca2eeb8a4f92074b9aec6"
+      },
+      "shape": [
+        8,
+        8
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "float64",
+        "DNA": "float64",
+        "labels": "int32",
+        "mask": "bool",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": true,
+      "name": "empty_mask",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/empty_mask.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/empty_mask/Actin.npy": "fdb14a2aa5b940b0a97af77ac1c9f3853d26f524c6a57a197fe43c4d9743a44b",
+        "fixtures/synthetic/empty_mask/DNA.npy": "c1baba4c456896910cdf9a7dee05d16122655c876fbeff78ac8ceda8ff08d598",
+        "fixtures/synthetic/empty_mask/labels.npy": "a5b3968a0ac9709baeac9d38498c734acf2119aedb471aa3069ed5d5c5f4969d",
+        "fixtures/synthetic/empty_mask/mask.npy": "f226353971a75a1b5cbc86b36cd5e7baa61f489095644ce60270ed760a3d7be9",
+        "fixtures/synthetic/empty_mask/nuclei_labels.npy": "23c4c746fadf7ba7532b32ff328059bfd0713798a3b11054610ba1d4009b7abe"
+      },
+      "shape": [
+        8,
+        8
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "float64",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "one_constant",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/one_constant.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/one_constant/Actin.npy": "25285b3747d2ff15bf857dd83c097cdbb15242b66d154792e555ba7e4c26915b",
+        "fixtures/synthetic/one_constant/DNA.npy": "c1baba4c456896910cdf9a7dee05d16122655c876fbeff78ac8ceda8ff08d598",
+        "fixtures/synthetic/one_constant/labels.npy": "a5b3968a0ac9709baeac9d38498c734acf2119aedb471aa3069ed5d5c5f4969d",
+        "fixtures/synthetic/one_constant/nuclei_labels.npy": "23c4c746fadf7ba7532b32ff328059bfd0713798a3b11054610ba1d4009b7abe"
+      },
+      "shape": [
+        8,
+        8
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint16",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "touching_gradient",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/touching_gradient.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/touching_gradient/Actin.npy": "f4513563f50841eaf22fd632aad4e05897a625e83cda2fca2e6247638d0b4e0f",
+        "fixtures/synthetic/touching_gradient/DNA.npy": "8ebba9dfc1ac2eb6ce0e93a170f0aebe43a70b0f6c95a53d9a3dc3b606c2285a",
+        "fixtures/synthetic/touching_gradient/labels.npy": "dda5f4bbe8972773ecb98a323bbce915607241166dd52ed32cc7f3d9638bf84f",
+        "fixtures/synthetic/touching_gradient/nuclei_labels.npy": "7930704f393af16b8a85779ac9e7dd56860c0e21fe9cd960e14a794152944833"
+      },
+      "shape": [
+        12,
+        12
+      ],
+      "spacing": [
+        0.25,
+        0.5
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint16",
+        "DNA": "float64",
+        "labels": "int32",
+        "mask": "bool",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": true,
+      "name": "partial_mask",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/partial_mask.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/partial_mask/Actin.npy": "f4513563f50841eaf22fd632aad4e05897a625e83cda2fca2e6247638d0b4e0f",
+        "fixtures/synthetic/partial_mask/DNA.npy": "8ebba9dfc1ac2eb6ce0e93a170f0aebe43a70b0f6c95a53d9a3dc3b606c2285a",
+        "fixtures/synthetic/partial_mask/labels.npy": "dda5f4bbe8972773ecb98a323bbce915607241166dd52ed32cc7f3d9638bf84f",
+        "fixtures/synthetic/partial_mask/mask.npy": "3c7180384b9c9e4cb296bfaa1938f1b730bb64dc916af688e3a699d9b5d9281e",
+        "fixtures/synthetic/partial_mask/nuclei_labels.npy": "7930704f393af16b8a85779ac9e7dd56860c0e21fe9cd960e14a794152944833"
+      },
+      "shape": [
+        12,
+        12
+      ],
+      "spacing": [
+        0.25,
+        0.5
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint8",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "holes_disconnected_border",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/holes_disconnected_border.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/holes_disconnected_border/Actin.npy": "3e2d19ad86c1be1dc0c823b1815f6e71f9be4b9beb3dc7cb713b0186fb75ac05",
+        "fixtures/synthetic/holes_disconnected_border/DNA.npy": "08be6b473ac736e2d1d6307062d5a29e79606e94d2ae5a42fb32803899c116fd",
+        "fixtures/synthetic/holes_disconnected_border/labels.npy": "cca53c194f0f4f95eabf6772d464cecc4129e1e50329cb73f8b5a7d8756e19bf",
+        "fixtures/synthetic/holes_disconnected_border/nuclei_labels.npy": "09a342bfe70c76aedf2b48765f9fa8072ecf0ad90a42e611357b23ef0bfe7b16"
+      },
+      "shape": [
+        13,
+        13
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "float64",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "sparse_ids",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/sparse_ids.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/sparse_ids/Actin.npy": "66746e7e3f4458865b56c1bab08272f3b95b6ce01e36587f4faa44f58a3a78bf",
+        "fixtures/synthetic/sparse_ids/DNA.npy": "17bb38e9503bafc2babffb87514ab82abffacac6041585e5922b34660f3a10a0",
+        "fixtures/synthetic/sparse_ids/labels.npy": "72f4a874d73e47302f15543458f52e5243a70003a3c651ab0b68fb3848022c25",
+        "fixtures/synthetic/sparse_ids/nuclei_labels.npy": "30065f8421996390c07aebba61c5b02955df238e78fef3df88ea70a5fffd91d3"
+      },
+      "shape": [
+        10,
+        10
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 3,
+      "dtypes": {
+        "Actin": "uint16",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "volume_3d",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/volume_3d.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/volume_3d/Actin.npy": "d8331757e3f811f66ad39316ce2e35686d4d0ede9360a507bb03e7e82756acf5",
+        "fixtures/synthetic/volume_3d/DNA.npy": "a8b8ae7a7f605541db119bba24d534786d6c6d6e27ef8092c95cc03276b90e23",
+        "fixtures/synthetic/volume_3d/labels.npy": "6b12c000207dd1da9d5e03be4ee6e2b06dc0633d0a45a5e358e2e2b3fc0e4e5f",
+        "fixtures/synthetic/volume_3d/nuclei_labels.npy": "dc88d4c40c43ed9d9ba79b38e855997830be9d282106053e3429175fa85346fc"
+      },
+      "shape": [
+        7,
+        8,
+        8
+      ],
+      "spacing": [
+        2.0,
+        0.5,
+        0.5
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "float64",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "nonfinite",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/nonfinite.json",
+      "segmentation": "supplied",
+      "sha256": {
+        "fixtures/synthetic/nonfinite/Actin.npy": "27c4ce0fe12216b0f1def0cf58a7d1e0364e8054f1e02d78f28ed3c2812d9931",
+        "fixtures/synthetic/nonfinite/DNA.npy": "941471525863e2d7f0f2cd93649c6fa55e6ccb642ab8cef406c4c3083a45bb0b",
+        "fixtures/synthetic/nonfinite/labels.npy": "fede4e06f1ff147a3dba21fb0cf72a6be5b700f48b3faa8298c8674755c03fa6",
+        "fixtures/synthetic/nonfinite/nuclei_labels.npy": "8e89264cd67525d5a486a6b9ce639faac7d3b17d0cb4a1abd6716473581ac94b"
+      },
+      "shape": [
+        9,
+        9
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint8",
+        "DNA": "uint8",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "real_cell_cc0",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/real_cell_cc0.json",
+      "segmentation": "threshold at 85th percentile; connected labels; 4..2000 pixels; first 20",
+      "sha256": {
+        "fixtures/real/real_cell_cc0/Actin.npy": "e51cf72cf00f9042760e01c24ccd5958bf569f1bb7a23e6c541fe539ac349e1d",
+        "fixtures/real/real_cell_cc0/DNA.npy": "fd60c496d7b2c3c7735e6c1558a5945c00a733b59a9d7776b8b927654cc60922",
+        "fixtures/real/real_cell_cc0/labels.npy": "80da20e0c43e107ad6547f1b1b86ecde6285ad9ebb844e84b409e6ca326d506c",
+        "fixtures/real/real_cell_cc0/nuclei_labels.npy": "918c469c06296192927ebadce1f0534a42da0e3442caebb20f0da2282c559c9e"
+      },
+      "shape": [
+        96,
+        96
+      ],
+      "spacing": [
+        0.107,
+        0.107
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint8",
+        "DNA": "uint8",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "real_bbbc007",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/real_bbbc007.json",
+      "segmentation": "BBBC007v1 manual outline ground truth; connected labels; see reference/vendor/bbbc007/README.md",
+      "sha256": {
+        "fixtures/real/real_bbbc007/Actin.npy": "5ba36077ddc7c6d15ffd75f2d7406d26465659b0817894b5414ec2fd48fe9736",
+        "fixtures/real/real_bbbc007/DNA.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+        "fixtures/real/real_bbbc007/labels.npy": "7abab2504cdd3f73b249919404a07cee65aef3e98c132a218c494989e31c0216",
+        "fixtures/real/real_bbbc007/nuclei_labels.npy": "93f32a97dc20920b4c469864fb5fb678293c522fd7c275fb1c3bdfaff7d32a8f"
+      },
+      "shape": [
+        128,
+        128
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint8",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "grid_medium",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/grid_medium.json",
+      "segmentation": "supplied grid: 8x8-pixel objects in 12x12-pixel cells",
+      "sha256": {
+        "fixtures/synthetic/grid_medium/Actin.npy": "0f3f9572a36187bc5d97b0b1cef3341ef7a80b733c2b0ce2fee4d7b07b63004f",
+        "fixtures/synthetic/grid_medium/DNA.npy": "6a9b0d225833f0169b6b858cc85a03ee1b51d92d5adc2823a780027f678c8d71",
+        "fixtures/synthetic/grid_medium/labels.npy": "670f5cdb3ff0432a7cc7abc091c878ea49b02e533f0753084a0344fdd42747f2",
+        "fixtures/synthetic/grid_medium/nuclei_labels.npy": "24d21e3e9489ff2021db0848ae279c4c20f0bba2615332a3681b22009ca0222b"
+      },
+      "shape": [
+        96,
+        96
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "channel_names": [
+        "DNA",
+        "Actin"
+      ],
+      "dimensions": 2,
+      "dtypes": {
+        "Actin": "uint8",
+        "DNA": "float64",
+        "labels": "int32",
+        "nuclei_labels": "int32"
+      },
+      "environment_lock": "reference/source-lock.json",
+      "mask_present": false,
+      "name": "grid_large",
+      "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+      "result": "fixtures/reference/grid_large.json",
+      "segmentation": "supplied grid: 8x8-pixel objects in 12x12-pixel cells",
+      "sha256": {
+        "fixtures/synthetic/grid_large/Actin.npy": "c12fd2c848aa0663d130621355ccd5253325d362c836b39d12b32027ac38243f",
+        "fixtures/synthetic/grid_large/DNA.npy": "a4830b9439873988109a79ad0b1d16db80361f999572fae2cb911ce71f1a3fed",
+        "fixtures/synthetic/grid_large/labels.npy": "ed5689f40aef33e67a9e51acb9c2372162fa6c6a340958e72d7578587ed9e3ca",
+        "fixtures/synthetic/grid_large/nuclei_labels.npy": "e92e33482571ac9b7d6c8327ac1330e2cc979b23f972e1489f175caa742e84c9"
+      },
+      "shape": [
+        192,
+        192
+      ],
+      "spacing": [
+        1.0,
+        1.0
+      ]
+    }
+  ],
+  "pipeline": "reference/pipelines/intensity_neighbors.cppipe",
+  "pipeline_sha256": "ead260413e5919b618fbac7fd3bd5cc70240708d4350e6d303da4ad38fb838c4",
+  "real_sources": [
+    {
+      "crop": "rows 260:356, columns 210:306",
+      "fixture": "real_cell_cc0",
+      "license": "CC0",
+      "name": "skimage.data.cell",
+      "package": "scikit-image 0.21.0",
+      "source_file_sha256": "8d23a7fb81f7cc877cd09f330357fc7f595651306e84e17252f6e0a1b3f61515"
+    },
+    {
+      "crop": "rows 256:384, columns 192:320 of a 450x450 field",
+      "fixture": "real_bbbc007",
+      "license": "CC0",
+      "name": "BBBC007v1 (Drosophila Kc167 cells, A9 p10)",
+      "package": "Broad Bioimage Benchmark Collection",
+      "provenance": "reference/vendor/bbbc007/README.md"
+    }
+  ],
+  "relationship_type_count": 1,
+  "requirements_sha256": "bda66aa52d24a6f40e50b5cc452fceca175b2c83cefbb286f07db9c1f349e83e",
+  "source_commit": "2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "tables": {
+    "image": "fixtures/reference/image.csv",
+    "objects": "fixtures/reference/objects.csv",
+    "relationships": "fixtures/reference/relationships.csv"
+  }
+}

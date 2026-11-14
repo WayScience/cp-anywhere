@@ -1,0 +1,13 @@
+image_id,module_number,relationship,first_scope,first_object_id,second_scope,second_object_id
+touching_gradient,3,Neighbors,Cells,1,Cells,2
+touching_gradient,3,Neighbors,Cells,2,Cells,1
+touching_gradient,3,Neighbors,Cells,2,Cells,3
+touching_gradient,3,Neighbors,Cells,3,Cells,2
+partial_mask,3,Neighbors,Cells,1,Cells,2
+partial_mask,3,Neighbors,Cells,2,Cells,1
+partial_mask,3,Neighbors,Cells,2,Cells,3
+partial_mask,3,Neighbors,Cells,3,Cells,2
+holes_disconnected_border,3,Neighbors,Cells,2,Cells,3
+holes_disconnected_border,3,Neighbors,Cells,3,Cells,2
+volume_3d,3,Neighbors,Cells,1,Cells,2
+volume_3d,3,Neighbors,Cells,2,Cells,1

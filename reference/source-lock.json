@@ -1,0 +1,27 @@
+{
+  "cellprofiler": {
+    "version": "4.2.8",
+    "source": "https://github.com/CellProfiler/CellProfiler.git",
+    "commit": "2df090ff281cff80943fe679a1c3192fbda9cd6d",
+    "license": "BSD-3-Clause",
+    "execution": "original module.run on cellprofiler-core Workspace"
+  },
+  "cellprofiler_core": {
+    "version": "4.2.8",
+    "distribution": "PyPI cellprofiler-core==4.2.8"
+  },
+  "cp_measure": {
+    "version": "0.3.0",
+    "source": "https://github.com/afermg/cp_measure.git",
+    "commit": "cdf693187e3dcaf3d067da7b58bdd4ab8896f91e",
+    "license": "MIT",
+    "role": "M2 comparison baseline only"
+  },
+  "environment": {
+    "python": "3.9.25",
+    "java": "25.0.2",
+    "platform_validated": "macOS arm64",
+    "packages": "reference/requirements.lock",
+    "dependency_policy": "Headless measurement-only install with exact installed versions. The original source and core are unmodified. Several support packages are newer than CellProfiler 4.2.8 setup.py pins; see docs/reference.md."
+  }
+}

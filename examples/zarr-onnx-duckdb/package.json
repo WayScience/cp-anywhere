@@ -1,0 +1,23 @@
+{
+  "name": "cp-anywhere-zarr-onnx-duckdb-example",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview",
+    "browser-check": "node run-browser-check.mjs"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
+    "cp-anywhere-wasm": "file:../../crates/cp_anywhere_wasm/pkg",
+    "onnxruntime-web": "1.31.1",
+    "zarrita": "0.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "playwright": "^1.65.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.8"
+  }
+}

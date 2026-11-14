@@ -1,0 +1,94 @@
+---
+# Nightly full-parity check: native Rust/Python against the live
+# CellProfiler oracle, and WASM against the saved golden fixtures, across
+# the full declared feature manifest (plan section 8, "Nightly / release
+# checks: Full feature inventory parity across native/Python/WASM").
+# Not run on every PR: installing the pinned CellProfiler oracle
+# (python-javabridge + a JDK + a pinned Python 3.9 build) is heavy and
+# would make every PR slow; run-tests.yml's PR checks already cover
+# golden-fixture parity (no live oracle needed) and a WASM browser smoke
+# test on every PR.
+name: nightly full parity
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # nightly, 07:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  full_parity:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v10.3.3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install a JDK (required by python-javabridge for the oracle)
+        uses: actions/setup-java@v5.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Install the pinned CellProfiler 4.2.8 oracle
+        run: ./reference/install.sh
+      - name: Configure oracle environment variables
+        run: |
+          reference_root="$HOME/.cache/cp-anywhere/reference"
+          echo "CP_ANYWHERE_REFERENCE_PYTHON=$reference_root/venv/bin/python" \
+            >> "$GITHUB_ENV"
+          echo "PYTHONPATH=$reference_root/cellprofiler" >> "$GITHUB_ENV"
+      - name: Build the native extension
+        run: uv run --frozen maturin develop --release
+      - name: Run pytest with the oracle configured
+        run: uv run --frozen pytest
+      - name: Native golden parity (full manifest)
+        run: uv run --frozen python scripts/parity/compare_native.py
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM package
+        run: |
+          wasm-pack build crates/cp_anywhere_wasm --target web --release \
+            --out-dir pkg --out-name cp_anywhere
+      - name: Export golden fixtures for the browser demo
+        run: uv run --frozen python scripts/wasm/export_fixtures.py
+      - name: Node setup
+        uses: actions/setup-node@v5.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: examples/browser-vite/package-lock.json
+      - name: Install example dependencies
+        working-directory: examples/browser-vite
+        run: npm ci
+      - name: Install Playwright Chromium
+        working-directory: examples/browser-vite
+        run: npx playwright install --with-deps chromium
+      - name: Build and run the real-browser check
+        working-directory: examples/browser-vite
+        run: |
+          npm run build
+          npm run browser-check
+      - name: WASM golden parity (full manifest, all 12 fixtures)
+        run: uv run --frozen python scripts/parity/compare_wasm.py
+      - name: Upload parity reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: nightly-parity-reports
+          path: |
+            benchmarks/reports/native-parity.json
+            benchmarks/reports/wasm-parity.json
+          retention-days: 90

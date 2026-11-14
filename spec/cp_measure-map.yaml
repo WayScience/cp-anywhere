@@ -1,0 +1,601 @@
+---
+cp_measure_commit: cdf693187e3dcaf3d067da7b58bdd4ab8896f91e
+relationship_status: unsupported
+relationship_reason: Neighbor function has TODO for relationships; returns
+  only object columns
+features:
+  - object_scope: Cells
+    name: Intensity_IntegratedIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensityEdge_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_IntegratedIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensityEdge_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_IntegratedIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_IntegratedIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_LowerQuartileIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_LowerQuartileIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_LowerQuartileIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_LowerQuartileIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MADIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MADIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MADIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MADIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MassDisplacement_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MassDisplacement_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MassDisplacement_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MassDisplacement_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MaxIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensityEdge_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MaxIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensityEdge_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MaxIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MaxIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MeanIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensityEdge_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MeanIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensityEdge_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MeanIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MeanIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MedianIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MedianIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MedianIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MedianIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MinIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensityEdge_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MinIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensityEdge_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MinIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_MinIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_StdIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensityEdge_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_StdIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensityEdge_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_StdIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_StdIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Intensity_UpperQuartileIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_UpperQuartileIntensity_Actin
+    reason: null
+  - object_scope: Cells
+    name: Intensity_UpperQuartileIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_UpperQuartileIntensity_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_X_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_X_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_X_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_X_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_Y_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Y_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_Y_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Y_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_Z_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Z_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_CenterMassIntensity_Z_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Z_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_X_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_X_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_X_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_X_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_Y_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Y_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_Y_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Y_DNA
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_Z_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Z_Actin
+    reason: null
+  - object_scope: Cells
+    name: Location_MaxIntensity_Z_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Z_DNA
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_AngleBetweenNeighbors_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_AngleBetweenNeighbors_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_FirstClosestDistance_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_FirstClosestDistance_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_FirstClosestObjectNumber_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_FirstClosestObjectNumber_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_NumberOfNeighbors_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_NumberOfNeighbors_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_PercentTouching_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_PercentTouching_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_SecondClosestDistance_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_SecondClosestDistance_Adjacent
+    reason: null
+  - object_scope: Cells
+    name: Neighbors_SecondClosestObjectNumber_Adjacent
+    status: mapped
+    cp_measure_feature: Neighbors_SecondClosestObjectNumber_Adjacent
+    reason: null
+  - object_scope: Image
+    name: Intensity_LowerQuartileIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_LowerQuartileIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MADIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MADIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MaxIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MaxIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MeanIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MeanIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MedianIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MedianIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MinIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_MinIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_PercentMaximal_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_PercentMaximal_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_10_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_10_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_50_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_50_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_90_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_Percentile_90_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_StdIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_StdIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_TotalArea_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_TotalArea_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_TotalIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_TotalIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_UpperQuartileIntensity_Actin
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Image
+    name: Intensity_UpperQuartileIntensity_DNA
+    status: unsupported
+    cp_measure_feature: null
+    reason: cp_measure 0.3.0 has no MeasureImageIntensity implementation
+  - object_scope: Nuclei
+    name: Intensity_IntegratedIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensityEdge_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_IntegratedIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensityEdge_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_IntegratedIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_IntegratedIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_IntegratedIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_LowerQuartileIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_LowerQuartileIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_LowerQuartileIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_LowerQuartileIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MADIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MADIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MADIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MADIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MassDisplacement_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MassDisplacement_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MassDisplacement_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MassDisplacement_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MaxIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensityEdge_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MaxIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensityEdge_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MaxIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MaxIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MaxIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MeanIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensityEdge_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MeanIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensityEdge_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MeanIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MeanIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MeanIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MedianIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MedianIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MedianIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MedianIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MinIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensityEdge_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MinIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensityEdge_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MinIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_MinIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_MinIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_StdIntensityEdge_Actin
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensityEdge_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_StdIntensityEdge_DNA
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensityEdge_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_StdIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_StdIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_StdIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_UpperQuartileIntensity_Actin
+    status: mapped
+    cp_measure_feature: Intensity_UpperQuartileIntensity_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Intensity_UpperQuartileIntensity_DNA
+    status: mapped
+    cp_measure_feature: Intensity_UpperQuartileIntensity_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_X_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_X_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_X_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_X_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_Y_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Y_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_Y_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Y_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_Z_Actin
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Z_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_CenterMassIntensity_Z_DNA
+    status: mapped
+    cp_measure_feature: Location_CenterMassIntensity_Z_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_X_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_X_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_X_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_X_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_Y_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Y_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_Y_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Y_DNA
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_Z_Actin
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Z_Actin
+    reason: null
+  - object_scope: Nuclei
+    name: Location_MaxIntensity_Z_DNA
+    status: mapped
+    cp_measure_feature: Location_MaxIntensity_Z_DNA
+    reason: null

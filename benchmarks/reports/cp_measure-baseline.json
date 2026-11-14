@@ -1,0 +1,372 @@
+{
+  "contract_version": 1,
+  "baseline": "cp_measure",
+  "source_commit": "cdf693187e3dcaf3d067da7b58bdd4ab8896f91e",
+  "warmups": 3,
+  "timed_runs": 10,
+  "startup_import_ms": {
+    "raw_ms": [
+      710.49825,
+      695.794334,
+      687.57675
+    ],
+    "median_ms": 695.794334,
+    "min_ms": 687.57675,
+    "max_ms": 710.49825
+  },
+  "environment": {
+    "python": "3.11.13 (main, Jul 11 2025, 22:26:10) [Clang 20.1.4 ]",
+    "os": "macOS-26.7.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "cpu_count": 12,
+    "memory_bytes": 51539607552,
+    "packages": {
+      "cp_measure": "0.3.0",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1",
+      "scikit-image": "0.26.0",
+      "centrosome": "1.3.4",
+      "mahotas": "1.4.19",
+      "PyYAML": "6.0.3"
+    },
+    "threads": {
+      "OMP_NUM_THREADS": "unset",
+      "OPENBLAS_NUM_THREADS": "unset",
+      "MKL_NUM_THREADS": "unset"
+    }
+  },
+  "workloads": [
+    {
+      "fixture": "touching_gradient",
+      "shape": [
+        12,
+        12
+      ],
+      "pixels": 144,
+      "object_count": 3,
+      "equivalent_feature_count": 91,
+      "actual_output_feature_count": 91,
+      "output_bytes_json": 6999,
+      "peak_rss_bytes_process": 115261440,
+      "conversion": {
+        "raw_ms": [
+          0.00125,
+          0.000667,
+          0.000333,
+          0.000375,
+          0.0005,
+          0.000417,
+          0.000333,
+          0.000334,
+          0.000334,
+          0.000333
+        ],
+        "median_ms": 0.0003545,
+        "min_ms": 0.000333,
+        "max_ms": 0.00125
+      },
+      "object_intensity": {
+        "raw_ms": [
+          0.618042,
+          0.634625,
+          0.606709,
+          0.6265,
+          0.626792,
+          0.595292,
+          0.626709,
+          0.621125,
+          0.631375,
+          0.626916
+        ],
+        "median_ms": 0.6266045,
+        "min_ms": 0.595292,
+        "max_ms": 0.634625
+      },
+      "neighbors": {
+        "raw_ms": [
+          0.438917,
+          0.459208,
+          0.407584,
+          0.402375,
+          0.395917,
+          0.392833,
+          0.408459,
+          0.400167,
+          0.407917,
+          0.406958
+        ],
+        "median_ms": 0.407271,
+        "min_ms": 0.392833,
+        "max_ms": 0.459208
+      },
+      "end_to_end": {
+        "raw_ms": [
+          1.281,
+          1.318333,
+          1.279958,
+          1.292292,
+          1.306208,
+          1.280958,
+          1.281958,
+          1.26,
+          1.273208,
+          1.25325
+        ],
+        "median_ms": 1.2809789999999999,
+        "min_ms": 1.25325,
+        "max_ms": 1.318333
+      }
+    },
+    {
+      "fixture": "real_cell_cc0",
+      "shape": [
+        96,
+        96
+      ],
+      "pixels": 9216,
+      "object_count": 10,
+      "equivalent_feature_count": 91,
+      "actual_output_feature_count": 91,
+      "output_bytes_json": 10951,
+      "peak_rss_bytes_process": 115687424,
+      "conversion": {
+        "raw_ms": [
+          0.000416,
+          0.000375,
+          0.000375,
+          0.000291,
+          0.000291,
+          0.000292,
+          0.000292,
+          0.000333,
+          0.000291,
+          0.000292
+        ],
+        "median_ms": 0.000292,
+        "min_ms": 0.000291,
+        "max_ms": 0.000416
+      },
+      "object_intensity": {
+        "raw_ms": [
+          2.060375,
+          2.057833,
+          2.072292,
+          2.035209,
+          2.0755,
+          2.075208,
+          2.057583,
+          2.049958,
+          2.075375,
+          2.078666
+        ],
+        "median_ms": 2.0663335,
+        "min_ms": 2.035209,
+        "max_ms": 2.078666
+      },
+      "neighbors": {
+        "raw_ms": [
+          1.346083,
+          1.329459,
+          1.316583,
+          1.322292,
+          1.305416,
+          1.325,
+          1.310625,
+          1.278625,
+          1.293708,
+          1.274708
+        ],
+        "median_ms": 1.313604,
+        "min_ms": 1.274708,
+        "max_ms": 1.346083
+      },
+      "end_to_end": {
+        "raw_ms": [
+          3.7785,
+          3.729916,
+          3.680334,
+          3.675291,
+          3.745292,
+          3.680875,
+          3.680708,
+          3.698125,
+          3.746958,
+          3.674625
+        ],
+        "median_ms": 3.6895,
+        "min_ms": 3.674625,
+        "max_ms": 3.7785
+      }
+    },
+    {
+      "fixture": "grid_medium",
+      "shape": [
+        96,
+        96
+      ],
+      "pixels": 9216,
+      "object_count": 64,
+      "equivalent_feature_count": 91,
+      "actual_output_feature_count": 91,
+      "output_bytes_json": 64451,
+      "peak_rss_bytes_process": 116195328,
+      "conversion": {
+        "raw_ms": [
+          0.000417,
+          0.000417,
+          0.000334,
+          0.000292,
+          0.000417,
+          0.000333,
+          0.000333,
+          0.000417,
+          0.000334,
+          0.000333
+        ],
+        "median_ms": 0.000334,
+        "min_ms": 0.000292,
+        "max_ms": 0.000417
+      },
+      "object_intensity": {
+        "raw_ms": [
+          8.145375,
+          8.182833,
+          8.285125,
+          8.14075,
+          8.184833,
+          8.128875,
+          8.1455,
+          8.21725,
+          8.011917,
+          7.986833
+        ],
+        "median_ms": 8.1454375,
+        "min_ms": 7.986833,
+        "max_ms": 8.285125
+      },
+      "neighbors": {
+        "raw_ms": [
+          2.787375,
+          2.781708,
+          2.827083,
+          2.768375,
+          2.769375,
+          2.772,
+          2.719416,
+          2.741666,
+          2.776916,
+          2.727917
+        ],
+        "median_ms": 2.7706875,
+        "min_ms": 2.719416,
+        "max_ms": 2.827083
+      },
+      "end_to_end": {
+        "raw_ms": [
+          11.895209,
+          12.459167,
+          12.05825,
+          12.181417,
+          12.029791,
+          12.114083,
+          12.173416,
+          12.159041,
+          12.008625,
+          12.0145
+        ],
+        "median_ms": 12.086166500000001,
+        "min_ms": 11.895209,
+        "max_ms": 12.459167
+      }
+    },
+    {
+      "fixture": "grid_large",
+      "shape": [
+        192,
+        192
+      ],
+      "pixels": 36864,
+      "object_count": 256,
+      "equivalent_feature_count": 91,
+      "actual_output_feature_count": 91,
+      "output_bytes_json": 247221,
+      "peak_rss_bytes_process": 122552320,
+      "conversion": {
+        "raw_ms": [
+          0.000417,
+          0.000417,
+          0.000333,
+          0.000292,
+          0.000333,
+          0.000292,
+          0.000292,
+          0.000375,
+          0.000333,
+          0.000333
+        ],
+        "median_ms": 0.000333,
+        "min_ms": 0.000292,
+        "max_ms": 0.000417
+      },
+      "object_intensity": {
+        "raw_ms": [
+          33.563583,
+          39.800417,
+          31.636125,
+          31.557791,
+          31.493125,
+          31.679959,
+          31.769958,
+          31.793667,
+          32.06575,
+          31.730791
+        ],
+        "median_ms": 31.7503745,
+        "min_ms": 31.493125,
+        "max_ms": 39.800417
+      },
+      "neighbors": {
+        "raw_ms": [
+          11.321541,
+          11.176333,
+          11.12,
+          11.493625,
+          11.140625,
+          11.488666,
+          11.098833,
+          11.178333,
+          11.187875,
+          11.250625
+        ],
+        "median_ms": 11.183104,
+        "min_ms": 11.098833,
+        "max_ms": 11.493625
+      },
+      "end_to_end": {
+        "raw_ms": [
+          45.899209,
+          45.94125,
+          45.38,
+          46.899417,
+          46.227125,
+          46.922667,
+          48.125834,
+          49.70525,
+          47.707708,
+          49.432708
+        ],
+        "median_ms": 46.911041999999995,
+        "min_ms": 45.38,
+        "max_ms": 49.70525
+      }
+    }
+  ],
+  "limitations": [
+    "Peak RSS is a process high-water mark, not a per-kernel allocation.",
+    "Startup is a separate fresh-process import timer; kernel samples exclude imports.",
+    "End to end includes saved NPY loading, conversion, kernels, and JSON output; it excludes CellProfiler and Parquet export.",
+    "Only 91 mapped object columns are timed; image intensity and directed relationship rows have no cp_measure implementation.",
+    "Timing is a comparison baseline, not evidence of CellProfiler parity."
+  ]
+}

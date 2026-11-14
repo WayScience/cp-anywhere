@@ -1,0 +1,533 @@
+{
+  "features": {
+    "Cells": {
+      "Intensity_IntegratedIntensityEdge_Actin": [
+        75.0,
+        195.0,
+        507.0
+      ],
+      "Intensity_IntegratedIntensityEdge_DNA": [
+        2.7272727272727275,
+        5.636363636363638,
+        7.090909090909092
+      ],
+      "Intensity_IntegratedIntensity_Actin": [
+        100.0,
+        260.0,
+        676.0
+      ],
+      "Intensity_IntegratedIntensity_DNA": [
+        3.636363636363637,
+        7.5151515151515165,
+        9.454545454545455
+      ],
+      "Intensity_LowerQuartileIntensity_Actin": [
+        3.0,
+        10.0,
+        35.0
+      ],
+      "Intensity_LowerQuartileIntensity_DNA": [
+        0.18181818181818182,
+        0.42424242424242425,
+        0.5454545454545454
+      ],
+      "Intensity_MADIntensity_Actin": [
+        3.0,
+        8.0,
+        7.0
+      ],
+      "Intensity_MADIntensity_DNA": [
+        0.06060606060606061,
+        0.06060606060606061,
+        0.06060606060606066
+      ],
+      "Intensity_MassDisplacement_Actin": [
+        0.7071067811865476,
+        0.5357072414301585,
+        0.2719641466102109
+      ],
+      "Intensity_MassDisplacement_DNA": [
+        0.372677996249964,
+        0.1803280627015956,
+        0.14333769086537182
+      ],
+      "Intensity_MaxIntensityEdge_Actin": [
+        16.0,
+        32.0,
+        64.0
+      ],
+      "Intensity_MaxIntensityEdge_DNA": [
+        0.36363636363636365,
+        0.6060606060606061,
+        0.7272727272727273
+      ],
+      "Intensity_MaxIntensity_Actin": [
+        16.0,
+        32.0,
+        64.0
+      ],
+      "Intensity_MaxIntensity_DNA": [
+        0.36363636363636365,
+        0.6060606060606061,
+        0.7272727272727273
+      ],
+      "Intensity_MeanIntensityEdge_Actin": [
+        6.25,
+        16.25,
+        42.25
+      ],
+      "Intensity_MeanIntensityEdge_DNA": [
+        0.2272727272727273,
+        0.4696969696969698,
+        0.5909090909090909
+      ],
+      "Intensity_MeanIntensity_Actin": [
+        6.25,
+        16.25,
+        42.25
+      ],
+      "Intensity_MeanIntensity_DNA": [
+        0.22727272727272732,
+        0.4696969696969698,
+        0.5909090909090909
+      ],
+      "Intensity_MedianIntensity_Actin": [
+        6.0,
+        16.0,
+        42.0
+      ],
+      "Intensity_MedianIntensity_DNA": [
+        0.24242424242424243,
+        0.48484848484848486,
+        0.6060606060606061
+      ],
+      "Intensity_MinIntensityEdge_Actin": [
+        1.0,
+        5.0,
+        25.0
+      ],
+      "Intensity_MinIntensityEdge_DNA": [
+        0.09090909090909091,
+        0.3333333333333333,
+        0.45454545454545453
+      ],
+      "Intensity_MinIntensity_Actin": [
+        1.0,
+        5.0,
+        25.0
+      ],
+      "Intensity_MinIntensity_DNA": [
+        0.09090909090909091,
+        0.3333333333333333,
+        0.45454545454545453
+      ],
+      "Intensity_StdIntensityEdge_Actin": [
+        4.674844025918583,
+        8.879986861852142,
+        11.655649560048838
+      ],
+      "Intensity_StdIntensityEdge_DNA": [
+        0.08526233846532388,
+        0.08526233846532391,
+        0.0852623384653239
+      ],
+      "Intensity_StdIntensity_Actin": [
+        4.14578098794425,
+        7.8859051477937525,
+        10.353139620424328
+      ],
+      "Intensity_StdIntensity_DNA": [
+        0.07575757575757576,
+        0.07575757575757576,
+        0.07575757575757576
+      ],
+      "Intensity_UpperQuartileIntensity_Actin": [
+        9.0,
+        24.0,
+        49.0
+      ],
+      "Intensity_UpperQuartileIntensity_DNA": [
+        0.30303030303030304,
+        0.5454545454545454,
+        0.6666666666666666
+      ],
+      "Location_CenterMassIntensity_X_Actin": [
+        3.0,
+        3.0,
+        6.6923076923076925
+      ],
+      "Location_CenterMassIntensity_X_DNA": [
+        2.666666666666666,
+        2.580645161290322,
+        6.564102564102563
+      ],
+      "Location_CenterMassIntensity_Y_Actin": [
+        3.0,
+        6.6923076923076925,
+        6.6923076923076925
+      ],
+      "Location_CenterMassIntensity_Y_DNA": [
+        2.8333333333333326,
+        6.661290322580645,
+        6.6282051282051295
+      ],
+      "Location_CenterMassIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_X_Actin": [
+        4.0,
+        4.0,
+        8.0
+      ],
+      "Location_MaxIntensity_X_DNA": [
+        4.0,
+        4.0,
+        8.0
+      ],
+      "Location_MaxIntensity_Y_Actin": [
+        4.0,
+        8.0,
+        8.0
+      ],
+      "Location_MaxIntensity_Y_DNA": [
+        4.0,
+        8.0,
+        8.0
+      ],
+      "Location_MaxIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Neighbors_AngleBetweenNeighbors_Adjacent": [
+        45.00000000000001,
+        90.0,
+        45.00000000000001
+      ],
+      "Neighbors_FirstClosestDistance_Adjacent": [
+        4.0,
+        4.0,
+        4.0
+      ],
+      "Neighbors_FirstClosestObjectNumber_Adjacent": [
+        2,
+        1,
+        2
+      ],
+      "Neighbors_NumberOfNeighbors_Adjacent": [
+        1.0,
+        2.0,
+        1.0
+      ],
+      "Neighbors_PercentTouching_Adjacent": [
+        33.333333333333336,
+        58.333333333333336,
+        33.333333333333336
+      ],
+      "Neighbors_SecondClosestDistance_Adjacent": [
+        5.656854249492381,
+        4.0,
+        5.656854249492381
+      ],
+      "Neighbors_SecondClosestObjectNumber_Adjacent": [
+        3,
+        3,
+        1
+      ]
+    },
+    "Image": {
+      "Intensity_LowerQuartileIntensity_Actin": 5.0,
+      "Intensity_LowerQuartileIntensity_DNA": 0.30303030303030304,
+      "Intensity_MADIntensity_Actin": 17.0,
+      "Intensity_MADIntensity_DNA": 0.18181818181818188,
+      "Intensity_MaxIntensity_Actin": 99,
+      "Intensity_MaxIntensity_DNA": 0.9393939393939394,
+      "Intensity_MeanIntensity_Actin": 26.0,
+      "Intensity_MeanIntensity_DNA": 0.4848484848484848,
+      "Intensity_MedianIntensity_Actin": 18.0,
+      "Intensity_MedianIntensity_DNA": 0.5151515151515151,
+      "Intensity_MinIntensity_Actin": 0,
+      "Intensity_MinIntensity_DNA": 0.0,
+      "Intensity_PercentMaximal_Actin": 0.9523809523809523,
+      "Intensity_PercentMaximal_DNA": 0.9523809523809523,
+      "Intensity_Percentile_10_Actin": 0.0,
+      "Intensity_Percentile_10_DNA": 0.15151515151515152,
+      "Intensity_Percentile_50_Actin": 18.0,
+      "Intensity_Percentile_50_DNA": 0.5151515151515151,
+      "Intensity_Percentile_90_Actin": 63.60000000000001,
+      "Intensity_Percentile_90_DNA": 0.7878787878787878,
+      "Intensity_StdIntensity_Actin": 25.337718918639855,
+      "Intensity_StdIntensity_DNA": 0.23602669586965502,
+      "Intensity_TotalArea_Actin": 105,
+      "Intensity_TotalArea_DNA": 105,
+      "Intensity_TotalIntensity_Actin": 2730,
+      "Intensity_TotalIntensity_DNA": 50.90909090909091,
+      "Intensity_UpperQuartileIntensity_Actin": 42.0,
+      "Intensity_UpperQuartileIntensity_DNA": 0.6666666666666666
+    },
+    "Nuclei": {
+      "Intensity_IntegratedIntensityEdge_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_IntegratedIntensityEdge_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_IntegratedIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_IntegratedIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_LowerQuartileIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_LowerQuartileIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MADIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MADIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_DNA": [
+        0.0,
+        0.0,
+        8.881784197001252e-16
+      ],
+      "Intensity_MaxIntensityEdge_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MaxIntensityEdge_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MaxIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MaxIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MeanIntensityEdge_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MeanIntensityEdge_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MeanIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MeanIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MedianIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MedianIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MinIntensityEdge_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MinIntensityEdge_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_MinIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_MinIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Intensity_StdIntensityEdge_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_UpperQuartileIntensity_Actin": [
+        3.0,
+        7.0,
+        35.0
+      ],
+      "Intensity_UpperQuartileIntensity_DNA": [
+        0.21212121212121213,
+        0.45454545454545453,
+        0.5757575757575758
+      ],
+      "Location_CenterMassIntensity_X_Actin": [
+        1.0,
+        1.0,
+        5.0
+      ],
+      "Location_CenterMassIntensity_X_DNA": [
+        1.0,
+        1.0,
+        5.0
+      ],
+      "Location_CenterMassIntensity_Y_Actin": [
+        3.0,
+        7.0,
+        7.0
+      ],
+      "Location_CenterMassIntensity_Y_DNA": [
+        3.0,
+        7.0,
+        6.999999999999999
+      ],
+      "Location_CenterMassIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_X_Actin": [
+        1.0,
+        1.0,
+        5.0
+      ],
+      "Location_MaxIntensity_X_DNA": [
+        1.0,
+        1.0,
+        5.0
+      ],
+      "Location_MaxIntensity_Y_Actin": [
+        3.0,
+        7.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Y_DNA": [
+        3.0,
+        7.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "image_id": "partial_mask",
+  "image_number": 1,
+  "object_ids": {
+    "Cells": [
+      1,
+      2,
+      3
+    ],
+    "Nuclei": [
+      1,
+      2,
+      3
+    ]
+  },
+  "relationships": [
+    {
+      "first_image_id": "partial_mask",
+      "first_object_id": 1,
+      "second_image_id": "partial_mask",
+      "second_object_id": 2
+    },
+    {
+      "first_image_id": "partial_mask",
+      "first_object_id": 2,
+      "second_image_id": "partial_mask",
+      "second_object_id": 1
+    },
+    {
+      "first_image_id": "partial_mask",
+      "first_object_id": 2,
+      "second_image_id": "partial_mask",
+      "second_object_id": 3
+    },
+    {
+      "first_image_id": "partial_mask",
+      "first_object_id": 3,
+      "second_image_id": "partial_mask",
+      "second_object_id": 2
+    }
+  ]
+}

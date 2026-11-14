@@ -1,0 +1,96 @@
+---
+additional_regression_workloads:
+  - empty_image
+  - empty_mask
+  - one_constant
+  - partial_mask
+  - holes_disconnected_border
+  - sparse_ids
+  - volume_3d
+  - nonfinite
+browser_memory_budget: >-
+  Measured in M6 after the neighbors O(pixels^2)->O(pixels) fix (see
+  docs/performance.md): WebAssembly.Memory.buffer.byteLength was 3,538,944
+  bytes (~3.46 MiB) after running all 12 declared fixtures sequentially in
+  one worker instance (benchmarks/reports/wasm-baseline.json). This metric
+  is unaffected by the kernel speed fix (it is dominated by wasm-bindgen's
+  allocator, not the neighbor algorithm). Release budget: <=16 MiB linear
+  memory for this declared scope (~4.6x margin). Still a post-hoc read, not
+  a tracked peak -- see docs/wasm.md Known limitations.
+browser_package_size_budget: >-
+  Measured in M6: the wasm-bindgen --target web --release build
+  (crates/cp_anywhere_wasm) is 206,043 bytes raw / 91.3 KiB gzip-equivalent
+  (Vite build output; benchmarks/reports/wasm-baseline.json records the
+  browser's own measured transferSize). Unaffected by the kernel speed fix.
+  Release budget: <=500 KiB raw / <=200 KiB gzip for this declared scope.
+browser_worker_budget: >-
+  Measured in M6 after the neighbors O(pixels^2)->O(pixels) fix (see
+  docs/performance.md): median measure() call time in a real worker
+  (Playwright Chromium, 3 warmups/10 runs) was 0.2 ms (touching_gradient),
+  0.7 ms (real_cell_cc0), 2.0 ms (grid_medium), and 11.85 ms (grid_large) --
+  down from 0.15/2.85/11.8/174.0 ms before the fix (the small-workload
+  numbers sit near the browser timer's measurement resolution and are
+  noisier than the larger ones). See benchmarks/reports/wasm-baseline.json.
+  Each sample includes the in-WASM JSON result encoding, not isolated
+  kernel time. Release budget: <=50 ms per measure() call at the
+  grid_large scale (~4x margin over the fixed measurement).
+contract_version: 1
+fairness: Use identical saved arrays, masks, settings, feature subsets,
+  and output requirements. Compare only an equivalent subset once cp_measure
+  coverage is mapped in M2.
+measurement:
+  build: release for native
+  environment: record CPU, memory, OS, Python, Rust, browser, and package
+    versions
+  memory:
+    - peak_rss
+    - wasm_linear_memory
+  output:
+    - bytes
+    - feature_count
+  statistic: median with range and per-family results
+  threads: record and match
+  timed_runs: 10
+  timers:
+    - kernel
+    - conversion
+    - end_to_end
+  warmups: 3
+native_acceptance:
+  metric: equal-weight arithmetic mean of per-workload throughput ratios
+  minimum: 1.0
+  report_each_workload_and_family: true
+  requires_scientific_parity: true
+native_baseline:
+  name: cp_measure
+  version: 0.3.0
+  commit: cdf693187e3dcaf3d067da7b58bdd4ab8896f91e
+native_stretch: 3-5x throughput; not a release guarantee
+python_overhead_budget: >-
+  Measured in M6 (benchmarks/reports/python-binding-baseline.json vs
+  native-rust-baseline.json): fixed per-call overhead of the PyO3/NumPy
+  binding over the bare Rust kernel is roughly 0.04-0.07 ms, shrinking in
+  relative terms as workload grows -- 2.09x on touching_gradient (tiny
+  absolute cost), 1.34x on real_cell_cc0, 1.10x on grid_medium, 1.06x on
+  grid_large. No unnecessary full-array copy was identified for the
+  already-C-contiguous float64/uint32 fixture inputs (see docs/native.md's
+  borrowing notes). Budget: overhead ratio must stay <=1.5x for workloads
+  at or above the real_cell_cc0 scale.
+representative_workloads:
+  - fixture: touching_gradient
+    role: small 2D, adjacent relationships
+    weight: 0.25
+  - fixture: real_cell_cc0
+    role: real microscopy crop
+    weight: 0.25
+  - fixture: grid_medium
+    role: medium object count
+    weight: 0.25
+  - fixture: grid_large
+    role: large object count
+    weight: 0.25
+scientific_reference:
+  name: CellProfiler
+  version: 4.2.8
+  commit: 2df090ff281cff80943fe679a1c3192fbda9cd6d
+status: predefined_before_tuning

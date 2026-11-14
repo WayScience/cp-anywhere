@@ -1,0 +1,20 @@
+{
+  "name": "cp-anywhere-browser-vite-example",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "license": "BSD-3-Clause",
+  "scripts": {
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --strictPort",
+    "browser-check": "node run-browser-check.mjs"
+  },
+  "dependencies": {
+    "cp-anywhere-wasm": "file:../../crates/cp_anywhere_wasm/pkg"
+  },
+  "devDependencies": {
+    "playwright": "1.65.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.8"
+  }
+}

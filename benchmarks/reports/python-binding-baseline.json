@@ -1,0 +1,97 @@
+{
+  "contract_version": 1,
+  "engine": "cp-anywhere Python binding (cp_anywhere.measure, installed release wheel)",
+  "families_timed": [
+    "object_intensity",
+    "neighbors"
+  ],
+  "warmups": 3,
+  "timed_runs": 10,
+  "environment": {
+    "python": "3.11.13 (main, Jul 11 2025, 22:26:10) [Clang 20.1.4 ]",
+    "os": "macOS-26.7.2-arm64-arm-64bit",
+    "machine": "arm64",
+    "packages": {
+      "cp-anywhere": "0.1.0",
+      "numpy": "2.4.6"
+    }
+  },
+  "peak_rss_bytes_process": 40435712,
+  "workloads": [
+    {
+      "fixture": "touching_gradient",
+      "raw_ms": [
+        0.089666,
+        0.083416,
+        0.077291,
+        0.074542,
+        0.0775,
+        0.074292,
+        0.074041,
+        0.073334,
+        0.072667,
+        0.072584
+      ],
+      "median_ms": 0.074417,
+      "min_ms": 0.072584,
+      "max_ms": 0.089666
+    },
+    {
+      "fixture": "real_cell_cc0",
+      "raw_ms": [
+        0.258708,
+        0.262416,
+        0.261167,
+        0.252541,
+        0.367,
+        0.393708,
+        0.28175,
+        0.261583,
+        0.257333,
+        0.255625
+      ],
+      "median_ms": 0.261375,
+      "min_ms": 0.252541,
+      "max_ms": 0.393708
+    },
+    {
+      "fixture": "grid_medium",
+      "raw_ms": [
+        0.801542,
+        0.782875,
+        0.76575,
+        0.767833,
+        0.761,
+        0.758125,
+        0.758041,
+        0.751292,
+        0.751834,
+        0.764166
+      ],
+      "median_ms": 0.762583,
+      "min_ms": 0.751292,
+      "max_ms": 0.801542
+    },
+    {
+      "fixture": "grid_large",
+      "raw_ms": [
+        8.008583,
+        7.756584,
+        7.778166,
+        7.924416,
+        7.625417,
+        7.551042,
+        7.81,
+        7.94675,
+        7.597875,
+        7.7735
+      ],
+      "median_ms": 7.775833,
+      "min_ms": 7.551042,
+      "max_ms": 8.008583
+    }
+  ],
+  "limitations": [
+    "This times Python call overhead plus the Rust kernel plus NumPy array marshaling; it is not an isolated kernel time (see scripts/benchmarks/report_native_rust.py for that)."
+  ]
+}

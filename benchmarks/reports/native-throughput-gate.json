@@ -1,0 +1,32 @@
+{
+  "metric": "equal-weight arithmetic mean of per-workload throughput ratios",
+  "minimum": 1.0,
+  "cp_measure_object_intensity_plus_neighbors_ms": {
+    "touching_gradient": 1.0338755,
+    "real_cell_cc0": 3.3799374999999996,
+    "grid_medium": 10.916125000000001,
+    "grid_large": 42.9334785
+  },
+  "cp_anywhere_rust_ms": {
+    "touching_gradient": 0.03554561710963455,
+    "real_cell_cc0": 0.19515977398989898,
+    "grid_medium": 0.6952082558139534,
+    "grid_large": 7.353523857142857
+  },
+  "per_workload_throughput_ratio": {
+    "touching_gradient": 29.08587848710525,
+    "real_cell_cc0": 17.318822577520187,
+    "grid_medium": 15.701949608206746,
+    "grid_large": 5.838490407329881
+  },
+  "per_workload_pass": {
+    "touching_gradient": true,
+    "real_cell_cc0": true,
+    "grid_medium": true,
+    "grid_large": true
+  },
+  "equal_weight_mean_ratio": 16.986285270040515,
+  "aggregate_pass": true,
+  "all_workloads_pass_individually": true,
+  "note": "A workload ratio below 1.0 means cp-anywhere Rust is slower than cp_measure for that workload; the aggregate mean must not be read as a pass if any per-workload ratio is below the minimum."
+}

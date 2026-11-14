@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>cp-anywhere: Zarr -> ONNX -> cp-anywhere-wasm -> DuckDB-WASM Parquet</title>
+  </head>
+  <body>
+    <h1>cp-anywhere browser integration demo</h1>
+    <p>
+      Real OME-Zarr read (zarrita.js), real ONNX Runtime Web inference
+      producing a label mask, real cp-anywhere-wasm measurement, real
+      DuckDB-WASM Parquet export. No stage is mocked; see
+      <code>docs/browser-integration.md</code> for scope and limitations.
+    </p>
+    <pre id="status">loading...</pre>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

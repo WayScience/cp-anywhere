@@ -1,0 +1,96 @@
+{
+  "contract_version": 1,
+  "engine": "cp-anywhere WASM (crates/cp_anywhere_wasm, wasm-bindgen, --target web, release)",
+  "source_commit_note": "Same Rust source as the native build; includes the neighbors O(pixels^2)->O(pixels) fix (see docs/performance.md)",
+  "driver": "Playwright 1.65.1, Chrome for Testing 159.0.8154.6, examples/browser-vite/run-browser-check.mjs",
+  "parity_fixtures": "all 12 declared golden fixtures (2D and 3D); see benchmarks/reports/wasm-parity.json",
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/159.0.8154.6 Safari/537.36",
+    "hardwareConcurrency": 12,
+    "host_os": "macOS 26.7.2 arm64 (build host; browser runs in a sandboxed renderer process)"
+  },
+  "warmups": 3,
+  "timed_runs": 10,
+  "wasm_binary_bytes": 206043,
+  "wasm_linear_memory_bytes_after_run": 3538944,
+  "workloads": [
+    {
+      "fixture": "touching_gradient",
+      "raw_ms": [
+        0.19999999925494194,
+        0.19999999925494194,
+        0.10000000149011612,
+        0.09999999776482582,
+        0.20000000298023224,
+        0,
+        0.19999999925494194,
+        0.19999999925494194,
+        0,
+        0.19999999925494194
+      ],
+      "median_ms": 0.19999999925494194,
+      "min_ms": 0,
+      "max_ms": 0.20000000298023224
+    },
+    {
+      "fixture": "real_cell_cc0",
+      "raw_ms": [
+        0.8000000007450581,
+        0.6999999992549419,
+        0.6000000014901161,
+        0.6999999992549419,
+        0.6000000014901161,
+        0.6999999992549419,
+        0.5999999977648258,
+        0.6000000014901161,
+        0.6999999992549419,
+        0.6999999992549419
+      ],
+      "median_ms": 0.6999999992549419,
+      "min_ms": 0.5999999977648258,
+      "max_ms": 0.8000000007450581
+    },
+    {
+      "fixture": "grid_medium",
+      "raw_ms": [
+        1.699999999254942,
+        1.800000000745058,
+        2.100000001490116,
+        2,
+        2,
+        2.099999997764826,
+        1.9000000022351742,
+        2.099999997764826,
+        2.100000001490116,
+        2
+      ],
+      "median_ms": 2.0,
+      "min_ms": 1.699999999254942,
+      "max_ms": 2.100000001490116
+    },
+    {
+      "fixture": "grid_large",
+      "raw_ms": [
+        12.100000001490116,
+        11.899999998509884,
+        11.800000000745058,
+        12.399999998509884,
+        12,
+        11.400000002235174,
+        11.5,
+        11.699999999254942,
+        12.800000000745058,
+        11.799999997019768
+      ],
+      "median_ms": 11.849999999627471,
+      "min_ms": 11.400000002235174,
+      "max_ms": 12.800000000745058
+    }
+  ],
+  "limitations": [
+    "Each timed sample is one measure() call: kernel computation plus the in-WASM serde_json::to_string() encoding of the full 119-column result, matching what a real worker caller actually receives. It is a worker round-trip-per-call time, not an isolated kernel time.",
+    "wasm_linear_memory_bytes_after_run is WebAssembly.Memory.buffer.byteLength read once after all 12 fixtures ran, not a tracked peak.",
+    "Single run, single machine, localhost static file server (no network latency, no HTTP compression on the preview server beyond what Node default serving provides). Not a production CDN measurement.",
+    "Browser timer resolution here was coarse (0.1-0.2ms granularity); the smallest workload (touching_gradient) is near that resolution floor, so its reported median has more relative noise than the larger workloads."
+  ]
+}

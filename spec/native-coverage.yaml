@@ -1,0 +1,44 @@
+reference: CellProfiler 4.2.8, commit 2df090ff281cff80943fe679a1c3192fbda9cd6d
+engine: >-
+  cp-anywhere Rust core (crates/cp_anywhere_core, crates/cp_anywhere_python)
+scope_contract: spec/compatibility.md
+feature_count: 119
+fixtures: 13
+rows: 1560
+summary:
+  pass_exact: 1535
+  pass_tolerance: 25
+  fail: 0
+tolerance_rows: >-
+  All 25 pass_tolerance rows are Image/MeasureImageIntensity scalar reductions
+  (TotalIntensity, MeanIntensity, StdIntensity, Percentile_10/90,
+  UpperQuartileIntensity) with max_abs_error/max_rel_error between 1e-17 and
+  1e-14 against Python 3.9.25/NumPy 1.23.5 float64 summation order. These are
+  float64 reduction-order differences anticipated in spec/compatibility.md,
+  not unexplained mismatches.
+build:
+  cargo_test: pass (1 unit test; shape/MAX_LABEL rejection)
+  cargo_fmt: clean
+  cargo_clippy: clean (both crates, --all-targets)
+  wheel_smoke_test: >-
+    maturin build --release produced
+    cp_anywhere-0.1.0-cp311-abi3-macosx_11_0_arm64.whl; installed into a
+    fresh uv venv with no project source on sys.path; imported module file
+    resolved under site-packages (no source-tree leakage); measure() on the
+    touching_gradient fixture returned all 119 columns.
+reproduce:
+  - cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml
+  - env -u CONDA_PREFIX uv run maturin develop --release --uv
+  - uv run --frozen python scripts/parity/compare_native.py
+  - CP_ANYWHERE_REFERENCE_PYTHON=.../venv/bin/python PYTHONPATH=.../cellprofiler
+    uv run --frozen pytest
+measured_in_m6: >-
+  Rust vs cp_measure throughput: see docs/performance.md and
+  benchmarks/reports/native-throughput-gate.json. Every representative
+  workload beats the pinned cp_measure baseline individually (5.8x-29.1x,
+  equal-weight mean 17.0x); benchmarks/baseline/initial-cp-measure-timing.json
+  remains the frozen pre-Rust snapshot that comparison is measured against.
+wasm_build_and_browser_worker_integration: >-
+  Completed in M4/M5; see docs/wasm.md and benchmarks/reports/wasm-parity.json
+  (1,560/1,560 rows across all 13 fixtures, same pass/tolerance pattern as
+  native).

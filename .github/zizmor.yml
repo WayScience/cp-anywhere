@@ -1,0 +1,20 @@
+rules:
+  unpinned-uses:
+    config:
+      policies:
+        "*": ref-pin
+  # crates.io's OIDC trusted-publishing support is not GA yet (unlike
+  # PyPI's, used via pypa/gh-action-pypi-publish in publish-pypi.yml, and
+  # npm's, used directly via `npm publish` + id-token: write in
+  # publish-npm.yml). Token-based `cargo publish` via a scoped
+  # CARGO_REGISTRY_TOKEN secret is the only available mechanism; revisit
+  # when crates.io trusted publishing reaches general availability.
+  use-trusted-publishing:
+    ignore:
+      - publish-crate.yml
+  # Bootstraps a newer global npm CLI (required for OIDC trusted
+  # publishing support) before publishing; this is deliberately not a
+  # project dependency installed from a lockfile.
+  adhoc-packages:
+    ignore:
+      - publish-npm.yml

@@ -1,0 +1,63 @@
+---
+# used for publishing the WASM bindings to npm, and attaching a
+# standalone .wasm artifact + checksum to the GitHub Release, on release
+name: publish npm release and release assets
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_publish_npm:
+    name: build and publish cp-anywhere-wasm to npm
+    runs-on: ubuntu-26.04
+    environment: release
+    permissions:
+      contents: write # to upload release assets
+      id-token: write # for npm OIDC trusted publishing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Update npm for OIDC trusted publishing support
+        run: npm install -g npm@latest
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Sync package version from release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: python tools/sync_release_version.py "$RELEASE_TAG"
+      - name: Build WASM package
+        run: |
+          wasm-pack build crates/cp_anywhere_wasm --target web --release \
+            --out-dir pkg --out-name cp_anywhere
+      - name: Checksum the standalone .wasm artifact
+        run: |
+          cd crates/cp_anywhere_wasm/pkg
+          sha256sum cp_anywhere_bg.wasm > cp_anywhere_bg.wasm.sha256
+          cat cp_anywhere_bg.wasm.sha256
+      - name: Attach .wasm artifact and checksum to the GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$RELEASE_TAG" \
+            crates/cp_anywhere_wasm/pkg/cp_anywhere_bg.wasm \
+            crates/cp_anywhere_wasm/pkg/cp_anywhere_bg.wasm.sha256 \
+            --clobber
+      - name: Publish to npm (OIDC trusted publishing, no stored token)
+        run: npm publish crates/cp_anywhere_wasm/pkg --access public

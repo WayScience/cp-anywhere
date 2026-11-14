@@ -1,0 +1,133 @@
+---
+# used for running tests
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pre_commit_checks:
+    permissions:
+      contents: write
+    runs-on: ubuntu-26.04
+    steps:
+      # checks out the repo
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      # run pre-commit
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v10.3.3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      # the ty hook below resolves imports against this project's own
+      # .venv; sync every optional group (including demo-assets, used
+      # only by scripts/zarr/*.py) so it can resolve onnx/duckdb imports,
+      # not just the default dependency groups uv syncs implicitly. This
+      # also builds the native extension via maturin, hence Rust setup
+      # above.
+      - name: Sync all dependency groups
+        run: uv sync --all-groups --frozen
+      # use prek for speedy precommit results
+      - uses: j178/prek-action@v3.1.0
+      # run pre-commit ci lite for automated fixes
+      - uses: pre-commit-ci/lite-action@v1.2.0
+        if: ${{ !cancelled() }}
+  run_tests:
+    needs: pre_commit_checks
+    strategy:
+      matrix:
+        python_version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+        os: [ubuntu-26.04, macos-26]
+    runs-on: ${{ matrix.os }}
+    env:
+      OS: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ matrix.python_version }}
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v10.3.3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      # format-check, lint, and unit-test the Rust code
+      - name: Rust lint and test
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --all-targets -- -D warnings
+          cargo test
+      # build the native extension, then run the Python tests
+      - name: Python tests
+        run: |
+          uv run --frozen maturin develop
+          uv run --frozen pytest
+      # golden parity check against the saved CellProfiler reference
+      # fixtures (does not need the live CellProfiler oracle -- that is
+      # the nightly-full-parity.yml job's job); catches any native-build
+      # numeric regression on every PR, across the OS/Python matrix.
+      - name: Native golden parity check
+        run: uv run --frozen python scripts/parity/compare_native.py
+
+  wasm_build_and_browser_check:
+    needs: pre_commit_checks
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Python setup
+        uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v10.3.3
+      - name: Rust setup
+        uses: dtolnay/rust-toolchain@stable
+      - name: Add wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build WASM package
+        run: |
+          wasm-pack build crates/cp_anywhere_wasm --target web --release \
+            --out-dir pkg --out-name cp_anywhere
+      - name: Export golden fixtures for the browser demo
+        run: uv run --frozen python scripts/wasm/export_fixtures.py
+      - name: Node setup
+        uses: actions/setup-node@v5.0.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: examples/browser-vite/package-lock.json
+      - name: Install example dependencies
+        working-directory: examples/browser-vite
+        run: npm ci
+      - name: Install Playwright Chromium
+        working-directory: examples/browser-vite
+        run: npx playwright install --with-deps chromium
+      - name: Build and run the real-browser smoke test
+        working-directory: examples/browser-vite
+        run: |
+          npm run build
+          npm run browser-check
+      - name: WASM golden parity check (Playwright-captured browser results)
+        run: uv run --frozen python scripts/parity/compare_wasm.py

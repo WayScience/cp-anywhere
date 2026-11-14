@@ -1,0 +1,27 @@
+{
+  "checked_at": "2026-11-14T02:29:39.221916+00:00",
+  "checks": [
+    {
+      "registry": "pypi",
+      "url": "https://pypi.org/pypi/cp-anywhere/json",
+      "http_status": 404,
+      "body": "{\"message\": \"Not Found\"}",
+      "interpretation": "not currently found; no ownership reservation implied"
+    },
+    {
+      "registry": "crates",
+      "url": "https://crates.io/api/v1/crates/cp-anywhere",
+      "http_status": 404,
+      "body": "{\"errors\":[{\"detail\":\"crate `cp-anywhere` does not exist\"}]}",
+      "interpretation": "not currently found; no ownership reservation implied"
+    },
+    {
+      "registry": "npm",
+      "url": "https://registry.npmjs.org/@cp-anywhere%2Fwasm",
+      "http_status": 404,
+      "body": "{\"error\":\"Not found\"}",
+      "interpretation": "not currently found; no ownership reservation implied"
+    }
+  ],
+  "publishing": "not performed; credentials and explicit review required; npm scope ownership not proven"
+}

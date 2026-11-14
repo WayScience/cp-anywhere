@@ -1,0 +1,557 @@
+{
+  "features": {
+    "Cells": {
+      "Intensity_IntegratedIntensityEdge_Actin": [
+        2805.0,
+        2040.0,
+        2550.0
+      ],
+      "Intensity_IntegratedIntensityEdge_DNA": [
+        0.0,
+        0.5,
+        0.0
+      ],
+      "Intensity_IntegratedIntensity_Actin": [
+        3060.0,
+        2040.0,
+        3060.0
+      ],
+      "Intensity_IntegratedIntensity_DNA": [
+        1.0,
+        0.5,
+        0.0
+      ],
+      "Intensity_LowerQuartileIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_LowerQuartileIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MADIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MADIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_DNA": [
+        2.1213203435596424,
+        3.3541019662496847,
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Intensity_MaxIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MaxIntensityEdge_DNA": [
+        0.0,
+        0.5,
+        0.0
+      ],
+      "Intensity_MaxIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MaxIntensity_DNA": [
+        1.0,
+        0.5,
+        0.0
+      ],
+      "Intensity_MeanIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MeanIntensityEdge_DNA": [
+        0.0,
+        0.0625,
+        0.0
+      ],
+      "Intensity_MeanIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MeanIntensity_DNA": [
+        0.08333333333333333,
+        0.0625,
+        0.0
+      ],
+      "Intensity_MedianIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MedianIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MinIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MinIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MinIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MinIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensityEdge_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensityEdge_DNA": [
+        0.0,
+        0.16535945694153692,
+        0.0
+      ],
+      "Intensity_StdIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensity_DNA": [
+        0.27638539919628324,
+        0.16535945694153692,
+        0.0
+      ],
+      "Intensity_UpperQuartileIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_UpperQuartileIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_X_Actin": [
+        1.5,
+        8.0,
+        8.0
+      ],
+      "Location_CenterMassIntensity_X_DNA": [
+        0.0,
+        5.0,
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_CenterMassIntensity_Y_Actin": [
+        1.5,
+        8.5,
+        8.5
+      ],
+      "Location_CenterMassIntensity_Y_DNA": [
+        0.0,
+        7.0,
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_CenterMassIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_MaxIntensity_X_Actin": [
+        1.0,
+        11.0,
+        7.0
+      ],
+      "Location_MaxIntensity_X_DNA": [
+        0.0,
+        5.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Y_Actin": [
+        0.0,
+        11.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Y_DNA": [
+        0.0,
+        7.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Neighbors_AngleBetweenNeighbors_Adjacent": [
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Neighbors_FirstClosestDistance_Adjacent": [
+        9.5524865872714,
+        0.0,
+        0.0
+      ],
+      "Neighbors_FirstClosestObjectNumber_Adjacent": [
+        2,
+        3,
+        3
+      ],
+      "Neighbors_NumberOfNeighbors_Adjacent": [
+        0.0,
+        1.0,
+        1.0
+      ],
+      "Neighbors_PercentTouching_Adjacent": [
+        0.0,
+        50.0,
+        40.0
+      ],
+      "Neighbors_SecondClosestDistance_Adjacent": [
+        9.5524865872714,
+        9.5524865872714,
+        9.5524865872714
+      ],
+      "Neighbors_SecondClosestObjectNumber_Adjacent": [
+        3,
+        1,
+        1
+      ]
+    },
+    "Image": {
+      "Intensity_LowerQuartileIntensity_Actin": 255.0,
+      "Intensity_LowerQuartileIntensity_DNA": 0.0,
+      "Intensity_MADIntensity_Actin": 0.0,
+      "Intensity_MADIntensity_DNA": 0.0,
+      "Intensity_MaxIntensity_Actin": 255,
+      "Intensity_MaxIntensity_DNA": 1.0,
+      "Intensity_MeanIntensity_Actin": 255.0,
+      "Intensity_MeanIntensity_DNA": 0.008875739644970414,
+      "Intensity_MedianIntensity_Actin": 255.0,
+      "Intensity_MedianIntensity_DNA": 0.0,
+      "Intensity_MinIntensity_Actin": 255,
+      "Intensity_MinIntensity_DNA": 0.0,
+      "Intensity_PercentMaximal_Actin": 100.0,
+      "Intensity_PercentMaximal_DNA": 0.591715976331361,
+      "Intensity_Percentile_10_Actin": 255.0,
+      "Intensity_Percentile_10_DNA": 0.0,
+      "Intensity_Percentile_50_Actin": 255.0,
+      "Intensity_Percentile_50_DNA": 0.0,
+      "Intensity_Percentile_90_Actin": 255.0,
+      "Intensity_Percentile_90_DNA": 0.0,
+      "Intensity_StdIntensity_Actin": 0.0,
+      "Intensity_StdIntensity_DNA": 0.085543386359769,
+      "Intensity_TotalArea_Actin": 169,
+      "Intensity_TotalArea_DNA": 169,
+      "Intensity_TotalIntensity_Actin": 43095,
+      "Intensity_TotalIntensity_DNA": 1.5,
+      "Intensity_UpperQuartileIntensity_Actin": 255.0,
+      "Intensity_UpperQuartileIntensity_DNA": 0.0
+    },
+    "Nuclei": {
+      "Intensity_IntegratedIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_IntegratedIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_IntegratedIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_IntegratedIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_LowerQuartileIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_LowerQuartileIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MADIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MADIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MassDisplacement_DNA": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Intensity_MaxIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MaxIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MaxIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MaxIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MeanIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MeanIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MeanIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MeanIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MedianIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MedianIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MinIntensityEdge_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MinIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_MinIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_MinIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensityEdge_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensityEdge_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensity_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_StdIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Intensity_UpperQuartileIntensity_Actin": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "Intensity_UpperQuartileIntensity_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_X_Actin": [
+        0.0,
+        10.0,
+        7.0
+      ],
+      "Location_CenterMassIntensity_X_DNA": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_CenterMassIntensity_Y_Actin": [
+        2.0,
+        10.0,
+        9.0
+      ],
+      "Location_CenterMassIntensity_Y_DNA": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_CenterMassIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_CenterMassIntensity_Z_DNA": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "Location_MaxIntensity_X_Actin": [
+        0.0,
+        10.0,
+        7.0
+      ],
+      "Location_MaxIntensity_X_DNA": [
+        0.0,
+        10.0,
+        7.0
+      ],
+      "Location_MaxIntensity_Y_Actin": [
+        2.0,
+        10.0,
+        9.0
+      ],
+      "Location_MaxIntensity_Y_DNA": [
+        2.0,
+        10.0,
+        9.0
+      ],
+      "Location_MaxIntensity_Z_Actin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "Location_MaxIntensity_Z_DNA": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "image_id": "holes_disconnected_border",
+  "image_number": 1,
+  "object_ids": {
+    "Cells": [
+      1,
+      2,
+      3
+    ],
+    "Nuclei": [
+      1,
+      2,
+      3
+    ]
+  },
+  "relationships": [
+    {
+      "first_image_id": "holes_disconnected_border",
+      "first_object_id": 2,
+      "second_image_id": "holes_disconnected_border",
+      "second_object_id": 3
+    },
+    {
+      "first_image_id": "holes_disconnected_border",
+      "first_object_id": 3,
+      "second_image_id": "holes_disconnected_border",
+      "second_object_id": 2
+    }
+  ]
+}

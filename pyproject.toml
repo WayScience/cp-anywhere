@@ -1,0 +1,136 @@
+[build-system]
+build-backend = "maturin"
+requires = [ "maturin>=1.9,<2" ]
+
+[project]
+name = "cp-anywhere"
+description = "CellProfiler-compatible measurements for native Python and web browsers"
+readme = "README.md"
+authors = [
+  { name = "Dave Bunten" },
+]
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dynamic = [ "version" ]
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2",
+  "pillow>=10",
+  "tifffile>=2024.1",
+]
+scripts.cp-anywhere = "cp_anywhere.cli:trigger"
+
+[dependency-groups]
+dev = [
+  "coverage[toml]>=7.10.6",
+  "maturin>=1.9,<2",
+  "poethepoet>=0.34",
+  "pytest>=8.3.5",
+  "pytest-cov>=6.2.1",
+  "pyyaml>=6,<7",
+]
+docs = [
+  "myst-nb>=1.2",
+  "pydata-sphinx-theme>=0.16.1",
+  "sphinx>=8.2.3",
+]
+# Asset-generation and native-validation tooling for the Zarr/ONNX/DuckDB
+# browser integration demo (examples/zarr-onnx-duckdb/). Not needed to
+# build, test, or use cp-anywhere itself -- only to regenerate or verify
+# that one example's fixture assets.
+demo-assets = [
+  "duckdb>=1.1",
+  "onnx>=1.17",
+]
+
+[tool.maturin]
+# Build the native extension as "cp_anywhere._native" alongside the
+# pure-Python package that lives under src/. The Rust sources live in a Cargo
+# workspace under crates/; the bindings crate is the maturin entry point.
+module-name = "cp_anywhere._native"
+python-source = "src"
+manifest-path = "crates/cp_anywhere_python/Cargo.toml"
+include = [
+  { path = "LICENSE", format = "sdist" },
+]
+features = [ "pyo3/extension-module" ]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+fix = true
+lint.select = [
+  # flake8-builtins
+  "A",
+  # flake8-annotations
+  "ANN",
+  # flake8-comprehensions
+  "C4",
+  # mccabe
+  "C90",
+  # pycodestyle
+  "E",
+  # pyflakes
+  "F",
+  # isort
+  "I",
+  # pylint
+  "PL",
+  # ruff
+  "RUF",
+  # flake8-simplify
+  "SIM",
+  "W",
+]
+# Ignore `F401` (unused imports) for `__init__.py` file
+lint.per-file-ignores."__init__.py" = [ "F401" ]
+# Ignore `PLC0415` (import not at top-level) for `api.py`, which defers the
+# native extension import so the pure-Python package stays importable.
+lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415" ]
+
+[tool.pytest.ini_options]
+pythonpath = [ "." ]
+addopts = [
+  "--cov=cp_anywhere",
+  "--cov-report=term-missing",
+  "--cov-report=xml",
+]
+
+[tool.coverage.run]
+branch = true
+source = [ "src/cp_anywhere" ]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.poe.tasks]
+# tasks for development environments
+# build the native extension into the active environment
+develop.shell = """
+maturin develop --uv
+"""
+# run the Rust unit tests
+rust-test.shell = """
+cargo test
+"""
+# rebuild the extension, then run the Python tests
+test.shell = """
+maturin develop --uv && pytest
+"""
+lint.shell = """
+pre-commit run --all-files
+"""
+# full local pipeline: Rust tests, native build, linting, Python tests
+pipeline.shell = """
+cargo test && maturin develop --uv && pre-commit run --all-files && pytest
+"""
+
+[tool.vulture]
+min_confidence = 90
+paths = [ "src/cp_anywhere", "tests" ]
