@@ -351,8 +351,13 @@ already-loaded arrays) and returns a tidy <code class="docutils literal notransl
 <span class="w">  </span>--output<span class="w"> </span>result.json
 </pre></div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">--output</span></code> also accepts <code class="docutils literal notranslate"><span class="pre">.csv</span></code> or <code class="docutils literal notranslate"><span class="pre">.arrow</span></code> (Arrow IPC/Feather, covering
+every feature value as one long-form table, with NaN/Infinity kept as
+real floats instead of JSON’s string markers). <code class="docutils literal notranslate"><span class="pre">measure_files</span></code>’s
+DataFrame can be written the same way with <code class="docutils literal notranslate"><span class="pre">frame.to_feather(&quot;result.arrow&quot;)</span></code>.</p>
 <p>For arrays already in memory, <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code> is the lower-level
-entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>
+entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>;
+it has matching <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">to_csv</span></code>/<code class="docutils literal notranslate"><span class="pre">to_arrow</span></code> methods
 (see <code class="docutils literal notranslate"><span class="pre">docs/src/python-api.md</span></code>).</p>
 </section>
 <section id="high-level-overview">

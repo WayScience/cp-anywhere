@@ -400,6 +400,18 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_arrow">
+<span class="sig-name descname"><span class="pre">to_arrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_arrow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_arrow" title="Link to this definition">#</a></dt>
+<dd><p>Write every feature row as an Arrow IPC (Feather v2) file.</p>
+<p>One row per object per feature column, the same long-form shape as
+<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.rows" title="src.cp_anywhere.api.MeasurementResult.rows"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rows()</span></code></a>/<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_csv" title="src.cp_anywhere.api.MeasurementResult.to_csv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_csv()</span></code></a>, covering all feature data (every
+scope, object, and column) in a single typed Arrow table –
+<code class="docutils literal notranslate"><span class="pre">image_id</span></code>/<code class="docutils literal notranslate"><span class="pre">scope</span></code>/<code class="docutils literal notranslate"><span class="pre">feature</span></code> as strings, <code class="docutils literal notranslate"><span class="pre">object_id</span></code> as
+int64, <code class="docutils literal notranslate"><span class="pre">value</span></code> as float64 (NaN/Infinity preserved natively,
+unlike <a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_json" title="src.cp_anywhere.api.MeasurementResult.to_json"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code></a>’s string markers).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_csv">
 <span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_csv" title="Link to this definition">#</a></dt>
 <dd><p>Write long-form feature rows with nonfinite values kept as strings.</p>
