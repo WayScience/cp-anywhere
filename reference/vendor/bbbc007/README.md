@@ -69,18 +69,27 @@ actin = tifffile.imread("BBBC007_v1_images/A9/A9 p10f.tif")
 dna_outline = tifffile.imread("BBBC007_v1_outlines/A9/A9 p10d.tif")
 actin_outline = tifffile.imread("BBBC007_v1_outlines/A9/A9 p10f.tif")
 
+
 def labels_from_outline(outline):
     labeled = label(~outline, connectivity=1)
-    border = set(labeled[0, :]) | set(labeled[-1, :]) | set(labeled[:, 0]) | set(labeled[:, -1])
+    border = (
+        set(labeled[0, :])
+        | set(labeled[-1, :])
+        | set(labeled[:, 0])
+        | set(labeled[:, -1])
+    )
     border.discard(0)
     out = labeled.copy()
     for b in border:
         out[out == b] = 0
-    remap = {old: new for new, old in enumerate(sorted(set(np.unique(out)) - {0}), start=1)}
+    remap = {
+        old: new for new, old in enumerate(sorted(set(np.unique(out)) - {0}), start=1)
+    }
     renumbered = np.zeros_like(out, dtype=np.int32)
     for old, new in remap.items():
         renumbered[out == old] = new
     return renumbered
+
 
 y0, x0, size = 256, 192, 128
 dna_crop = dna[y0 : y0 + size, x0 : x0 + size]
