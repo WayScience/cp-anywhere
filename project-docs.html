@@ -2017,19 +2017,19 @@ real scheduled GitHub Actions run.</p></li>
 <td><p>PyPI</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-pypi.yml</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
-<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code>)</p></td>
+<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code>); works from the first release via a PyPI “pending publisher”</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> (Rust crate)</p></td>
 <td><p>crates.io</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-crate.yml</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret (crates.io trusted publishing is not GA yet; see <code class="docutils literal notranslate"><span class="pre">.github/zizmor.yml</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret for the first release (crates.io OIDC trusted publishing can only be configured for a crate that already exists); can migrate to OIDC afterward</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> (npm package)</p></td>
 <td><p>npm</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-npm.yml</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
-<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code>, no stored token)</p></td>
+<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code>, no stored token) – <strong>but only once the package already exists on npm</strong>; see the bootstrap step below</p></td>
 </tr>
 <tr class="row-odd"><td><p>Standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> + checksum</p></td>
 <td><p>GitHub Release assets</p></td>
@@ -2045,15 +2045,81 @@ the release tag before any build; because all three crates
 (<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code>) use
 <code class="docutils literal notranslate"><span class="pre">version.workspace</span> <span class="pre">=</span> <span class="pre">true</span></code>, this single rewrite keeps the PyPI wheel,
 npm package, and crates.io crate at the same version with no separate
-sync step.</p>
+sync step. The git tag is the single source of truth for every published
+version across all three registries.</p>
 <p>Only <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> is published to crates.io: it is the portable,
 dependency-free measurement kernel usable from any Rust project.
 <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code> and <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code> are thin FFI bindings consumed
 through PyPI and npm respectively, not as Cargo dependencies of other
 projects.</p>
 </section>
-<section id="cutting-a-release-manual-steps">
-<h2>Cutting a release (manual steps)<a class="headerlink" href="#cutting-a-release-manual-steps" title="Link to this heading">#</a></h2>
+<section id="one-time-setup-must-be-done-once-outside-this-repo-before-the-first-release">
+<h2>One-time setup (must be done once, outside this repo, before the first release)<a class="headerlink" href="#one-time-setup-must-be-done-once-outside-this-repo-before-the-first-release" title="Link to this heading">#</a></h2>
+<p>None of the three packages (<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>,
+<code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code>) have been published anywhere yet. Each registry has a
+different bootstrap story for a brand-new, never-published package:</p>
+<ol class="arabic">
+<li><p><strong>GitHub “release” environment.</strong> Already created
+(<code class="docutils literal notranslate"><span class="pre">repos/d33bs/cp-anywhere/environments/release</span></code>), referenced by all
+three publish workflows’ <code class="docutils literal notranslate"><span class="pre">environment:</span> <span class="pre">release</span></code>. Optional hardening:
+add required reviewers under Settings -&gt; Environments -&gt; release.</p></li>
+<li><p><strong>PyPI – zero-touch, even for the first release.</strong> PyPI supports a
+“pending publisher” that creates the project on first use:</p>
+<ol class="arabic simple">
+<li><p>Sign in at <a class="reference external" href="https://pypi.org/manage/account/publishing/">https://pypi.org/manage/account/publishing/</a>.</p></li>
+<li><p>Add a pending GitHub publisher: PyPI project name <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>,
+owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
+<code class="docutils literal notranslate"><span class="pre">publish-pypi.yml</span></code>, environment name <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
+<li><p>Nothing else to do – the first tagged release creates the project
+and publishes to it automatically.</p></li>
+</ol>
+</li>
+<li><p><strong>npm – needs one manual publish first.</strong> npm’s trusted publishing
+has no “pending publisher” equivalent: a trusted publisher can only be
+attached to a package that already exists, so the very first publish
+cannot go through OIDC.</p>
+<ol class="arabic">
+<li><p>Build the package once locally with the version you intend to tag,
+e.g. for <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/sync_release_version.py<span class="w"> </span>v0.1.0
+wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+<span class="nb">cd</span><span class="w"> </span>crates/cp_anywhere_wasm/pkg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>publish<span class="w"> </span>--access<span class="w"> </span>public
+git<span class="w"> </span>checkout<span class="w"> </span>Cargo.toml<span class="w"> </span>Cargo.lock<span class="w">  </span><span class="c1"># undo the local version bump</span>
+</pre></div>
+</div>
+</li>
+<li><p>Once <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> exists on npm, go to its package settings
+-&gt; Publishing access -&gt; add a trusted publisher: GitHub Actions,
+owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
+<code class="docutils literal notranslate"><span class="pre">publish-npm.yml</span></code>, environment <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
+<li><p>Every release from that point on (including re-tagging <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>’s
+GitHub Release, or any later tag) publishes automatically via OIDC,
+no token stored anywhere.</p></li>
+</ol>
+</li>
+<li><p><strong>crates.io – needs a token for the first release.</strong> Trusted
+publishing on crates.io reached general availability in 2025, but like
+npm, the trusted publisher can only be configured for a crate that
+already exists – so the first publish needs a classic API token.</p>
+<ol class="arabic simple">
+<li><p>Sign in at <a class="reference external" href="https://crates.io/settings/tokens">https://crates.io/settings/tokens</a>, create a token
+scoped to <code class="docutils literal notranslate"><span class="pre">publish-new</span></code> (and <code class="docutils literal notranslate"><span class="pre">publish-update</span></code> for later releases).</p></li>
+<li><p>Add it as a <code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret in the GitHub <code class="docutils literal notranslate"><span class="pre">release</span></code>
+environment (Settings -&gt; Environments -&gt; release -&gt; Environment
+secrets). <code class="docutils literal notranslate"><span class="pre">publish-crate.yml</span></code> already reads this secret, so no
+workflow change is needed.</p></li>
+<li><p>Optional, after the crate exists: migrate <code class="docutils literal notranslate"><span class="pre">publish-crate.yml</span></code> from
+the stored token to OIDC (<code class="docutils literal notranslate"><span class="pre">rust-lang/crates-io-auth-action&#64;v1</span></code>,
+the modern equivalent of this project’s PyPI/npm setup) and delete
+the <code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret. Not required – the token-based
+workflow keeps working for every future release too.</p></li>
+</ol>
+</li>
+</ol>
+</section>
+<section id="cutting-a-release">
+<h2>Cutting a release<a class="headerlink" href="#cutting-a-release" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p>Open a PR that updates <code class="docutils literal notranslate"><span class="pre">CHANGELOG</span></code>-equivalent notes if desired (this
 project uses <code class="docutils literal notranslate"><span class="pre">release-drafter</span></code> – <code class="docutils literal notranslate"><span class="pre">.github/workflows/draft-release.yml</span></code>
@@ -2061,12 +2127,12 @@ drafts release notes automatically from merged PR labels on every push
 to <code class="docutils literal notranslate"><span class="pre">main</span></code>; review and edit the draft before publishing).</p></li>
 <li><p>Publish the drafted GitHub Release with a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> tag. This single
 <code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code> event fans out to all three publish workflows
-above, plus the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>/checksum release-asset upload.</p></li>
-<li><p>Watch the four jobs in the Actions tab. PyPI and npm use
-environment-scoped (<code class="docutils literal notranslate"><span class="pre">environment:</span> <span class="pre">release</span></code>) trusted publishing, so no
-secret needs rotating for those two. crates.io needs a
-<code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> configured once in the <code class="docutils literal notranslate"><span class="pre">release</span></code> environment’s
-secrets.</p></li>
+above, plus the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>/checksum release-asset upload. The tag is the
+only place a version is chosen; nothing else needs editing first.</p></li>
+<li><p>Watch the four jobs in the Actions tab. After the one-time setup above,
+PyPI, npm, and crates.io all publish with no further manual steps,
+using the Cargo workspace version that <code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code>
+derived from the tag.</p></li>
 </ol>
 </section>
 <section id="verified-locally-every-m7-session-not-a-real-publish">
@@ -2103,9 +2169,10 @@ which this session does not do). The dry runs above verify the
 artifacts the workflows would build and upload are correct; they do not
 verify the workflow YAML executes successfully end to end on GitHub’s
 runners.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> and the <code class="docutils literal notranslate"><span class="pre">release</span></code> GitHub Environment (with its
-PyPI/npm trusted-publishing configuration) must be set up once, outside
-this repository, before the first real release.</p></li>
+<li><p>The one-time setup steps above (PyPI pending publisher, npm bootstrap
+publish + trusted publisher, crates.io token) require the registry
+account owner’s own login and have not been done yet – they are not
+something a CI workflow or an automated tool can perform.</p></li>
 </ul>
 </section>
 </section>
