@@ -3,12 +3,13 @@ rules:
     config:
       policies:
         "*": ref-pin
-  # crates.io's OIDC trusted-publishing support is not GA yet (unlike
-  # PyPI's, used via pypa/gh-action-pypi-publish in publish-pypi.yml, and
-  # npm's, used directly via `npm publish` + id-token: write in
-  # publish-npm.yml). Token-based `cargo publish` via a scoped
-  # CARGO_REGISTRY_TOKEN secret is the only available mechanism; revisit
-  # when crates.io trusted publishing reaches general availability.
+  # crates.io's OIDC trusted-publishing reached general availability in
+  # 2025 (unlike npm's, which has no path for a brand-new, never-published
+  # package -- the trusted publisher can only be configured for a crate
+  # that already exists). cp_anywhere_core has not been published yet, so
+  # its first release still needs a scoped CARGO_REGISTRY_TOKEN secret to
+  # bootstrap the crate; OIDC (rust-lang/crates-io-auth-action) can be
+  # adopted afterward once the crate exists, see docs/release.md.
   use-trusted-publishing:
     ignore:
       - publish-crate.yml
