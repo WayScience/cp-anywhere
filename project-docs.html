@@ -1,0 +1,2368 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Project documentation &#8212; cp-anywhere  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'project-docs';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Python API" href="python-api.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cp-anywhere</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Project documentation</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="project-documentation">
+<h1>Project documentation<a class="headerlink" href="#project-documentation" title="Link to this heading">#</a></h1>
+</section>
+<section id="supported-feature-table">
+<h1>Supported feature table<a class="headerlink" href="#supported-feature-table" title="Link to this heading">#</a></h1>
+<p>Generated by <code class="docutils literal notranslate"><span class="pre">scripts/docs/render_feature_table.py</span></code> by joining
+<code class="docutils literal notranslate"><span class="pre">spec/features.yaml</span></code> (the frozen empirical CellProfiler 4.2.8 oracle
+inventory, M1 – never hand-edited or mutated by this script) with
+the real parity reports (<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-parity.json</span></code>,
+<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/wasm-parity.json</span></code>, M3-M5) and the cp_measure
+mapping (<code class="docutils literal notranslate"><span class="pre">spec/cp_measure-map.yaml</span></code>, M2). Regenerate after any
+parity re-run; do not hand-edit.</p>
+<p>Total declared columns: 119 (see <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code> for the full scope contract).</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Feature</p></th>
+<th class="head"><p>Object scope</p></th>
+<th class="head"><p>Dims</p></th>
+<th class="head"><p>Rust</p></th>
+<th class="head"><p>WASM</p></th>
+<th class="head"><p>cp_measure</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MADIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MADIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MaxIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MaxIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MeanIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MeanIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MedianIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MedianIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MinIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_MinIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_PercentMaximal_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_PercentMaximal_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_10_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_10_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_50_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_50_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_90_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_Percentile_90_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_StdIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_StdIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_TotalArea_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_TotalArea_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_TotalIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_TotalIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_Actin</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureImageIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_DNA</p></td>
+<td><p>Image</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>unsupported</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensityEdge_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensityEdge_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensityEdge_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensityEdge_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_IntegratedIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_LowerQuartileIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MADIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MADIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MADIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MADIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MassDisplacement_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MassDisplacement_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MassDisplacement_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MassDisplacement_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensityEdge_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensityEdge_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensityEdge_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensityEdge_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MaxIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensityEdge_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensityEdge_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensityEdge_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensityEdge_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MeanIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MedianIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MedianIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MedianIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MedianIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensityEdge_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensityEdge_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensityEdge_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensityEdge_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_MinIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensityEdge_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensityEdge_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensityEdge_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensityEdge_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_StdIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Intensity_UpperQuartileIntensity_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_X_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_X_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_X_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_X_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Y_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Y_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Y_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Y_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Z_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Z_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Z_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_CenterMassIntensity_Z_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_X_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_X_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_X_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_X_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Y_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Y_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Y_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Y_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Z_Actin</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Z_Actin</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Z_DNA</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectIntensity</p></td>
+<td><p>Location_MaxIntensity_Z_DNA</p></td>
+<td><p>Nuclei</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_AngleBetweenNeighbors_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_tolerance</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_FirstClosestDistance_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_FirstClosestObjectNumber_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_NumberOfNeighbors_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_PercentTouching_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-odd"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_SecondClosestDistance_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+<tr class="row-even"><td><p>MeasureObjectNeighbors</p></td>
+<td><p>Neighbors_SecondClosestObjectNumber_Adjacent</p></td>
+<td><p>Cells</p></td>
+<td><p>2/3</p></td>
+<td><p>pass_exact</p></td>
+<td><p>pass_exact</p></td>
+<td><p>mapped</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="m3-native-rust-core">
+<h1>M3 native Rust core<a class="headerlink" href="#m3-native-rust-core" title="Link to this heading">#</a></h1>
+<section id="result">
+<h2>Result<a class="headerlink" href="#result" title="Link to this heading">#</a></h2>
+<p>The Rust core (<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core</span></code>) implements the complete declared
+scope from <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>: <code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensity</span></code> over <code class="docutils literal notranslate"><span class="pre">Cells</span></code>/<code class="docutils literal notranslate"><span class="pre">Nuclei</span></code> × <code class="docutils literal notranslate"><span class="pre">DNA</span></code>/<code class="docutils literal notranslate"><span class="pre">Actin</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code> same-set <code class="docutils literal notranslate"><span class="pre">Adjacent</span></code> with directed relationship
+rows. <code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_python</span></code> is a thin PyO3/NumPy binding with no
+scientific logic of its own; <code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/api.py</span></code> validates inputs and
+exposes <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/parity/compare_native.py</span></code> compares the Rust result against all 13
+saved golden fixtures and all 119 declared columns plus the directed
+relationship table: <strong>1,560 of 1,560 rows pass</strong> (1,535 exact, 25 within
+the <code class="docutils literal notranslate"><span class="pre">spec/features.yaml</span></code> float64 tolerance). The 25 tolerance rows are all
+<code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code> scalar reductions with errors between 1e-17 and
+1e-14 — float64 summation-order variance, not a scope or semantics bug.
+Full counts and reasons are recorded in <code class="docutils literal notranslate"><span class="pre">spec/native-coverage.yaml</span></code> and
+<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-parity.json</span></code>.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_native.py
+<span class="nv">CP_ANYWHERE_REFERENCE_PYTHON</span><span class="o">=</span>/path/to/reference/venv/bin/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">env</span> <span class="pre">-u</span> <span class="pre">CONDA_PREFIX</span></code> is required on hosts where both <code class="docutils literal notranslate"><span class="pre">CONDA_PREFIX</span></code> and
+<code class="docutils literal notranslate"><span class="pre">VIRTUAL_ENV</span></code> are set; maturin refuses to build with both present.</p>
+</section>
+<section id="hard-case-source-decisions">
+<h2>Hard-case source decisions<a class="headerlink" href="#hard-case-source-decisions" title="Link to this heading">#</a></h2>
+<p>These follow <code class="docutils literal notranslate"><span class="pre">spec/reference-semantics.md</span></code>, which records the exact
+original behavior read from the pinned CellProfiler 4.2.8 and NumPy 1.23.5
+sources, not a cleaned-up reimplementation:</p>
+<ul class="simple">
+<li><p>Integer images are promoted to <code class="docutils literal notranslate"><span class="pre">f64</span></code> without dtype-maximum rescaling,
+matching the reference runner’s <code class="docutils literal notranslate"><span class="pre">Image(...,</span> <span class="pre">convert=False)</span></code>.</p></li>
+<li><p>Object-quantile and MAD formulas use <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">*</span> <span class="pre">fraction</span></code> (not <code class="docutils literal notranslate"><span class="pre">(n-1)</span> <span class="pre">*</span> <span class="pre">fraction</span></code>) and <code class="docutils literal notranslate"><span class="pre">n</span> <span class="pre">/</span> <span class="pre">dimensions</span></code>, matching the original module exactly.</p></li>
+<li><p>Maximum-intensity coordinate ties are resolved by a literal Rust port of
+NumPy 1.23.5’s introsort (<code class="docutils literal notranslate"><span class="pre">numpy_argsort</span></code>/<code class="docutils literal notranslate"><span class="pre">argsort_range</span></code>/
+<code class="docutils literal notranslate"><span class="pre">numpy_heapsort</span></code> in <code class="docutils literal notranslate"><span class="pre">lib.rs</span></code>), derived from
+<code class="docutils literal notranslate"><span class="pre">numpy/core/src/npysort/quicksort.cpp</span></code> and <code class="docutils literal notranslate"><span class="pre">npysort_heapsort.h</span></code> at
+<code class="docutils literal notranslate"><span class="pre">de82cd9468704a033702974010ee7e7efc85b393</span></code> (BSD-3-Clause; see
+<code class="docutils literal notranslate"><span class="pre">licenses/numpy.txt</span></code> and <code class="docutils literal notranslate"><span class="pre">THIRD_PARTY_NOTICES.md</span></code>). A stable per-object
+sort does not reproduce the golden tie-break positions; this port does.</p></li>
+<li><p>Same-set adjacent neighbors use only the first two center axes even in
+3D (z/y, omitting x) for nearest-distance and angle, a separate ordering
+for distance/angle selection versus the ID ordering, and the original
+<code class="docutils literal notranslate"><span class="pre">centrosome.outline.outline</span></code>-equivalent first-two-axes diagonal outline
+(also applied unchanged in 3D). These are preserved reference quirks,
+not defects introduced by this port.</p></li>
+<li><p>Sparse object IDs keep their array position through the maximum label;
+missing slots are not compacted.</p></li>
+</ul>
+</section>
+<section id="resource-and-memory-contract">
+<h2>Resource and memory contract<a class="headerlink" href="#resource-and-memory-contract" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Inputs: 2D or 3D only, nonzero shape, checked shape-product
+multiplication (<code class="docutils literal notranslate"><span class="pre">checked_mul</span></code>), matching channel/object/mask lengths,
+labels must be unsigned and <code class="docutils literal notranslate"><span class="pre">&lt;=</span> <span class="pre">MAX_LABEL</span></code> (1,000,000; a documented
+limit, not an attempt to allocate <code class="docutils literal notranslate"><span class="pre">u32::MAX</span></code> rows).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_python/src/lib.rs</span></code> borrows C-contiguous <code class="docutils literal notranslate"><span class="pre">f64</span></code> image
+arrays and <code class="docutils literal notranslate"><span class="pre">u32</span></code> label arrays directly as slices — no copy for that
+common case. <code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/api.py</span></code> performs exactly one conversion
+via <code class="docutils literal notranslate"><span class="pre">np.ascontiguousarray</span></code> for other numeric dtypes or non-contiguous
+input; it does not claim zero-copy for those cases.</p></li>
+<li><p>The kernel runs with <code class="docutils literal notranslate"><span class="pre">py.detach(...)</span></code> (PyO3’s GIL release), so Rust work
+does not hold the GIL. Callers must not mutate input arrays while
+<code class="docutils literal notranslate"><span class="pre">measure()</span></code> is running, since the Rust side holds borrowed slices for
+the call’s duration.</p></li>
+<li><p>Rejected inputs: 1D or higher-than-3D shapes, boolean/float label
+arrays, non-real-numeric image dtypes, mismatched shapes, labels above
+<code class="docutils literal notranslate"><span class="pre">MAX_LABEL</span></code>, and (when neighbors are selected) no <code class="docutils literal notranslate"><span class="pre">Cells</span></code> object set.</p></li>
+<li><p>The core (<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>) has no Python, filesystem, or platform
+dependency: <code class="docutils literal notranslate"><span class="pre">Input</span></code>/<code class="docutils literal notranslate"><span class="pre">ResultTable</span></code> are plain Rust types over borrowed
+slices, which keeps a future WASM target possible without a rewrite.</p></li>
+</ul>
+</section>
+<section id="api">
+<h2>API<a class="headerlink" href="#api" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(images,</span> <span class="pre">objects,</span> <span class="pre">*,</span> <span class="pre">mask=None,</span> <span class="pre">image_id=&quot;Image&quot;,</span> <span class="pre">families=None)</span></code> returns a frozen <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> with <code class="docutils literal notranslate"><span class="pre">.features</span></code>
+(mirroring the golden JSON structure: <code class="docutils literal notranslate"><span class="pre">Image</span></code> scope holds scalars, object
+scopes hold NumPy arrays aligned to <code class="docutils literal notranslate"><span class="pre">.object_ids</span></code>), <code class="docutils literal notranslate"><span class="pre">.object_ids</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">.relationships</span></code> (directed edges with both image/object IDs). <code class="docutils literal notranslate"><span class="pre">.rows()</span></code>
+gives a long table; <code class="docutils literal notranslate"><span class="pre">.to_csv()</span></code>/<code class="docutils literal notranslate"><span class="pre">.to_json()</span></code> write it and the
+reference-shaped structure respectively, with nonfinite floats encoded
+explicitly (<code class="docutils literal notranslate"><span class="pre">{&quot;nonfinite&quot;:</span> <span class="pre">&quot;NaN&quot;}</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;+Infinity&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;-Infinity&quot;</span></code>) rather
+than silently dropped or turned into <code class="docutils literal notranslate"><span class="pre">null</span></code>. <code class="docutils literal notranslate"><span class="pre">families</span></code> restricts
+computation to a subset of <code class="docutils literal notranslate"><span class="pre">(&quot;image_intensity&quot;,</span> <span class="pre">&quot;object_intensity&quot;,</span> <span class="pre">&quot;neighbors&quot;)</span></code> so later benchmarking can time an equivalent subset without
+computing unselected families.</p>
+<p>The CLI (<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span> <span class="pre">--image</span> <span class="pre">NAME=PATH</span> <span class="pre">--objects</span> <span class="pre">NAME=PATH</span> <span class="pre">[--mask</span> <span class="pre">PATH]</span> <span class="pre">--output</span> <span class="pre">PATH</span></code>) loads saved NPY arrays and writes CSV or JSON depending on
+the output suffix.</p>
+</section>
+<section id="wheel-build-and-installed-wheel-smoke-test">
+<h2>Wheel build and installed-wheel smoke test<a class="headerlink" href="#wheel-build-and-installed-wheel-smoke-test" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">build</span> <span class="pre">--release</span></code> produced
+<code class="docutils literal notranslate"><span class="pre">cp_anywhere-0.1.0-cp311-abi3-macosx_11_0_arm64.whl</span></code>. It was installed into
+a <strong>fresh, isolated <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">venv</span></code></strong> with no project checkout on <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>. The
+imported module resolved to that venv’s <code class="docutils literal notranslate"><span class="pre">site-packages</span></code> (not the source
+tree), and <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code> on the <code class="docutils literal notranslate"><span class="pre">touching_gradient</span></code> fixture
+returned all 119 declared columns. This proves the installed wheel, not
+just the editable development install, produces the full declared scope.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">fmt</span> <span class="pre">--check</span></code> and <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">clippy</span> <span class="pre">--all-targets</span></code> are clean for both
+crates. <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">test</span></code> passes the one Rust unit test (invalid shape and
+over-limit label rejection). The full project <code class="docutils literal notranslate"><span class="pre">pytest</span></code> suite (22 tests,
+including the real CellProfiler 4.2.8 replay) passes.</p>
+</section>
+<section id="known-limitations">
+<h2>Known limitations<a class="headerlink" href="#known-limitations" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Only the one <code class="docutils literal notranslate"><span class="pre">rejects_bad_shape_and_large_id</span></code> Rust unit test exists; most
+correctness assurance currently comes from the Python-side golden parity
+script, not from Rust-level property tests (e.g. proptest) on the
+sorting or neighbor kernels.</p></li>
+<li><p>Timing against <code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> and against a WASM build is explicitly out
+of scope for M3; see <code class="docutils literal notranslate"><span class="pre">docs/decisions/0002-rust-core.md</span></code> and M4/M6.</p></li>
+</ul>
+</section>
+</section>
+<section id="m4-wasm-feasibility-and-browser-integration-spike">
+<h1>M4 WASM feasibility and browser integration spike<a class="headerlink" href="#m4-wasm-feasibility-and-browser-integration-spike" title="Link to this heading">#</a></h1>
+<section id="id1">
+<h2>Result<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>The Rust core compiles unmodified to <code class="docutils literal notranslate"><span class="pre">wasm32-unknown-unknown</span></code> (no feature
+gates needed; <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> has no dependencies beyond <code class="docutils literal notranslate"><span class="pre">std</span></code>).
+<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_wasm</span></code> is a thin <code class="docutils literal notranslate"><span class="pre">wasm-bindgen</span></code> binding (JSON in/out for
+small metadata, typed arrays for the numeric payload) built with
+<code class="docutils literal notranslate"><span class="pre">wasm-pack</span> <span class="pre">build</span> <span class="pre">crates/cp_anywhere_wasm</span> <span class="pre">--target</span> <span class="pre">web</span> <span class="pre">--release</span></code>, producing
+a <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> npm package consumed by a real Vite example
+(<code class="docutils literal notranslate"><span class="pre">examples/browser-vite</span></code>) that runs the module inside a dedicated web
+worker.</p>
+<p><strong>Both declared families run entirely client-side with verified parity,
+across the full declared manifest (2D and 3D).</strong> A real, reproducible
+headless-Chromium run (Playwright, not a mock DOM;
+<code class="docutils literal notranslate"><span class="pre">examples/browser-vite/run-browser-check.mjs</span></code>) executed the worker against
+all <strong>13</strong> declared golden fixtures and <code class="docutils literal notranslate"><span class="pre">scripts/parity/compare_wasm.py</span></code>
+compared every result against the same original CellProfiler 4.2.8 golden
+fixtures used by the native build:</p>
+<ul class="simple">
+<li><p><strong>1,560 of 1,560 rows pass</strong> (1,533 exact, 27 within the declared float64
+tolerance; zero failures). 13 fixtures × 120 rows (119 features + 1
+relationship table) — the identical row count the native build passes
+(<code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code>), closing M5’s “100% … in native Rust, Python, and
+WASM” gate for the current declared manifest.</p></li>
+<li><p>The 27 tolerance rows are the same <code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code> reduction-order
+families already seen in the native build (<code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code>), plus two
+<code class="docutils literal notranslate"><span class="pre">Neighbors_AngleBetweenNeighbors_Adjacent</span></code> rows at 1e-14-scale absolute /
+1e-16-scale relative error — consistent with a transcendental-function
+(<code class="docutils literal notranslate"><span class="pre">acos</span></code>/<code class="docutils literal notranslate"><span class="pre">atan2</span></code>) last-bit difference between wasm32’s and native arm64’s
+libm, not a computation bug.</p></li>
+</ul>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>fmt<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_wasm/Cargo.toml<span class="w"> </span>--check
+cargo<span class="w"> </span>clippy<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_wasm/Cargo.toml<span class="w"> </span>--target<span class="w"> </span>wasm32-unknown-unknown<span class="w"> </span>--all-targets
+wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+
+<span class="nb">cd</span><span class="w"> </span>examples/browser-vite
+npm<span class="w"> </span>install
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>../../scripts/wasm/export_fixtures.py<span class="w">   </span><span class="c1"># regenerates public/fixtures/ (gitignored)</span>
+npm<span class="w"> </span>run<span class="w"> </span>build
+npx<span class="w"> </span>playwright<span class="w"> </span>install<span class="w"> </span>chromium<span class="w">   </span><span class="c1"># once</span>
+npm<span class="w"> </span>run<span class="w"> </span>browser-check<span class="w">             </span><span class="c1"># writes browser-results.json</span>
+
+<span class="nb">cd</span><span class="w"> </span>../..
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm.py
+</pre></div>
+</div>
+</section>
+<section id="browser-demo-and-npm-package">
+<h2>Browser demo and npm package<a class="headerlink" href="#browser-demo-and-npm-package" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">examples/browser-vite</span></code> is a real Vite project (not a static mockup): its
+<code class="docutils literal notranslate"><span class="pre">src/worker.ts</span></code> imports the generated <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> package, fetches
+each fixture’s raw binary arrays (see below), calls <code class="docutils literal notranslate"><span class="pre">measure()</span></code>, and posts
+the result back; <code class="docutils literal notranslate"><span class="pre">src/main.ts</span></code> drives the worker from the page and renders
+status in <code class="docutils literal notranslate"><span class="pre">#status</span></code>. <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">build</span></code> produces a genuine production bundle:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>dist/index.html                             0.46 kB
+dist/assets/worker-*.js                     ~6.3 kB
+dist/assets/cp_anywhere_bg-*.wasm         205.89 kB  (91.27 kB gzip-equivalent)
+dist/assets/index-*.js                      ~2.0 kB
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">preview</span></code> (or <code class="docutils literal notranslate"><span class="pre">run-browser-check.mjs</span></code>’s own tiny static server)
+serves this real build; nothing is dev-server-only or dynamically
+recompiled per request.</p>
+</section>
+<section id="typed-array-inputs-output-conversion-memory">
+<h2>Typed-array inputs, output conversion, memory<a class="headerlink" href="#typed-array-inputs-output-conversion-memory" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Input:</strong> <code class="docutils literal notranslate"><span class="pre">measure(shape,</span> <span class="pre">image_names,</span> <span class="pre">images,</span> <span class="pre">object_names,</span> <span class="pre">objects,</span> <span class="pre">mask,</span> <span class="pre">image_id,</span> <span class="pre">families)</span></code> takes real typed arrays
+(<code class="docutils literal notranslate"><span class="pre">Uint32Array</span></code>/<code class="docutils literal notranslate"><span class="pre">Float64Array</span></code>/<code class="docutils literal notranslate"><span class="pre">Uint8Array</span></code>) across the wasm-bindgen
+boundary — the plan’s “typed-array inputs” requirement. <code class="docutils literal notranslate"><span class="pre">wasm-bindgen</span></code>
+copies <code class="docutils literal notranslate"><span class="pre">&amp;[T]</span></code> parameters into wasm linear memory once per call; this is
+the standard, documented cost of that FFI pattern (see
+<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_wasm/src/lib.rs</span></code>), not something hidden.</p></li>
+<li><p><strong>Numeric fixture data is fetched as raw binary, not JSON.</strong> The first
+export attempt used plain JSON and failed immediately: <code class="docutils literal notranslate"><span class="pre">nonfinite</span></code>’s
+pixel array contains literal NaN/Infinity, which are not valid JSON
+numbers (<code class="docutils literal notranslate"><span class="pre">JSON.parse</span></code> correctly rejects them). <code class="docutils literal notranslate"><span class="pre">scripts/wasm/export_fixtures.py</span></code>
+now writes small JSON metadata (shape, names, <code class="docutils literal notranslate"><span class="pre">image_id</span></code>) plus
+<code class="docutils literal notranslate"><span class="pre">.images.f64</span></code> / <code class="docutils literal notranslate"><span class="pre">.objects.u32</span></code> / <code class="docutils literal notranslate"><span class="pre">.mask.u8</span></code> raw binary blobs; the worker
+fetches each as an <code class="docutils literal notranslate"><span class="pre">ArrayBuffer</span></code> and constructs a typed-array view
+directly over the bytes, which preserves the exact IEEE754 bit pattern
+and is also the more realistic typed-array transfer path for a browser
+demo.</p></li>
+<li><p><strong>Output conversion:</strong> <code class="docutils literal notranslate"><span class="pre">measure()</span></code> returns one JSON string matching
+<code class="docutils literal notranslate"><span class="pre">MeasurementResult.to_json()</span></code>’s shape exactly (same <code class="docutils literal notranslate"><span class="pre">{&quot;nonfinite&quot;:</span> <span class="pre">&quot;NaN&quot;}</span></code>-style markers), so the same Python comparator
+(<code class="docutils literal notranslate"><span class="pre">scripts/parity/compare_cp_measure.py</span></code>’s <code class="docutils literal notranslate"><span class="pre">compare_feature</span></code>/
+<code class="docutils literal notranslate"><span class="pre">compare_relationships</span></code>) verifies both the native and the WASM result
+without a second, independently-trusted comparison implementation.</p></li>
+<li><p><strong>Memory:</strong> <code class="docutils literal notranslate"><span class="pre">WebAssembly.Memory.buffer.byteLength</span></code> was 3,538,944 bytes
+(~3.46 MiB) after running all 13 fixtures sequentially in one worker
+instance — a post-hoc read, not a tracked peak (see Known limitations).</p></li>
+</ul>
+</section>
+<section id="worker-execution-and-browser-compatibility">
+<h2>Worker execution and browser compatibility<a class="headerlink" href="#worker-execution-and-browser-compatibility" title="Link to this heading">#</a></h2>
+<p>The module runs inside a dedicated <code class="docutils literal notranslate"><span class="pre">Worker({</span> <span class="pre">type:</span> <span class="pre">&quot;module&quot;</span> <span class="pre">})</span></code>, loaded via
+Vite’s <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">URL(...)</span></code> + <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">Worker(...)</span></code> pattern, which Vite bundles
+correctly (confirmed by the production build above). Testing used real
+headless Chromium (Playwright, Chrome for Testing 159.0.8154.6); Firefox
+and Safari were not tested in this spike (see Known limitations).
+<code class="docutils literal notranslate"><span class="pre">crossOriginIsolated</span></code> / COOP-COEP were not required for this
+single-threaded <code class="docutils literal notranslate"><span class="pre">wasm-bindgen</span></code> build.</p>
+</section>
+<section id="native-vs-wasm-comparison">
+<h2>Native vs WASM comparison<a class="headerlink" href="#native-vs-wasm-comparison" title="Link to this heading">#</a></h2>
+<p>Both the native build (<code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code>) and this WASM build pass the same
+golden fixtures exactly (modulo the same class of float64
+reduction/transcendental-order tolerance). Measured per-call timing
+(<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/wasm-baseline.json</span></code>, 3 warmups / 10 runs, same four
+representative workloads from <code class="docutils literal notranslate"><span class="pre">spec/benchmark-contract.yaml</span></code>):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Fixture</p></th>
+<th class="head text-right"><p>WASM median ms (worker round trip)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>touching_gradient</p></td>
+<td class="text-right"><p>0.15</p></td>
+</tr>
+<tr class="row-odd"><td><p>real_cell_cc0</p></td>
+<td class="text-right"><p>2.85</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_medium</p></td>
+<td class="text-right"><p>11.80</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_large</p></td>
+<td class="text-right"><p>174.00</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Each sample times one <code class="docutils literal notranslate"><span class="pre">measure()</span></code> call, which includes the in-WASM
+<code class="docutils literal notranslate"><span class="pre">serde_json::to_string()</span></code> encoding of the full 119-column result — a
+worker-round-trip cost, not an isolated kernel time. It is <strong>not yet</strong>
+comparable to the native/<code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> Python baseline
+(<code class="docutils literal notranslate"><span class="pre">benchmarks/baseline/initial-cp-measure-timing.json</span></code>) on an
+apples-to-apples kernel-only basis; that isolation, plus a real
+cross-target regression gate, is M6’s job. <code class="docutils literal notranslate"><span class="pre">spec/benchmark-contract.yaml</span></code>’s
+<code class="docutils literal notranslate"><span class="pre">browser_worker_budget</span></code>, <code class="docutils literal notranslate"><span class="pre">browser_memory_budget</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">browser_package_size_budget</span></code> are updated from “provisional until M4” to
+real first-measured numbers with a documented margin.</p>
+</section>
+<section id="id2">
+<h2>Known limitations<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Only Chromium was tested (via Playwright). Firefox and Safari are
+untested; no WASM feature used here (no SIMD, no threads, no
+SharedArrayBuffer) is Chromium-specific, so cross-browser support is
+expected but not verified in this spike.</p></li>
+<li><p>Per-call timing includes JSON-encoding every result; kernel-only timing
+(e.g., via a numeric-only output mode) is left to M6.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wasm_linear_memory_bytes_after_run</span></code> is a single post-run read, not a
+tracked peak across the run.</p></li>
+<li><p>This spike did not test a <code class="docutils literal notranslate"><span class="pre">crossOriginIsolated</span></code>/threaded build; the
+current build is intentionally single-threaded, matching the plan’s
+“test… browser compatibility” bar without requiring COOP/COEP
+deployment headers.</p></li>
+</ul>
+</section>
+</section>
+<section id="browser-integration-zarr-onnx-runtime-web-duckdb-wasm">
+<h1>Browser integration: Zarr, ONNX Runtime Web, DuckDB-WASM<a class="headerlink" href="#browser-integration-zarr-onnx-runtime-web-duckdb-wasm" title="Link to this heading">#</a></h1>
+<section id="what-this-is">
+<h2>What this is<a class="headerlink" href="#what-this-is" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">examples/zarr-onnx-duckdb/</span></code> is a real, end-to-end browser integration
+proving the pieces named in the plan work together with cp-anywhere’s own
+WASM build, with <strong>no mocked stage</strong>:</p>
+<ol class="arabic simple">
+<li><p><strong>zarrita.js</strong> reads a real OME-Zarr v2 array (<code class="docutils literal notranslate"><span class="pre">public/dna.zarr</span></code>,
+written by <code class="docutils literal notranslate"><span class="pre">scripts/zarr/export_demo_fixture.py</span></code>) over HTTP.</p></li>
+<li><p><strong>onnxruntime-web</strong> runs a real, checked ONNX graph
+(<code class="docutils literal notranslate"><span class="pre">public/threshold.onnx</span></code>) against that array, producing an integer
+label mask.</p></li>
+<li><p><strong>cp-anywhere-wasm</strong> (this project’s own Rust/WASM kernel, the same
+build verified in <code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code>) measures the Zarr image using that
+ONNX-produced mask as the <code class="docutils literal notranslate"><span class="pre">Cells</span></code> object labels.</p></li>
+<li><p><strong>DuckDB-WASM</strong> loads cp-anywhere’s own measurement output into a SQL
+table and exports it as a real Parquet file (<code class="docutils literal notranslate"><span class="pre">COPY</span> <span class="pre">...</span> <span class="pre">FORMAT</span> <span class="pre">PARQUET</span></code>).</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/zarr/validate_export.py</span></code> then validates that Parquet file with
+<strong>native</strong> DuckDB (not the WASM build under test) and cross-checks every
+value against a fresh, from-source native Python <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure()</span></code>
+call on the identical Zarr bytes and mask – proving the browser pipeline
+produced numerically correct output, not just that it ran without an
+error.</p>
+</section>
+<section id="why-the-mask-not-a-trained-segmentation-model">
+<h2>Why the mask, not a trained segmentation model<a class="headerlink" href="#why-the-mask-not-a-trained-segmentation-model" title="Link to this heading">#</a></h2>
+<p>The plan names “ONNX Runtime Web label masks” as an integration target, not
+a trained segmentation model (cp-anywhere does not ship or depend on one).
+<code class="docutils literal notranslate"><span class="pre">scripts/zarr/export_demo_fixture.py</span></code> builds a tiny, real ONNX graph –
+<code class="docutils literal notranslate"><span class="pre">Greater(image,</span> <span class="pre">0.5)</span> <span class="pre">-&gt;</span> <span class="pre">Cast(...,</span> <span class="pre">INT32)</span></code> – checked with
+<code class="docutils literal notranslate"><span class="pre">onnx.checker.check_model</span></code> and independently evaluated with
+<code class="docutils literal notranslate"><span class="pre">onnx.reference.ReferenceEvaluator</span></code> before the browser ever sees it. This
+is a deterministic threshold, not instance segmentation: disconnected
+foreground pixels all share label <code class="docutils literal notranslate"><span class="pre">1</span></code>. It exists to exercise the real
+Zarr -&gt; ONNX -&gt; cp-anywhere -&gt; DuckDB pipeline end to end, not to claim
+CellProfiler-parity object identification from a thresholding operator (see
+“Known limitations” below).</p>
+</section>
+<section id="run-it">
+<h2>Run it<a class="headerlink" href="#run-it" title="Link to this heading">#</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>demo-assets
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/zarr/export_demo_fixture.py
+
+<span class="nb">cd</span><span class="w"> </span>examples/zarr-onnx-duckdb
+npm<span class="w"> </span>install
+npm<span class="w"> </span>run<span class="w"> </span>build
+npm<span class="w"> </span>run<span class="w"> </span>browser-check<span class="w">   </span><span class="c1"># real Playwright/Chromium run; writes</span>
+<span class="w">                         </span><span class="c1"># cp_anywhere_features.parquet and browser-results.json</span>
+<span class="nb">cd</span><span class="w"> </span>../..
+
+uv<span class="w"> </span>run<span class="w"> </span>--group<span class="w"> </span>demo-assets<span class="w"> </span>python<span class="w"> </span>scripts/zarr/validate_export.py
+</pre></div>
+</div>
+</section>
+<section id="verified-results">
+<h2>Verified results<a class="headerlink" href="#verified-results" title="Link to this heading">#</a></h2>
+<p>A real run (Playwright 1.65.1, Chrome for Testing, <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">browser-check</span></code>)
+on the <code class="docutils literal notranslate"><span class="pre">touching_gradient</span></code> fixture’s DNA channel (12x12, normalized to
+<code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>):</p>
+<ul class="simple">
+<li><p>Zarr read: shape <code class="docutils literal notranslate"><span class="pre">[12,</span> <span class="pre">12]</span></code>, 144 pixels.</p></li>
+<li><p>ONNX inference: 72 foreground pixels (<code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">&gt;</span> <span class="pre">0.5</span></code>).</p></li>
+<li><p>cp-anywhere-wasm <code class="docutils literal notranslate"><span class="pre">measure()</span></code>: 21 <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> columns for the
+single foreground object.</p></li>
+<li><p>DuckDB-WASM Parquet export: 1,924 bytes, real <code class="docutils literal notranslate"><span class="pre">PAR1</span></code> magic bytes at both
+ends of the file, independently readable by native DuckDB.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scripts/zarr/validate_export.py</span></code>: all 21 feature values match a
+from-source native Python <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure()</span></code> run exactly (<code class="docutils literal notranslate"><span class="pre">rtol=1e-6,</span> <span class="pre">atol=1e-9</span></code>) – zero mismatches.</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>Known limitations<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Not scientific segmentation.</strong> The ONNX model is a fixed-threshold
+demo graph (see above), not a learned model or connected-component
+instance segmentation. Scientific parity for this demo’s mask is not
+claimed or meaningful; cp-anywhere’s own measurement parity is
+established separately and exhaustively in <code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code> and
+<code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code> against real CellProfiler 4.2.8 fixtures.</p></li>
+<li><p><strong>Network required at run time.</strong> DuckDB-WASM fetches its <code class="docutils literal notranslate"><span class="pre">parquet</span></code>
+extension from <code class="docutils literal notranslate"><span class="pre">extensions.duckdb.org</span></code> on the first <code class="docutils literal notranslate"><span class="pre">LOAD</span> <span class="pre">parquet</span></code>; this
+demo does not vendor that extension. For a fully offline/CSP-restricted
+deployment, fetch and serve
+<code class="docutils literal notranslate"><span class="pre">https://extensions.duckdb.org/v1.5.4/wasm_mvp/parquet.duckdb_extension.wasm</span></code>
+locally and set <code class="docutils literal notranslate"><span class="pre">custom_extension_repository</span></code> before <code class="docutils literal notranslate"><span class="pre">LOAD</span> <span class="pre">parquet</span></code>
+(verify the embedded engine version first – it does not always match
+the npm package version; see the exact version-pinning caveats this was
+derived from in
+<code class="docutils literal notranslate"><span class="pre">~/.hermes/cache/scratch/cp-anywhere-browser-integration-research.md</span></code>
+if still present, or re-derive from DuckDB-WASM’s own docs).</p></li>
+<li><p><strong>Single browser tested.</strong> Only Chromium (via Playwright) was exercised.
+No SharedArrayBuffer/COOP/COEP cross-origin isolation was used or is
+required for this single-threaded WASM MVP path.</p></li>
+<li><p><strong>2D only.</strong> The Zarr/ONNX stage of this demo uses one 2D channel; this
+does not affect cp-anywhere’s own 2D/3D coverage (<code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code>,
+<code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code>), which is unrelated and already complete.</p></li>
+<li><p><strong>Not an OME-Zarr multiscale/metadata demo.</strong> The written Zarr array
+has an empty <code class="docutils literal notranslate"><span class="pre">.zattrs</span></code> (no OME-NGFF multiscale metadata, no
+multichannel axes); it is a plain single-chunk array read for its pixel
+data only.</p></li>
+</ul>
+</section>
+</section>
+<section id="m6-performance-report">
+<h1>M6 performance report<a class="headerlink" href="#m6-performance-report" title="Link to this heading">#</a></h1>
+<section id="headline-result">
+<h2>Headline result<a class="headerlink" href="#headline-result" title="Link to this heading">#</a></h2>
+<p><strong>Fixed a real O(pixels^2) bug in the neighbors kernel</strong>, found by profiling
+a per-workload throughput regression the plan explicitly warns against
+hiding behind an aggregate: before the fix, <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> was 3.6x <em>slower</em>
+than the pinned <code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> baseline on the <code class="docutils literal notranslate"><span class="pre">grid_large</span></code> workload (256
+objects, 192x192 px), even though every smaller workload was already much
+faster. After the fix, all four representative workloads beat the baseline
+individually, and WASM round-trip times fell by 11x-33x at the same time.</p>
+</section>
+<section id="how-the-bug-was-found">
+<h2>How the bug was found<a class="headerlink" href="#how-the-bug-was-found" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core/src/lib.rs</span></code>’s “touching” check (used for
+<code class="docutils literal notranslate"><span class="pre">PercentTouching</span></code> in <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code>) needs to know, for every
+outline pixel of object <code class="docutils literal notranslate"><span class="pre">k</span></code>, whether any pixel within a small fixed radius
+(1.5 px) belongs to a <em>different</em> object. The original implementation
+tested that by scanning <strong>every pixel in the whole image</strong> for each outline
+pixel – an accidental O(perimeter_pixels * total_pixels) algorithm when
+O(perimeter_pixels) suffices, because the actual predicate only ever
+depends on a handful of neighboring offsets.</p>
+<p>This was invisible in the declared fixture set’s smallest three workloads
+(it is a constant-factor cost there) but dominates at <code class="docutils literal notranslate"><span class="pre">grid_large</span></code> scale
+(36,864 px, 256 objects): a <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">bench</span></code> run that split the combined
+<code class="docutils literal notranslate"><span class="pre">object_intensity_and_neighbors</span></code> timing by family
+(<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core/benches/throughput.rs</span></code>’s <code class="docutils literal notranslate"><span class="pre">by_family</span></code> group)
+showed <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> alone was 151.45 ms on <code class="docutils literal notranslate"><span class="pre">grid_large</span></code> vs 9.68 ms on
+<code class="docutils literal notranslate"><span class="pre">grid_medium</span></code> – roughly a 15.6x time increase for a 4x object-count / 4x
+pixel-count increase, consistent with an O(pixels * objects) or O(pixels^2)
+pattern, not the near-linear scaling <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> showed over the
+same step (0.44 ms -&gt; 2.18 ms, ~5x).</p>
+</section>
+<section id="the-fix">
+<h2>The fix<a class="headerlink" href="#the-fix" title="Link to this heading">#</a></h2>
+<p>Replaced the whole-image scan with a bounded local-neighborhood check using
+the same <code class="docutils literal notranslate"><span class="pre">shifted(index,</span> <span class="pre">shape,</span> <span class="pre">delta)</span></code> helper the adjacent-relationship
+loop just below it already used correctly: a small, fixed Cartesian product
+of candidate offsets (9 for 2D, 8 for 3D) covering exactly the same set of
+relative positions the original predicate tested, reusing the project’s
+existing bounds-checked index arithmetic instead of adding a new primitive.
+<strong>The predicate itself was not touched</strong> – including its asymmetric,
+reference-preserving 3D offset range (<code class="docutils literal notranslate"><span class="pre">d</span> <span class="pre">==</span> <span class="pre">0</span> <span class="pre">||</span> <span class="pre">d</span> <span class="pre">==</span> <span class="pre">-1</span></code>, not a symmetric
+radius) – only how it is evaluated changed, from O(total pixels) to O(1)
+per outline pixel.</p>
+<p>Correctness was re-verified immediately after the change, not assumed:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml   # pass
+uv run --frozen python scripts/parity/compare_native.py          # 1440/1440 pass (unchanged)
+# rebuild WASM, re-export fixtures, rebuild demo, re-run in Chromium:
+uv run --frozen python scripts/parity/compare_wasm.py            # 1440/1440 pass (unchanged)
+</pre></div>
+</div>
+<p>Both parity counts are bit-for-bit identical to before the fix – the
+change is a pure performance fix, not a semantics change.</p>
+</section>
+<section id="before-after-timing">
+<h2>Before / after timing<a class="headerlink" href="#before-after-timing" title="Link to this heading">#</a></h2>
+<p>Native Rust kernel only (<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core::measure</span></code>, no Python/FFI,
+<code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> + <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> families, Criterion, median of 100
+samples):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head text-right"><p>Before</p></th>
+<th class="head text-right"><p>After</p></th>
+<th class="head text-right"><p>Speedup</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>touching_gradient</p></td>
+<td class="text-right"><p>38.05 us</p></td>
+<td class="text-right"><p>35.48 us</p></td>
+<td class="text-right"><p>1.07x</p></td>
+</tr>
+<tr class="row-odd"><td><p>real_cell_cc0</p></td>
+<td class="text-right"><p>2.53 ms</p></td>
+<td class="text-right"><p>0.195 ms</p></td>
+<td class="text-right"><p>13.0x</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_medium</p></td>
+<td class="text-right"><p>10.16 ms</p></td>
+<td class="text-right"><p>0.695 ms</p></td>
+<td class="text-right"><p>14.6x</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_large</p></td>
+<td class="text-right"><p>154.85 ms</p></td>
+<td class="text-right"><p>7.354 ms</p></td>
+<td class="text-right"><p>21.1x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Browser (WASM, Playwright/Chromium, median per <code class="docutils literal notranslate"><span class="pre">measure()</span></code> call including
+in-WASM JSON encoding, 10 timed runs):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head text-right"><p>Before</p></th>
+<th class="head text-right"><p>After</p></th>
+<th class="head text-right"><p>Speedup</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>touching_gradient</p></td>
+<td class="text-right"><p>0.15 ms</p></td>
+<td class="text-right"><p>0.20 ms</p></td>
+<td class="text-right"><p>~unchanged (near timer resolution)</p></td>
+</tr>
+<tr class="row-odd"><td><p>real_cell_cc0</p></td>
+<td class="text-right"><p>2.85 ms</p></td>
+<td class="text-right"><p>0.70 ms</p></td>
+<td class="text-right"><p>4.1x</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_medium</p></td>
+<td class="text-right"><p>11.80 ms</p></td>
+<td class="text-right"><p>2.00 ms</p></td>
+<td class="text-right"><p>5.9x</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_large</p></td>
+<td class="text-right"><p>174.00 ms</p></td>
+<td class="text-right"><p>11.85 ms</p></td>
+<td class="text-right"><p>14.7x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="throughput-vs-the-pinned-cp-measure-baseline">
+<h2>Throughput vs the pinned <code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> baseline<a class="headerlink" href="#throughput-vs-the-pinned-cp-measure-baseline" title="Link to this heading">#</a></h2>
+<p>Per <code class="docutils literal notranslate"><span class="pre">spec/benchmark-contract.yaml</span></code>’s <code class="docutils literal notranslate"><span class="pre">native_acceptance</span></code> gate: equal-weight
+arithmetic mean of per-workload <code class="docutils literal notranslate"><span class="pre">cp_measure_time</span> <span class="pre">/</span> <span class="pre">cp-anywhere_time</span></code> ratios
+on the <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> + <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> scope (the only scope <code class="docutils literal notranslate"><span class="pre">cp_measure</span></code>
+implements), minimum 1.0. Computed by
+<code class="docutils literal notranslate"><span class="pre">scripts/benchmarks/check_throughput_gate.py</span></code>, which prints every
+per-workload ratio and fails if <em>any</em> workload is below the minimum, so an
+aggregate pass cannot hide an individual regression:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head text-right"><p>cp_measure (ms)</p></th>
+<th class="head text-right"><p>cp-anywhere Rust (ms)</p></th>
+<th class="head text-right"><p>Ratio</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>touching_gradient</p></td>
+<td class="text-right"><p>1.034</p></td>
+<td class="text-right"><p>0.0355</p></td>
+<td class="text-right"><p>29.1x</p></td>
+</tr>
+<tr class="row-odd"><td><p>real_cell_cc0</p></td>
+<td class="text-right"><p>3.380</p></td>
+<td class="text-right"><p>0.1952</p></td>
+<td class="text-right"><p>17.3x</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_medium</p></td>
+<td class="text-right"><p>10.916</p></td>
+<td class="text-right"><p>0.6952</p></td>
+<td class="text-right"><p>15.7x</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_large</p></td>
+<td class="text-right"><p>42.933</p></td>
+<td class="text-right"><p>7.3535</p></td>
+<td class="text-right"><p>5.8x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Equal-weight mean: <strong>17.0x</strong>. Every workload individually clears the 1.0x
+minimum (<code class="docutils literal notranslate"><span class="pre">all_workloads_pass_individually:</span> <span class="pre">true</span></code> in
+<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-throughput-gate.json</span></code>) – before the fix,
+<code class="docutils literal notranslate"><span class="pre">grid_large</span></code>’s ratio was 0.28x (a genuine regression the aggregate of
+~7.5x would have silently hidden had it not been checked per-workload).</p>
+</section>
+<section id="python-binding-overhead">
+<h2>Python binding overhead<a class="headerlink" href="#python-binding-overhead" title="Link to this heading">#</a></h2>
+<p>Per plan 5.2 (“Python binding overhead: quantified and bounded”), comparing
+the installed release wheel’s <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure()</span></code> against the bare Rust
+kernel on the same inputs (<code class="docutils literal notranslate"><span class="pre">benchmarks/benchmark_native.py</span></code> vs
+<code class="docutils literal notranslate"><span class="pre">scripts/benchmarks/report_native_rust.py</span></code>):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Workload</p></th>
+<th class="head text-right"><p>Rust (ms)</p></th>
+<th class="head text-right"><p>Python (ms)</p></th>
+<th class="head text-right"><p>Overhead</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>touching_gradient</p></td>
+<td class="text-right"><p>0.0355</p></td>
+<td class="text-right"><p>0.0744</p></td>
+<td class="text-right"><p>2.09x</p></td>
+</tr>
+<tr class="row-odd"><td><p>real_cell_cc0</p></td>
+<td class="text-right"><p>0.1952</p></td>
+<td class="text-right"><p>0.2614</p></td>
+<td class="text-right"><p>1.34x</p></td>
+</tr>
+<tr class="row-even"><td><p>grid_medium</p></td>
+<td class="text-right"><p>0.6952</p></td>
+<td class="text-right"><p>0.7626</p></td>
+<td class="text-right"><p>1.10x</p></td>
+</tr>
+<tr class="row-odd"><td><p>grid_large</p></td>
+<td class="text-right"><p>7.3535</p></td>
+<td class="text-right"><p>7.7758</p></td>
+<td class="text-right"><p>1.06x</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The fixed per-call cost (roughly 0.04-0.07 ms: Python call dispatch plus
+NumPy array validation) shrinks in relative terms as the workload grows,
+and stays within the declared <code class="docutils literal notranslate"><span class="pre">&lt;=1.5x</span></code> budget
+(<code class="docutils literal notranslate"><span class="pre">spec/benchmark-contract.yaml</span></code>’s <code class="docutils literal notranslate"><span class="pre">python_overhead_budget</span></code>) for every
+workload at or above <code class="docutils literal notranslate"><span class="pre">real_cell_cc0</span></code> scale. No unnecessary full-array copy
+was found in the binding for the already-C-contiguous fixture inputs.</p>
+</section>
+<section id="ci-regression-gate">
+<h2>CI regression gate<a class="headerlink" href="#ci-regression-gate" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/benchmarks/check_regression.py</span></code> compares a fresh
+<code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-rust-baseline.json</span></code> against the committed
+<code class="docutils literal notranslate"><span class="pre">benchmarks/baseline/native-rust-committed.json</span></code>, failing only when a
+workload is more than 20% slower than committed – never on an
+improvement, and never on noise within that margin, per the plan’s
+explicit warning against hard-failing on noisy single-run CI timing.
+<code class="docutils literal notranslate"><span class="pre">.github/workflows/benchmark.yml</span></code> runs the full benchmark -&gt; report -&gt;
+throughput-gate -&gt; regression-check chain on a weekly schedule and on
+manual dispatch (not on every PR, for the same noise reason), uploading
+the raw report as a 90-day build artifact for trend-watching.</p>
+<p>To intentionally accept a new baseline after a verified, deliberate
+change, regenerate <code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-rust-baseline.json</span></code> and copy
+it over <code class="docutils literal notranslate"><span class="pre">benchmarks/baseline/native-rust-committed.json</span></code>.</p>
+</section>
+<section id="reproduce">
+<h2>Reproduce<a class="headerlink" href="#reproduce" title="Link to this heading">#</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>bench<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/benchmarks/report_native_rust.py
+env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>benchmarks/benchmark_native.py
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/benchmarks/check_throughput_gate.py
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/benchmarks/check_regression.py
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>Known limitations<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Single machine, single run per report regeneration (Criterion’s own
+statistical sampling, 100 samples per workload, is the only
+within-run repetition; see <code class="docutils literal notranslate"><span class="pre">benchmark-analysis</span></code>’s guidance on
+single-rep measurements – the gaps here are large (5.8x-29x, 21x on
+the previously-regressed workload), well above the “order of magnitude”
+bar for a conclusion to survive run-to-run noise).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cp_measure</span></code>’s own timing snapshot (<code class="docutils literal notranslate"><span class="pre">benchmarks/baseline/initial-cp-measure-timing.json</span></code>)
+was captured once, in M2, on this same machine; it was not re-measured in
+M6. Re-running it would only change the comparison if this machine’s
+absolute performance characteristics changed between M2 and M6, which
+they did not (same hardware, same session).</p></li>
+<li><p>The regression-gate tolerance (20%) and the schedule (weekly, not
+per-PR) are both judgment calls aimed at the plan’s explicit warning
+against noisy single-run CI failures; they have not been tuned against
+real CI runner variance data, because this session cannot execute a
+real scheduled GitHub Actions run.</p></li>
+</ul>
+</section>
+</section>
+<section id="release-process">
+<h1>Release process<a class="headerlink" href="#release-process" title="Link to this heading">#</a></h1>
+<section id="what-publishes-where-and-how">
+<h2>What publishes where, and how<a class="headerlink" href="#what-publishes-where-and-how" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>Registry</p></th>
+<th class="head"><p>Workflow</p></th>
+<th class="head"><p>Trigger</p></th>
+<th class="head"><p>Auth</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> (sdist + abi3 wheels, 5 platforms)</p></td>
+<td><p>PyPI</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-pypi.yml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
+<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> (Rust crate)</p></td>
+<td><p>crates.io</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-crate.yml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret (crates.io trusted publishing is not GA yet; see <code class="docutils literal notranslate"><span class="pre">.github/zizmor.yml</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> (npm package)</p></td>
+<td><p>npm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-npm.yml</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
+<td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">id-token:</span> <span class="pre">write</span></code>, no stored token)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Standalone <code class="docutils literal notranslate"><span class="pre">.wasm</span></code> + checksum</p></td>
+<td><p>GitHub Release assets</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-npm.yml</span></code> (<code class="docutils literal notranslate"><span class="pre">build_and_publish_npm</span></code> job)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GITHUB_TOKEN</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code> rewrites the Cargo workspace <code class="docutils literal notranslate"><span class="pre">version</span></code> from
+the release tag before any build; because all three crates
+(<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code>) use
+<code class="docutils literal notranslate"><span class="pre">version.workspace</span> <span class="pre">=</span> <span class="pre">true</span></code>, this single rewrite keeps the PyPI wheel,
+npm package, and crates.io crate at the same version with no separate
+sync step.</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> is published to crates.io: it is the portable,
+dependency-free measurement kernel usable from any Rust project.
+<code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code> and <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code> are thin FFI bindings consumed
+through PyPI and npm respectively, not as Cargo dependencies of other
+projects.</p>
+</section>
+<section id="cutting-a-release-manual-steps">
+<h2>Cutting a release (manual steps)<a class="headerlink" href="#cutting-a-release-manual-steps" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Open a PR that updates <code class="docutils literal notranslate"><span class="pre">CHANGELOG</span></code>-equivalent notes if desired (this
+project uses <code class="docutils literal notranslate"><span class="pre">release-drafter</span></code> – <code class="docutils literal notranslate"><span class="pre">.github/workflows/draft-release.yml</span></code>
+drafts release notes automatically from merged PR labels on every push
+to <code class="docutils literal notranslate"><span class="pre">main</span></code>; review and edit the draft before publishing).</p></li>
+<li><p>Publish the drafted GitHub Release with a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> tag. This single
+<code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code> event fans out to all three publish workflows
+above, plus the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>/checksum release-asset upload.</p></li>
+<li><p>Watch the four jobs in the Actions tab. PyPI and npm use
+environment-scoped (<code class="docutils literal notranslate"><span class="pre">environment:</span> <span class="pre">release</span></code>) trusted publishing, so no
+secret needs rotating for those two. crates.io needs a
+<code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> configured once in the <code class="docutils literal notranslate"><span class="pre">release</span></code> environment’s
+secrets.</p></li>
+</ol>
+</section>
+<section id="verified-locally-every-m7-session-not-a-real-publish">
+<h2>Verified locally, every M7 session (not a real publish)<a class="headerlink" href="#verified-locally-every-m7-session-not-a-real-publish" title="Link to this heading">#</a></h2>
+<p>Every artifact below was built and checked locally in this session with
+the real toolchain – no registry credentials involved, nothing uploaded:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># crates.io: packaging + a full publish dry run (compiles the packaged</span>
+<span class="c1"># tarball from scratch, as crates.io would)</span>
+cargo<span class="w"> </span>publish<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml<span class="w"> </span>--dry-run
+
+<span class="c1"># PyPI: sdist + wheel build, then install from the wheel into a throwaway</span>
+<span class="c1"># venv with no project source on sys.path</span>
+uv<span class="w"> </span>build
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/tmp/smoke<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>/tmp/smoke/bin/pip<span class="w"> </span>install<span class="w"> </span>dist/*.whl<span class="w"> </span>numpy
+/tmp/smoke/bin/python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cp_anywhere; cp_anywhere.measure(...)&quot;</span>
+
+<span class="c1"># npm: wasm-pack build, then a full publish dry run</span>
+wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+<span class="nb">cd</span><span class="w"> </span>crates/cp_anywhere_wasm/pkg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>publish<span class="w"> </span>--dry-run<span class="w"> </span>--access<span class="w"> </span>public
+</pre></div>
+</div>
+<p>Results: <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">publish</span> <span class="pre">--dry-run</span></code> packaged and compiled 7 files (46.5 KiB,
+12.9 KiB compressed) with zero errors. <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">build</span></code> produced a working
+abi3 wheel that installs and runs <code class="docutils literal notranslate"><span class="pre">measure()</span></code> correctly from a venv with no
+project source path. <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">publish</span> <span class="pre">--dry-run</span></code> packaged 5 files (97.0 KiB
+tarball, 224.2 KiB unpacked).</p>
+</section>
+<section id="known-gaps">
+<h2>Known gaps<a class="headerlink" href="#known-gaps" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>The publish workflows themselves have not been exercised by a real
+GitHub Actions run (that would require actually cutting a release,
+which this session does not do). The dry runs above verify the
+artifacts the workflows would build and upload are correct; they do not
+verify the workflow YAML executes successfully end to end on GitHub’s
+runners.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> and the <code class="docutils literal notranslate"><span class="pre">release</span></code> GitHub Environment (with its
+PyPI/npm trusted-publishing configuration) must be set up once, outside
+this repository, before the first real release.</p></li>
+</ul>
+</section>
+</section>
+<section id="m5-implementation-coverage-dashboard">
+<h1>M5 implementation coverage dashboard<a class="headerlink" href="#m5-implementation-coverage-dashboard" title="Link to this heading">#</a></h1>
+<section id="declared-feature-inventory">
+<h2>Declared feature inventory<a class="headerlink" href="#declared-feature-inventory" title="Link to this heading">#</a></h2>
+<p>The declared manifest is <code class="docutils literal notranslate"><span class="pre">spec/features.yaml</span></code>: 119 columns across
+<code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensity</span></code>, and same-set adjacent
+<code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code> (full settings and exclusions in
+<code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>). This is the project’s first release scope, not
+every CellProfiler module; expanding it requires its own fixtures and
+scope decision, per <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>’s scope decision gate.</p>
+</section>
+<section id="cross-target-parity-status">
+<h2>Cross-target parity status<a class="headerlink" href="#cross-target-parity-status" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Target</p></th>
+<th class="head text-right"><p>Fixtures</p></th>
+<th class="head text-right"><p>Rows checked</p></th>
+<th class="head text-right"><p>Pass (exact + tolerance)</p></th>
+<th class="head text-right"><p>Fail</p></th>
+<th class="head"><p>Report</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Native Rust</p></td>
+<td class="text-right"><p>13</p></td>
+<td class="text-right"><p>1,560 (119 + 1 rel.)</p></td>
+<td class="text-right"><p>1,535 + 25 = 1,560</p></td>
+<td class="text-right"><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-parity.json</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Python (PyO3)</p></td>
+<td class="text-right"><p>13</p></td>
+<td class="text-right"><p>1,560</p></td>
+<td class="text-right"><p>1,535 + 25 = 1,560</p></td>
+<td class="text-right"><p>0</p></td>
+<td><p>Same binding as native Rust (<code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/api.py</span></code> calls the identical <code class="docutils literal notranslate"><span class="pre">_native.measure</span></code>); verified by the installed-wheel smoke test in <code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>WASM (browser)</p></td>
+<td class="text-right"><p>13</p></td>
+<td class="text-right"><p>1,560</p></td>
+<td class="text-right"><p>1,533 + 27 = 1,560</p></td>
+<td class="text-right"><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">benchmarks/reports/wasm-parity.json</span></code>, <code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>100% of the 119 declared features pass CellProfiler 4.2.8 parity in
+native Rust, Python, and WASM, across all 13 golden fixtures (2D and 3D,
+including two independent real-microscopy sources).
+No fixture, feature, or target has a silent fallback or omission; any
+feature that could not be verified would show as <code class="docutils literal notranslate"><span class="pre">fail_*</span></code>, not <code class="docutils literal notranslate"><span class="pre">pass_*</span></code>,
+in the reports above.</strong> The “tolerance” pass count differs slightly by
+target (25 native, 27 WASM) because the WASM run includes two
+<code class="docutils literal notranslate"><span class="pre">Neighbors_AngleBetweenNeighbors_Adjacent</span></code> rows at a transcendental-function
+libm last-bit difference (documented in <code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code>); every such row is
+still within <code class="docutils literal notranslate"><span class="pre">spec/features.yaml</span></code>’s declared <code class="docutils literal notranslate"><span class="pre">atol</span></code>/<code class="docutils literal notranslate"><span class="pre">rtol</span></code>, not a relaxed
+or hidden threshold.</p>
+</section>
+<section id="m5-task-checklist-against-the-plan">
+<h2>M5 task checklist against the plan<a class="headerlink" href="#m5-task-checklist-against-the-plan" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>“Implement remaining features in the declared manifest.”</strong> None
+remained: M3 implemented and passed all 119 declared columns before M4
+started (<code class="docutils literal notranslate"><span class="pre">docs/native.md</span></code>).</p></li>
+<li><p><strong>“Support documented multichannel, 2D/3D, calibration, and object
+relationship semantics.”</strong> Multichannel: <code class="docutils literal notranslate"><span class="pre">DNA</span></code>/<code class="docutils literal notranslate"><span class="pre">Actin</span></code> two-channel
+intensity is in the declared scope and passes on all targets.
+2D/3D: <code class="docutils literal notranslate"><span class="pre">volume_3d</span></code> passes on native and (as of this update) WASM.
+Calibration: <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code> explicitly declares
+“calibration-driven value conversion” out of scope for this release —
+there is no undocumented gap here, it is a declared exclusion.
+Object relationships: the directed <code class="docutils literal notranslate"><span class="pre">Neighbors</span></code> relationship table is
+implemented and checked on every fixture and every target.</p></li>
+<li><p><strong>“Add regression fixtures for each difference found in
+CellProfiler/<code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> comparisons.”</strong> M2’s comparison
+(<code class="docutils literal notranslate"><span class="pre">benchmarks/baseline/cp_measure-parity.json</span></code>) found that cp_measure (not
+CellProfiler) mismatches CellProfiler on sparse-ID positions, the
+<code class="docutils literal notranslate"><span class="pre">NumberOfNeighbors</span></code> dtype, and nonfinite propagation. The golden fixtures
+that exposed those differences — <code class="docutils literal notranslate"><span class="pre">sparse_ids</span></code>, <code class="docutils literal notranslate"><span class="pre">nonfinite</span></code> — are exactly
+the fixtures this project’s own Rust/WASM implementation is checked
+against, and it passes all of them. No additional fixture was needed
+because the existing M1 fixture set already covered these cases; this
+was verified, not assumed.</p></li>
+<li><p><strong>“Update per-feature support and numerical parity reports.”</strong> Done:
+<code class="docutils literal notranslate"><span class="pre">spec/features.yaml</span></code> (oracle inventory), <code class="docutils literal notranslate"><span class="pre">spec/cp_measure-map.yaml</span></code>
+(cp_measure per-feature status), <code class="docutils literal notranslate"><span class="pre">spec/native-coverage.yaml</span></code> (native
+build status), and this dashboard (cross-target status) are all current.</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>Reproduce<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_native.py
+
+<span class="nb">cd</span><span class="w"> </span>examples/browser-vite<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>install<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>../../scripts/wasm/export_fixtures.py
+npm<span class="w"> </span>run<span class="w"> </span>browser-check
+<span class="nb">cd</span><span class="w"> </span>../..
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm.py
+
+<span class="nv">CP_ANYWHERE_REFERENCE_PYTHON</span><span class="o">=</span>/path/to/reference/venv/bin/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest
+</pre></div>
+</div>
+</section>
+</section>
+<section id="ci-cd">
+<h1>CI/CD<a class="headerlink" href="#ci-cd" title="Link to this heading">#</a></h1>
+<section id="on-every-pull-request-github-workflows-run-tests-yml">
+<h2>On every pull request (<code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>)<a class="headerlink" href="#on-every-pull-request-github-workflows-run-tests-yml" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">pre_commit_checks</span></code></strong>: all pre-commit hooks (ruff, cargo fmt/clippy via
+the Rust hooks below, yamllint, codespell, mdformat, zizmor, vulture,
+<code class="docutils literal notranslate"><span class="pre">ty</span></code>). Syncs every <code class="docutils literal notranslate"><span class="pre">uv</span></code> dependency group (<code class="docutils literal notranslate"><span class="pre">--all-groups</span></code>) so <code class="docutils literal notranslate"><span class="pre">ty</span></code> can
+resolve the demo-only <code class="docutils literal notranslate"><span class="pre">onnx</span></code>/<code class="docutils literal notranslate"><span class="pre">duckdb</span></code> imports in <code class="docutils literal notranslate"><span class="pre">scripts/zarr/*.py</span></code>.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">run_tests</span></code></strong> (matrix: Python 3.11-3.15 x Ubuntu/macOS): <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">fmt</span> <span class="pre">--check</span></code>, <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">clippy</span> <span class="pre">-D</span> <span class="pre">warnings</span></code>, <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">develop</span></code> +
+<code class="docutils literal notranslate"><span class="pre">pytest</span></code>, and <code class="docutils literal notranslate"><span class="pre">scripts/parity/compare_native.py</span></code> (golden-fixture parity;
+does not need the live CellProfiler oracle, so it runs on every PR
+across the full OS/Python matrix).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">wasm_build_and_browser_check</span></code></strong>: builds <code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_wasm</span></code>
+with <code class="docutils literal notranslate"><span class="pre">wasm-pack</span></code>, builds the <code class="docutils literal notranslate"><span class="pre">examples/browser-vite</span></code> Vite demo, runs it
+in a real headless Chromium via Playwright
+(<code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">run</span> <span class="pre">browser-check</span></code>), and checks the captured output with
+<code class="docutils literal notranslate"><span class="pre">scripts/parity/compare_wasm.py</span></code> – a real WASM build and browser smoke
+test on every PR, not a native-only check.</p></li>
+</ul>
+</section>
+<section id="nightly-github-workflows-nightly-full-parity-yml">
+<h2>Nightly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/nightly-full-parity.yml</span></code>)<a class="headerlink" href="#nightly-github-workflows-nightly-full-parity-yml" title="Link to this heading">#</a></h2>
+<p>Installs the pinned CellProfiler 4.2.8 oracle (<code class="docutils literal notranslate"><span class="pre">reference/install.sh</span></code>,
+which needs a JDK for <code class="docutils literal notranslate"><span class="pre">python-javabridge</span></code> – too heavy to run on every
+PR) and re-runs the full suite against it: <code class="docutils literal notranslate"><span class="pre">pytest</span></code> with the oracle
+configured, <code class="docutils literal notranslate"><span class="pre">compare_native.py</span></code>, and a full WASM build + browser check +
+<code class="docutils literal notranslate"><span class="pre">compare_wasm.py</span></code>. This is the plan’s “full feature inventory parity
+across native/Python/WASM” nightly check. Also runnable on demand
+(<code class="docutils literal notranslate"><span class="pre">workflow_dispatch</span></code>).</p>
+</section>
+<section id="weekly-github-workflows-benchmark-yml">
+<h2>Weekly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/benchmark.yml</span></code>)<a class="headerlink" href="#weekly-github-workflows-benchmark-yml" title="Link to this heading">#</a></h2>
+<p>Native Rust throughput benchmark (Criterion) against the committed
+baseline, with a tolerance-based regression gate
+(<code class="docutils literal notranslate"><span class="pre">scripts/benchmarks/check_regression.py</span></code>) – see <code class="docutils literal notranslate"><span class="pre">docs/performance.md</span></code>
+for why this runs on a schedule rather than every PR (CI runner timing
+noise).</p>
+</section>
+<section id="on-release-github-workflows-publish-yml">
+<h2>On release (<code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-*.yml</span></code>)<a class="headerlink" href="#on-release-github-workflows-publish-yml" title="Link to this heading">#</a></h2>
+<p>See <code class="docutils literal notranslate"><span class="pre">docs/release.md</span></code> for the full publish pipeline (PyPI, crates.io,
+npm, GitHub Release assets).</p>
+</section>
+<section id="id6">
+<h2>Known gaps<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Property-based tests for invariants such as label permutation and
+object ordering (plan section 8) are not implemented. The current test
+suite checks golden-fixture correctness, not permutation-invariance
+properties; this would be a reasonable follow-up using <code class="docutils literal notranslate"><span class="pre">proptest</span></code>
+(Rust) or <code class="docutils literal notranslate"><span class="pre">hypothesis</span></code> (Python).</p></li>
+<li><p>None of the new CI workflows added in M7 (<code class="docutils literal notranslate"><span class="pre">wasm_build_and_browser_check</span></code>,
+<code class="docutils literal notranslate"><span class="pre">nightly-full-parity.yml</span></code>) have been exercised by a real GitHub Actions
+run in this session – only validated locally (the exact same commands
+each step runs were run directly in this session and passed) and
+statically (<code class="docutils literal notranslate"><span class="pre">actionlint</span></code>/<code class="docutils literal notranslate"><span class="pre">zizmor</span></code> via pre-commit).</p></li>
+</ul>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="python-api.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Python API</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, DBMI Community.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

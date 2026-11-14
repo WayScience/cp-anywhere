@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cp-anywhere &#8212; cp-anywhere  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="python-api.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cp-anywhere</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <!-- include contents from the root readme -->
+<section id="cp-anywhere">
+<h1>cp-anywhere<a class="headerlink" href="#cp-anywhere" title="Link to this heading">#</a></h1>
+<p>CellProfiler-compatible measurements for native Python and web browsers</p>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>The simplest way to call cp-anywhere is <code class="docutils literal notranslate"><span class="pre">measure_files</span></code>, which accepts
+TIFF/OME-TIFF, PNG, or saved NumPy array file paths directly (or
+already-loaded arrays) and returns a tidy <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">cp_anywhere</span>
+
+<span class="n">frame</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure_files</span><span class="p">(</span>
+    <span class="n">images</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="s2">&quot;dna.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;Actin&quot;</span><span class="p">:</span> <span class="s2">&quot;actin.tif&quot;</span><span class="p">},</span>
+    <span class="n">objects</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="s2">&quot;cells.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;Nuclei&quot;</span><span class="p">:</span> <span class="s2">&quot;nuclei.tif&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>A single image/object-set pair can skip the dict form entirely:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frame</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure_files</span><span class="p">(</span><span class="s2">&quot;dna.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;cells.tif&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same file formats work from the command line:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cp-anywhere<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image<span class="w"> </span><span class="nv">DNA</span><span class="o">=</span>dna.tif<span class="w"> </span>--image<span class="w"> </span><span class="nv">Actin</span><span class="o">=</span>actin.tif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--objects<span class="w"> </span><span class="nv">Cells</span><span class="o">=</span>cells.tif<span class="w"> </span>--objects<span class="w"> </span><span class="nv">Nuclei</span><span class="o">=</span>nuclei.tif<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>result.json
+</pre></div>
+</div>
+<p>For arrays already in memory, <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code> is the lower-level
+entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>
+(see <code class="docutils literal notranslate"><span class="pre">docs/src/python-api.md</span></code>).</p>
+</section>
+<section id="high-level-overview">
+<h2>High-level overview<a class="headerlink" href="#high-level-overview" title="Link to this heading">#</a></h2>
+<p>This template gives you a ready-to-run Python research software project with:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">uv</span></code>-managed environments and dependencies</p></li>
+<li><p>Testing and coverage defaults via <code class="docutils literal notranslate"><span class="pre">pytest</span></code> + <code class="docutils literal notranslate"><span class="pre">coverage.py</span></code></p></li>
+<li><p>Pre-commit automation for formatting, linting, and type checks</p></li>
+<li><p>GitHub Actions workflows for linting, tests, docs, and release-related automation</p></li>
+<li><p>Starter package + CLI scaffold under <code class="docutils literal notranslate"><span class="pre">src/</span></code></p></li>
+<li><p>Optional high-performance Rust bindings (PyO3 + maturin) with a Cargo workspace under <code class="docutils literal notranslate"><span class="pre">crates/</span></code></p></li>
+<li><p>Documentation scaffold under <code class="docutils literal notranslate"><span class="pre">docs/</span></code></p></li>
+<li><p>Poe task entrypoints for common local workflows (including a full local pipeline task)</p></li>
+</ul>
+</section>
+<section id="included-agent-skills">
+<h2>Included agent skills<a class="headerlink" href="#included-agent-skills" title="Link to this heading">#</a></h2>
+<p>This project includes agent guidance in <code class="docutils literal notranslate"><span class="pre">.agents/skills/</span></code> with common skills for:</p>
+<ul class="simple">
+<li><p>Test-driven development</p></li>
+<li><p>Incremental implementation</p></li>
+<li><p>Code review and quality checks</p></li>
+<li><p>CI/CD and automation workflow alignment</p></li>
+<li><p>Targeted correctness properties and honest verification reports (<code class="docutils literal notranslate"><span class="pre">formal-verification</span></code>)</p></li>
+<li><p>Debugging and error recovery</p></li>
+<li><p>Optional learning exercises (<code class="docutils literal notranslate"><span class="pre">learning-opportunities</span></code>)</p></li>
+<li><p>Simplified Technical English (ASD-STE100) writing checks (<code class="docutils literal notranslate"><span class="pre">simple-english</span></code>)</p></li>
+</ul>
+<p>If you do not want to use local agent guidance in your project, remove <code class="docutils literal notranslate"><span class="pre">AGENTS.md</span></code> and the <code class="docutils literal notranslate"><span class="pre">.agents/</span></code> directory.</p>
+</section>
+<section id="working-with-the-rust-bindings">
+<h2>Working with the Rust bindings<a class="headerlink" href="#working-with-the-rust-bindings" title="Link to this heading">#</a></h2>
+<p>This project includes a native extension written in Rust. The performance-critical work lives in a Cargo workspace under <code class="docutils literal notranslate"><span class="pre">crates/</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core</span></code> — a plain Rust library with the core routines (unit-tested with <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">test</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_python</span></code> — a thin <a class="reference external" href="https://pyo3.rs/">PyO3</a> layer that exposes them to Python as the native module <code class="docutils literal notranslate"><span class="pre">cp_anywhere._native</span></code></p></li>
+</ul>
+<p>The Python package under <code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/</span></code> calls into the compiled extension, so build it into your environment before running the Python code:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># build the native extension into the active uv environment</span>
+uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop
+
+<span class="c1"># or use the provided poe task</span>
+uv<span class="w"> </span>run<span class="w"> </span>poe<span class="w"> </span>develop
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">poe</span> <span class="pre">test</span></code> rebuilds the extension and runs the Python tests; <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">poe</span> <span class="pre">pipeline</span></code> runs the Rust tests, rebuilds, lints, and runs the Python tests. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CONTRIBUTING.md#versioning">versioning notes</a> for how release versions flow from git tags into the built wheel.</p>
+</section>
+<section id="post-template-copy-instructions">
+<h2>Post template copy instructions<a class="headerlink" href="#post-template-copy-instructions" title="Link to this heading">#</a></h2>
+<p>While we provide some customizations to the files in this template based on your specification there’s likely a chance some things aren’t perfect.
+We recommend taking a look at each file used within this template to ensure it meets your expectations for the project you’re working on.
+In addition, consider the following steps to help ensure the project is in good shape before proceeding too far.</p>
+<ul class="simple">
+<li><p>[ ] Remove files you plan on not using (e.g. <code class="docutils literal notranslate"><span class="pre">src/notebooks</span></code>, <code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-pypi.yml</span></code>, etc.).</p></li>
+<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> file based on the project.</p></li>
+<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> file based on the project.</p></li>
+<li><p>[ ] Update <code class="docutils literal notranslate"><span class="pre">.github/CODEOWNERS</span></code> with the right GitHub handle(s) for review ownership, and expand it to additional owners/teams and path-specific ownership rules as the project grows.</p></li>
+<li><p>[ ] Update the project dependencies using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">remove</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">add</span></code>.</p></li>
+<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file based on the project.</p></li>
+<li><p>[ ] Enable <code class="docutils literal notranslate"><span class="pre">pre-commit-lite</span></code> to help automate corrections to code during pull request updates. Otherwise, consider removing the step: labeled with: <code class="docutils literal notranslate"><span class="pre">pre-commit-ci/lite-action</span></code> within <code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>.</p></li>
+<li><p>[ ] Enable private security vulnerability issue reporting within the repo settings (e.g. https://github.com/repo_org/repo_name/settings/security_analysis)</p></li>
+<li><p>[ ] Enable <a class="reference external" href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule">branch protection rules</a> to require one pull request review approval per pull request to help with maintainer expectations.</p></li>
+<li><p>[ ] Add collaborators to access the repository.</p></li>
+<li><p>[ ] Create a <code class="docutils literal notranslate"><span class="pre">pages</span></code> branch and enable GitHub Pages on the repository (for documentation).</p></li>
+<li><p>[ ] Update the GitHub repository description.</p></li>
+<li><p>[ ] Remove these instructions!</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#module-src.cp_anywhere.api">cp_anywhere.api</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.MeasurementResult"><code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.measure"><code class="docutils literal notranslate"><span class="pre">measure()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-io">cp_anywhere.io</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.io.load_array"><code class="docutils literal notranslate"><span class="pre">load_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.io.measure_files"><code class="docutils literal notranslate"><span class="pre">measure_files()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html">Project documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#supported-feature-table">Supported feature table</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#m3-native-rust-core">M3 native Rust core</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#result">Result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#hard-case-source-decisions">Hard-case source decisions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#resource-and-memory-contract">Resource and memory contract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#wheel-build-and-installed-wheel-smoke-test">Wheel build and installed-wheel smoke test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#known-limitations">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#m4-wasm-feasibility-and-browser-integration-spike">M4 WASM feasibility and browser integration spike</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id1">Result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#browser-demo-and-npm-package">Browser demo and npm package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#typed-array-inputs-output-conversion-memory">Typed-array inputs, output conversion, memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#worker-execution-and-browser-compatibility">Worker execution and browser compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#native-vs-wasm-comparison">Native vs WASM comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id2">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#browser-integration-zarr-onnx-runtime-web-duckdb-wasm">Browser integration: Zarr, ONNX Runtime Web, DuckDB-WASM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#what-this-is">What this is</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#why-the-mask-not-a-trained-segmentation-model">Why the mask, not a trained segmentation model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#run-it">Run it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#verified-results">Verified results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id3">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#m6-performance-report">M6 performance report</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#headline-result">Headline result</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#how-the-bug-was-found">How the bug was found</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#the-fix">The fix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#before-after-timing">Before / after timing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#throughput-vs-the-pinned-cp-measure-baseline">Throughput vs the pinned <code class="docutils literal notranslate"><span class="pre">cp_measure</span></code> baseline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#python-binding-overhead">Python binding overhead</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#ci-regression-gate">CI regression gate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#reproduce">Reproduce</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id4">Known limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#release-process">Release process</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#what-publishes-where-and-how">What publishes where, and how</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#cutting-a-release-manual-steps">Cutting a release (manual steps)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#verified-locally-every-m7-session-not-a-real-publish">Verified locally, every M7 session (not a real publish)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#known-gaps">Known gaps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#m5-implementation-coverage-dashboard">M5 implementation coverage dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#declared-feature-inventory">Declared feature inventory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#cross-target-parity-status">Cross-target parity status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#m5-task-checklist-against-the-plan">M5 task checklist against the plan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id5">Reproduce</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#ci-cd">CI/CD</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-every-pull-request-github-workflows-run-tests-yml">On every pull request (<code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#nightly-github-workflows-nightly-full-parity-yml">Nightly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/nightly-full-parity.yml</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#weekly-github-workflows-benchmark-yml">Weekly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/benchmark.yml</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-release-github-workflows-publish-yml">On release (<code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-*.yml</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id6">Known gaps</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="python-api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Python API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, DBMI Community.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
