@@ -359,6 +359,20 @@ DataFrame can be written the same way with <code class="docutils literal notrans
 entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>;
 it has matching <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">to_csv</span></code>/<code class="docutils literal notranslate"><span class="pre">to_arrow</span></code> methods
 (see <code class="docutils literal notranslate"><span class="pre">docs/src/python-api.md</span></code>).</p>
+<section id="segmentation">
+<h3>Segmentation<a class="headerlink" href="#segmentation" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects(...)</span></code> segments a 2D grayscale image
+into labeled objects (CellProfiler’s <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code>, Global Otsu
+or a manual threshold – see <code class="docutils literal notranslate"><span class="pre">spec/segmentation-modules.md</span></code> for the exact
+scope), and its output chains directly into <code class="docutils literal notranslate"><span class="pre">measure</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span><span class="n">dna_image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;otsu&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure</span><span class="p">({</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Verified against real CellProfiler 4.2.8, exact label-for-label, on both
+synthetic and real microscopy fixtures: <code class="docutils literal notranslate"><span class="pre">tests/segmentation/</span></code>,
+<code class="docutils literal notranslate"><span class="pre">fixtures/segmentation/</span></code>. Performance: <code class="docutils literal notranslate"><span class="pre">docs/segmentation-performance.md</span></code>.</p>
+</section>
 </section>
 <section id="high-level-overview">
 <h2>High-level overview<a class="headerlink" href="#high-level-overview" title="Link to this heading">#</a></h2>
