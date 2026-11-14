@@ -42,7 +42,7 @@ jobs:
         run: uv run --frozen python scripts/benchmarks/check_regression.py
       - name: Upload benchmark report
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: native-benchmark-report
           path: |

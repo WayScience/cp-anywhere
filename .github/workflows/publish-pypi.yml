@@ -55,7 +55,7 @@ jobs:
           args: --release --out dist
           manylinux: auto
       - name: Upload wheel
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.runner }}-${{ matrix.target }}
           path: dist/*.whl
@@ -88,7 +88,7 @@ jobs:
           command: sdist
           args: --out dist
       - name: Upload source distribution
-        uses: actions/upload-artifact@v7.0.2
+        uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: dist/*.tar.gz
