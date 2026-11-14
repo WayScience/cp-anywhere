@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 
 import numpy as np
+import pyarrow as pa
 import pytest
+from pyarrow import feather
 
 from cp_anywhere import measure
 
@@ -69,11 +72,38 @@ def test_measurement_result_round_trips_through_csv_and_json(tmp_path: Path) -> 
     result = measure(images, objects, image_id="touching_gradient")
     csv_path = tmp_path / "out.csv"
     json_path = tmp_path / "out.json"
+    arrow_path = tmp_path / "out.arrow"
     result.to_csv(csv_path)
     result.to_json(json_path)
+    result.to_arrow(arrow_path)
     assert (
         csv_path.read_text().splitlines()[0] == "image_id,scope,object_id,feature,value"
     )
     decoded = json.loads(json_path.read_text())
     assert decoded["image_id"] == "touching_gradient"
     assert decoded["features"]["Cells"]
+
+    table = feather.read_table(arrow_path)
+    assert table.column_names == ["image_id", "scope", "object_id", "feature", "value"]
+    assert table.schema.field("object_id").type == pa.int64()
+    assert table.schema.field("value").type == pa.float64()
+    assert table.num_rows == len(result.rows())
+
+
+def test_arrow_export_preserves_nonfinite_values_as_real_floats(
+    tmp_path: Path,
+) -> None:
+    """Unlike to_json's string markers, Arrow keeps NaN/Infinity as floats."""
+    folder = ROOT / "fixtures/synthetic/nonfinite"
+    images = {name: np.load(folder / f"{name}.npy") for name in ("DNA", "Actin")}
+    objects = {
+        "Cells": np.load(folder / "labels.npy"),
+        "Nuclei": np.load(folder / "nuclei_labels.npy"),
+    }
+    result = measure(images, objects, image_id="nonfinite")
+    arrow_path = tmp_path / "nonfinite.arrow"
+    result.to_arrow(arrow_path)
+    table = feather.read_table(arrow_path)
+    values = table.column("value").to_pylist()
+    assert any(math.isnan(v) for v in values)
+    assert any(math.isinf(v) for v in values)

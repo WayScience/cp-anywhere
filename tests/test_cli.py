@@ -7,6 +7,7 @@ import subprocess
 from pathlib import Path
 
 import numpy as np
+import pyarrow.feather
 import tifffile
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -97,3 +98,37 @@ def test_cli_measures_tiff_images_to_json(tmp_path: Path) -> None:
         sum(len(columns) for columns in decoded["features"].values())
         == TOTAL_FEATURE_COLUMNS
     )
+
+
+def test_cli_measures_to_arrow(tmp_path: Path) -> None:
+    """A .arrow --output extension writes all feature data as Arrow IPC."""
+    output_path = tmp_path / "result.arrow"
+    subprocess.run(
+        [
+            "uv",
+            "run",
+            "cp-anywhere",
+            "--image",
+            f"DNA={FIXTURE / 'DNA.npy'}",
+            "--image",
+            f"Actin={FIXTURE / 'Actin.npy'}",
+            "--objects",
+            f"Cells={FIXTURE / 'labels.npy'}",
+            "--objects",
+            f"Nuclei={FIXTURE / 'nuclei_labels.npy'}",
+            "--image-id",
+            "touching_gradient",
+            "--output",
+            str(output_path),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+        cwd=ROOT,
+    )
+    table = pyarrow.feather.read_table(output_path)
+    assert table.column_names == ["image_id", "scope", "object_id", "feature", "value"]
+    pairs = set(
+        zip(table.column("scope").to_pylist(), table.column("feature").to_pylist())
+    )
+    assert len(pairs) == TOTAL_FEATURE_COLUMNS

@@ -32,8 +32,14 @@ cp-anywhere \
   --output result.json
 ```
 
+`--output` also accepts `.csv` or `.arrow` (Arrow IPC/Feather, covering
+every feature value as one long-form table, with NaN/Infinity kept as
+real floats instead of JSON's string markers). `measure_files`'s
+DataFrame can be written the same way with `frame.to_feather("result.arrow")`.
+
 For arrays already in memory, `cp_anywhere.measure(...)` is the lower-level
-entry point that returns a `MeasurementResult` instead of a `DataFrame`
+entry point that returns a `MeasurementResult` instead of a `DataFrame`;
+it has matching `to_json`/`to_csv`/`to_arrow` methods
 (see `docs/src/python-api.md`).
 
 ## High-level overview

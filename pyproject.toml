@@ -23,6 +23,7 @@ dependencies = [
   "numpy>=1.26",
   "pandas>=2",
   "pillow>=10",
+  "pyarrow>=14",
   "tifffile>=2024.1",
 ]
 scripts.cp-anywhere = "cp_anywhere.cli:trigger"

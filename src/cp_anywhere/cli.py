@@ -44,5 +44,7 @@ def trigger() -> None:
     )
     if args.output.suffix == ".json":
         result.to_json(args.output)
+    elif args.output.suffix in (".arrow", ".feather"):
+        result.to_arrow(args.output)
     else:
         result.to_csv(args.output)

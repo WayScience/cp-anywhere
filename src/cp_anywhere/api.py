@@ -67,6 +67,35 @@ class MeasurementResult:
             writer.writeheader()
             writer.writerows(self.rows())
 
+    def to_arrow(self, path: str | Path) -> None:
+        """Write every feature row as an Arrow IPC (Feather v2) file.
+
+        One row per object per feature column, the same long-form shape as
+        :meth:`rows`/:meth:`to_csv`, covering all feature data (every
+        scope, object, and column) in a single typed Arrow table --
+        ``image_id``/``scope``/``feature`` as strings, ``object_id`` as
+        int64, ``value`` as float64 (NaN/Infinity preserved natively,
+        unlike :meth:`to_json`'s string markers).
+        """
+        import pyarrow as pa
+        from pyarrow import feather
+
+        rows = self.rows()
+        table = pa.table(
+            {
+                "image_id": pa.array(
+                    [row["image_id"] for row in rows], type=pa.string()
+                ),
+                "scope": pa.array([row["scope"] for row in rows], type=pa.string()),
+                "object_id": pa.array(
+                    [row["object_id"] for row in rows], type=pa.int64()
+                ),
+                "feature": pa.array([row["feature"] for row in rows], type=pa.string()),
+                "value": pa.array([row["value"] for row in rows], type=pa.float64()),
+            }
+        )
+        feather.write_feather(table, str(path))
+
     def to_json(self, path: str | Path) -> None:
         """Write the reference-compatible feature and relationship structure."""
 
