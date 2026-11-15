@@ -49,6 +49,13 @@ relative-images:
 ---
 ```
 
+```{include} ../segmentation-coverage.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```
+
 ```{include} ../ci.md
 ---
 relative-docs: docs/src/

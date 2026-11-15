@@ -454,6 +454,11 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.io.measure_files"><code class="docutils literal notranslate"><span class="pre">measure_files()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-segment">cp_anywhere.segment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.SegmentationResult"><code class="docutils literal notranslate"><span class="pre">SegmentationResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_primary_objects"><code class="docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html">Project documentation</a></li>
@@ -470,6 +475,7 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html#m4-wasm-feasibility-and-browser-integration-spike">M4 WASM feasibility and browser integration spike</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#id1">Result</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#browser-demo-and-npm-package">Browser demo and npm package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#segmentation-identifyprimaryobjects">Segmentation: <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#typed-array-inputs-output-conversion-memory">Typed-array inputs, output conversion, memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#worker-execution-and-browser-compatibility">Worker execution and browser compatibility</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#native-vs-wasm-comparison">Native vs WASM comparison</a></li>
@@ -478,7 +484,7 @@ In addition, consider the following steps to help ensure the project is in good 
 </li>
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html#browser-integration-zarr-onnx-runtime-web-duckdb-wasm">Browser integration: Zarr, ONNX Runtime Web, DuckDB-WASM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#what-this-is">What this is</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-docs.html#why-the-mask-not-a-trained-segmentation-model">Why the mask, not a trained segmentation model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#why-the-mask-is-only-a-reference">Why the mask is only a reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#run-it">Run it</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#verified-results">Verified results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#id3">Known limitations</a></li>
@@ -511,12 +517,19 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#id5">Reproduce</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#segmentation-coverage-dashboard">Segmentation coverage dashboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#declared-scope">Declared scope</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#cross-target-verification-status">Cross-target verification status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#chaining-into-measurement">Chaining into measurement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id6">Reproduce</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html#ci-cd">CI/CD</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-every-pull-request-github-workflows-run-tests-yml">On every pull request (<code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#nightly-github-workflows-nightly-full-parity-yml">Nightly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/nightly-full-parity.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#weekly-github-workflows-benchmark-yml">Weekly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/benchmark.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-release-github-workflows-publish-yml">On release (<code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-*.yml</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id6">Known gaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id7">Known gaps</a></li>
 </ul>
 </li>
 </ul>

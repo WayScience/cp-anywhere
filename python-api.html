@@ -468,6 +468,208 @@ feature column (see <code class="xref py py-meth docutils literal notranslate"><
 </dd></dl>
 
 </section>
+<section id="cp-anywhere-segment">
+<h2>cp_anywhere.segment<a class="headerlink" href="#cp-anywhere-segment" title="Link to this heading">#</a></h2>
+<p>Object segmentation (<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects()</span></code>),
+implemented against CellProfiler’s <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> module as
+the compatibility oracle – see
+<a class="reference external" href="project-docs.html#segmentation-coverage-dashboard">segmentation coverage</a>
+for the declared scope and verification status.</p>
+<p id="module-src.cp_anywhere.segment">Object segmentation, implemented against CellProfiler 4.2.8’s
+<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> module (and the shared <code class="docutils literal notranslate"><span class="pre">Threshold</span></code> module it
+uses) as the compatibility oracle.</p>
+<p>Declared scope: every global and adaptive threshold operation (Manual,
+Otsu two/three-class, Li, Robust Background, Sauvola), log transform,
+threshold smoothing, declumping/watershed (Intensity/Shape/Propagate),
+hole filling (including nested-object absorption), border exclusion,
+and size/count filtering – see <code class="docutils literal notranslate"><span class="pre">spec/segmentation-modules.md</span></code> for
+the exact settings mapping and the explicit remaining gaps (not silent
+approximations).</p>
+<p>CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">Threshold</span></code> module hard-bounds <code class="docutils literal notranslate"><span class="pre">manual_threshold</span></code>
+and <code class="docutils literal notranslate"><span class="pre">threshold_range</span></code> to <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> and assumes images have been
+rescaled to that range (its default <code class="docutils literal notranslate"><span class="pre">Image(...,</span> <span class="pre">convert=True)</span></code> divides
+integer-dtype pixels by their dtype’s max value; float-dtype pixels are
+never rescaled). <code class="docutils literal notranslate"><span class="pre">identify_primary_objects</span></code> reproduces that default
+behavior automatically (<code class="docutils literal notranslate"><span class="pre">rescale=True</span></code>) so passing a raw <code class="docutils literal notranslate"><span class="pre">uint8</span></code>/
+<code class="docutils literal notranslate"><span class="pre">uint16</span></code> image works exactly like a default CellProfiler pipeline,
+with no manual conversion needed.</p>
+<p>The result chains directly into <code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.measure()</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span><span class="n">dna_image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;otsu&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure</span><span class="p">({</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">})</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">SegmentationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_removed_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#SegmentationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Labels and diagnostics from one <a class="reference internal" href="#src.cp_anywhere.segment.identify_primary_objects" title="src.cp_anywhere.segment.identify_primary_objects"><code class="xref py py-func docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a> call.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.guide_threshold">
+<span class="sig-name descname"><span class="pre">guide_threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.guide_threshold" title="Link to this definition">#</a></dt>
+<dd><p>Corrected global guide used to constrain Adaptive thresholds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.labels" title="Link to this definition">#</a></dt>
+<dd><p>2D integer label array, same shape as the input image; 0 is background.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.object_count">
+<span class="sig-name descname"><span class="pre">object_count</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.object_count" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.small_removed_labels">
+<span class="sig-name descname"><span class="pre">small_removed_labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.small_removed_labels" title="Link to this definition">#</a></dt>
+<dd><p>Labels after the small-object filter only (large objects still
+present), matching CellProfiler’s <code class="docutils literal notranslate"><span class="pre">objects.small_removed_segmented</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.threshold" title="Link to this definition">#</a></dt>
+<dd><p>The threshold value actually applied, after correction/clamping,
+in the same units as the (possibly rescaled) pixels this was run on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.threshold_map">
+<span class="sig-name descname"><span class="pre">threshold_map</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.threshold_map" title="Link to this definition">#</a></dt>
+<dd><p>Corrected 2D Adaptive threshold array; None for Global thresholding.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.identify_primary_objects">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">identify_primary_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'otsu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_correction_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_diameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_MIN_DIAMETER_DEFAULT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_diameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_MAX_DIAMETER_DEFAULT</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_border_objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_object_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_holes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_smoothing_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_middle_to_foreground</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_lower_outlier_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_upper_outlier_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_averaging_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_variance_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_number_of_deviations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptive_window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unclump_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">watershed_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_filter_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxima_suppression_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_resolution_maxima</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult" title="src.cp_anywhere.segment.SegmentationResult"><span class="pre">SegmentationResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#identify_primary_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.identify_primary_objects" title="Link to this definition">#</a></dt>
+<dd><p>Segment one 2D grayscale image into labeled primary objects.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rescale</span></code> (default <code class="docutils literal notranslate"><span class="pre">True</span></code>) matches CellProfiler’s own default
+image loading: integer-dtype images (<code class="docutils literal notranslate"><span class="pre">uint8</span></code>/<code class="docutils literal notranslate"><span class="pre">uint16</span></code>/<code class="docutils literal notranslate"><span class="pre">uint32</span></code>)
+are divided by their dtype’s max value before thresholding, exactly
+like CellProfiler’s <code class="docutils literal notranslate"><span class="pre">Image(...,</span> <span class="pre">convert=True)</span></code>; float-dtype images
+are never rescaled (also matching CellProfiler). Set <code class="docutils literal notranslate"><span class="pre">rescale=False</span></code>
+to operate on raw pixel values directly instead (matching this
+project’s measurement API’s own <code class="docutils literal notranslate"><span class="pre">convert=False</span></code> convention).</p>
+<p><code class="docutils literal notranslate"><span class="pre">threshold</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;otsu&quot;</span></code> (two-class, global, 256-bin histogram –
+CellProfiler’s default algorithm for any already-float pixel data,
+which is what every image becomes after rescaling), <code class="docutils literal notranslate"><span class="pre">&quot;otsu_integer&quot;</span></code>
+(exact one-bin-per-value histogram; only valid with <code class="docutils literal notranslate"><span class="pre">rescale=False</span></code>
+on an integer-dtype image – matches CellProfiler’s Otsu only if
+CellProfiler would also have skipped rescaling), <code class="docutils literal notranslate"><span class="pre">&quot;otsu_three_class&quot;</span></code>
+(a 128-bin, 3-class histogram split; <code class="docutils literal notranslate"><span class="pre">assign_middle_to_foreground</span></code>
+picks the lower split, i.e. the middle class counts as foreground,
+when <code class="docutils literal notranslate"><span class="pre">True</span></code> (default), or the upper split when <code class="docutils literal notranslate"><span class="pre">False</span></code>, matching
+CellProfiler’s <code class="docutils literal notranslate"><span class="pre">&quot;Foreground&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;Background&quot;</span></code> setting), <code class="docutils literal notranslate"><span class="pre">&quot;li&quot;</span></code>
+(Li’s iterative Minimum Cross-Entropy threshold, matching
+<code class="docutils literal notranslate"><span class="pre">skimage.filters.threshold_li</span></code> with CellProfiler’s own tolerance
+formula), <code class="docutils literal notranslate"><span class="pre">&quot;robust_background&quot;</span></code> (a trimmed mean/median/mode –
+<code class="docutils literal notranslate"><span class="pre">robust_background_averaging_method</span></code> – plus a multiple –
+<code class="docutils literal notranslate"><span class="pre">robust_background_number_of_deviations</span></code> – of the standard
+deviation or MAD – <code class="docutils literal notranslate"><span class="pre">robust_background_variance_method</span></code> –
+computed after discarding <code class="docutils literal notranslate"><span class="pre">robust_background_lower_outlier_fraction</span></code>/
+<code class="docutils literal notranslate"><span class="pre">robust_background_upper_outlier_fraction</span></code> of the lowest/highest
+pixels; matches <code class="docutils literal notranslate"><span class="pre">Threshold.get_threshold_robust_background</span></code>
+exactly, including its quirk where a zero lower-fraction also
+disables the upper trim), <code class="docutils literal notranslate"><span class="pre">&quot;sauvola&quot;</span></code> (a local mean/standard-
+deviation formula over a sliding window, only valid with
+<code class="docutils literal notranslate"><span class="pre">threshold_scope=&quot;adaptive&quot;</span></code> – matches
+<code class="docutils literal notranslate"><span class="pre">skimage.filters.threshold_sauvola</span></code>; CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">global_operation</span></code> Choice does not even include Sauvola, so this
+raises if combined with <code class="docutils literal notranslate"><span class="pre">threshold_scope=&quot;global&quot;</span></code>), or a numeric
+manual threshold value, interpreted in the same units as the
+(possibly rescaled) pixels actually compared against it.</p>
+<p><code class="docutils literal notranslate"><span class="pre">threshold_scope</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;global&quot;</span></code>) matches
+<code class="docutils literal notranslate"><span class="pre">Threshold.threshold_scope</span></code>: <code class="docutils literal notranslate"><span class="pre">&quot;global&quot;</span></code> applies one scalar
+threshold to the whole image; <code class="docutils literal notranslate"><span class="pre">&quot;adaptive&quot;</span></code> instead computes a
+per-pixel threshold map by splitting the image into
+<code class="docutils literal notranslate"><span class="pre">adaptive_window_size</span></code>-sized blocks (computing a block threshold
+with the same algorithm named by <code class="docutils literal notranslate"><span class="pre">threshold</span></code> – or a direct
+sliding-window Sauvola computation, which has no block/spline
+step), blending the block grid across the image with a
+tensor-product B-spline (matching
+<code class="docutils literal notranslate"><span class="pre">scipy.interpolate.RectBivariateSpline</span></code>), and finally clamping
+the result to <code class="docutils literal notranslate"><span class="pre">[0.7,</span> <span class="pre">1.5]</span> <span class="pre">*</span> <span class="pre">guide_threshold</span></code> (the ordinary global
+threshold, used only as a bound; for <code class="docutils literal notranslate"><span class="pre">&quot;sauvola&quot;</span></code> this guide is
+computed via <code class="docutils literal notranslate"><span class="pre">&quot;li&quot;</span></code>, matching CellProfiler’s own shared branch).
+<code class="docutils literal notranslate"><span class="pre">threshold_map</span></code> (a same-shape array) and <code class="docutils literal notranslate"><span class="pre">guide_threshold</span></code> on
+the returned <a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult" title="src.cp_anywhere.segment.SegmentationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationResult</span></code></a> are <code class="docutils literal notranslate"><span class="pre">None</span></code> unless
+<code class="docutils literal notranslate"><span class="pre">threshold_scope=&quot;adaptive&quot;</span></code>; <code class="docutils literal notranslate"><span class="pre">&quot;manual&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;otsu_integer&quot;</span></code>
+are not supported with adaptive scope (CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">local_operation</span></code> Choice does not include either).</p>
+<p><code class="docutils literal notranslate"><span class="pre">log_transform</span></code> (default <code class="docutils literal notranslate"><span class="pre">False</span></code>) matches CellProfiler’s
+<code class="docutils literal notranslate"><span class="pre">Threshold.log_transform</span></code> setting, meaningful only when
+<code class="docutils literal notranslate"><span class="pre">threshold</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;otsu&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;otsu_three_class&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;li&quot;</span></code>
+(CellProfiler itself only exposes this setting for those global
+operations; it is silently ignored for <code class="docutils literal notranslate"><span class="pre">&quot;otsu_integer&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;robust_background&quot;</span></code>, and numeric manual thresholds, matching
+CellProfiler’s own behavior). When enabled, the threshold is
+computed on a log-transformed, <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code>-rescaled copy of the
+<em>entire</em> image (not just the masked subset) and mapped back before
+<code class="docutils literal notranslate"><span class="pre">threshold_correction_factor</span></code>/clamping, exactly matching
+<code class="docutils literal notranslate"><span class="pre">centrosome.threshold.log_transform</span></code>/<code class="docutils literal notranslate"><span class="pre">inverse_log_transform</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">exclude_size</span></code>/<code class="docutils literal notranslate"><span class="pre">min_diameter</span></code>/<code class="docutils literal notranslate"><span class="pre">max_diameter</span></code> match
+CellProfiler’s <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> size filter: objects whose
+pixel area falls outside <code class="docutils literal notranslate"><span class="pre">pi</span> <span class="pre">*</span> <span class="pre">diameter^2</span> <span class="pre">/</span> <span class="pre">4</span></code> for the given
+diameter bounds are removed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">exclude_border_objects</span></code> (<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects.exclude_border_objects</span></code>)
+removes any object touching the image border (or, if <code class="docutils literal notranslate"><span class="pre">mask</span></code> is
+given and nothing touches the image border directly, any object
+touching the mask’s own border instead).</p>
+<p><code class="docutils literal notranslate"><span class="pre">maximum_object_count</span></code> (<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects.maximum_object_count</span></code>,
+only enforced when not <code class="docutils literal notranslate"><span class="pre">None</span></code>) erases every object if the final
+count exceeds this value, matching CellProfiler’s <code class="docutils literal notranslate"><span class="pre">LIMIT_ERASE</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fill_holes</span></code> (<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects.fill_holes</span></code>) is one of
+<code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;after_declump_only&quot;</span></code> (fills background
+holes enclosed by a single object, after border/size filtering), or
+<code class="docutils literal notranslate"><span class="pre">&quot;after_thresholding_and_declump&quot;</span></code> (also fills holes in the binary
+foreground mask before labeling, limited to area &lt; <code class="docutils literal notranslate"><span class="pre">max_diameter^2</span></code>).
+A background region bordered by two or more <em>different</em> objects (not
+fully enclosed by one) is left unfilled, matching
+<code class="docutils literal notranslate"><span class="pre">centrosome.cpmorphology.fill_labeled_holes</span></code> exactly, including
+its handling of a small object fully nested inside a larger one
+(absorbed into the enclosing label) and multi-level nested holes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">threshold_smoothing_scale</span></code> (<code class="docutils literal notranslate"><span class="pre">Threshold.threshold_smoothing_scale</span></code>,
+default <code class="docutils literal notranslate"><span class="pre">0.0</span></code> – no smoothing) blurs the image used for the
+foreground/background comparison (not the value used to <em>compute</em>
+the threshold, which is always the unsmoothed image) with a Gaussian
+of <code class="docutils literal notranslate"><span class="pre">sigma</span> <span class="pre">=</span> <span class="pre">threshold_smoothing_scale</span> <span class="pre">/</span> <span class="pre">0.6744</span> <span class="pre">/</span> <span class="pre">2.0</span></code>, matching
+CellProfiler’s <code class="docutils literal notranslate"><span class="pre">apply_threshold</span></code> exactly, including its
+mask-bleed-over correction near the image border.</p>
+<p><code class="docutils literal notranslate"><span class="pre">unclump_method</span></code>/<code class="docutils literal notranslate"><span class="pre">watershed_method</span></code>
+(<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects.unclump_method</span></code>/<code class="docutils literal notranslate"><span class="pre">watershed_method</span></code>)
+separate touching objects after initial labeling and before
+border/size filtering – matching <code class="docutils literal notranslate"><span class="pre">separate_neighboring_objects</span></code>’s
+exact position in CellProfiler’s pipeline. <code class="docutils literal notranslate"><span class="pre">unclump_method</span></code> is
+<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> (default; no separation), <code class="docutils literal notranslate"><span class="pre">&quot;intensity&quot;</span></code> (find local
+intensity maxima in a Gaussian-smoothed copy of the image), or
+<code class="docutils literal notranslate"><span class="pre">&quot;shape&quot;</span></code> (find local maxima of the Euclidean distance transform
+of the foreground, jittered with CellProfiler’s own fixed-seed(0)
+legacy-RNG noise to break exact ties). <code class="docutils literal notranslate"><span class="pre">watershed_method</span></code> is
+<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;intensity&quot;</span></code> (watershed on <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">image</span></code>),
+<code class="docutils literal notranslate"><span class="pre">&quot;shape&quot;</span></code> (watershed on the negated distance transform – reuses
+the <em>same</em> jittered transform computed above when
+<code class="docutils literal notranslate"><span class="pre">unclump_method=&quot;shape&quot;</span></code> too, matching CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">distance_transformed_image</span> <span class="pre">is</span> <span class="pre">None</span></code> check), or
+<code class="docutils literal notranslate"><span class="pre">&quot;propagate&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">centrosome.propagate.propagate</span></code>, a distinct
+non-watershed algorithm; ignores both image and distance-transform
+inputs, geometric distance only). Both must be set to something
+other than <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> for separation to actually run, matching
+CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">UN_NONE</span></code>/<code class="docutils literal notranslate"><span class="pre">WA_NONE</span></code> no-op check.</p>
+<p><code class="docutils literal notranslate"><span class="pre">smoothing_filter_size</span></code>/<code class="docutils literal notranslate"><span class="pre">maxima_suppression_size</span></code> override
+CellProfiler’s own automatic formulas (<code class="docutils literal notranslate"><span class="pre">2.35</span> <span class="pre">*</span> <span class="pre">min_diameter</span> <span class="pre">/</span> <span class="pre">3.5</span></code>
+and <code class="docutils literal notranslate"><span class="pre">min_diameter</span> <span class="pre">/</span> <span class="pre">1.5</span></code> respectively) when given explicitly,
+matching <code class="docutils literal notranslate"><span class="pre">automatic_smoothing</span></code>/<code class="docutils literal notranslate"><span class="pre">automatic_suppression</span></code> set to
+<code class="docutils literal notranslate"><span class="pre">False</span></code> with an explicit <code class="docutils literal notranslate"><span class="pre">Float</span></code> Setting value.
+<code class="docutils literal notranslate"><span class="pre">low_resolution_maxima</span></code> (<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects.low_res_maxima</span></code>)
+only takes effect when <code class="docutils literal notranslate"><span class="pre">min_diameter</span> <span class="pre">&gt;</span> <span class="pre">10.0</span></code> (CellProfiler’s own
+gate); when both are true, maxima are found on a downsampled copy
+of the image for speed – not yet implemented, raises if triggered.</p>
+</dd></dl>
+
+</section>
 </section>
 
 

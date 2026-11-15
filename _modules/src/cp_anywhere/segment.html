@@ -1,0 +1,787 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.cp_anywhere.segment &#8212; cp-anywhere  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/src/cp_anywhere/segment';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cp-anywhere</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">src.cp_anywhere.segment</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for src.cp_anywhere.segment</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Object segmentation, implemented against CellProfiler 4.2.8&#39;s</span>
+<span class="sd">``IdentifyPrimaryObjects`` module (and the shared ``Threshold`` module it</span>
+<span class="sd">uses) as the compatibility oracle.</span>
+
+<span class="sd">Declared scope: every global and adaptive threshold operation (Manual,</span>
+<span class="sd">Otsu two/three-class, Li, Robust Background, Sauvola), log transform,</span>
+<span class="sd">threshold smoothing, declumping/watershed (Intensity/Shape/Propagate),</span>
+<span class="sd">hole filling (including nested-object absorption), border exclusion,</span>
+<span class="sd">and size/count filtering -- see ``spec/segmentation-modules.md`` for</span>
+<span class="sd">the exact settings mapping and the explicit remaining gaps (not silent</span>
+<span class="sd">approximations).</span>
+
+<span class="sd">CellProfiler&#39;s own ``Threshold`` module hard-bounds ``manual_threshold``</span>
+<span class="sd">and ``threshold_range`` to ``[0, 1]`` and assumes images have been</span>
+<span class="sd">rescaled to that range (its default ``Image(..., convert=True)`` divides</span>
+<span class="sd">integer-dtype pixels by their dtype&#39;s max value; float-dtype pixels are</span>
+<span class="sd">never rescaled). ``identify_primary_objects`` reproduces that default</span>
+<span class="sd">behavior automatically (``rescale=True``) so passing a raw ``uint8``/</span>
+<span class="sd">``uint16`` image works exactly like a default CellProfiler pipeline,</span>
+<span class="sd">with no manual conversion needed.</span>
+
+<span class="sd">The result chains directly into :func:`cp_anywhere.measure`::</span>
+
+<span class="sd">    seg = cp_anywhere.identify_primary_objects(dna_image, threshold=&quot;otsu&quot;)</span>
+<span class="sd">    result = cp_anywhere.measure({&quot;DNA&quot;: dna_image}, {&quot;Cells&quot;: seg.labels})</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">_MIN_DIAMETER_DEFAULT</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">_MAX_DIAMETER_DEFAULT</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">)</span>
+<span class="n">_EXPECTED_NDIM</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_RESCALE_DIVISORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint8&quot;</span><span class="p">):</span> <span class="mf">255.0</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint16&quot;</span><span class="p">):</span> <span class="mf">65535.0</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s2">&quot;uint32&quot;</span><span class="p">):</span> <span class="mf">4294967295.0</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="SegmentationResult">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.SegmentationResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SegmentationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Labels and diagnostics from one :func:`identify_primary_objects` call.&quot;&quot;&quot;</span>
+
+    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2D integer label array, same shape as the input image; 0 is background.&quot;&quot;&quot;</span>
+
+    <span class="n">small_removed_labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Labels after the small-object filter only (large objects still</span>
+<span class="sd">    present), matching CellProfiler&#39;s ``objects.small_removed_segmented``.&quot;&quot;&quot;</span>
+
+    <span class="n">object_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The threshold value actually applied, after correction/clamping,</span>
+<span class="sd">    in the same units as the (possibly rescaled) pixels this was run on.&quot;&quot;&quot;</span>
+
+    <span class="n">threshold_map</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Corrected 2D Adaptive threshold array; None for Global thresholding.&quot;&quot;&quot;</span>
+
+    <span class="n">guide_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Corrected global guide used to constrain Adaptive thresholds.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rescale_divisor</span><span class="p">(</span><span class="n">dtype</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_RESCALE_DIVISORS</span><span class="p">[</span><span class="n">dtype</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;rescale=True does not support dtype </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">; pass rescale=False &quot;</span>
+            <span class="s2">&quot;and interpret threshold values in the image&#39;s own raw units, &quot;</span>
+            <span class="s2">&quot;or pre-convert the image to uint8/uint16/uint32 yourself&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_threshold</span><span class="p">(</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">rescale</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">is_integer_dtype</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map the public ``threshold`` argument to a native method/value/</span>
+<span class="sd">    integer_pixels triple, validating the &#39;otsu_integer&#39; + rescale combo.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">threshold</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;manual&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">threshold</span><span class="p">),</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;otsu&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;otsu&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;otsu_integer&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">rescale</span> <span class="ow">and</span> <span class="n">is_integer_dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;threshold=&#39;otsu_integer&#39; requires rescale=False &quot;</span>
+                <span class="s2">&quot;(rescaling turns integer pixels into floats, which &quot;</span>
+                <span class="s2">&quot;defeats the exact-bincount integer histogram)&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_integer_dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;threshold=&#39;otsu_integer&#39; requires an integer dtype image&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;otsu_integer&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;otsu_three_class&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;otsu_three_class&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;li&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;li&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;robust_background&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;robust_background&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;sauvola&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;sauvola&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="s2">&quot;threshold must be &#39;otsu&#39;, &#39;otsu_integer&#39;, &#39;otsu_three_class&#39;, &#39;li&#39;, &quot;</span>
+        <span class="s2">&quot;&#39;robust_background&#39;, &#39;sauvola&#39;, or a numeric value&quot;</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="identify_primary_objects">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.identify_primary_objects">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">identify_primary_objects</span><span class="p">(</span>
+    <span class="n">image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">mask</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="s2">&quot;otsu&quot;</span><span class="p">,</span>
+    <span class="n">rescale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">threshold_correction_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">threshold_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">exclude_size</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">min_diameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_MIN_DIAMETER_DEFAULT</span><span class="p">,</span>
+    <span class="n">max_diameter</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">_MAX_DIAMETER_DEFAULT</span><span class="p">,</span>
+    <span class="n">exclude_border_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">maximum_object_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fill_holes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+    <span class="n">threshold_smoothing_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">assign_middle_to_foreground</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">robust_background_lower_outlier_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">robust_background_upper_outlier_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">robust_background_averaging_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">robust_background_variance_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span>
+    <span class="n">robust_background_number_of_deviations</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">log_transform</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">threshold_scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;global&quot;</span><span class="p">,</span>
+    <span class="n">adaptive_window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">unclump_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">watershed_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">smoothing_filter_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">maxima_suppression_size</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">low_resolution_maxima</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Segment one 2D grayscale image into labeled primary objects.</span>
+
+<span class="sd">    ``rescale`` (default ``True``) matches CellProfiler&#39;s own default</span>
+<span class="sd">    image loading: integer-dtype images (``uint8``/``uint16``/``uint32``)</span>
+<span class="sd">    are divided by their dtype&#39;s max value before thresholding, exactly</span>
+<span class="sd">    like CellProfiler&#39;s ``Image(..., convert=True)``; float-dtype images</span>
+<span class="sd">    are never rescaled (also matching CellProfiler). Set ``rescale=False``</span>
+<span class="sd">    to operate on raw pixel values directly instead (matching this</span>
+<span class="sd">    project&#39;s measurement API&#39;s own ``convert=False`` convention).</span>
+
+<span class="sd">    ``threshold`` is ``&quot;otsu&quot;`` (two-class, global, 256-bin histogram --</span>
+<span class="sd">    CellProfiler&#39;s default algorithm for any already-float pixel data,</span>
+<span class="sd">    which is what every image becomes after rescaling), ``&quot;otsu_integer&quot;``</span>
+<span class="sd">    (exact one-bin-per-value histogram; only valid with ``rescale=False``</span>
+<span class="sd">    on an integer-dtype image -- matches CellProfiler&#39;s Otsu only if</span>
+<span class="sd">    CellProfiler would also have skipped rescaling), ``&quot;otsu_three_class&quot;``</span>
+<span class="sd">    (a 128-bin, 3-class histogram split; ``assign_middle_to_foreground``</span>
+<span class="sd">    picks the lower split, i.e. the middle class counts as foreground,</span>
+<span class="sd">    when ``True`` (default), or the upper split when ``False``, matching</span>
+<span class="sd">    CellProfiler&#39;s ``&quot;Foreground&quot;``/``&quot;Background&quot;`` setting), ``&quot;li&quot;``</span>
+<span class="sd">    (Li&#39;s iterative Minimum Cross-Entropy threshold, matching</span>
+<span class="sd">    ``skimage.filters.threshold_li`` with CellProfiler&#39;s own tolerance</span>
+<span class="sd">    formula), ``&quot;robust_background&quot;`` (a trimmed mean/median/mode --</span>
+<span class="sd">    ``robust_background_averaging_method`` -- plus a multiple --</span>
+<span class="sd">    ``robust_background_number_of_deviations`` -- of the standard</span>
+<span class="sd">    deviation or MAD -- ``robust_background_variance_method`` --</span>
+<span class="sd">    computed after discarding ``robust_background_lower_outlier_fraction``/</span>
+<span class="sd">    ``robust_background_upper_outlier_fraction`` of the lowest/highest</span>
+<span class="sd">    pixels; matches ``Threshold.get_threshold_robust_background``</span>
+<span class="sd">    exactly, including its quirk where a zero lower-fraction also</span>
+<span class="sd">    disables the upper trim), ``&quot;sauvola&quot;`` (a local mean/standard-</span>
+<span class="sd">    deviation formula over a sliding window, only valid with</span>
+<span class="sd">    ``threshold_scope=&quot;adaptive&quot;`` -- matches</span>
+<span class="sd">    ``skimage.filters.threshold_sauvola``; CellProfiler&#39;s own</span>
+<span class="sd">    ``global_operation`` Choice does not even include Sauvola, so this</span>
+<span class="sd">    raises if combined with ``threshold_scope=&quot;global&quot;``), or a numeric</span>
+<span class="sd">    manual threshold value, interpreted in the same units as the</span>
+<span class="sd">    (possibly rescaled) pixels actually compared against it.</span>
+
+<span class="sd">    ``threshold_scope`` (default ``&quot;global&quot;``) matches</span>
+<span class="sd">    ``Threshold.threshold_scope``: ``&quot;global&quot;`` applies one scalar</span>
+<span class="sd">    threshold to the whole image; ``&quot;adaptive&quot;`` instead computes a</span>
+<span class="sd">    per-pixel threshold map by splitting the image into</span>
+<span class="sd">    ``adaptive_window_size``-sized blocks (computing a block threshold</span>
+<span class="sd">    with the same algorithm named by ``threshold`` -- or a direct</span>
+<span class="sd">    sliding-window Sauvola computation, which has no block/spline</span>
+<span class="sd">    step), blending the block grid across the image with a</span>
+<span class="sd">    tensor-product B-spline (matching</span>
+<span class="sd">    ``scipy.interpolate.RectBivariateSpline``), and finally clamping</span>
+<span class="sd">    the result to ``[0.7, 1.5] * guide_threshold`` (the ordinary global</span>
+<span class="sd">    threshold, used only as a bound; for ``&quot;sauvola&quot;`` this guide is</span>
+<span class="sd">    computed via ``&quot;li&quot;``, matching CellProfiler&#39;s own shared branch).</span>
+<span class="sd">    ``threshold_map`` (a same-shape array) and ``guide_threshold`` on</span>
+<span class="sd">    the returned :class:`SegmentationResult` are ``None`` unless</span>
+<span class="sd">    ``threshold_scope=&quot;adaptive&quot;``; ``&quot;manual&quot;`` and ``&quot;otsu_integer&quot;``</span>
+<span class="sd">    are not supported with adaptive scope (CellProfiler&#39;s own</span>
+<span class="sd">    ``local_operation`` Choice does not include either).</span>
+
+<span class="sd">    ``log_transform`` (default ``False``) matches CellProfiler&#39;s</span>
+<span class="sd">    ``Threshold.log_transform`` setting, meaningful only when</span>
+<span class="sd">    ``threshold`` is ``&quot;otsu&quot;``, ``&quot;otsu_three_class&quot;``, or ``&quot;li&quot;``</span>
+<span class="sd">    (CellProfiler itself only exposes this setting for those global</span>
+<span class="sd">    operations; it is silently ignored for ``&quot;otsu_integer&quot;``,</span>
+<span class="sd">    ``&quot;robust_background&quot;``, and numeric manual thresholds, matching</span>
+<span class="sd">    CellProfiler&#39;s own behavior). When enabled, the threshold is</span>
+<span class="sd">    computed on a log-transformed, ``[0, 1]``-rescaled copy of the</span>
+<span class="sd">    *entire* image (not just the masked subset) and mapped back before</span>
+<span class="sd">    ``threshold_correction_factor``/clamping, exactly matching</span>
+<span class="sd">    ``centrosome.threshold.log_transform``/``inverse_log_transform``.</span>
+
+<span class="sd">    ``exclude_size``/``min_diameter``/``max_diameter`` match</span>
+<span class="sd">    CellProfiler&#39;s ``IdentifyPrimaryObjects`` size filter: objects whose</span>
+<span class="sd">    pixel area falls outside ``pi * diameter^2 / 4`` for the given</span>
+<span class="sd">    diameter bounds are removed.</span>
+
+<span class="sd">    ``exclude_border_objects`` (``IdentifyPrimaryObjects.exclude_border_objects``)</span>
+<span class="sd">    removes any object touching the image border (or, if ``mask`` is</span>
+<span class="sd">    given and nothing touches the image border directly, any object</span>
+<span class="sd">    touching the mask&#39;s own border instead).</span>
+
+<span class="sd">    ``maximum_object_count`` (``IdentifyPrimaryObjects.maximum_object_count``,</span>
+<span class="sd">    only enforced when not ``None``) erases every object if the final</span>
+<span class="sd">    count exceeds this value, matching CellProfiler&#39;s ``LIMIT_ERASE``.</span>
+
+<span class="sd">    ``fill_holes`` (``IdentifyPrimaryObjects.fill_holes``) is one of</span>
+<span class="sd">    ``&quot;never&quot;`` (default), ``&quot;after_declump_only&quot;`` (fills background</span>
+<span class="sd">    holes enclosed by a single object, after border/size filtering), or</span>
+<span class="sd">    ``&quot;after_thresholding_and_declump&quot;`` (also fills holes in the binary</span>
+<span class="sd">    foreground mask before labeling, limited to area &lt; ``max_diameter^2``).</span>
+<span class="sd">    A background region bordered by two or more *different* objects (not</span>
+<span class="sd">    fully enclosed by one) is left unfilled, matching</span>
+<span class="sd">    ``centrosome.cpmorphology.fill_labeled_holes`` exactly, including</span>
+<span class="sd">    its handling of a small object fully nested inside a larger one</span>
+<span class="sd">    (absorbed into the enclosing label) and multi-level nested holes.</span>
+
+<span class="sd">    ``threshold_smoothing_scale`` (``Threshold.threshold_smoothing_scale``,</span>
+<span class="sd">    default ``0.0`` -- no smoothing) blurs the image used for the</span>
+<span class="sd">    foreground/background comparison (not the value used to *compute*</span>
+<span class="sd">    the threshold, which is always the unsmoothed image) with a Gaussian</span>
+<span class="sd">    of ``sigma = threshold_smoothing_scale / 0.6744 / 2.0``, matching</span>
+<span class="sd">    CellProfiler&#39;s ``apply_threshold`` exactly, including its</span>
+<span class="sd">    mask-bleed-over correction near the image border.</span>
+
+<span class="sd">    ``unclump_method``/``watershed_method``</span>
+<span class="sd">    (``IdentifyPrimaryObjects.unclump_method``/``watershed_method``)</span>
+<span class="sd">    separate touching objects after initial labeling and before</span>
+<span class="sd">    border/size filtering -- matching ``separate_neighboring_objects``&#39;s</span>
+<span class="sd">    exact position in CellProfiler&#39;s pipeline. ``unclump_method`` is</span>
+<span class="sd">    ``&quot;none&quot;`` (default; no separation), ``&quot;intensity&quot;`` (find local</span>
+<span class="sd">    intensity maxima in a Gaussian-smoothed copy of the image), or</span>
+<span class="sd">    ``&quot;shape&quot;`` (find local maxima of the Euclidean distance transform</span>
+<span class="sd">    of the foreground, jittered with CellProfiler&#39;s own fixed-seed(0)</span>
+<span class="sd">    legacy-RNG noise to break exact ties). ``watershed_method`` is</span>
+<span class="sd">    ``&quot;none&quot;`` (default), ``&quot;intensity&quot;`` (watershed on ``1 - image``),</span>
+<span class="sd">    ``&quot;shape&quot;`` (watershed on the negated distance transform -- reuses</span>
+<span class="sd">    the *same* jittered transform computed above when</span>
+<span class="sd">    ``unclump_method=&quot;shape&quot;`` too, matching CellProfiler&#39;s own</span>
+<span class="sd">    ``if distance_transformed_image is None`` check), or</span>
+<span class="sd">    ``&quot;propagate&quot;`` (``centrosome.propagate.propagate``, a distinct</span>
+<span class="sd">    non-watershed algorithm; ignores both image and distance-transform</span>
+<span class="sd">    inputs, geometric distance only). Both must be set to something</span>
+<span class="sd">    other than ``&quot;none&quot;`` for separation to actually run, matching</span>
+<span class="sd">    CellProfiler&#39;s own ``UN_NONE``/``WA_NONE`` no-op check.</span>
+
+<span class="sd">    ``smoothing_filter_size``/``maxima_suppression_size`` override</span>
+<span class="sd">    CellProfiler&#39;s own automatic formulas (``2.35 * min_diameter / 3.5``</span>
+<span class="sd">    and ``min_diameter / 1.5`` respectively) when given explicitly,</span>
+<span class="sd">    matching ``automatic_smoothing``/``automatic_suppression`` set to</span>
+<span class="sd">    ``False`` with an explicit ``Float`` Setting value.</span>
+<span class="sd">    ``low_resolution_maxima`` (``IdentifyPrimaryObjects.low_res_maxima``)</span>
+<span class="sd">    only takes effect when ``min_diameter &gt; 10.0`` (CellProfiler&#39;s own</span>
+<span class="sd">    gate); when both are true, maxima are found on a downsampled copy</span>
+<span class="sd">    of the image for speed -- not yet implemented, raises if triggered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
+
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_EXPECTED_NDIM</span> <span class="ow">or</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;image must be a nonempty 2D array&quot;</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">is_integer_dtype</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;iu&quot;</span>
+    <span class="k">if</span> <span class="n">rescale</span> <span class="ow">and</span> <span class="n">is_integer_dtype</span><span class="p">:</span>
+        <span class="n">divisor</span> <span class="o">=</span> <span class="n">_rescale_divisor</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">method</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">,</span> <span class="n">integer_pixels</span> <span class="o">=</span> <span class="n">_resolve_threshold</span><span class="p">(</span>
+        <span class="n">threshold</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="n">rescale</span><span class="p">,</span> <span class="n">is_integer_dtype</span><span class="o">=</span><span class="n">is_integer_dtype</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">threshold_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">threshold_range</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">rescale</span> <span class="ow">and</span> <span class="n">is_integer_dtype</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mask must have the image shape&quot;</span><span class="p">)</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_native</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span>
+        <span class="n">pixels</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">,</span>
+        <span class="n">cols</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">threshold_value</span><span class="o">=</span><span class="n">threshold_value</span><span class="p">,</span>
+        <span class="n">integer_pixels</span><span class="o">=</span><span class="n">integer_pixels</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="n">mask_array</span><span class="p">,</span>
+        <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">threshold_correction_factor</span><span class="p">,</span>
+        <span class="n">threshold_range_min</span><span class="o">=</span><span class="n">threshold_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">threshold_range_max</span><span class="o">=</span><span class="n">threshold_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">exclude_size</span><span class="o">=</span><span class="n">exclude_size</span><span class="p">,</span>
+        <span class="n">min_diameter</span><span class="o">=</span><span class="n">min_diameter</span><span class="p">,</span>
+        <span class="n">max_diameter</span><span class="o">=</span><span class="n">max_diameter</span><span class="p">,</span>
+        <span class="n">exclude_border_objects</span><span class="o">=</span><span class="n">exclude_border_objects</span><span class="p">,</span>
+        <span class="n">maximum_object_count</span><span class="o">=</span><span class="n">maximum_object_count</span><span class="p">,</span>
+        <span class="n">fill_holes</span><span class="o">=</span><span class="n">fill_holes</span><span class="p">,</span>
+        <span class="n">threshold_smoothing_scale</span><span class="o">=</span><span class="n">threshold_smoothing_scale</span><span class="p">,</span>
+        <span class="n">assign_middle_to_foreground</span><span class="o">=</span><span class="n">assign_middle_to_foreground</span><span class="p">,</span>
+        <span class="n">robust_background_lower_outlier_fraction</span><span class="o">=</span><span class="n">robust_background_lower_outlier_fraction</span><span class="p">,</span>
+        <span class="n">robust_background_upper_outlier_fraction</span><span class="o">=</span><span class="n">robust_background_upper_outlier_fraction</span><span class="p">,</span>
+        <span class="n">robust_background_averaging_method</span><span class="o">=</span><span class="n">robust_background_averaging_method</span><span class="p">,</span>
+        <span class="n">robust_background_variance_method</span><span class="o">=</span><span class="n">robust_background_variance_method</span><span class="p">,</span>
+        <span class="n">robust_background_number_of_deviations</span><span class="o">=</span><span class="n">robust_background_number_of_deviations</span><span class="p">,</span>
+        <span class="n">log_transform</span><span class="o">=</span><span class="n">log_transform</span><span class="p">,</span>
+        <span class="n">threshold_scope</span><span class="o">=</span><span class="n">threshold_scope</span><span class="p">,</span>
+        <span class="n">adaptive_window_size</span><span class="o">=</span><span class="n">adaptive_window_size</span><span class="p">,</span>
+        <span class="n">unclump_method</span><span class="o">=</span><span class="n">unclump_method</span><span class="p">,</span>
+        <span class="n">watershed_method</span><span class="o">=</span><span class="n">watershed_method</span><span class="p">,</span>
+        <span class="n">smoothing_filter_size</span><span class="o">=</span><span class="n">smoothing_filter_size</span><span class="p">,</span>
+        <span class="n">maxima_suppression_size</span><span class="o">=</span><span class="n">maxima_suppression_size</span><span class="p">,</span>
+        <span class="n">low_resolution_maxima</span><span class="o">=</span><span class="n">low_resolution_maxima</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">SegmentationResult</span><span class="p">(</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">small_removed_labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;small_removed_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">object_count</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;object_count&quot;</span><span class="p">]),</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;threshold&quot;</span><span class="p">]),</span>
+        <span class="n">threshold_map</span><span class="o">=</span><span class="p">(</span>
+            <span class="kc">None</span>
+            <span class="k">if</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;threshold_map&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;threshold_map&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">guide_threshold</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;guide_threshold&quot;</span><span class="p">],</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, DBMI Community.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
