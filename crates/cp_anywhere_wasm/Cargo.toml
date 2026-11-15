@@ -13,6 +13,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 cp_anywhere_core = { path = "../cp_anywhere_core" }
+cp_anywhere_segmentation = { path = "../cp_anywhere_segmentation", features = ["serde"] }
 # Pinned to match the installed wasm-bindgen CLI (0.2.130) used by wasm-pack;
 # the glue code generator and this crate's version must match exactly.
 wasm-bindgen = "=0.2.130"

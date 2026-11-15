@@ -1,0 +1,23 @@
+{
+  "image_id": "synthetic_declump_with_fill_holes_after_declump",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "fill_holes": "after_declump_only",
+    "min_diameter": 4.0,
+    "threshold_method": "manual",
+    "threshold_value": 0.001,
+    "unclump_method": "intensity",
+    "watershed_method": "intensity"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_declump_with_fill_holes_after_declump/labels.npy": "0122419164199d391325516177132c0bd99e898b1336e62e7f6da37e7023a117",
+    "fixtures/segmentation/synthetic_declump_with_fill_holes_after_declump/pixels.npy": "b96389c4177e121e91bde089995f15155ca165a9d2049489a1074459286c0edb",
+    "fixtures/segmentation/synthetic_declump_with_fill_holes_after_declump/small_removed_labels.npy": "ca065de19a73d2cb3a1b54552eb28168061fe65aa911eebef18db0425a0fbc44"
+  },
+  "shape": [
+    20,
+    20
+  ],
+  "threshold": 0.001
+}

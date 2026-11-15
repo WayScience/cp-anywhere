@@ -39,4 +39,9 @@ def identify_primary_objects(
     log_transform: bool = ...,
     threshold_scope: str | None = ...,
     adaptive_window_size: int = ...,
+    unclump_method: str | None = ...,
+    watershed_method: str | None = ...,
+    smoothing_filter_size: float | None = ...,
+    maxima_suppression_size: float | None = ...,
+    low_resolution_maxima: bool = ...,
 ) -> dict[str, Any]: ...

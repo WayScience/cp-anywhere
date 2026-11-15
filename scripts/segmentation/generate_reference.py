@@ -8,13 +8,14 @@ scripts/reference/generate.py). It never imports cp_anywhere or
 substitutes another segmentation engine.
 
 Declared scope matches crates/cp_anywhere_segmentation's module docs:
-Global Otsu (two-class) or Manual threshold, no smoothing, no
-declumping/watershed, no hole-filling, no border exclusion. Every case
-uses CellProfiler's default ``Image(..., convert=True)`` image loading
-(the realistic default: integer-dtype pixels divided by their dtype's
-max value before thresholding; CellProfiler's own ``Threshold`` module
-hard-bounds ``manual_threshold``/``threshold_range`` to [0, 1] and
-assumes this). See spec/segmentation-modules.md.
+every global/adaptive threshold operation, hole-filling, border
+exclusion, size/count filtering, and declumping/watershed (Intensity/
+Shape/Propagate). Every case uses CellProfiler's default
+``Image(..., convert=True)`` image loading (the realistic default:
+integer-dtype pixels divided by their dtype's max value before
+thresholding; CellProfiler's own ``Threshold`` module hard-bounds
+``manual_threshold``/``threshold_range`` to [0, 1] and assumes this).
+See spec/segmentation-modules.md.
 """
 
 # The reference API is dynamically typed, and fixture literals define the test cases.
@@ -64,6 +65,11 @@ def configure_module(
     threshold_scope="global",
     adaptive_window_size=50,
     threshold_range=(0.0, 1.0),
+    unclump_method="none",
+    watershed_method="none",
+    smoothing_filter_size=None,
+    maxima_suppression_size=None,
+    low_resolution_maxima=False,
 ):
     """Set exactly the declared-scope settings (see module docstring)."""
     module.use_advanced.value = True
@@ -175,8 +181,24 @@ def configure_module(
             module.threshold.number_of_deviations.value
             == robust_background_number_of_deviations
         )
-    module.unclump_method.value = "None"
-    module.watershed_method.value = "None"
+    module.unclump_method.value = {
+        "none": "None",
+        "intensity": "Intensity",
+        "shape": "Shape",
+    }[unclump_method]
+    module.watershed_method.value = {
+        "none": "None",
+        "intensity": "Intensity",
+        "shape": "Shape",
+        "propagate": "Propagate",
+    }[watershed_method]
+    module.automatic_smoothing.value = smoothing_filter_size is None
+    if smoothing_filter_size is not None:
+        module.smoothing_filter_size.value = smoothing_filter_size
+    module.automatic_suppression.value = maxima_suppression_size is None
+    if maxima_suppression_size is not None:
+        module.maxima_suppression_size.value = maxima_suppression_size
+    module.low_res_maxima.value = low_resolution_maxima
     module.fill_holes.value = {
         "never": "Never",
         "after_declump_only": "After declumping only",
@@ -665,6 +687,92 @@ def fixture_cases():
         "real_bbbc007_dna_log_transform_otsu",
         real_bbbc_log,
         {"threshold_method": "otsu", "log_transform": True},
+    )
+
+    # Declumping/watershed: two touching synthetic blobs, every
+    # unclump/watershed combination CellProfiler actually implements.
+    yy, xx = np.mgrid[0:20, 0:24]
+    d1 = np.sqrt((yy - 9) ** 2 + (xx - 8) ** 2)
+    d2 = np.sqrt((yy - 9) ** 2 + (xx - 15) ** 2)
+    twin_blobs = np.maximum(np.clip(1 - d1 / 7, 0, 1), np.clip(1 - d2 / 7, 0, 1))
+    for unclump, watershed in (
+        ("intensity", "intensity"),
+        ("intensity", "shape"),
+        ("shape", "shape"),
+        ("intensity", "propagate"),
+        ("shape", "propagate"),
+    ):
+        yield (
+            f"synthetic_declump_{unclump}_{watershed}",
+            twin_blobs,
+            {
+                "threshold_method": "manual",
+                "threshold_value": 0.001,
+                "min_diameter": 10.0,
+                "unclump_method": unclump,
+                "watershed_method": watershed,
+            },
+        )
+
+    # A manual (non-automatic) smoothing filter size / maxima
+    # suppression size override.
+    yield (
+        "synthetic_declump_manual_smoothing_and_suppression",
+        twin_blobs,
+        {
+            "threshold_method": "manual",
+            "threshold_value": 0.001,
+            "min_diameter": 10.0,
+            "unclump_method": "intensity",
+            "watershed_method": "intensity",
+            "smoothing_filter_size": 3.0,
+            "maxima_suppression_size": 4.0,
+        },
+    )
+
+    real_bbbc_declump = np.load(ROOT / "fixtures/real/real_bbbc007/DNA.npy")
+    yield (
+        "real_bbbc007_dna_declump_intensity_intensity",
+        real_bbbc_declump,
+        {
+            "threshold_method": "otsu",
+            "min_diameter": 10.0,
+            "unclump_method": "intensity",
+            "watershed_method": "intensity",
+        },
+    )
+    yield (
+        "real_bbbc007_dna_declump_shape_propagate",
+        real_bbbc_declump,
+        {
+            "threshold_method": "otsu",
+            "min_diameter": 10.0,
+            "unclump_method": "shape",
+            "watershed_method": "propagate",
+        },
+    )
+
+    # Declumping combined with fill_holes (the nested-object-absorption
+    # fix): a ring of label 1 enclosing a small, separately-thresholded
+    # blob -- after declumping could split into 2, then fill_holes
+    # after declumping absorbs it back into 1.
+    nested = np.zeros((20, 20))
+    yy2, xx2 = np.mgrid[0:20, 0:20]
+    ring = np.sqrt((yy2 - 10) ** 2 + (xx2 - 10) ** 2)
+    inner_radius, outer_radius, core_radius = 3, 9, 2
+    nested[(ring > inner_radius) & (ring < outer_radius)] = 1.0
+    nested[ring <= core_radius] = 1.0
+    yield (
+        "synthetic_declump_with_fill_holes_after_declump",
+        nested,
+        {
+            "threshold_method": "manual",
+            "threshold_value": 0.001,
+            "min_diameter": 4.0,
+            "unclump_method": "intensity",
+            "watershed_method": "intensity",
+            "fill_holes": "after_declump_only",
+        },
     )
 
 

@@ -1,0 +1,21 @@
+{
+  "image_id": "real_bbbc007_dna_declump_intensity_intensity",
+  "object_count": 9,
+  "rescale": true,
+  "settings": {
+    "min_diameter": 10.0,
+    "threshold_method": "otsu",
+    "unclump_method": "intensity",
+    "watershed_method": "intensity"
+  },
+  "sha256": {
+    "fixtures/segmentation/real_bbbc007_dna_declump_intensity_intensity/labels.npy": "60bb8575a91a7772a410b65b73864947f706485834f3c0ab3efb424e98862d39",
+    "fixtures/segmentation/real_bbbc007_dna_declump_intensity_intensity/pixels.npy": "04cbc775afbcae64176c7fa0c4424e54744f54b2a851f819d5b67f9d25e8d313",
+    "fixtures/segmentation/real_bbbc007_dna_declump_intensity_intensity/small_removed_labels.npy": "60bb8575a91a7772a410b65b73864947f706485834f3c0ab3efb424e98862d39"
+  },
+  "shape": [
+    128,
+    128
+  ],
+  "threshold": 0.14417892694473267
+}

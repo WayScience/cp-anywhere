@@ -4,9 +4,11 @@ Reads the real Parquet file the browser's DuckDB-WASM instance exported
 (examples/zarr-onnx-duckdb/cp_anywhere_features.parquet, produced by
 `npm run browser-check`), validates it with *native* DuckDB (not the WASM
 build under test), and cross-checks every value against a fresh, from-source
-native Python `cp_anywhere.measure()` call on the exact same Zarr bytes and
-ONNX-derived mask -- proving the browser pipeline is numerically correct,
-not just that it ran without crashing.
+native Python `cp_anywhere.measure()` call fed the exact same Zarr bytes and
+a fresh native `cp_anywhere.identify_primary_objects()` segmentation (the
+same settings `main.ts` passes to `identifyPrimaryObjects`) -- proving the
+browser pipeline (both its own segmentation and its measurement) is
+numerically correct, not just that it ran without crashing.
 """
 
 from __future__ import annotations
@@ -46,18 +48,24 @@ def main() -> None:
         raise AssertionError(msg)
 
     # Re-derive the identical inputs from source: the exact Zarr chunk bytes
-    # (what zarrita.js actually read) and the pre-computed expected ONNX
-    # mask (scripts/zarr/export_demo_fixture.py already validated this
-    # mask matches the real ONNX model via onnx.reference.ReferenceEvaluator;
-    # the browser itself ran the production onnxruntime-web WASM backend).
+    # (what zarrita.js actually read), fresh-segmented natively with the
+    # same settings main.ts passes to cp-anywhere-wasm's
+    # `identifyPrimaryObjects` (not the ONNX demo mask -- that model is
+    # still run in the browser for comparison/logging only, see
+    # docs/browser-integration.md).
     raw = (EXAMPLE / "public/dna.zarr/0.0").read_bytes()
     image = np.frombuffer(raw, dtype="<f8").reshape(12, 12).copy()
-    expected = json.loads((EXAMPLE / "expected-mask.json").read_text())
-    mask = np.array(expected["mask"], dtype=np.uint32)
+    seg = cp_anywhere.identify_primary_objects(
+        image,
+        threshold="otsu",
+        unclump_method="intensity",
+        watershed_method="intensity",
+        min_diameter=4.0,
+    )
 
     native = cp_anywhere.measure(
         {"DNA": image},
-        {"Cells": mask},
+        {"Cells": seg.labels},
         image_id="zarr-onnx-demo",
         families=["object_intensity"],
     )
@@ -81,7 +89,8 @@ def main() -> None:
         "rows_in_parquet": len(rows),
         "features_compared": len(native_values),
         "mismatches": mismatches,
-        "foreground_pixels": int(expected["foreground_pixels"]),
+        "cp_anywhere_object_count": int(seg.object_count),
+        "cp_anywhere_threshold": float(seg.threshold),
     }
     print(json.dumps(report, indent=2))
     if mismatches:

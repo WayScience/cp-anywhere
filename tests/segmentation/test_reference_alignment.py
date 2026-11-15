@@ -113,6 +113,11 @@ def _run_cp_anywhere(case: dict, pixels: np.ndarray) -> cp_anywhere.Segmentation
         "adaptive_window_size": settings.get("adaptive_window_size", 50),
         "threshold_correction_factor": settings.get("threshold_correction_factor", 1.0),
         "threshold_range": tuple(settings.get("threshold_range", (0.0, 1.0))),
+        "unclump_method": settings.get("unclump_method", "none"),
+        "watershed_method": settings.get("watershed_method", "none"),
+        "smoothing_filter_size": settings.get("smoothing_filter_size"),
+        "maxima_suppression_size": settings.get("maxima_suppression_size"),
+        "low_resolution_maxima": settings.get("low_resolution_maxima", False),
     }
     threshold = (
         settings["threshold_value"]

@@ -69,7 +69,11 @@ exists.
 ///
 /// Panics if `rows * cols` overflows or does not equal `labels.len()`.
 pub fn fill_labeled_holes(labels: &mut [u32], rows: usize, cols: usize, max_area: Option<f64>) {
-    assert_eq!(rows.checked_mul(cols), Some(labels.len()), "label shape mismatch");
+    assert_eq!(
+        rows.checked_mul(cols),
+        Some(labels.len()),
+        "label shape mismatch"
+    );
     if labels.is_empty() {
         return;
     }
@@ -195,7 +199,11 @@ pub fn fill_labeled_holes(labels: &mut [u32], rows: usize, cols: usize, max_area
     }
     for (label, node) in labels.iter_mut().zip(nodes) {
         if !non_hole[node] {
-            *label = if owner[node] == 0 { 0 } else { foreground[owner[node] - 1] };
+            *label = if owner[node] == 0 {
+                0
+            } else {
+                foreground[owner[node] - 1]
+            };
         }
     }
 }
@@ -209,4 +217,206 @@ fn neighbors(pixel: usize, rows: usize, cols: usize) -> [Option<usize>; 4] {
         (row + 1 < rows).then_some(pixel + cols),
         (col + 1 < cols).then_some(pixel + 1),
     ]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fills_a_simple_single_owner_hole() {
+        // Verified against real centrosome.cpmorphology.fill_labeled_holes:
+        // a one-pixel hole fully enclosed by a single label is filled.
+        #[rustfmt::skip]
+        let mut labels: Vec<u32> = vec![
+            0, 0, 0, 0, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 0, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
+        ];
+        fill_labeled_holes(&mut labels, 5, 5, None);
+        #[rustfmt::skip]
+        let expected: Vec<u32> = vec![
+            0, 0, 0, 0, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
+        ];
+        assert_eq!(labels, expected);
+    }
+
+    #[test]
+    fn leaves_a_hole_shared_between_two_different_labels_unfilled() {
+        // Verified against real centrosome: a background region
+        // touching TWO differently-labeled foreground objects gets a
+        // second, distinct owner proposed, which disqualifies it (it
+        // becomes a non-hole and stays background), matching real
+        // CellProfiler's rule "no path to two similarly-labeled
+        // pixels adjacent to two DIFFERENTLY labeled non-hole pixels".
+        #[rustfmt::skip]
+        let mut labels: Vec<u32> = vec![
+            0, 0, 0, 0, 0, 0,
+            0, 1, 1, 0, 2, 0,
+            0, 1, 0, 0, 2, 0,
+            0, 1, 0, 0, 2, 0,
+            0, 1, 1, 0, 2, 0,
+            0, 0, 0, 0, 0, 0,
+        ];
+        let expected = labels.clone();
+        fill_labeled_holes(&mut labels, 6, 6, None);
+        assert_eq!(labels, expected, "shared hole must remain unfilled");
+    }
+
+    #[test]
+    fn absorbs_a_small_object_fully_nested_inside_a_larger_one() {
+        // The known prior gap this module exists to fix: a small
+        // foreground object (label 2) entirely enclosed by a larger
+        // one (label 1) is absorbed into the enclosing label, not
+        // left standing. Verified against real
+        // centrosome.cpmorphology.fill_labeled_holes.
+        #[rustfmt::skip]
+        let mut labels: Vec<u32> = vec![
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 2, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+        ];
+        fill_labeled_holes(&mut labels, 7, 7, None);
+        #[rustfmt::skip]
+        let expected: Vec<u32> = vec![
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+        ];
+        assert_eq!(labels, expected, "label 2 must be absorbed into label 1");
+    }
+
+    #[test]
+    fn max_area_predicate_matches_real_size_fn_semantics() {
+        // Real centrosome's `size_fn(area, is_foreground)` returning
+        // False REJECTS a region as a hole candidate (it becomes a
+        // non-hole, excluded from filling); returning True allows
+        // normal processing. cp-anywhere's `max_area` implements
+        // exactly `size_fn = lambda area, is_fg: area < max_area`.
+        // Verified against real centrosome on a 1-pixel hole
+        // (area=1): max_area=2.0 (1 < 2 is True -> allowed -> filled)
+        // vs max_area=0.5 (1 < 0.5 is False -> rejected -> unfilled).
+        #[rustfmt::skip]
+        let base: Vec<u32> = vec![
+            0, 0, 0, 0, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 0, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
+        ];
+
+        let mut allowed = base.clone();
+        fill_labeled_holes(&mut allowed, 5, 5, Some(2.0));
+        #[rustfmt::skip]
+        let expected_filled: Vec<u32> = vec![
+            0, 0, 0, 0, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
+        ];
+        assert_eq!(
+            allowed, expected_filled,
+            "max_area=2.0 must still fill the hole"
+        );
+
+        let mut rejected = base.clone();
+        fill_labeled_holes(&mut rejected, 5, 5, Some(0.5));
+        assert_eq!(
+            rejected, base,
+            "max_area=0.5 must reject the hole, leaving it unfilled"
+        );
+    }
+
+    #[test]
+    fn max_area_rejecting_the_small_nested_object_prevents_absorption() {
+        // Same nested setup as `absorbs_a_small_object_...` (label 2
+        // has area=1). max_area=1.0 makes the predicate `1 < 1.0`
+        // False, REJECTING label 2 as a hole candidate, which
+        // prevents its absorption (it survives as its own label);
+        // max_area=1.5 makes `1 < 1.5` True, allowing absorption as
+        // before. Both verified directly against real centrosome.
+        #[rustfmt::skip]
+        let labels: Vec<u32> = vec![
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 2, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+        ];
+
+        let mut rejected = labels.clone();
+        fill_labeled_holes(&mut rejected, 7, 7, Some(1.0));
+        assert_eq!(
+            rejected, labels,
+            "max_area=1.0 must reject label 2, leaving it un-absorbed"
+        );
+
+        let mut absorbed = labels;
+        fill_labeled_holes(&mut absorbed, 7, 7, Some(1.5));
+        #[rustfmt::skip]
+        let expected_absorbed: Vec<u32> = vec![
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 1, 1, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+        ];
+        assert_eq!(
+            absorbed, expected_absorbed,
+            "max_area=1.5 must still absorb label 2"
+        );
+    }
+
+    #[test]
+    fn multi_level_bullseye_nesting_fully_resolves_to_the_outer_owner() {
+        // Ring 1 -> hole -> ring 2 (nested foreground) -> innermost
+        // hole -> all the way to the "bullseye" center. Exercises the
+        // two-phase owner-propagation walk (direct non-hole exposure,
+        // then propagation through nested hole nodes) across THREE
+        // nesting levels, not just one. Verified against real
+        // centrosome.cpmorphology.fill_labeled_holes: everything
+        // collapses into label 1.
+        #[rustfmt::skip]
+        let mut labels: Vec<u32> = vec![
+            0,0,0,0,0,0,0,0,0,0,0,
+            0,1,1,1,1,1,1,1,1,1,0,
+            0,1,1,1,1,1,1,1,1,1,0,
+            0,1,1,0,0,0,0,0,1,1,0,
+            0,1,1,0,2,2,2,0,1,1,0,
+            0,1,1,0,2,0,2,0,1,1,0,
+            0,1,1,0,2,2,2,0,1,1,0,
+            0,1,1,0,0,0,0,0,1,1,0,
+            0,1,1,1,1,1,1,1,1,1,0,
+            0,1,1,1,1,1,1,1,1,1,0,
+            0,0,0,0,0,0,0,0,0,0,0,
+        ];
+        fill_labeled_holes(&mut labels, 11, 11, None);
+        let expected: Vec<u32> = (0..121)
+            .map(|i| {
+                let row = i / 11;
+                let col = i % 11;
+                u32::from(!(row == 0 || col == 0 || row == 10 || col == 10))
+            })
+            .collect();
+        assert_eq!(labels, expected);
+    }
 }

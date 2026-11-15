@@ -22,3 +22,18 @@ requiring images to be pre-converted to NumPy arrays first.
    :undoc-members:
    :show-inheritance:
 ```
+
+```{eval-rst}
+cp_anywhere.segment
+-------------------
+Object segmentation (:func:`cp_anywhere.identify_primary_objects`),
+implemented against CellProfiler's ``IdentifyPrimaryObjects`` module as
+the compatibility oracle -- see
+`segmentation coverage <project-docs.html#segmentation-coverage-dashboard>`_
+for the declared scope and verification status.
+
+.. automodule:: src.cp_anywhere.segment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```

@@ -11,25 +11,37 @@ a `cp-anywhere-wasm` npm package consumed by a real Vite example
 (`examples/browser-vite`) that runs the module inside a dedicated web
 worker.
 
-**Both declared families run entirely client-side with verified parity,
-across the full declared manifest (2D and 3D).** A real, reproducible
-headless-Chromium run (Playwright, not a mock DOM;
-`examples/browser-vite/run-browser-check.mjs`) executed the worker against
-all **13** declared golden fixtures and `scripts/parity/compare_wasm.py`
-compared every result against the same original CellProfiler 4.2.8 golden
-fixtures used by the native build:
+**Both measurement and segmentation run entirely client-side with
+verified parity against the real CellProfiler 4.2.8 oracle.** A real,
+reproducible headless-Chromium run (Playwright, not a mock DOM;
+`examples/browser-vite/run-browser-check.mjs`) executes the worker
+against:
 
-- **1,560 of 1,560 rows pass** (1,533 exact, 27 within the declared float64
-  tolerance; zero failures). 13 fixtures × 120 rows (119 features + 1
-  relationship table) — the identical row count the native build passes
-  (`docs/native.md`), closing M5's "100% ... in native Rust, Python, and
-  WASM" gate for the current declared manifest.
-- The 27 tolerance rows are the same `MeasureImageIntensity` reduction-order
-  families already seen in the native build (`docs/native.md`), plus two
-  `Neighbors_AngleBetweenNeighbors_Adjacent` rows at 1e-14-scale absolute /
-  1e-16-scale relative error — consistent with a transcendental-function
-  (`acos`/`atan2`) last-bit difference between wasm32's and native arm64's
-  libm, not a computation bug.
+- All **13** declared measurement golden fixtures (2D and 3D) via
+  `measure()`, compared by `scripts/parity/compare_wasm.py` --
+  **1,560 of 1,560 rows pass** (1,533 exact, 27 within the declared
+  float64 tolerance; zero failures). 13 fixtures × 120 rows (119
+  features + 1 relationship table) -- the identical row count the
+  native build passes (`docs/native.md`), closing M5's "100% ... in
+  native Rust, Python, and WASM" gate for the current declared
+  manifest.
+- All **100** segmentation golden fixtures (`fixtures/segmentation/`)
+  via `identifyPrimaryObjects()`, compared by
+  `scripts/parity/compare_wasm_segmentation.py` -- **100 of 100 pass**
+  exactly on labels and object count (one fixture's scalar threshold
+  uses the same documented, narrow, label-safe float32/float64
+  tolerance exception as the native/Python build; see
+  `tests/segmentation/test_reference_alignment.py`'s
+  `_KNOWN_THRESHOLD_MAP_TOLERANCE_GAP`) -- see
+  `docs/segmentation-coverage.md`.
+
+The 27 measurement tolerance rows are the same `MeasureImageIntensity`
+reduction-order families already seen in the native build
+(`docs/native.md`), plus two `Neighbors_AngleBetweenNeighbors_Adjacent`
+rows at 1e-14-scale absolute / 1e-16-scale relative error --
+consistent with a transcendental-function (`acos`/`atan2`) last-bit
+difference between wasm32's and native arm64's libm, not a computation
+bug.
 
 ```sh
 cargo fmt --manifest-path crates/cp_anywhere_wasm/Cargo.toml --check
@@ -38,33 +50,58 @@ wasm-pack build crates/cp_anywhere_wasm --target web --release --out-dir pkg --o
 
 cd examples/browser-vite
 npm install
-uv run --frozen python ../../scripts/wasm/export_fixtures.py   # regenerates public/fixtures/ (gitignored)
+uv run --frozen python ../../scripts/wasm/export_fixtures.py               # measurement fixtures (gitignored)
+uv run --frozen python ../../scripts/wasm/export_segmentation_fixtures.py  # segmentation fixtures (gitignored)
 npm run build
 npx playwright install chromium   # once
 npm run browser-check             # writes browser-results.json
-
 cd ../..
 uv run --frozen python scripts/parity/compare_wasm.py
+uv run --frozen python scripts/parity/compare_wasm_segmentation.py
 ```
 
 ## Browser demo and npm package
 
 `examples/browser-vite` is a real Vite project (not a static mockup): its
 `src/worker.ts` imports the generated `cp-anywhere-wasm` package, fetches
-each fixture's raw binary arrays (see below), calls `measure()`, and posts
-the result back; `src/main.ts` drives the worker from the page and renders
-status in `#status`. `npm run build` produces a genuine production bundle:
+each fixture's raw binary arrays (see below), calls `measure()` and
+`identifyPrimaryObjects()`, and posts the results back; `src/main.ts`
+drives the worker from the page and renders status in `#status`.
+`npm run build` produces a genuine production bundle:
 
 ```text
 dist/index.html                             0.46 kB
-dist/assets/worker-*.js                     ~6.3 kB
-dist/assets/cp_anywhere_bg-*.wasm         205.89 kB  (91.27 kB gzip-equivalent)
-dist/assets/index-*.js                      ~2.0 kB
+dist/assets/worker-*.js                     ~9.0 kB
+dist/assets/cp_anywhere_wasm_bg-*.wasm    377.62 kB  (146.80 kB gzip-equivalent)
+dist/assets/index-*.js                      ~2.5 kB
 ```
 
 `npm run preview` (or `run-browser-check.mjs`'s own tiny static server)
 serves this real build; nothing is dev-server-only or dynamically
 recompiled per request.
+
+## Segmentation: `identifyPrimaryObjects`
+
+`identifyPrimaryObjects(pixels, rows, cols, mask, config_json)` shares
+its exact settings surface with the Python binding
+(`cp_anywhere_segmentation::build_config`/`ConfigParams` -- see
+`spec/segmentation-modules.md`), so the same `config_json` field names
+(`threshold_method`, `unclump_method`, `watershed_method`, ...) work
+identically in both bindings, eliminating a second, driftable mapping.
+Its result (`SegmentationResult`) is exposed as typed-array/scalar
+getters (`labels`, `smallRemovedLabels`, `objectCount`, `threshold`,
+`thresholdMap`, `guideThreshold`), not a JSON string: the label arrays
+are the same size as the input image, unlike `measure()`'s much smaller
+per-object feature output, so JSON-encoding them would be wasteful.
+`identifyPrimaryObjectsJson(input)` is a JSON-string overload (pixels as
+a plain array) kept for parity with `measureJson`, for debugging/small
+inputs without constructing a typed array by hand.
+
+`examples/zarr-onnx-duckdb` demonstrates this chained into a full
+Zarr -> segmentation -> measurement -> Parquet pipeline in a real
+browser (see `docs/browser-integration.md`) -- this is the shape a
+browser-based consumer needing **both** segmentation and feature
+extraction from cp-anywhere would use, not a theoretical API surface.
 
 ## Typed-array inputs, output conversion, memory
 

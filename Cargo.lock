@@ -104,6 +104,7 @@ name = "cp-anywhere-wasm"
 version = "0.1.0"
 dependencies = [
  "cp_anywhere_core",
+ "cp_anywhere_segmentation",
  "serde",
  "serde_json",
  "wasm-bindgen",
@@ -129,6 +130,9 @@ dependencies = [
 [[package]]
 name = "cp_anywhere_segmentation"
 version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "criterion"

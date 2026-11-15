@@ -1,0 +1,22 @@
+{
+  "image_id": "synthetic_declump_shape_propagate",
+  "object_count": 1,
+  "rescale": true,
+  "settings": {
+    "min_diameter": 10.0,
+    "threshold_method": "manual",
+    "threshold_value": 0.001,
+    "unclump_method": "shape",
+    "watershed_method": "propagate"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_declump_shape_propagate/labels.npy": "60a470eee6707b0179d801672cc5725d65f0048539048b0576958b22df95e8be",
+    "fixtures/segmentation/synthetic_declump_shape_propagate/pixels.npy": "d22a88ee10d8266cc897ecf99578fc823c90c0da1eff6a8b055ff4a43babc539",
+    "fixtures/segmentation/synthetic_declump_shape_propagate/small_removed_labels.npy": "60a470eee6707b0179d801672cc5725d65f0048539048b0576958b22df95e8be"
+  },
+  "shape": [
+    20,
+    24
+  ],
+  "threshold": 0.001
+}

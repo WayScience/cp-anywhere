@@ -129,6 +129,9 @@ fn measure<'py>(
     robust_background_number_of_deviations=2.0,
     log_transform=false,
     threshold_scope=None, adaptive_window_size=50,
+    unclump_method=None, watershed_method=None,
+    smoothing_filter_size=None, maxima_suppression_size=None,
+    low_resolution_maxima=false,
 ))]
 fn identify_primary_objects<'py>(
     py: Python<'py>,
@@ -158,10 +161,14 @@ fn identify_primary_objects<'py>(
     log_transform: bool,
     threshold_scope: Option<String>,
     adaptive_window_size: usize,
+    unclump_method: Option<String>,
+    watershed_method: Option<String>,
+    smoothing_filter_size: Option<f64>,
+    maxima_suppression_size: Option<f64>,
+    low_resolution_maxima: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
     use cp_anywhere_segmentation::{
-        identify_primary_objects as segment, FillHoles, IdentifyPrimaryObjectsConfig,
-        RobustAveraging, RobustBackgroundConfig, RobustVariance, ThresholdMethod,
+        build_config, identify_primary_objects as segment, ConfigParams,
     };
 
     let pixels_slice = pixels
@@ -185,67 +192,9 @@ fn identify_primary_objects<'py>(
         })
         .transpose()?;
 
-    let method = match threshold_method.as_str() {
-        "manual" => ThresholdMethod::Manual(threshold_value.ok_or_else(|| {
-            PyValueError::new_err("threshold_value is required for threshold_method='manual'")
-        })?),
-        "otsu" => ThresholdMethod::OtsuTwoClass,
-        "otsu_integer" => ThresholdMethod::OtsuTwoClassInteger,
-        "otsu_three_class" => ThresholdMethod::OtsuThreeClass {
-            assign_middle_to_foreground: assign_middle_to_foreground.unwrap_or(true),
-        },
-        "li" => ThresholdMethod::Li,
-        "sauvola" => ThresholdMethod::Sauvola,
-        "robust_background" => {
-            let averaging_method = match robust_background_averaging_method.as_deref() {
-                None | Some("mean") => RobustAveraging::Mean,
-                Some("median") => RobustAveraging::Median,
-                Some("mode") => RobustAveraging::Mode,
-                Some(other) => {
-                    return Err(PyValueError::new_err(format!(
-                        "unsupported robust_background_averaging_method: {other:?}; \
-                         use 'mean', 'median', or 'mode'"
-                    )))
-                }
-            };
-            let variance_method = match robust_background_variance_method.as_deref() {
-                None | Some("sd") => RobustVariance::StandardDeviation,
-                Some("mad") => RobustVariance::MedianAbsoluteDeviation,
-                Some(other) => {
-                    return Err(PyValueError::new_err(format!(
-                        "unsupported robust_background_variance_method: {other:?}; \
-                         use 'sd' or 'mad'"
-                    )))
-                }
-            };
-            ThresholdMethod::RobustBackground(RobustBackgroundConfig {
-                lower_outlier_fraction: robust_background_lower_outlier_fraction,
-                upper_outlier_fraction: robust_background_upper_outlier_fraction,
-                averaging_method,
-                variance_method,
-                number_of_deviations: robust_background_number_of_deviations,
-            })
-        }
-        other => {
-            return Err(PyValueError::new_err(format!(
-                "unsupported threshold_method: {other:?}; use 'manual', 'otsu', \
-                 'otsu_integer', 'otsu_three_class', 'li', 'robust_background', or 'sauvola'"
-            )))
-        }
-    };
-    let fill_holes = match fill_holes.as_deref() {
-        None | Some("never") => FillHoles::Never,
-        Some("after_declump_only") => FillHoles::AfterDeclumpOnly,
-        Some("after_thresholding_and_declump") => FillHoles::AfterThresholdingAndDeclump,
-        Some(other) => {
-            return Err(PyValueError::new_err(format!(
-                "unsupported fill_holes: {other:?}; use 'never', \
-                 'after_declump_only', or 'after_thresholding_and_declump'"
-            )))
-        }
-    };
-    let config = IdentifyPrimaryObjectsConfig {
-        threshold_method: method,
+    let config = build_config(&ConfigParams {
+        threshold_method,
+        threshold_value,
         threshold_correction_factor,
         threshold_range: (threshold_range_min, threshold_range_max),
         exclude_size,
@@ -255,19 +204,22 @@ fn identify_primary_objects<'py>(
         maximum_object_count,
         fill_holes,
         threshold_smoothing_scale,
+        assign_middle_to_foreground,
+        robust_background_lower_outlier_fraction,
+        robust_background_upper_outlier_fraction,
+        robust_background_averaging_method,
+        robust_background_variance_method,
+        robust_background_number_of_deviations,
         log_transform,
-        threshold_scope: match threshold_scope.as_deref() {
-            None | Some("global") => cp_anywhere_segmentation::ThresholdScope::Global,
-            Some("adaptive") => cp_anywhere_segmentation::ThresholdScope::Adaptive {
-                window_size: adaptive_window_size,
-            },
-            Some(other) => {
-                return Err(PyValueError::new_err(format!(
-                    "unsupported threshold_scope: {other:?}; use 'global' or 'adaptive'"
-                )))
-            }
-        },
-    };
+        threshold_scope,
+        adaptive_window_size,
+        unclump_method,
+        watershed_method,
+        smoothing_filter_size,
+        maxima_suppression_size,
+        low_resolution_maxima,
+    })
+    .map_err(PyValueError::new_err)?;
 
     let result = py
         .detach(|| {

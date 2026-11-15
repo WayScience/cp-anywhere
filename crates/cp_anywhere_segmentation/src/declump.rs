@@ -1,14 +1,94 @@
 //! Standalone CellProfiler 4.2.8 IdentifyPrimaryObjects declumping.
 //! No Python, filesystem, or external-crate dependency.
 
+/// Legacy `numpy.random.RandomState` MT19937 generator, matching
+/// `numpy.random.seed(0); numpy.random.uniform(0, 0.001, shape)` bit
+/// for bit. CellProfiler's Shape unclump method reseeds the GLOBAL
+/// legacy numpy RNG with a fixed seed (0) before jittering the
+/// distance transform (`numpy.random.seed(0); ... += numpy.random.uniform(...)`),
+/// so a from-scratch, standalone generator is the only way to
+/// reproduce that jitter exactly (no external crate dependency is
+/// allowed in this crate). Only the plain-integer-seed path is
+/// implemented (`mt19937_seed`'s Knuth scalar seeding) -- the
+/// alternate `init_by_array` seeding path is for array/SeedSequence
+/// seeds, which CellProfiler's own `numpy.random.seed(0)` call never
+/// takes.
+struct Mt19937 {
+    key: [u32; 624],
+    pos: usize,
+}
+impl Mt19937 {
+    fn seed(seed: u32) -> Self {
+        let mut key = [0u32; 624];
+        let mut s = seed;
+        for (pos, slot) in key.iter_mut().enumerate() {
+            *slot = s;
+            s = 1812433253u32
+                .wrapping_mul(s ^ (s >> 30))
+                .wrapping_add(pos as u32 + 1);
+        }
+        Mt19937 { key, pos: 624 }
+    }
+    fn gen(&mut self) {
+        const M: usize = 397;
+        const MATRIX_A: u32 = 0x9908b0df;
+        const UPPER_MASK: u32 = 0x8000_0000;
+        const LOWER_MASK: u32 = 0x7fff_ffff;
+        for i in 0..624 {
+            let y = (self.key[i] & UPPER_MASK) | (self.key[(i + 1) % 624] & LOWER_MASK);
+            let mag = if y & 1 != 0 { MATRIX_A } else { 0 };
+            self.key[i] = self.key[(i + M) % 624] ^ (y >> 1) ^ mag;
+        }
+        self.pos = 0;
+    }
+    fn next_u32(&mut self) -> u32 {
+        if self.pos == 624 {
+            self.gen();
+        }
+        let mut y = self.key[self.pos];
+        self.pos += 1;
+        y ^= y >> 11;
+        y ^= (y << 7) & 0x9d2c5680;
+        y ^= (y << 15) & 0xefc60000;
+        y ^= y >> 18;
+        y
+    }
+    fn next_double(&mut self) -> f64 {
+        let a = (self.next_u32() >> 5) as f64;
+        let b = (self.next_u32() >> 6) as f64;
+        (a * 67108864.0 + b) / 9007199254740992.0
+    }
+    /// `numpy.random.uniform(low, high, n)`.
+    fn uniform(&mut self, low: f64, high: f64, n: usize) -> Vec<f64> {
+        (0..n)
+            .map(|_| low + (high - low) * self.next_double())
+            .collect()
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum UnclumpMethod { None, Intensity, Shape }
+pub enum UnclumpMethod {
+    None,
+    Intensity,
+    Shape,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum WatershedMethod { None, Intensity, Shape, Propagate }
+pub enum WatershedMethod {
+    None,
+    Intensity,
+    Shape,
+    Propagate,
+}
 #[derive(Clone, Copy, Debug)]
-pub enum Smoothing { Automatic, Manual(f64) }
+pub enum Smoothing {
+    Automatic,
+    Manual(f64),
+}
 #[derive(Clone, Copy, Debug)]
-pub enum MaximaSuppression { Automatic, Manual(f64) }
+pub enum MaximaSuppression {
+    Automatic,
+    Manual(f64),
+}
 #[derive(Clone, Debug)]
 pub struct DeclumpConfig {
     pub unclump: UnclumpMethod,
@@ -22,135 +102,411 @@ pub struct DeclumpConfig {
 }
 impl Default for DeclumpConfig {
     fn default() -> Self {
-        Self { unclump: UnclumpMethod::Intensity, watershed: WatershedMethod::Intensity,
-            smoothing: Smoothing::Automatic, suppression: MaximaSuppression::Automatic,
-            minimum_diameter: 10.0, low_resolution_maxima: true, basic: false,
-            fill_holes_for_shape: false }
+        Self {
+            unclump: UnclumpMethod::Intensity,
+            watershed: WatershedMethod::Intensity,
+            smoothing: Smoothing::Automatic,
+            suppression: MaximaSuppression::Automatic,
+            minimum_diameter: 10.0,
+            low_resolution_maxima: true,
+            basic: false,
+            fill_holes_for_shape: false,
+        }
     }
 }
 #[derive(Clone, Debug)]
 pub struct DeclumpResult {
     pub labels: Vec<u32>,
+    // Not yet consumed by this crate's own `identify_primary_objects`
+    // caller (which only needs `.labels`), but kept as real public
+    // API for future diagnostic exposure (mirroring `threshold_map`/
+    // `guide_threshold` on `SegmentationResult`), not dead weight.
+    #[allow(dead_code)]
     pub object_count: u32,
+    #[allow(dead_code)]
     pub labeled_maxima: Vec<u32>,
+    #[allow(dead_code)]
     pub maxima_suppression_size: f64,
 }
 /// Arrays are row-major, `width * height` pixels. Labels are the existing
 /// foreground connected components; zero is background. `object_count` is
 /// preserved on the no-op path, just as CellProfiler does.
-pub fn declump(image: &[f64], mask: Option<&[bool]>, labels: &[u32], width: usize,
-    height: usize, object_count: u32, config: &DeclumpConfig) -> Result<DeclumpResult, String> {
-    let n = width.checked_mul(height).ok_or("image dimensions overflow")?;
+pub fn declump(
+    image: &[f64],
+    mask: Option<&[bool]>,
+    labels: &[u32],
+    width: usize,
+    height: usize,
+    object_count: u32,
+    config: &DeclumpConfig,
+) -> Result<DeclumpResult, String> {
+    let n = width
+        .checked_mul(height)
+        .ok_or("image dimensions overflow")?;
     if n != image.len() || n != labels.len() || mask.is_some_and(|m| m.len() != n) {
         return Err("image, labels and mask must match width * height".into());
     }
-    if !config.basic && (config.unclump == UnclumpMethod::None || config.watershed == WatershedMethod::None) {
-        return Ok(DeclumpResult { labels: labels.to_vec(), object_count,
-            labeled_maxima: vec![0; n], maxima_suppression_size: 7.0 });
+    if !config.basic
+        && (config.unclump == UnclumpMethod::None || config.watershed == WatershedMethod::None)
+    {
+        return Ok(DeclumpResult {
+            labels: labels.to_vec(),
+            object_count,
+            labeled_maxima: vec![0; n],
+            maxima_suppression_size: 7.0,
+        });
     }
     let owned_mask;
-    let mask=if let Some(m)=mask {m}else{owned_mask=vec![true;n];&owned_mask};
-    let smoothing=match config.smoothing {Smoothing::Automatic=>2.35*config.minimum_diameter/3.5,Smoothing::Manual(x)=>x};
-    let blurred=smooth(image,mask,width,height,smoothing);
-    let resize=if config.minimum_diameter>10.0 && (config.basic || config.low_resolution_maxima) {10.0/config.minimum_diameter}else{1.0};
-    let suppression=if resize<1.0 {
-        if config.basic || matches!(config.suppression,MaximaSuppression::Automatic) {7.0}else{match config.suppression {MaximaSuppression::Manual(x)=>x*resize+0.5,_=>unreachable!()}}
-    } else {if config.basic {config.minimum_diameter/1.5}else{match config.suppression {MaximaSuppression::Automatic=>config.minimum_diameter/1.5,MaximaSuppression::Manual(x)=>x}}};
-    if resize<1.0 {return Err("low resolution not yet implemented".into());}
-    if !config.basic && config.unclump==UnclumpMethod::Shape {return Err("shape not yet implemented".into());}
-    let binary=maxima(&blurred,labels,width,height,(suppression-0.5).max(1.0));
-    let (labeled_maxima,count)=label8(&binary,width,height);
-    let output=if !config.basic && config.watershed==WatershedMethod::Propagate {
-        propagate(labels,&labeled_maxima,width,height)
+    let mask = if let Some(m) = mask {
+        m
     } else {
-        if !config.basic && config.watershed==WatershedMethod::Shape {return Err("shape watershed not yet implemented".into());}
-        let elevation=image.iter().map(|&x|1.0-x).collect::<Vec<_>>();
-        watershed(&elevation,labels,&labeled_maxima,width,height)
+        owned_mask = vec![true; n];
+        &owned_mask
     };
-    Ok(DeclumpResult{labels:output,object_count:count,labeled_maxima,maxima_suppression_size:suppression/resize})
+    let smoothing = match config.smoothing {
+        Smoothing::Automatic => 2.35 * config.minimum_diameter / 3.5,
+        Smoothing::Manual(x) => x,
+    };
+    let blurred = smooth(image, mask, width, height, smoothing);
+    let resize = if config.minimum_diameter > 10.0 && (config.basic || config.low_resolution_maxima)
+    {
+        10.0 / config.minimum_diameter
+    } else {
+        1.0
+    };
+    let suppression = if resize < 1.0 {
+        if config.basic || matches!(config.suppression, MaximaSuppression::Automatic) {
+            7.0
+        } else {
+            match config.suppression {
+                MaximaSuppression::Manual(x) => x * resize + 0.5,
+                _ => unreachable!(),
+            }
+        }
+    } else {
+        if config.basic {
+            config.minimum_diameter / 1.5
+        } else {
+            match config.suppression {
+                MaximaSuppression::Automatic => config.minimum_diameter / 1.5,
+                MaximaSuppression::Manual(x) => x,
+            }
+        }
+    };
+    if resize < 1.0 {
+        return Err("low resolution not yet implemented".into());
+    }
+    // Shape unclump: distance-transform the (hole-filled, if the main
+    // fill_holes setting is "Never") foreground, jitter it with the
+    // SAME fixed-seed(0) legacy RNG draw CellProfiler itself uses (to
+    // break exact distance ties into unique maxima), then find maxima
+    // on THIS jittered array instead of the blurred intensity image.
+    let mut shape_distance: Option<Vec<f64>> = None;
+    let maxima_source: Vec<f64> = if !config.basic && config.unclump == UnclumpMethod::Shape {
+        let mut foreground: Vec<bool> = labels.iter().map(|&l| l > 0).collect();
+        if config.fill_holes_for_shape {
+            let mut filled = labels.to_vec();
+            crate::holes::fill_labeled_holes(&mut filled, height, width, None);
+            foreground = filled.iter().map(|&l| l > 0).collect();
+        }
+        let mut d = distance_transform_edt(&foreground, width, height);
+        let jitter = Mt19937::seed(0).uniform(0.0, 0.001, n);
+        for (v, j) in d.iter_mut().zip(&jitter) {
+            *v += j;
+        }
+        shape_distance = Some(d.clone());
+        d
+    } else {
+        blurred
+    };
+    let binary = maxima(
+        &maxima_source,
+        labels,
+        width,
+        height,
+        (suppression - 0.5).max(1.0),
+    );
+    let (labeled_maxima, count) = label8(&binary, width, height);
+    let output = if !config.basic && config.watershed == WatershedMethod::Propagate {
+        propagate(labels, &labeled_maxima, width, height)
+    } else if !config.basic && config.watershed == WatershedMethod::Shape {
+        // Reuses the SAME (already-jittered) distance transform
+        // computed above when unclump was also Shape -- matching
+        // CellProfiler's own `if distance_transformed_image is None`
+        // check, which is false in that case. Only recomputes a
+        // fresh, unjittered one when Shape watershed is paired with a
+        // different unclump method.
+        let d = match shape_distance {
+            Some(d) => d,
+            None => {
+                let foreground: Vec<bool> = labels.iter().map(|&l| l > 0).collect();
+                distance_transform_edt(&foreground, width, height)
+            }
+        };
+        let max = d.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+        // Real CellProfiler: watershed_image = -d; watershed_image -=
+        // min(watershed_image). Since min(-d) = -max(d), this
+        // simplifies to max(d) - d (NOT -d - min(d)).
+        let elevation: Vec<f64> = d.iter().map(|&v| max - v).collect();
+        watershed(&elevation, labels, &labeled_maxima, width, height)
+    } else {
+        let elevation = image.iter().map(|&x| 1.0 - x).collect::<Vec<_>>();
+        watershed(&elevation, labels, &labeled_maxima, width, height)
+    };
+    Ok(DeclumpResult {
+        labels: output,
+        object_count: count,
+        labeled_maxima,
+        maxima_suppression_size: suppression / resize,
+    })
 }
 fn smooth(image: &[f64], mask: &[bool], w: usize, h: usize, size: f64) -> Vec<f64> {
-    if size == 0.0 { return image.to_vec(); }
+    if size == 0.0 {
+        return image.to_vec();
+    }
     let sigma = size / 2.35;
     let radius = ((size / 2.0) as usize).max(1);
     let mut weights = Vec::with_capacity(radius + 1);
     for r in 0..=radius {
-        weights.push(1.0 / (2.0 * std::f64::consts::PI).sqrt() / sigma
-            * (-0.5 * (r as f64).powi(2) / sigma.powi(2)).exp());
+        weights.push(
+            1.0 / (2.0 * std::f64::consts::PI).sqrt() / sigma
+                * (-0.5 * (r as f64).powi(2) / sigma.powi(2)).exp(),
+        );
     }
     let convolve = |src: &[f64], axis: usize| {
         let mut dst = vec![0.0; src.len()];
-        for y in 0..h { for x in 0..w {
-            let p=y*w+x;
-            let mut v=src[p]*weights[0];
-            for r in (1..=radius).rev() {
-                let (a,b)=if axis==0 {
-                    (if y>=r {src[(y-r)*w+x]}else{0.0},if y+r<h {src[(y+r)*w+x]}else{0.0})
-                } else {
-                    (if x>=r {src[p-r]}else{0.0},if x+r<w {src[p+r]}else{0.0})
-                };
-                v += (a+b)*weights[r];
+        for y in 0..h {
+            for x in 0..w {
+                let p = y * w + x;
+                let mut v = src[p] * weights[0];
+                for r in (1..=radius).rev() {
+                    let (a, b) = if axis == 0 {
+                        (
+                            if y >= r { src[(y - r) * w + x] } else { 0.0 },
+                            if y + r < h { src[(y + r) * w + x] } else { 0.0 },
+                        )
+                    } else {
+                        (
+                            if x >= r { src[p - r] } else { 0.0 },
+                            if x + r < w { src[p + r] } else { 0.0 },
+                        )
+                    };
+                    v += (a + b) * weights[r];
+                }
+                dst[p] = v;
             }
-            dst[p]=v;
-        }}
+        }
         dst
     };
-    let m=mask.iter().map(|&b|if b {1.0}else{0.0}).collect::<Vec<_>>();
-    let masked=image.iter().zip(mask).map(|(&x,&b)|if b {x}else{0.0}).collect::<Vec<_>>();
-    let edge=convolve(&convolve(&m,0),1);
-    let blurred=convolve(&convolve(&masked,0),1);
-    blurred.iter().zip(edge).zip(mask).map(|((&x,e),&b)|if b {x/e}else{0.0}).collect()
+    let m = mask
+        .iter()
+        .map(|&b| if b { 1.0 } else { 0.0 })
+        .collect::<Vec<_>>();
+    let masked = image
+        .iter()
+        .zip(mask)
+        .map(|(&x, &b)| if b { x } else { 0.0 })
+        .collect::<Vec<_>>();
+    let edge = convolve(&convolve(&m, 0), 1);
+    let blurred = convolve(&convolve(&masked, 0), 1);
+    blurred
+        .iter()
+        .zip(edge)
+        .zip(mask)
+        .map(|((&x, e), &b)| if b { x / e } else { 0.0 })
+        .collect()
 }
 
 // Packed, bit-indexed binary_shrink lookup tables from centrosome 1.2.3
 // cpmorphology.binary_shrink, in its UL/R, UR/B, LR/L, LL/T order.
-const SHRINK_TABLES: [[u64;8];4] = [
-    [0xffffffff7475ffff,0xffffffff74ffffff,0xffffffffffffffff,0xffffffff74ffffff,0xffffffffffffffff,0xffffffffffffffff,0xffffffffffffffff,0xffffffff74ffffff],
-    [0x7f2fffff7723ffff,0x7fffffff77ffffff,0xffffffffffffffff,0xffffffffffffffff,0x7f2fffffffffffff,0x7fffffffffffffff,0xffffffffffffffff,0xffffffffffffffff],
-    [0xff2effffffffffff,0xffffffffffffffff,0xffffffffffffffff,0xffffffffffffffff,0xff2efffffffeffff,0xffffffffffffffff,0xff2efffffffeffff,0xff2efffffffeffff],
-    [0xffffffffffffffff,0xfffffffffcfeffff,0xfffffffffffeffff,0xfffffffffcfeffff,0xffffffffffffffff,0xffffffffffffffff,0xffeefffffffeffff,0xcceefffffcfeffff],
+const SHRINK_TABLES: [[u64; 8]; 4] = [
+    [
+        0xffffffff7475ffff,
+        0xffffffff74ffffff,
+        0xffffffffffffffff,
+        0xffffffff74ffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0xffffffff74ffffff,
+    ],
+    [
+        0x7f2fffff7723ffff,
+        0x7fffffff77ffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0x7f2fffffffffffff,
+        0x7fffffffffffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+    ],
+    [
+        0xff2effffffffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0xff2efffffffeffff,
+        0xffffffffffffffff,
+        0xff2efffffffeffff,
+        0xff2efffffffeffff,
+    ],
+    [
+        0xffffffffffffffff,
+        0xfffffffffcfeffff,
+        0xfffffffffffeffff,
+        0xfffffffffcfeffff,
+        0xffffffffffffffff,
+        0xffffffffffffffff,
+        0xffeefffffffeffff,
+        0xcceefffffcfeffff,
+    ],
 ];
 fn shrink(mut pixels: Vec<bool>, w: usize, h: usize) -> Vec<bool> {
-    let mut active=pixels.iter().enumerate().filter_map(|(i,&b)|b.then_some(i)).collect::<Vec<_>>();
+    let mut active = pixels
+        .iter()
+        .enumerate()
+        .filter_map(|(i, &b)| b.then_some(i))
+        .collect::<Vec<_>>();
     loop {
-        let count=active.len();
+        let count = active.len();
         for table in SHRINK_TABLES {
-            let mut remove=Vec::new();
+            let mut remove = Vec::new();
             for &p in &active {
-                let mut index=0usize;
-                for dy in -1..=1 { for dx in -1..=1 {
-                    if let Some(q)=neighbor(p,w,h,dy,dx) {if pixels[q] {index |= 1 << ((dy+1)*3+dx+1);}}
-                }}
-                if table[index/64] & (1 << (index%64))==0 {remove.push(p);}
+                let mut index = 0usize;
+                for dy in -1..=1 {
+                    for dx in -1..=1 {
+                        if let Some(q) = neighbor(p, w, h, dy, dx) {
+                            if pixels[q] {
+                                index |= 1 << ((dy + 1) * 3 + dx + 1);
+                            }
+                        }
+                    }
+                }
+                if table[index / 64] & (1 << (index % 64)) == 0 {
+                    remove.push(p);
+                }
             }
-            for p in remove { pixels[p]=false; }
-            active.retain(|&p|pixels[p]);
+            for p in remove {
+                pixels[p] = false;
+            }
+            active.retain(|&p| pixels[p]);
         }
-        if active.len()==count {break;}
+        if active.len() == count {
+            break;
+        }
     }
     pixels
 }
-fn neighbor(p: usize,w: usize,h: usize,dy: isize,dx: isize) -> Option<usize> {
-    let y=(p/w).checked_add_signed(dy)?;
-    let x=(p%w).checked_add_signed(dx)?;
-    (y<h && x<w).then_some(y*w+x)
+fn neighbor(p: usize, w: usize, h: usize, dy: isize, dx: isize) -> Option<usize> {
+    let y = (p / w).checked_add_signed(dy)?;
+    let x = (p % w).checked_add_signed(dx)?;
+    (y < h && x < w).then_some(y * w + x)
 }
-fn label8(binary: &[bool], w: usize, h: usize) -> (Vec<u32>,u32) {
-    let mut out=vec![0;binary.len()];let mut count=0;
-    let mut todo=Vec::new();
+fn label8(binary: &[bool], w: usize, h: usize) -> (Vec<u32>, u32) {
+    let mut out = vec![0; binary.len()];
+    let mut count = 0;
+    let mut todo = Vec::new();
     for p in 0..binary.len() {
-        if !binary[p] || out[p]!=0 {continue;}
-        count+=1;out[p]=count;todo.push(p);
-        while let Some(q)=todo.pop() {
-            for dy in -1..=1 {for dx in -1..=1 {
-                if let Some(r)=neighbor(q,w,h,dy,dx) {
-                    if binary[r] && out[r]==0 {out[r]=count;todo.push(r);}
+        if !binary[p] || out[p] != 0 {
+            continue;
+        }
+        count += 1;
+        out[p] = count;
+        todo.push(p);
+        while let Some(q) = todo.pop() {
+            for dy in -1..=1 {
+                for dx in -1..=1 {
+                    if let Some(r) = neighbor(q, w, h, dy, dx) {
+                        if binary[r] && out[r] == 0 {
+                            out[r] = count;
+                            todo.push(r);
+                        }
+                    }
                 }
-            }}
+            }
         }
     }
-    (out,count)
+    (out, count)
 }
+
+/// 1D exact squared-distance transform of a sampled function (the
+/// lower envelope of unit parabolas), Felzenszwalt & Huttenlocher
+/// 2004 -- the same algorithm `scipy.ndimage.distance_transform_edt`
+/// itself uses internally, so results match to float precision (this
+/// measures a well-defined mathematical quantity, not a heuristic:
+/// any correct implementation agrees).
+#[allow(clippy::needless_range_loop)]
+fn edt_1d(f: &[f64]) -> Vec<f64> {
+    let n = f.len();
+    let mut v = vec![0usize; n];
+    let mut z = vec![0.0f64; n + 1];
+    let mut k = 0usize;
+    z[0] = f64::NEG_INFINITY;
+    z[1] = f64::INFINITY;
+    for q in 1..n {
+        let mut s = ((f[q] + (q * q) as f64) - (f[v[k]] + (v[k] * v[k]) as f64))
+            / (2.0 * q as f64 - 2.0 * v[k] as f64);
+        while k > 0 && s <= z[k] {
+            k -= 1;
+            s = ((f[q] + (q * q) as f64) - (f[v[k]] + (v[k] * v[k]) as f64))
+                / (2.0 * q as f64 - 2.0 * v[k] as f64);
+        }
+        k += 1;
+        v[k] = q;
+        z[k] = s;
+        if k + 1 < z.len() {
+            z[k + 1] = f64::INFINITY;
+        }
+    }
+    let mut d = vec![0.0f64; n];
+    let mut k = 0usize;
+    for q in 0..n {
+        while k < n && z[k + 1] < q as f64 {
+            k += 1;
+        }
+        let dv = q as f64 - v[k] as f64;
+        d[q] = dv * dv + f[v[k]];
+    }
+    d
+}
+
+/// `scipy.ndimage.distance_transform_edt`: for each foreground pixel,
+/// the Euclidean distance to the nearest background (false) pixel;
+/// background pixels are 0. Separable: a vertical pass then a
+/// horizontal pass of 1D squared-distance transforms, final sqrt.
+fn distance_transform_edt(foreground: &[bool], w: usize, h: usize) -> Vec<f64> {
+    // A large *finite* sentinel, not f64::INFINITY: the parabola
+    // intersection formula subtracts two f-values, and inf - inf is
+    // NaN, which silently breaks the lower-envelope comparisons.
+    // Scaled to the image so it is always many orders of magnitude
+    // bigger than any real squared coordinate (keeping the lower-
+    // envelope comparisons correct) while staying small enough that
+    // f64's ~15-16 significant decimal digits still resolve integer
+    // q^2 - v^2 differences precisely (a fixed 1e18 constant was
+    // tried first and silently reintroduced the same inf-inf-style
+    // precision collapse this sentinel is meant to avoid).
+    let inf = ((w * w + h * h) as f64) * 1e6 + 1e6;
+    let mut g = vec![0.0f64; foreground.len()];
+    for x in 0..w {
+        let col: Vec<f64> = (0..h)
+            .map(|y| if foreground[y * w + x] { inf } else { 0.0 })
+            .collect();
+        let d = edt_1d(&col);
+        for y in 0..h {
+            g[y * w + x] = d[y];
+        }
+    }
+    let mut out = vec![0.0f64; foreground.len()];
+    for y in 0..h {
+        let row = &g[y * w..y * w + w];
+        let d = edt_1d(row);
+        for x in 0..w {
+            out[y * w + x] = d[x].sqrt();
+        }
+    }
+    out
+}
+
 fn maxima(image: &[f64], labels: &[u32], w: usize, h: usize, radius: f64) -> Vec<bool> {
     let r = radius as isize;
     let mut offsets = Vec::new();
@@ -208,9 +564,7 @@ mod tests {
             0.5840979689127356, 0.64984660155482, 0.08444432113988909, 0.41580740217060963, 0.04161417386189248, 0.49399081924451893, 0.3298612123327853, 0.1445241888660469, 0.10340296772255164, 0.587644572177712, 0.1705929685368861, 0.9251201183767972,
             0.581061139700395, 0.34686980453483707, 0.5909154914814168, 0.022803871029697498, 0.9585592132414453, 0.48230343694290023, 0.7827352272502862, 0.08272999992243857, 0.48665833083816035, 0.4907069943545209, 0.9378264549749828, 0.5717280523760754,
         ];
-        let labels: Vec<u32> = (0..144)
-            .map(|p| if p / 12 < 2 { 0 } else { 1 })
-            .collect();
+        let labels: Vec<u32> = (0..144).map(|p| if p / 12 < 2 { 0 } else { 1 }).collect();
         let binary = maxima(&image, &labels, 12, 12, (7.0_f64 - 0.5).max(1.0));
         assert_eq!(coords(&binary, 12), vec![(8, 7)]);
     }
@@ -250,6 +604,88 @@ mod tests {
         let labels = vec![1u32; 30];
         let binary = maxima(&image, &labels, 6, 5, 1.0);
         assert_eq!(coords(&binary, 6), vec![(2, 2)]);
+    }
+
+    #[test]
+    #[allow(clippy::approx_constant)]
+    fn distance_transform_edt_matches_real_scipy_ndimage() {
+        // 8x8 ring with a hole at (3,3), verified against real
+        // scipy.ndimage.distance_transform_edt.
+        #[rustfmt::skip]
+        let mut foreground = vec![false; 64];
+        for r in 1..7 {
+            for c in 1..7 {
+                foreground[r * 8 + c] = true;
+            }
+        }
+        foreground[3 * 8 + 3] = false;
+        let d = distance_transform_edt(&foreground, 8, 8);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+            0.0, 1.0, 1.4142135623730951, 1.0, 1.4142135623730951, 2.0, 1.0, 0.0,
+            0.0, 1.0, 1.0, 0.0, 1.0, 2.0, 1.0, 0.0,
+            0.0, 1.0, 1.4142135623730951, 1.0, 1.4142135623730951, 2.0, 1.0, 0.0,
+            0.0, 1.0, 2.0, 2.0, 2.0, 2.0, 1.0, 0.0,
+            0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+    }
+
+    #[test]
+    #[allow(clippy::approx_constant)]
+    fn distance_transform_edt_matches_real_scipy_on_an_irregular_random_mask() {
+        // Fixed numpy.random.default_rng(42) 8x8 boolean mask
+        // (rng.random((8,8)) > 0.3), verified against real
+        // scipy.ndimage.distance_transform_edt.
+        #[rustfmt::skip]
+        let foreground: Vec<bool> = vec![
+            true, true, true, true, false, true, true, true,
+            false, true, true, true, true, true, true, false,
+            true, false, true, true, true, true, true, true,
+            true, false, true, false, false, true, true, true,
+            true, true, true, false, false, true, false, true,
+            true, true, true, true, true, true, true, false,
+            true, false, false, false, true, true, true, true,
+            true, true, false, false, true, true, true, true,
+        ];
+        let d = distance_transform_edt(&foreground, 8, 8);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            1.0, 1.4142135623730951, 2.0, 1.0, 0.0, 1.0, 1.4142135623730951, 1.0,
+            0.0, 1.0, 1.4142135623730951, 1.4142135623730951, 1.0, 1.4142135623730951, 1.0, 0.0,
+            1.0, 0.0, 1.0, 1.0, 1.0, 1.4142135623730951, 1.4142135623730951, 1.0,
+            1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.4142135623730951,
+            1.4142135623730951, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,
+            1.4142135623730951, 1.0, 1.0, 1.0, 1.0, 1.4142135623730951, 1.0, 0.0,
+            1.0, 0.0, 0.0, 0.0, 1.0, 2.0, 1.4142135623730951, 1.0,
+            1.4142135623730951, 1.0, 0.0, 0.0, 1.0, 2.0, 2.23606797749979, 2.0,
+        ];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+    }
+
+    #[test]
+    fn mt19937_uniform_matches_real_numpy_legacy_random_seed_0() {
+        // `numpy.random.seed(0); numpy.random.uniform(0, 0.001, (3,4))`
+        // -- the exact jitter CellProfiler's Shape unclump applies.
+        // Verified against real numpy.
+        let mut rng = Mt19937::seed(0);
+        let got = rng.uniform(0.0, 0.001, 12);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            0.0005488135039273248, 0.0007151893663724195, 0.0006027633760716439, 0.0005448831829968968,
+            0.0004236547993389047, 0.0006458941130666561, 0.00043758721126269253, 0.0008917730007820798,
+            0.0009636627605010293, 0.0003834415188257777, 0.0007917250380826646, 0.0005288949197529045,
+        ];
+        for (got, want) in got.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-18, "{got} vs {want}");
+        }
     }
 
     #[test]
@@ -324,80 +760,178 @@ mod tests {
 }
 // A deliberately non-stable min heap: equal-priority seed entries must use
 // scikit-image's exact swap/pop behavior (not a Rust BinaryHeap tiebreaker).
-struct MinHeap<T> { data: Vec<T>, smaller: fn(&T,&T)->bool }
+struct MinHeap<T> {
+    data: Vec<T>,
+    smaller: fn(&T, &T) -> bool,
+}
 impl<T> MinHeap<T> {
-    fn new(smaller: fn(&T,&T)->bool) -> Self {Self {data:Vec::new(),smaller}}
+    fn new(smaller: fn(&T, &T) -> bool) -> Self {
+        Self {
+            data: Vec::new(),
+            smaller,
+        }
+    }
     fn push(&mut self, value: T) {
-        let mut child=self.data.len();self.data.push(value);
-        while child>0 {let parent=(child-1)/2;
-            if !(self.smaller)(&self.data[child],&self.data[parent]) {break;}
-            self.data.swap(parent,child);child=parent;
+        let mut child = self.data.len();
+        self.data.push(value);
+        while child > 0 {
+            let parent = (child - 1) / 2;
+            if !(self.smaller)(&self.data[child], &self.data[parent]) {
+                break;
+            }
+            self.data.swap(parent, child);
+            child = parent;
         }
     }
     fn pop(&mut self) -> Option<T> {
-        if self.data.is_empty() {return None;}
-        let result=self.data.swap_remove(0);let mut i=0;
+        if self.data.is_empty() {
+            return None;
+        }
+        let result = self.data.swap_remove(0);
+        let mut i = 0;
         loop {
-            let l=2*i+1;let r=l+1;let mut smallest=i;
-            if l>=self.data.len() {break;}
-            if (self.smaller)(&self.data[l],&self.data[i]) {smallest=l;}
-            if r<self.data.len() && (self.smaller)(&self.data[r],&self.data[smallest]) {smallest=r;}
-            if smallest==i {break;}
-            self.data.swap(i,smallest);i=smallest;
+            let l = 2 * i + 1;
+            let r = l + 1;
+            let mut smallest = i;
+            if l >= self.data.len() {
+                break;
+            }
+            if (self.smaller)(&self.data[l], &self.data[i]) {
+                smallest = l;
+            }
+            if r < self.data.len() && (self.smaller)(&self.data[r], &self.data[smallest]) {
+                smallest = r;
+            }
+            if smallest == i {
+                break;
+            }
+            self.data.swap(i, smallest);
+            i = smallest;
         }
         Some(result)
     }
 }
 #[derive(Clone, Copy)]
-struct Flood { value: f64, age: usize, pixel: usize }
-fn watershed(image: &[f64], labels: &[u32], markers: &[u32], w: usize,h: usize) -> Vec<u32> {
-    let mut out=markers.iter().zip(labels).map(|(&m,&l)|if l!=0 {m}else{0}).collect::<Vec<_>>();
-    let mut heap=MinHeap::new(|a:&Flood,b:&Flood|if a.value!=b.value {a.value<b.value}else{a.age<b.age});
-    for p in 0..out.len() {if out[p]!=0 {heap.push(Flood{value:image[p],age:0,pixel:p});}}
-    let mut age=1;
-    while let Some(e)=heap.pop() {
+struct Flood {
+    value: f64,
+    age: usize,
+    pixel: usize,
+}
+fn watershed(image: &[f64], labels: &[u32], markers: &[u32], w: usize, h: usize) -> Vec<u32> {
+    let mut out = markers
+        .iter()
+        .zip(labels)
+        .map(|(&m, &l)| if l != 0 { m } else { 0 })
+        .collect::<Vec<_>>();
+    let mut heap = MinHeap::new(|a: &Flood, b: &Flood| {
+        if a.value != b.value {
+            a.value < b.value
+        } else {
+            a.age < b.age
+        }
+    });
+    for p in 0..out.len() {
+        if out[p] != 0 {
+            heap.push(Flood {
+                value: image[p],
+                age: 0,
+                pixel: p,
+            });
+        }
+    }
+    let mut age = 1;
+    while let Some(e) = heap.pop() {
         // skimage.morphology._offsets_to_raveled_neighbors distance order.
-        for (dy,dx) in [(-1,0),(0,-1),(0,1),(1,0),(-1,-1),(-1,1),(1,-1),(1,1)] {
-            if let Some(q)=neighbor(e.pixel,w,h,dy,dx) {
-                if labels[q]==0 || out[q]!=0 {continue;}
-                out[q]=out[e.pixel];age+=1;
-                heap.push(Flood{value:image[q],age,pixel:q});
+        for (dy, dx) in [
+            (-1, 0),
+            (0, -1),
+            (0, 1),
+            (1, 0),
+            (-1, -1),
+            (-1, 1),
+            (1, -1),
+            (1, 1),
+        ] {
+            if let Some(q) = neighbor(e.pixel, w, h, dy, dx) {
+                if labels[q] == 0 || out[q] != 0 {
+                    continue;
+                }
+                out[q] = out[e.pixel];
+                age += 1;
+                heap.push(Flood {
+                    value: image[q],
+                    age,
+                    pixel: q,
+                });
             }
         }
     }
     out
 }
 #[derive(Clone, Copy)]
-struct Propagation { key: (u64,u32,usize), pixel: usize, label: u32 }
-fn propagate(labels: &[u32],markers: &[u32],w: usize,h: usize) -> Vec<u32> {
-    let mut out=vec![0;labels.len()];let mut distance=vec![-1.0;labels.len()];
-    let mut heap=MinHeap::new(|a:&Propagation,b:&Propagation|a.key<b.key);
+struct Propagation {
+    key: (u64, u32, usize),
+    pixel: usize,
+    label: u32,
+}
+fn propagate(labels: &[u32], markers: &[u32], w: usize, h: usize) -> Vec<u32> {
+    let mut out = vec![0; labels.len()];
+    let mut distance = vec![-1.0; labels.len()];
+    let mut heap = MinHeap::new(|a: &Propagation, b: &Propagation| a.key < b.key);
     for p in 0..labels.len() {
-        if markers[p]>0 {distance[p]=0.0;
-            if labels[p]>0 {heap.push(Propagation{key:(0,markers[p],p),pixel:p,label:markers[p]});}
+        if markers[p] > 0 {
+            distance[p] = 0.0;
+            if labels[p] > 0 {
+                heap.push(Propagation {
+                    key: (0, markers[p], p),
+                    pixel: p,
+                    label: markers[p],
+                });
+            }
         }
     }
-    while let Some(e)=heap.pop() {
-        if out[e.pixel]!=0 {continue;}
-        out[e.pixel]=e.label;
-        let d0=distance[e.pixel];
-        for dy in -1..=1 {for dx in -1..=1 {
-            if dy==0 && dx==0 {continue;}
-            if let Some(q)=neighbor(e.pixel,w,h,dy,dx) {
-                if out[q]!=0 || labels[q]==0 {continue;}
-                let d=d0+if dy!=0 && dx!=0 {2.0_f64.sqrt()}else{1.0};
-                if distance[q]<0.0 || distance[q]>d {
-                    distance[q]=d;
-                    // centrosome converts positive doubles to two signed
-                    // ints, discarding the low bit of the mantissa.
-                    heap.push(Propagation{key:(d.to_bits()>>1,e.label,q),pixel:q,label:e.label});
+    while let Some(e) = heap.pop() {
+        if out[e.pixel] != 0 {
+            continue;
+        }
+        out[e.pixel] = e.label;
+        let d0 = distance[e.pixel];
+        for dy in -1..=1 {
+            for dx in -1..=1 {
+                if dy == 0 && dx == 0 {
+                    continue;
+                }
+                if let Some(q) = neighbor(e.pixel, w, h, dy, dx) {
+                    if out[q] != 0 || labels[q] == 0 {
+                        continue;
+                    }
+                    let d = d0
+                        + if dy != 0 && dx != 0 {
+                            2.0_f64.sqrt()
+                        } else {
+                            1.0
+                        };
+                    if distance[q] < 0.0 || distance[q] > d {
+                        distance[q] = d;
+                        // centrosome converts positive doubles to two signed
+                        // ints, discarding the low bit of the mantissa.
+                        heap.push(Propagation {
+                            key: (d.to_bits() >> 1, e.label, q),
+                            pixel: q,
+                            label: e.label,
+                        });
+                    }
                 }
             }
-        }}
+        }
     }
     // centrosome restores even markers that fell outside the mask after
     // spline upsampling (do not silently "fix" these).
-    for p in 0..markers.len() {if markers[p]!=0 {out[p]=markers[p];}}
+    for p in 0..markers.len() {
+        if markers[p] != 0 {
+            out[p] = markers[p];
+        }
+    }
     out
 }
 
@@ -427,7 +961,7 @@ mod watershed_tests {
         let watershed_image: Vec<f64> = image.iter().map(|&v| 1.0 - v).collect();
         let labels = vec![1u32; 25];
         let mut markers = vec![0u32; 25];
-        markers[1 * 5 + 1] = 1;
+        markers[5 + 1] = 1;
         markers[3 * 5 + 3] = 2;
         let out = watershed(&watershed_image, &labels, &markers, 5, 5);
         #[rustfmt::skip]
@@ -454,7 +988,7 @@ mod watershed_tests {
         let mut labels = vec![1u32; 36];
         labels[0] = 0;
         let mut markers = vec![0u32; 36];
-        markers[1 * 6 + 1] = 1;
+        markers[6 + 1] = 1;
         markers[4 * 6 + 4] = 2;
         let out = propagate(&labels, &markers, 6, 6);
         #[rustfmt::skip]
@@ -468,5 +1002,161 @@ mod watershed_tests {
         ];
         assert_eq!(out, expected);
     }
-}
 
+    fn twin_blob_image() -> Vec<f64> {
+        #[rustfmt::skip]
+        let v = vec![
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.041685152500090084, 0.09649209709474871, 0.13103392424311155, 0.1428571428571429, 0.13103392424311155, 0.09649209709474871, 0.041685152500090084, 0.041685152500090084, 0.09649209709474871, 0.13103392424311155, 0.1428571428571429, 0.13103392424311155, 0.09649209709474871, 0.041685152500090084, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0852679660810216, 0.16700687216495702, 0.23069074183792804, 0.2715686409153165, 0.2857142857142857, 0.2715686409153165, 0.23069074183792804, 0.16700687216495702, 0.16700687216495702, 0.23069074183792804, 0.2715686409153165, 0.2857142857142857, 0.2715686409153165, 0.23069074183792804, 0.16700687216495702, 0.0852679660810216, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0852679660810216, 0.19187796435823135, 0.2857142857142857, 0.36112343500006006, 0.41098491062604847, 0.4285714285714286, 0.41098491062604847, 0.36112343500006006, 0.2857142857142857, 0.2857142857142857, 0.36112343500006006, 0.41098491062604847, 0.4285714285714286, 0.41098491062604847, 0.36112343500006006, 0.2857142857142857, 0.19187796435823135, 0.0852679660810216, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.041685152500090084, 0.16700687216495702, 0.2857142857142857, 0.3939084732686736, 0.4849212463622873, 0.5482460485473744, 0.5714285714285714, 0.5482460485473744, 0.4849212463622873, 0.3939084732686736, 0.3939084732686736, 0.4849212463622873, 0.5482460485473744, 0.5714285714285714, 0.5482460485473744, 0.4849212463622873, 0.3939084732686736, 0.2857142857142857, 0.16700687216495702, 0.041685152500090084, 0.0, 0.0,
+            0.0, 0.0, 0.09649209709474871, 0.23069074183792804, 0.36112343500006006, 0.4849212463622873, 0.5959389821791157, 0.68056171750003, 0.7142857142857143, 0.68056171750003, 0.5959389821791157, 0.4849212463622873, 0.4849212463622873, 0.5959389821791157, 0.68056171750003, 0.7142857142857143, 0.68056171750003, 0.5959389821791157, 0.4849212463622873, 0.36112343500006006, 0.23069074183792804, 0.09649209709474871, 0.0, 0.0,
+            0.0, 0.0, 0.13103392424311155, 0.2715686409153165, 0.41098491062604847, 0.5482460485473744, 0.68056171750003, 0.7979694910895578, 0.8571428571428572, 0.7979694910895578, 0.68056171750003, 0.5482460485473744, 0.5482460485473744, 0.68056171750003, 0.7979694910895578, 0.8571428571428572, 0.7979694910895578, 0.68056171750003, 0.5482460485473744, 0.41098491062604847, 0.2715686409153165, 0.13103392424311155, 0.0, 0.0,
+            0.0, 0.0, 0.1428571428571429, 0.2857142857142857, 0.4285714285714286, 0.5714285714285714, 0.7142857142857143, 0.8571428571428572, 1.0, 0.8571428571428572, 0.7142857142857143, 0.5714285714285714, 0.5714285714285714, 0.7142857142857143, 0.8571428571428572, 1.0, 0.8571428571428572, 0.7142857142857143, 0.5714285714285714, 0.4285714285714286, 0.2857142857142857, 0.1428571428571429, 0.0, 0.0,
+            0.0, 0.0, 0.13103392424311155, 0.2715686409153165, 0.41098491062604847, 0.5482460485473744, 0.68056171750003, 0.7979694910895578, 0.8571428571428572, 0.7979694910895578, 0.68056171750003, 0.5482460485473744, 0.5482460485473744, 0.68056171750003, 0.7979694910895578, 0.8571428571428572, 0.7979694910895578, 0.68056171750003, 0.5482460485473744, 0.41098491062604847, 0.2715686409153165, 0.13103392424311155, 0.0, 0.0,
+            0.0, 0.0, 0.09649209709474871, 0.23069074183792804, 0.36112343500006006, 0.4849212463622873, 0.5959389821791157, 0.68056171750003, 0.7142857142857143, 0.68056171750003, 0.5959389821791157, 0.4849212463622873, 0.4849212463622873, 0.5959389821791157, 0.68056171750003, 0.7142857142857143, 0.68056171750003, 0.5959389821791157, 0.4849212463622873, 0.36112343500006006, 0.23069074183792804, 0.09649209709474871, 0.0, 0.0,
+            0.0, 0.0, 0.041685152500090084, 0.16700687216495702, 0.2857142857142857, 0.3939084732686736, 0.4849212463622873, 0.5482460485473744, 0.5714285714285714, 0.5482460485473744, 0.4849212463622873, 0.3939084732686736, 0.3939084732686736, 0.4849212463622873, 0.5482460485473744, 0.5714285714285714, 0.5482460485473744, 0.4849212463622873, 0.3939084732686736, 0.2857142857142857, 0.16700687216495702, 0.041685152500090084, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0852679660810216, 0.19187796435823135, 0.2857142857142857, 0.36112343500006006, 0.41098491062604847, 0.4285714285714286, 0.41098491062604847, 0.36112343500006006, 0.2857142857142857, 0.2857142857142857, 0.36112343500006006, 0.41098491062604847, 0.4285714285714286, 0.41098491062604847, 0.36112343500006006, 0.2857142857142857, 0.19187796435823135, 0.0852679660810216, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0852679660810216, 0.16700687216495702, 0.23069074183792804, 0.2715686409153165, 0.2857142857142857, 0.2715686409153165, 0.23069074183792804, 0.16700687216495702, 0.16700687216495702, 0.23069074183792804, 0.2715686409153165, 0.2857142857142857, 0.2715686409153165, 0.23069074183792804, 0.16700687216495702, 0.0852679660810216, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.041685152500090084, 0.09649209709474871, 0.13103392424311155, 0.1428571428571429, 0.13103392424311155, 0.09649209709474871, 0.041685152500090084, 0.041685152500090084, 0.09649209709474871, 0.13103392424311155, 0.1428571428571429, 0.13103392424311155, 0.09649209709474871, 0.041685152500090084, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+        ];
+        v
+    }
+
+    #[test]
+    fn declump_end_to_end_matches_real_identifyprimaryobjects_on_twin_blobs() {
+        // Two touching circular blobs (24x20), minimum_diameter=10,
+        // automatic smoothing/suppression. Verified against a direct,
+        // real-source-derived reimplementation of
+        // IdentifyPrimaryObjects.separate_neighboring_objects (smooth_image
+        // + is_local_maximum/binary_shrink + distance_transform_edt +
+        // the fixed-seed(0) jitter + skimage.segmentation.watershed),
+        // for all three combinations actually exercised here:
+        // Intensity/Intensity, Shape/Shape, Intensity/Shape.
+        let image = twin_blob_image();
+        let labels: Vec<u32> = image.iter().map(|&v| u32::from(v > 0.0)).collect();
+        let base = DeclumpConfig {
+            minimum_diameter: 10.0,
+            low_resolution_maxima: true,
+            basic: false,
+            fill_holes_for_shape: false,
+            smoothing: Smoothing::Automatic,
+            suppression: MaximaSuppression::Automatic,
+            unclump: UnclumpMethod::Intensity,
+            watershed: WatershedMethod::Intensity,
+        };
+
+        let intensity_intensity = declump(&image, None, &labels, 24, 20, 1, &base).unwrap();
+        #[rustfmt::skip]
+        let expected_ii: Vec<u32> = vec![
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2,2,2,2,0,0,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,0,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,2,2,2,2,2,2,2,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        ];
+        assert_eq!(
+            intensity_intensity.labels, expected_ii,
+            "intensity/intensity"
+        );
+
+        let intensity_shape = declump(
+            &image,
+            None,
+            &labels,
+            24,
+            20,
+            1,
+            &DeclumpConfig {
+                watershed: WatershedMethod::Shape,
+                ..base.clone()
+            },
+        )
+        .unwrap();
+        #[rustfmt::skip]
+        let expected_is: Vec<u32> = vec![
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,0,0,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,0,0,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,2,2,2,2,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        ];
+        assert_eq!(intensity_shape.labels, expected_is, "intensity/shape");
+
+        let shape_shape = declump(
+            &image,
+            None,
+            &labels,
+            24,
+            20,
+            1,
+            &DeclumpConfig {
+                unclump: UnclumpMethod::Shape,
+                watershed: WatershedMethod::Shape,
+                ..base
+            },
+        )
+        .unwrap();
+        #[rustfmt::skip]
+        let expected_ss: Vec<u32> = vec![
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+            0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,
+            0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,
+            0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        ];
+        assert_eq!(shape_shape.labels, expected_ss, "shape/shape");
+    }
+}

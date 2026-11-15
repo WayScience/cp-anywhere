@@ -112,6 +112,8 @@ jobs:
             --out-dir pkg --out-name cp_anywhere
       - name: Export golden fixtures for the browser demo
         run: uv run --frozen python scripts/wasm/export_fixtures.py
+      - name: Export segmentation golden fixtures for the browser demo
+        run: uv run --frozen python scripts/wasm/export_segmentation_fixtures.py
       - name: Node setup
         uses: actions/setup-node@v7.1.0
         with:
@@ -131,3 +133,5 @@ jobs:
           npm run browser-check
       - name: WASM golden parity check (Playwright-captured browser results)
         run: uv run --frozen python scripts/parity/compare_wasm.py
+      - name: WASM segmentation golden parity check (browser results)
+        run: uv run --frozen python scripts/parity/compare_wasm_segmentation.py

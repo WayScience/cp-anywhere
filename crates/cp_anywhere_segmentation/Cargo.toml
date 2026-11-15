@@ -11,3 +11,10 @@ rust-version.workspace = true
 name = "cp_anywhere_segmentation"
 
 [dependencies]
+serde = { version = "1", features = ["derive"], optional = true }
+
+[features]
+# Enables `serde::Deserialize` on `ConfigParams`, so a binding (e.g.
+# cp_anywhere_wasm) can parse a JSON settings blob directly into it
+# instead of hand-mirroring every field in its own crate.
+serde = ["dep:serde"]

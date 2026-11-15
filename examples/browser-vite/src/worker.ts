@@ -2,8 +2,9 @@
 // here is mocked: the module is the same build produced by `wasm-pack
 // build crates/cp_anywhere_wasm --target web --release`, and fixture
 // inputs are the project's real saved golden-fixture arrays, flattened by
-// `scripts/wasm/export_fixtures.py`.
-import init, { measure } from "cp-anywhere-wasm";
+// `scripts/wasm/export_fixtures.py` (measurement) and
+// `scripts/wasm/export_segmentation_fixtures.py` (segmentation).
+import init, { identifyPrimaryObjects, measure } from "cp-anywhere-wasm";
 
 interface FixtureMetadata {
   shape: number[];
@@ -74,6 +75,47 @@ function runOne(fixture: FlatFixture, families: string[]): string {
 
 const FAMILIES = ["image_intensity", "object_intensity", "neighbors"];
 
+interface SegmentationFixtureMetadata {
+  shape: number[];
+  settings: Record<string, unknown>;
+  has_mask: boolean;
+}
+
+async function loadSegmentationFixture(
+  name: string,
+): Promise<{ shape: number[]; settings: Record<string, unknown>; pixels: Float64Array; mask: Uint8Array | null }> {
+  const metaResponse = await fetch(`/segmentation-fixtures/${name}.json`);
+  if (!metaResponse.ok) throw new Error(`segmentation fixture metadata fetch failed: ${name}`);
+  const meta: SegmentationFixtureMetadata = await metaResponse.json();
+  const pixels = new Float64Array(
+    await (await fetch(`/segmentation-fixtures/${name}.pixels.f64`)).arrayBuffer(),
+  );
+  const mask = meta.has_mask
+    ? new Uint8Array(await (await fetch(`/segmentation-fixtures/${name}.mask.u8`)).arrayBuffer())
+    : null;
+  return { shape: meta.shape, settings: meta.settings, pixels, mask };
+}
+
+function runSegmentationOne(fixture: {
+  shape: number[];
+  settings: Record<string, unknown>;
+  pixels: Float64Array;
+  mask: Uint8Array | null;
+}): { object_count: number; threshold: number; labels: number[] } {
+  const result = identifyPrimaryObjects(
+    fixture.pixels,
+    fixture.shape[0],
+    fixture.shape[1],
+    fixture.mask ?? undefined,
+    JSON.stringify(fixture.settings),
+  );
+  return {
+    object_count: result.objectCount,
+    threshold: result.threshold,
+    labels: Array.from(result.labels),
+  };
+}
+
 function wasmTransferBytes(): number | null {
   const entry = self.performance
     .getEntriesByType("resource")
@@ -84,6 +126,7 @@ function wasmTransferBytes(): number | null {
 self.onmessage = async (event: MessageEvent) => {
   const message = event.data as
     | { type: "parity"; fixtures: string[] }
+    | { type: "segmentation"; fixtures: string[] }
     | { type: "benchmark"; fixtures: string[]; warmups: number; runs: number };
   try {
     await ensureInit();
@@ -96,6 +139,21 @@ self.onmessage = async (event: MessageEvent) => {
       }
       self.postMessage({
         type: "parity_done",
+        results,
+        memoryBytes: wasmMemory?.buffer.byteLength ?? null,
+        wasmTransferBytes: wasmTransferBytes(),
+      });
+      return;
+    }
+
+    if (message.type === "segmentation") {
+      const results: Record<string, { object_count: number; threshold: number; labels: number[] }> = {};
+      for (const name of message.fixtures) {
+        const fixture = await loadSegmentationFixture(name);
+        results[name] = runSegmentationOne(fixture);
+      }
+      self.postMessage({
+        type: "segmentation_done",
         results,
         memoryBytes: wasmMemory?.buffer.byteLength ?? null,
         wasmTransferBytes: wasmTransferBytes(),

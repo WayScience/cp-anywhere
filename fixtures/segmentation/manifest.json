@@ -545,6 +545,60 @@
       "object_count": 8,
       "result": "fixtures/segmentation/real_bbbc007_dna_log_transform_otsu.json",
       "threshold": 0.027315272800162375
+    },
+    {
+      "name": "synthetic_declump_intensity_intensity",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_declump_intensity_intensity.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_intensity_shape",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_declump_intensity_shape.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_shape_shape",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_declump_shape_shape.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_intensity_propagate",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_declump_intensity_propagate.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_shape_propagate",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_declump_shape_propagate.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_manual_smoothing_and_suppression",
+      "object_count": 2,
+      "result": "fixtures/segmentation/synthetic_declump_manual_smoothing_and_suppression.json",
+      "threshold": 0.001
+    },
+    {
+      "name": "real_bbbc007_dna_declump_intensity_intensity",
+      "object_count": 9,
+      "result": "fixtures/segmentation/real_bbbc007_dna_declump_intensity_intensity.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "real_bbbc007_dna_declump_shape_propagate",
+      "object_count": 9,
+      "result": "fixtures/segmentation/real_bbbc007_dna_declump_shape_propagate.json",
+      "threshold": 0.14417892694473267
+    },
+    {
+      "name": "synthetic_declump_with_fill_holes_after_declump",
+      "object_count": 1,
+      "result": "fixtures/segmentation/synthetic_declump_with_fill_holes_after_declump.json",
+      "threshold": 0.001
     }
   ],
   "cellprofiler_version": "4.2.8",

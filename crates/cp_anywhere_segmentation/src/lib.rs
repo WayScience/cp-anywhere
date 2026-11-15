@@ -4,21 +4,18 @@
 //! a generic image-processing reimplementation. Has no Python, browser,
 //! or filesystem dependency.
 //!
-//! # Declared scope (v0)
+//! # Declared scope
 //!
-//! This is a deliberately narrow first slice, matching
-//! `IdentifyPrimaryObjects` with:
-//! - `unclump_method = "None"` and `watershed_method = "None"` (no
-//!   declumping/watershed -- CellProfiler's own `separate_neighboring_objects`
-//!   is a no-op in this configuration, so skipping it is exact, not an
-//!   approximation).
-//! - `fill_holes = "Never"` (both of CellProfiler's hole-fill calls in
-//!   `run()` are skipped in this configuration).
-//! - `exclude_border_objects = No` (no border filtering).
-//! - `threshold_smoothing_scale = 0` (no Gaussian pre-blur).
-//! - Threshold: `Manual` (used as-is, with no correction factor, matching
-//!   `Threshold.get_threshold`'s `TM_MANUAL` branch exactly) or `Otsu`,
-//!   two-class, global scope.
+//! Every global and adaptive threshold operation (Manual, Otsu two/
+//! three-class, Li, Robust Background, Sauvola), log transform,
+//! threshold smoothing, declumping/watershed (Intensity/Shape/
+//! Propagate), hole filling (including nested-object absorption),
+//! border exclusion, and size/count filtering -- see
+//! `spec/segmentation-modules.md` for the exact settings mapping and the
+//! explicit remaining gaps (not silent approximations). `build_config`
+//! is the single, binding-agnostic entry point every FFI layer
+//! (`cp_anywhere_python`, `cp_anywhere_wasm`) uses to turn its own
+//! string/scalar settings surface into a real `IdentifyPrimaryObjectsConfig`.
 //!
 //! ## Pixel units and Otsu variants (important)
 //!
@@ -51,8 +48,8 @@
 //!   `convert=False` pipeline, matching this project's measurement
 //!   crate's own convention, not CellProfiler's default).
 //!
-//! Declumping, watershed, hole-filling, border exclusion, and secondary/
-//! tertiary objects are explicit, documented gaps, not silent
+//! 3D/volumetric segmentation and `IdentifySecondaryObjects`/
+//! `IdentifyTertiaryObjects` are explicit, documented gaps, not silent
 //! approximations.
 
 use std::collections::BTreeMap;
@@ -168,10 +165,9 @@ pub const OTSU_FLOAT_BINS: usize = 256;
 /// exactly for that common case. A hole adjacent to two or more
 /// *different* labels (without a third, fully enclosing object) is left
 /// as background, also matching the real function (verified directly
-/// against it). Not yet matched: the rarer case where a small, fully
-/// enclosed foreground object is itself absorbed into its surrounding
-/// object's label (`centrosome`'s graph-propagation can do this; see
-/// `spec/segmentation-modules.md`).
+/// against it). A small, fully enclosed foreground object is itself
+/// absorbed into its surrounding object's label, also matched (see
+/// `holes::fill_labeled_holes` and `spec/segmentation-modules.md`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
 pub enum FillHoles {
     #[default]
@@ -250,6 +246,42 @@ pub struct IdentifyPrimaryObjectsConfig {
     /// `get_local_threshold` only handles `TM_OTSU`/`TM_LI`/
     /// `TM_ROBUST_BACKGROUND`/`TM_SAUVOLA`).
     pub threshold_scope: ThresholdScope,
+    /// Declumping/watershed separation of touching objects, run right
+    /// after the initial 8-connected labeling and before border/size
+    /// filtering -- matching `IdentifyPrimaryObjects.run()`'s call to
+    /// `separate_neighboring_objects` at that exact point. Defaults to
+    /// `UnclumpMethod::None`/`WatershedMethod::None`, which
+    /// `declump()` itself treats as an exact no-op (matching real
+    /// CellProfiler's own `unclump_method == UN_NONE` early return),
+    /// so leaving this at its default preserves every prior fixture's
+    /// behavior unchanged.
+    pub declump: DeclumpSettings,
+}
+
+/// See `IdentifyPrimaryObjectsConfig::declump`.
+#[derive(Clone, Copy, Debug)]
+pub struct DeclumpSettings {
+    pub unclump: declump::UnclumpMethod,
+    pub watershed: declump::WatershedMethod,
+    pub smoothing: declump::Smoothing,
+    pub suppression: declump::MaximaSuppression,
+    /// `IdentifyPrimaryObjects.low_resolution_maxima`; only takes
+    /// effect when `min_diameter > 10.0` (matching real CellProfiler's
+    /// own gate), in which case maxima are found on a downsampled
+    /// copy of the image for speed.
+    pub low_resolution_maxima: bool,
+}
+
+impl Default for DeclumpSettings {
+    fn default() -> Self {
+        Self {
+            unclump: declump::UnclumpMethod::None,
+            watershed: declump::WatershedMethod::None,
+            smoothing: declump::Smoothing::Automatic,
+            suppression: declump::MaximaSuppression::Automatic,
+            low_resolution_maxima: false,
+        }
+    }
 }
 
 /// See `IdentifyPrimaryObjectsConfig::threshold_scope`.
@@ -278,6 +310,7 @@ impl Default for IdentifyPrimaryObjectsConfig {
             threshold_smoothing_scale: 0.0,
             log_transform: false,
             threshold_scope: ThresholdScope::Global,
+            declump: DeclumpSettings::default(),
         }
     }
 }
@@ -301,6 +334,201 @@ pub struct SegmentationResult {
 
 fn clamp(value: f64, range: (f64, f64)) -> f64 {
     value.max(range.0).min(range.1)
+}
+
+/// Plain, FFI-agnostic parameters mirroring the full settings surface of
+/// `IdentifyPrimaryObjectsConfig`, with every field a string/scalar
+/// instead of an enum -- the same shape every binding (`cp_anywhere_python`,
+/// `cp_anywhere_wasm`) exposes to its host language. `build_config` is the
+/// *single* place that maps these strings to the real enums, so adding a
+/// new threshold method or declump mode only needs updating one match
+/// arm, not one per binding (avoiding drift between Python and WASM).
+#[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Deserialize))]
+#[cfg_attr(feature = "serde", serde(default))]
+pub struct ConfigParams {
+    pub threshold_method: String,
+    pub threshold_value: Option<f64>,
+    pub threshold_correction_factor: f64,
+    pub threshold_range: (f64, f64),
+    pub exclude_size: bool,
+    pub min_diameter: f64,
+    pub max_diameter: f64,
+    pub exclude_border_objects: bool,
+    pub maximum_object_count: Option<u32>,
+    pub fill_holes: Option<String>,
+    pub threshold_smoothing_scale: f64,
+    pub assign_middle_to_foreground: Option<bool>,
+    pub robust_background_lower_outlier_fraction: f64,
+    pub robust_background_upper_outlier_fraction: f64,
+    pub robust_background_averaging_method: Option<String>,
+    pub robust_background_variance_method: Option<String>,
+    pub robust_background_number_of_deviations: f64,
+    pub log_transform: bool,
+    pub threshold_scope: Option<String>,
+    pub adaptive_window_size: usize,
+    pub unclump_method: Option<String>,
+    pub watershed_method: Option<String>,
+    pub smoothing_filter_size: Option<f64>,
+    pub maxima_suppression_size: Option<f64>,
+    pub low_resolution_maxima: bool,
+}
+
+impl Default for ConfigParams {
+    fn default() -> Self {
+        Self {
+            threshold_method: "otsu".to_string(),
+            threshold_value: None,
+            threshold_correction_factor: 1.0,
+            threshold_range: (0.0, 1.0),
+            exclude_size: false,
+            min_diameter: 0.0,
+            max_diameter: f64::INFINITY,
+            exclude_border_objects: false,
+            maximum_object_count: None,
+            fill_holes: None,
+            threshold_smoothing_scale: 0.0,
+            assign_middle_to_foreground: None,
+            robust_background_lower_outlier_fraction: 0.05,
+            robust_background_upper_outlier_fraction: 0.05,
+            robust_background_averaging_method: None,
+            robust_background_variance_method: None,
+            robust_background_number_of_deviations: 2.0,
+            log_transform: false,
+            threshold_scope: None,
+            adaptive_window_size: 50,
+            unclump_method: None,
+            watershed_method: None,
+            smoothing_filter_size: None,
+            maxima_suppression_size: None,
+            low_resolution_maxima: false,
+        }
+    }
+}
+
+/// Maps `ConfigParams`'s plain strings/scalars to a real
+/// `IdentifyPrimaryObjectsConfig`, returning a plain `String` error (not
+/// a binding-specific exception type) so every binding can wrap it in
+/// whatever its host language expects (`PyValueError`, `JsValue`, ...).
+pub fn build_config(params: &ConfigParams) -> Result<IdentifyPrimaryObjectsConfig, String> {
+    let method = match params.threshold_method.as_str() {
+        "manual" => ThresholdMethod::Manual(params.threshold_value.ok_or_else(|| {
+            "threshold_value is required for threshold_method='manual'".to_string()
+        })?),
+        "otsu" => ThresholdMethod::OtsuTwoClass,
+        "otsu_integer" => ThresholdMethod::OtsuTwoClassInteger,
+        "otsu_three_class" => ThresholdMethod::OtsuThreeClass {
+            assign_middle_to_foreground: params.assign_middle_to_foreground.unwrap_or(true),
+        },
+        "li" => ThresholdMethod::Li,
+        "sauvola" => ThresholdMethod::Sauvola,
+        "robust_background" => {
+            let averaging_method = match params.robust_background_averaging_method.as_deref() {
+                None | Some("mean") => RobustAveraging::Mean,
+                Some("median") => RobustAveraging::Median,
+                Some("mode") => RobustAveraging::Mode,
+                Some(other) => {
+                    return Err(format!(
+                        "unsupported robust_background_averaging_method: {other:?}; \
+                         use 'mean', 'median', or 'mode'"
+                    ))
+                }
+            };
+            let variance_method = match params.robust_background_variance_method.as_deref() {
+                None | Some("sd") => RobustVariance::StandardDeviation,
+                Some("mad") => RobustVariance::MedianAbsoluteDeviation,
+                Some(other) => {
+                    return Err(format!(
+                        "unsupported robust_background_variance_method: {other:?}; \
+                         use 'sd' or 'mad'"
+                    ))
+                }
+            };
+            ThresholdMethod::RobustBackground(RobustBackgroundConfig {
+                lower_outlier_fraction: params.robust_background_lower_outlier_fraction,
+                upper_outlier_fraction: params.robust_background_upper_outlier_fraction,
+                averaging_method,
+                variance_method,
+                number_of_deviations: params.robust_background_number_of_deviations,
+            })
+        }
+        other => {
+            return Err(format!(
+                "unsupported threshold_method: {other:?}; use 'manual', 'otsu', \
+                 'otsu_integer', 'otsu_three_class', 'li', 'robust_background', or 'sauvola'"
+            ))
+        }
+    };
+    let fill_holes = match params.fill_holes.as_deref() {
+        None | Some("never") => FillHoles::Never,
+        Some("after_declump_only") => FillHoles::AfterDeclumpOnly,
+        Some("after_thresholding_and_declump") => FillHoles::AfterThresholdingAndDeclump,
+        Some(other) => {
+            return Err(format!(
+                "unsupported fill_holes: {other:?}; use 'never', \
+                 'after_declump_only', or 'after_thresholding_and_declump'"
+            ))
+        }
+    };
+    let threshold_scope = match params.threshold_scope.as_deref() {
+        None | Some("global") => ThresholdScope::Global,
+        Some("adaptive") => ThresholdScope::Adaptive {
+            window_size: params.adaptive_window_size,
+        },
+        Some(other) => {
+            return Err(format!(
+                "unsupported threshold_scope: {other:?}; use 'global' or 'adaptive'"
+            ))
+        }
+    };
+    let declump = DeclumpSettings {
+        unclump: match params.unclump_method.as_deref() {
+            None | Some("none") => declump::UnclumpMethod::None,
+            Some("intensity") => declump::UnclumpMethod::Intensity,
+            Some("shape") => declump::UnclumpMethod::Shape,
+            Some(other) => {
+                return Err(format!(
+                    "unsupported unclump_method: {other:?}; use 'none', 'intensity', or 'shape'"
+                ))
+            }
+        },
+        watershed: match params.watershed_method.as_deref() {
+            None | Some("none") => declump::WatershedMethod::None,
+            Some("intensity") => declump::WatershedMethod::Intensity,
+            Some("shape") => declump::WatershedMethod::Shape,
+            Some("propagate") => declump::WatershedMethod::Propagate,
+            Some(other) => {
+                return Err(format!(
+                    "unsupported watershed_method: {other:?}; use 'none', 'intensity', \
+                     'shape', or 'propagate'"
+                ))
+            }
+        },
+        smoothing: match params.smoothing_filter_size {
+            None => declump::Smoothing::Automatic,
+            Some(size) => declump::Smoothing::Manual(size),
+        },
+        suppression: match params.maxima_suppression_size {
+            None => declump::MaximaSuppression::Automatic,
+            Some(size) => declump::MaximaSuppression::Manual(size),
+        },
+        low_resolution_maxima: params.low_resolution_maxima,
+    };
+    Ok(IdentifyPrimaryObjectsConfig {
+        threshold_method: method,
+        threshold_correction_factor: params.threshold_correction_factor,
+        threshold_range: params.threshold_range,
+        exclude_size: params.exclude_size,
+        min_diameter: params.min_diameter,
+        max_diameter: params.max_diameter,
+        exclude_border_objects: params.exclude_border_objects,
+        maximum_object_count: params.maximum_object_count,
+        fill_holes,
+        threshold_smoothing_scale: params.threshold_smoothing_scale,
+        log_transform: params.log_transform,
+        threshold_scope,
+        declump,
+    })
 }
 
 /// Shared two-class Otsu maximization over a precomputed histogram,
@@ -1269,76 +1497,6 @@ fn label_connected_components(foreground: &[bool], rows: usize, cols: usize) -> 
     (labels, next_final - 1)
 }
 
-/// 4-connected (not 8-connected) component labeling, matching
-/// `scipy.ndimage.label`'s default structuring element -- used for
-/// `fill_holes_single_label`'s background-component analysis, which
-/// CellProfiler's own `fill_labeled_holes` also does with
-/// `centrosome.cpmorphology.four_connect`.
-fn label_connected_components_4(foreground: &[bool], rows: usize, cols: usize) -> (Vec<u32>, u32) {
-    let mut labels = vec![0u32; foreground.len()];
-    let mut parent: Vec<u32> = Vec::new();
-
-    fn find(parent: &mut [u32], mut x: u32) -> u32 {
-        while parent[x as usize] != x {
-            x = parent[x as usize];
-        }
-        x
-    }
-    fn union(parent: &mut [u32], a: u32, b: u32) {
-        let ra = find(parent, a);
-        let rb = find(parent, b);
-        if ra != rb {
-            parent[ra.max(rb) as usize] = ra.min(rb);
-        }
-    }
-
-    for r in 0..rows {
-        for c in 0..cols {
-            let idx = r * cols + c;
-            if !foreground[idx] {
-                continue;
-            }
-            let mut neighbor_labels = Vec::new();
-            if c > 0 && foreground[idx - 1] {
-                neighbor_labels.push(labels[idx - 1]);
-            }
-            if r > 0 && foreground[idx - cols] {
-                neighbor_labels.push(labels[idx - cols]);
-            }
-            if neighbor_labels.is_empty() {
-                let new_label = parent.len() as u32;
-                parent.push(new_label);
-                labels[idx] = new_label;
-            } else {
-                let first = neighbor_labels[0];
-                labels[idx] = first;
-                for &other in &neighbor_labels[1..] {
-                    union(&mut parent, first, other);
-                }
-            }
-        }
-    }
-
-    let mut root_to_final: BTreeMap<u32, u32> = BTreeMap::new();
-    let mut next_final = 1u32;
-    for r in 0..rows {
-        for c in 0..cols {
-            let idx = r * cols + c;
-            if !foreground[idx] {
-                continue;
-            }
-            let root = find(&mut parent, labels[idx]);
-            let final_label = *root_to_final.entry(root).or_insert_with(|| {
-                let assigned = next_final;
-                next_final += 1;
-                assigned
-            });
-            labels[idx] = final_label;
-        }
-    }
-    (labels, next_final - 1)
-}
-
 fn relabel_consecutive(labels: &mut [u32]) -> u32 {
     let mut unique: Vec<u32> = labels.iter().copied().filter(|&v| v != 0).collect();
     unique.sort_unstable();
@@ -1356,85 +1514,6 @@ fn relabel_consecutive(labels: &mut [u32]) -> u32 {
         }
     }
     unique.len() as u32
-}
-
-/// Fill background 4-connected components that don't touch the image
-/// border, pass `max_area` (if given), and are 4-adjacent to exactly
-/// one distinct foreground label -- matching
-/// `centrosome.cpmorphology.fill_labeled_holes` for that common case
-/// (see `FillHoles`'s docs for the one known, rarer gap).
-fn fill_holes_single_label(labels: &mut [u32], rows: usize, cols: usize, max_area: Option<f64>) {
-    let background: Vec<bool> = labels.iter().map(|&v| v == 0).collect();
-    let (components, count) = label_connected_components_4(&background, rows, cols);
-    if count == 0 {
-        return;
-    }
-    let mut touches_border = vec![false; (count + 1) as usize];
-    for c in 0..cols {
-        touches_border[components[c] as usize] = true;
-        touches_border[components[(rows - 1) * cols + c] as usize] = true;
-    }
-    for r in 0..rows {
-        touches_border[components[r * cols] as usize] = true;
-        touches_border[components[r * cols + cols - 1] as usize] = true;
-    }
-    let mut areas = vec![0u64; (count + 1) as usize];
-    // None = not yet seen adjacent to any label; Some(0) = adjacent to
-    // 2+ distinct labels (disqualified); Some(label) = adjacent to
-    // exactly that one label so far.
-    let mut adjacent_label: Vec<Option<u32>> = vec![None; (count + 1) as usize];
-    for r in 0..rows {
-        for c in 0..cols {
-            let idx = r * cols + c;
-            if background[idx] {
-                areas[components[idx] as usize] += 1;
-                continue;
-            }
-            let label = labels[idx];
-            for (dr, dc) in [(-1i64, 0i64), (1, 0), (0, -1), (0, 1)] {
-                let rr = r as i64 + dr;
-                let cc = c as i64 + dc;
-                if rr < 0 || cc < 0 || rr as usize >= rows || cc as usize >= cols {
-                    continue;
-                }
-                let n_idx = rr as usize * cols + cc as usize;
-                if !background[n_idx] {
-                    continue;
-                }
-                let component = components[n_idx] as usize;
-                adjacent_label[component] = match adjacent_label[component] {
-                    None => Some(label),
-                    Some(0) => Some(0),
-                    Some(existing) if existing == label => Some(existing),
-                    Some(_) => Some(0),
-                };
-            }
-        }
-    }
-    let mut fill_with = vec![0u32; (count + 1) as usize];
-    for component in 1..=count as usize {
-        if touches_border[component] {
-            continue;
-        }
-        if let Some(max_area) = max_area {
-            if areas[component] as f64 >= max_area {
-                continue;
-            }
-        }
-        if let Some(label) = adjacent_label[component] {
-            if label != 0 {
-                fill_with[component] = label;
-            }
-        }
-    }
-    for (idx, &is_background) in background.iter().enumerate() {
-        if is_background {
-            let fill = fill_with[components[idx] as usize];
-            if fill != 0 {
-                labels[idx] = fill;
-            }
-        }
-    }
 }
 
 /// Zero out every object touching the image border, matching
@@ -1742,13 +1821,46 @@ pub fn identify_primary_objects(
         // circular area formula -- matches run()'s own size_fn exactly).
         let mut as_labels: Vec<u32> = foreground.iter().map(|&v| u32::from(v)).collect();
         let max_area = config.max_diameter * config.max_diameter;
-        fill_holes_single_label(&mut as_labels, rows, cols, Some(max_area));
+        holes::fill_labeled_holes(&mut as_labels, rows, cols, Some(max_area));
         for (dst, &v) in foreground.iter_mut().zip(as_labels.iter()) {
             *dst = v != 0;
         }
     }
 
-    let (mut labels, _) = label_connected_components(&foreground, rows, cols);
+    let (mut labels, initial_object_count) = label_connected_components(&foreground, rows, cols);
+
+    // `separate_neighboring_objects`: declumping/watershed, run right
+    // after the initial labeling and before border/size filtering,
+    // matching real CellProfiler's own call order exactly. A no-op
+    // when `declump.unclump`/`declump.watershed` are both `None`
+    // (declump()'s own early return), which is the default.
+    let declump_config = declump::DeclumpConfig {
+        unclump: config.declump.unclump,
+        watershed: config.declump.watershed,
+        smoothing: config.declump.smoothing,
+        suppression: config.declump.suppression,
+        minimum_diameter: config.min_diameter,
+        low_resolution_maxima: config.declump.low_resolution_maxima,
+        basic: false,
+        // Matches real CellProfiler's own condition in
+        // `separate_neighboring_objects`'s Shape-unclump branch
+        // exactly: only when the user's `fill_holes` setting is
+        // "Never" does Shape unclump do its own temporary internal
+        // hole fill for the distance transform (there being no later
+        // refill to otherwise correct for a hole putting a
+        // far-from-edge maximum candidate on the wrong side of it).
+        fill_holes_for_shape: config.fill_holes == FillHoles::Never,
+    };
+    let declumped = declump::declump(
+        pixels,
+        mask,
+        &labels,
+        cols,
+        rows,
+        initial_object_count,
+        &declump_config,
+    )?;
+    labels = declumped.labels;
 
     filter_on_border(&mut labels, mask, rows, cols, config.exclude_border_objects);
 
@@ -1786,7 +1898,7 @@ pub fn identify_primary_objects(
     }
 
     if config.fill_holes != FillHoles::Never {
-        fill_holes_single_label(&mut labels, rows, cols, None);
+        holes::fill_labeled_holes(&mut labels, rows, cols, None);
     }
 
     let mut object_count = relabel_consecutive(&mut labels);
@@ -1995,7 +2107,7 @@ mod tests {
     }
 
     #[test]
-    fn fill_holes_single_label_fills_an_interior_hole() {
+    fn fill_labeled_holes_fills_an_interior_hole() {
         // Matches the oracle probe: single object, interior hole -> filled.
         #[rustfmt::skip]
         let mut labels: Vec<u32> = vec![
@@ -2005,12 +2117,12 @@ mod tests {
             0,1,1,1,0,
             0,0,0,0,0,
         ];
-        fill_holes_single_label(&mut labels, 5, 5, None);
+        holes::fill_labeled_holes(&mut labels, 5, 5, None);
         assert_eq!(labels[2 * 5 + 2], 1);
     }
 
     #[test]
-    fn fill_holes_single_label_leaves_hole_adjacent_to_two_labels_unfilled() {
+    fn fill_labeled_holes_leaves_hole_adjacent_to_two_labels_unfilled() {
         // Matches the real-oracle-verified case: a hollow bordered by
         // two DIFFERENT labels, not touching the image edge, stays
         // background (centrosome.cpmorphology.fill_labeled_holes
@@ -2026,7 +2138,7 @@ mod tests {
             0,0,0,0,0,0,0,
         ];
         let before = labels.clone();
-        fill_holes_single_label(&mut labels, 7, 7, None);
+        holes::fill_labeled_holes(&mut labels, 7, 7, None);
         assert_eq!(
             labels, before,
             "hole bordered by two labels must stay unfilled"
@@ -2034,7 +2146,7 @@ mod tests {
     }
 
     #[test]
-    fn fill_holes_single_label_respects_max_area() {
+    fn fill_labeled_holes_respects_max_area() {
         // 6x6=36px interior hole, cutoff at 20 excludes it from filling.
         let mut labels = vec![0u32; 12 * 12];
         for r in 1..11 {
@@ -2048,9 +2160,9 @@ mod tests {
             }
         }
         let before = labels.clone();
-        fill_holes_single_label(&mut labels, 12, 12, Some(20.0));
+        holes::fill_labeled_holes(&mut labels, 12, 12, Some(20.0));
         assert_eq!(labels, before, "oversized hole must stay unfilled");
-        fill_holes_single_label(&mut labels, 12, 12, Some(40.0));
+        holes::fill_labeled_holes(&mut labels, 12, 12, Some(40.0));
         assert!(labels[5 * 12 + 5] == 1, "under the new cutoff it must fill");
     }
 
@@ -2405,5 +2517,5 @@ mod tests {
     }
 }
 
-mod declump;
+pub mod declump;
 mod holes;

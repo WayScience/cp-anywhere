@@ -2,11 +2,13 @@
 ``IdentifyPrimaryObjects`` module (and the shared ``Threshold`` module it
 uses) as the compatibility oracle.
 
-Declared scope (v0): threshold ("otsu" two-class global, or a manual
-numeric value) -> 8-connected components -> optional size filter ->
-consecutive relabeling. No declumping/watershed, hole-filling, or border
-exclusion yet -- see ``spec/segmentation-modules.md`` for the exact
-settings mapping and what is explicitly not yet covered.
+Declared scope: every global and adaptive threshold operation (Manual,
+Otsu two/three-class, Li, Robust Background, Sauvola), log transform,
+threshold smoothing, declumping/watershed (Intensity/Shape/Propagate),
+hole filling (including nested-object absorption), border exclusion,
+and size/count filtering -- see ``spec/segmentation-modules.md`` for
+the exact settings mapping and the explicit remaining gaps (not silent
+approximations).
 
 CellProfiler's own ``Threshold`` module hard-bounds ``manual_threshold``
 and ``threshold_range`` to ``[0, 1]`` and assumes images have been
@@ -134,6 +136,11 @@ def identify_primary_objects(
     log_transform: bool = False,
     threshold_scope: str = "global",
     adaptive_window_size: int = 50,
+    unclump_method: str = "none",
+    watershed_method: str = "none",
+    smoothing_filter_size: float | None = None,
+    maxima_suppression_size: float | None = None,
+    low_resolution_maxima: bool = False,
 ) -> SegmentationResult:
     """Segment one 2D grayscale image into labeled primary objects.
 
@@ -226,9 +233,9 @@ def identify_primary_objects(
     foreground mask before labeling, limited to area < ``max_diameter^2``).
     A background region bordered by two or more *different* objects (not
     fully enclosed by one) is left unfilled, matching
-    ``centrosome.cpmorphology.fill_labeled_holes`` for that common case
-    -- see ``spec/segmentation-modules.md`` for the one known, rarer gap
-    (nested small objects getting absorbed into their enclosing object).
+    ``centrosome.cpmorphology.fill_labeled_holes`` exactly, including
+    its handling of a small object fully nested inside a larger one
+    (absorbed into the enclosing label) and multi-level nested holes.
 
     ``threshold_smoothing_scale`` (``Threshold.threshold_smoothing_scale``,
     default ``0.0`` -- no smoothing) blurs the image used for the
@@ -237,6 +244,37 @@ def identify_primary_objects(
     of ``sigma = threshold_smoothing_scale / 0.6744 / 2.0``, matching
     CellProfiler's ``apply_threshold`` exactly, including its
     mask-bleed-over correction near the image border.
+
+    ``unclump_method``/``watershed_method``
+    (``IdentifyPrimaryObjects.unclump_method``/``watershed_method``)
+    separate touching objects after initial labeling and before
+    border/size filtering -- matching ``separate_neighboring_objects``'s
+    exact position in CellProfiler's pipeline. ``unclump_method`` is
+    ``"none"`` (default; no separation), ``"intensity"`` (find local
+    intensity maxima in a Gaussian-smoothed copy of the image), or
+    ``"shape"`` (find local maxima of the Euclidean distance transform
+    of the foreground, jittered with CellProfiler's own fixed-seed(0)
+    legacy-RNG noise to break exact ties). ``watershed_method`` is
+    ``"none"`` (default), ``"intensity"`` (watershed on ``1 - image``),
+    ``"shape"`` (watershed on the negated distance transform -- reuses
+    the *same* jittered transform computed above when
+    ``unclump_method="shape"`` too, matching CellProfiler's own
+    ``if distance_transformed_image is None`` check), or
+    ``"propagate"`` (``centrosome.propagate.propagate``, a distinct
+    non-watershed algorithm; ignores both image and distance-transform
+    inputs, geometric distance only). Both must be set to something
+    other than ``"none"`` for separation to actually run, matching
+    CellProfiler's own ``UN_NONE``/``WA_NONE`` no-op check.
+
+    ``smoothing_filter_size``/``maxima_suppression_size`` override
+    CellProfiler's own automatic formulas (``2.35 * min_diameter / 3.5``
+    and ``min_diameter / 1.5`` respectively) when given explicitly,
+    matching ``automatic_smoothing``/``automatic_suppression`` set to
+    ``False`` with an explicit ``Float`` Setting value.
+    ``low_resolution_maxima`` (``IdentifyPrimaryObjects.low_res_maxima``)
+    only takes effect when ``min_diameter > 10.0`` (CellProfiler's own
+    gate); when both are true, maxima are found on a downsampled copy
+    of the image for speed -- not yet implemented, raises if triggered.
     """
     from cp_anywhere import _native
 
@@ -294,6 +332,11 @@ def identify_primary_objects(
         log_transform=log_transform,
         threshold_scope=threshold_scope,
         adaptive_window_size=adaptive_window_size,
+        unclump_method=unclump_method,
+        watershed_method=watershed_method,
+        smoothing_filter_size=smoothing_filter_size,
+        maxima_suppression_size=maxima_suppression_size,
+        low_resolution_maxima=low_resolution_maxima,
     )
     return SegmentationResult(
         labels=raw["labels"].reshape(array.shape),

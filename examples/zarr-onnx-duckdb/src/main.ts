@@ -1,16 +1,17 @@
 // Real browser integration: Zarr read (zarrita.js) -> ONNX Runtime Web
-// inference producing a label mask -> cp-anywhere-wasm measurement (the
-// project's own Rust/WASM kernel, not a hand-rolled SQL reimplementation)
-// -> DuckDB-WASM Parquet export, validated afterward by native DuckDB in
-// Python (scripts/zarr/validate_export.py). No stage here is mocked; see
-// docs/browser-integration.md for scope and known limitations.
+// inference (a reference/comparison mask) -> cp-anywhere-wasm's own
+// IdentifyPrimaryObjects segmentation (CellProfiler-compatible
+// declumping, not the ONNX demo mask) -> cp-anywhere-wasm measurement
+// -> DuckDB-WASM Parquet export, validated afterward by native DuckDB
+// in Python (scripts/zarr/validate_export.py). No stage here is mocked;
+// see docs/browser-integration.md for scope and known limitations.
 
 import * as duckdb from "@duckdb/duckdb-wasm";
 import duckdbWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url";
 import duckdbWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
 import * as ort from "onnxruntime-web/wasm";
 import * as zarr from "zarrita";
-import init, { measure } from "cp-anywhere-wasm";
+import init, { identifyPrimaryObjects, measure } from "cp-anywhere-wasm";
 
 declare global {
   interface Window {
@@ -39,7 +40,7 @@ async function run(): Promise<void> {
   const size = shape[0] * shape[1];
   log(`   shape=${JSON.stringify(shape)} pixels=${size}`);
 
-  log("2. Running the real ONNX threshold model with onnxruntime-web...");
+  log("2. Running the real ONNX threshold model with onnxruntime-web (reference mask)...");
   const session = await ort.InferenceSession.create("/threshold.onnx", {
     executionProviders: ["wasm"],
   });
@@ -47,19 +48,33 @@ async function run(): Promise<void> {
   const inputTensor = new ort.Tensor("float32", imageFloat32, shape);
   const outputs = await session.run({ image: inputTensor });
   const maskInt32 = outputs.mask.data as Int32Array;
-  const foregroundPixels = maskInt32.reduce((acc, v) => acc + v, 0);
-  log(`   foreground_pixels=${foregroundPixels}`);
+  const onnxForegroundPixels = maskInt32.reduce((acc, v) => acc + v, 0);
+  log(`   onnx_foreground_pixels=${onnxForegroundPixels}`);
   await session.release();
 
-  log("3. Measuring with cp-anywhere-wasm (real Rust kernel)...");
+  log("3. Segmenting with cp-anywhere-wasm's own IdentifyPrimaryObjects...");
   await init();
-  const objectLabels = Uint32Array.from(maskInt32);
+  const seg = identifyPrimaryObjects(
+    block.data,
+    shape[0],
+    shape[1],
+    undefined,
+    JSON.stringify({
+      threshold_method: "otsu",
+      unclump_method: "intensity",
+      watershed_method: "intensity",
+      min_diameter: 4.0,
+    }),
+  );
+  log(`   cp_anywhere_object_count=${seg.objectCount} threshold=${seg.threshold.toFixed(6)}`);
+
+  log("4. Measuring with cp-anywhere-wasm (real Rust kernel)...");
   const resultJson = measure(
     Uint32Array.from(shape),
     ["DNA"],
     block.data,
     ["Cells"],
-    objectLabels,
+    seg.labels,
     undefined,
     "zarr-onnx-demo",
     ["object_intensity"],
@@ -71,7 +86,7 @@ async function run(): Promise<void> {
   };
   log(`   features for object 1: ${JSON.stringify(result.features.Cells)}`);
 
-  log("4. Exporting cp-anywhere's measurement to Parquet via DuckDB-WASM...");
+  log("5. Exporting cp-anywhere's measurement to Parquet via DuckDB-WASM...");
   const worker = new Worker(duckdbWorkerUrl, { type: "module" });
   const db = new duckdb.AsyncDuckDB(new duckdb.ConsoleLogger(), worker);
   await db.instantiate(duckdbWasmUrl);
@@ -100,7 +115,9 @@ async function run(): Promise<void> {
 
   window.__CP_ANYWHERE_ZOD_RESULT__ = {
     shape,
-    foregroundPixels,
+    onnxForegroundPixels,
+    cpAnywhereObjectCount: seg.objectCount,
+    cpAnywhereThreshold: seg.threshold,
     measurement: result,
     parquetBytesLength: parquetBytes.length,
     parquetBase64: btoa(String.fromCharCode(...parquetBytes)),

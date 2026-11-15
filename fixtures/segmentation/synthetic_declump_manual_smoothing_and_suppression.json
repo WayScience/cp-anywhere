@@ -1,0 +1,24 @@
+{
+  "image_id": "synthetic_declump_manual_smoothing_and_suppression",
+  "object_count": 2,
+  "rescale": true,
+  "settings": {
+    "maxima_suppression_size": 4.0,
+    "min_diameter": 10.0,
+    "smoothing_filter_size": 3.0,
+    "threshold_method": "manual",
+    "threshold_value": 0.001,
+    "unclump_method": "intensity",
+    "watershed_method": "intensity"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_declump_manual_smoothing_and_suppression/labels.npy": "622c8176aabf8ceaaad27736ebe852aa8e214b1fdbab4497420d0d5b390ba948",
+    "fixtures/segmentation/synthetic_declump_manual_smoothing_and_suppression/pixels.npy": "d22a88ee10d8266cc897ecf99578fc823c90c0da1eff6a8b055ff4a43babc539",
+    "fixtures/segmentation/synthetic_declump_manual_smoothing_and_suppression/small_removed_labels.npy": "622c8176aabf8ceaaad27736ebe852aa8e214b1fdbab4497420d0d5b390ba948"
+  },
+  "shape": [
+    20,
+    24
+  ],
+  "threshold": 0.001
+}
