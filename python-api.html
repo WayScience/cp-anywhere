@@ -400,6 +400,20 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.select_scopes">
+<span class="sig-name descname"><span class="pre">select_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.select_scopes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.select_scopes" title="Link to this definition">#</a></dt>
+<dd><p>Return a copy keeping only the named feature scopes (plus
+their <code class="docutils literal notranslate"><span class="pre">object_ids</span></code>) – e.g. to restrict <a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_sqlite" title="src.cp_anywhere.api.MeasurementResult.to_sqlite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_sqlite()</span></code></a>/
+<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_duckdb" title="src.cp_anywhere.api.MeasurementResult.to_duckdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_duckdb()</span></code></a>/<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_parquet" title="src.cp_anywhere.api.MeasurementResult.to_parquet"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_parquet()</span></code></a> to a chosen subset of this
+result’s object tables (mirrors real CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">ExportToDatabase</span></code> “export measurements for all/no/selected
+objects” setting; see <code class="docutils literal notranslate"><span class="pre">spec/database-export.md</span></code>).
+<code class="docutils literal notranslate"><span class="pre">relationships</span></code> passes through unchanged – it carries no
+scope of its own, and none of the wide-table export methods
+read it.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_arrow">
 <span class="sig-name descname"><span class="pre">to_arrow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_arrow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_arrow" title="Link to this definition">#</a></dt>
 <dd><p>Write every feature row as an Arrow IPC (Feather v2) file.</p>
@@ -418,19 +432,152 @@ unlike <a class="reference internal" href="#src.cp_anywhere.api.MeasurementResul
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_duckdb">
+<span class="sig-name descname"><span class="pre">to_duckdb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'append'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_duckdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_duckdb" title="Link to this definition">#</a></dt>
+<dd><p>Write/append wide <code class="docutils literal notranslate"><span class="pre">Per_Image</span></code>/<code class="docutils literal notranslate"><span class="pre">Per_&lt;ObjectName&gt;</span></code> tables
+(CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">ExportToDatabase</span></code> naming convention, one
+row per image or object, one column per feature) into a DuckDB
+database file.</p>
+<p><code class="docutils literal notranslate"><span class="pre">if_exists=&quot;append&quot;</span></code> (the default) adds this result’s rows to
+any existing tables at <code class="docutils literal notranslate"><span class="pre">path</span></code> – the usual way to accumulate
+one combined dataset across many images, since <a class="reference internal" href="#src.cp_anywhere.api.measure" title="src.cp_anywhere.api.measure"><code class="xref py py-func docutils literal notranslate"><span class="pre">measure()</span></code></a>
+itself always processes one image at a time. <code class="docutils literal notranslate"><span class="pre">&quot;replace&quot;</span></code>
+drops and recreates every table first.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_json">
 <span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_json" title="Link to this definition">#</a></dt>
 <dd><p>Write the reference-compatible feature and relationship structure.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_parquet">
+<span class="sig-name descname"><span class="pre">to_parquet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'long'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outer'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'append'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_rows_per_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100_000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_parquet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_parquet" title="Link to this definition">#</a></dt>
+<dd><p>Write this result’s feature data as real Apache Parquet file(s).</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode=&quot;long&quot;</span></code> (the default): <code class="docutils literal notranslate"><span class="pre">path</span></code> is a single file, written
+in the same long-form shape as <a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_arrow" title="src.cp_anywhere.api.MeasurementResult.to_arrow"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_arrow()</span></code></a> (one row per
+object per feature column).</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode=&quot;wide&quot;</span></code>: the traditional, tabular shape – <code class="docutils literal notranslate"><span class="pre">path</span></code> is a
+<em>directory</em> (created if missing); one file per feature scope is
+written into it, <code class="docutils literal notranslate"><span class="pre">Per_Image.parquet</span></code> plus one
+<code class="docutils literal notranslate"><span class="pre">Per_&lt;ObjectName&gt;.parquet</span></code> per object set (CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">ExportToDatabase</span></code> table-naming convention, matching
+<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_duckdb" title="src.cp_anywhere.api.MeasurementResult.to_duckdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_duckdb()</span></code></a>/<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_sqlite" title="src.cp_anywhere.api.MeasurementResult.to_sqlite"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_sqlite()</span></code></a>’s own tables exactly). Each
+file has <code class="docutils literal notranslate"><span class="pre">image_id</span></code> (and, for object scopes, <code class="docutils literal notranslate"><span class="pre">object_id</span></code>)
+columns plus one real, named column per feature – feature
+names are the column names, no extra lookup needed.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode=&quot;array&quot;</span></code>: same per-scope files and id columns as
+<code class="docutils literal notranslate"><span class="pre">&quot;wide&quot;</span></code>, but every feature is packed into a single
+<code class="docutils literal notranslate"><span class="pre">features</span></code> column instead of one column each, as one
+fixed-size list per row (Arrow <code class="docutils literal notranslate"><span class="pre">FixedSizeListArray</span></code> – the
+most direct way Parquet/Arrow represents a per-row numeric
+vector of known length; it round-trips straight into a dense
+<code class="docutils literal notranslate"><span class="pre">(n_rows,</span> <span class="pre">n_features)</span></code> numpy array with no separate decoding
+step). Reading a bare feature array back tells you nothing
+about <em>which</em> feature each position is; the file’s own Parquet
+schema metadata carries the exact ordered feature name list for
+that column, read back with <a class="reference internal" href="#src.cp_anywhere.api.read_parquet_feature_names" title="src.cp_anywhere.api.read_parquet_feature_names"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_parquet_feature_names()</span></code></a>
+– no sidecar file to lose or fall out of sync.</p>
+<p><code class="docutils literal notranslate"><span class="pre">mode=&quot;joined&quot;</span></code>: a single combined, <a class="reference external" href="https://github.com/cytomining/CytoTable">CytoTable</a>-style wide table –
+one row per object, every object scope joined together on
+<code class="docutils literal notranslate"><span class="pre">object_id</span></code> (<code class="docutils literal notranslate"><span class="pre">join=&quot;outer&quot;</span></code>, the default: every object_id
+seen in <em>any</em> scope, with nulls where a scope has no matching
+object; <code class="docutils literal notranslate"><span class="pre">join=&quot;inner&quot;</span></code>: only object_ids present in <em>every</em>
+scope), each scope’s feature columns prefixed with that scope’s
+name (<code class="docutils literal notranslate"><span class="pre">Cells_Intensity_MeanIntensity_DNA</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Nuclei_AreaShape_Area</span></code>, …) to avoid name collisions between
+scopes, with every <code class="docutils literal notranslate"><span class="pre">Image</span></code>-scope feature broadcast onto every
+row with an <code class="docutils literal notranslate"><span class="pre">Image_</span></code> prefix. This assumes matching
+<code class="docutils literal notranslate"><span class="pre">object_id</span></code> values across scopes identify the same physical
+object – true whenever one object set was derived from another
+(as most of this project’s own fixtures are; see
+<code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>), <em>not</em> guaranteed for independently
+segmented object sets with no declared parent-child
+relationship (<cite>cp_anywhere</cite> has no <code class="docutils literal notranslate"><span class="pre">RelateObjects</span></code>
+equivalent). <code class="docutils literal notranslate"><span class="pre">Neighbors</span></code> relationship rows have no natural
+per-object column and are not included.</p>
+<p><code class="docutils literal notranslate"><span class="pre">path</span></code> may be a single <code class="docutils literal notranslate"><span class="pre">.parquet</span></code> file (one write, no
+pagination beyond Parquet’s own row groups) or a directory, in
+which case this writes a real Parquet <em>dataset</em> via
+<code class="docutils literal notranslate"><span class="pre">pyarrow.dataset.write_dataset</span></code> – <code class="docutils literal notranslate"><span class="pre">max_rows_per_file</span></code>
+bounds each fragment file’s row count (Parquet’s own built-in
+pagination mechanism, not a bespoke chunking scheme; the
+100,000-row default is a common balance between per-file
+overhead and query/memory efficiency). Calling this repeatedly
+with a directory <code class="docutils literal notranslate"><span class="pre">path</span></code> – the usual way to build one combined
+multi-image dataset, since <a class="reference internal" href="#src.cp_anywhere.api.measure" title="src.cp_anywhere.api.measure"><code class="xref py py-func docutils literal notranslate"><span class="pre">measure()</span></code></a> always processes one
+image at a time – defaults to <code class="docutils literal notranslate"><span class="pre">if_exists=&quot;append&quot;</span></code>, adding a
+new, uniquely-named fragment file each call without touching
+existing ones; <code class="docutils literal notranslate"><span class="pre">if_exists=&quot;replace&quot;</span></code> deletes the directory
+first.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.MeasurementResult.to_sqlite">
+<span class="sig-name descname"><span class="pre">to_sqlite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'append'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#MeasurementResult.to_sqlite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.MeasurementResult.to_sqlite" title="Link to this definition">#</a></dt>
+<dd><p>Write/append the same wide <code class="docutils literal notranslate"><span class="pre">Per_Image</span></code>/<code class="docutils literal notranslate"><span class="pre">Per_&lt;ObjectName&gt;</span></code>
+tables as <a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_duckdb" title="src.cp_anywhere.api.MeasurementResult.to_duckdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_duckdb()</span></code></a>, but as SQLite <a class="reference external" href="https://www.sqlite.org/stricttables.html">STRICT tables</a> – every column has
+a declared, enforced type (<code class="docutils literal notranslate"><span class="pre">TEXT</span></code>/<code class="docutils literal notranslate"><span class="pre">INTEGER</span></code>/<code class="docutils literal notranslate"><span class="pre">REAL</span></code>) instead
+of SQLite’s legacy, permissive type affinity. Requires SQLite
+3.37+ (<code class="docutils literal notranslate"><span class="pre">STRICT</span></code> syntax support); raises <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code>
+naming the running SQLite’s version otherwise, rather than
+failing on the first <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span></code> with a confusing syntax
+error.</p>
+<p><code class="docutils literal notranslate"><span class="pre">if_exists</span></code> has the same “append” (default, accumulate across
+images) / “replace” (drop and recreate) meaning as
+<a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult.to_duckdb" title="src.cp_anywhere.api.MeasurementResult.to_duckdb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_duckdb()</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src.cp_anywhere.api.measure">
-<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.api.</span></span><span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">families</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.measure" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.api.</span></span><span class="sig-name descname"><span class="pre">measure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">families</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors_scopes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neighbors_full_objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_shape_calculate_zernikes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_shape_calculate_advanced</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#measure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.measure" title="Link to this definition">#</a></dt>
 <dd><p>Measure 2D or 3D arrays with the selected CellProfiler 4.2.8 settings.</p>
 <p>Float64 C-contiguous images are borrowed by Rust. Other numeric images and
 strided arrays are converted once. Do not mutate inputs during this call.</p>
+<p>The original three default families are unchanged. Select
+<code class="docutils literal notranslate"><span class="pre">families=[&quot;object_size_shape&quot;]</span></code> explicitly for 2D shape measurements.
+<code class="docutils literal notranslate"><span class="pre">size_shape_calculate_zernikes=True</span></code> adds 30 Zernike columns to the
+25 standard columns; <code class="docutils literal notranslate"><span class="pre">size_shape_calculate_advanced=True</span></code> adds 53
+moment/inertia columns. Shape measurements ignore the image mask and
+require consecutive object IDs starting at 1. Sparse shape labels and
+3D shape requests raise errors, not misaligned or substitute columns.</p>
+<p><code class="docutils literal notranslate"><span class="pre">neighbors_scopes</span></code> selects which object set(s) <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code>
+runs against itself (CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">Adjacent</span></code> distance method;
+cross-object-set and non-“Adjacent” neighbors remain out of scope – see
+<code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>). Defaults to <code class="docutils literal notranslate"><span class="pre">(&quot;Cells&quot;,)</span></code> when the
+<code class="docutils literal notranslate"><span class="pre">&quot;neighbors&quot;</span></code> family is selected and <code class="docutils literal notranslate"><span class="pre">neighbors_scopes</span></code> is omitted,
+matching this project’s original declared scope exactly, byte-for-byte
+(every pre-existing fixture, golden comparison, and caller is
+unaffected). Pass e.g. <code class="docutils literal notranslate"><span class="pre">neighbors_scopes=(&quot;Nuclei&quot;,</span> <span class="pre">&quot;Cells&quot;)</span></code> to
+compute it for multiple object sets in one call instead – each one
+independently, with its own feature columns and relationship rows
+tagged by an <code class="docutils literal notranslate"><span class="pre">&quot;object_name&quot;</span></code> key, matching how real CellProfiler
+pipelines invoke <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code> once per object set.</p>
+<p><code class="docutils literal notranslate"><span class="pre">neighbors_full_objects</span></code> supplies each scope’s diagnostic geometry
+(CellProfiler’s <code class="docutils literal notranslate"><span class="pre">objects.small_removed_segmented</span></code>). Both primary and
+secondary segmentation results expose it as <code class="docutils literal notranslate"><span class="pre">small_removed_labels</span></code>.
+The core matches diagnostic IDs to retained IDs by pixel overlap.
+Diagnostic objects omitted from the kept set can affect counts,
+touching percentages, distances, and angles, but do not get output
+rows or relationship edges. Closest-object numbers are recomputed
+among retained objects, matching CellProfiler. Which excluded objects
+appear in the diagnostic layer depends on the segmentation module;
+primary segmentation’s layer already excludes border objects.
+A scope with no entry here (the default) uses its kept labels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.api.read_parquet_feature_names">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.api.</span></span><span class="sig-name descname"><span class="pre">read_parquet_feature_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/api.html#read_parquet_feature_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.api.read_parquet_feature_names" title="Link to this definition">#</a></dt>
+<dd><p>Read back the ordered feature name list embedded in a
+<code class="docutils literal notranslate"><span class="pre">MeasurementResult.to_parquet(...,</span> <span class="pre">mode=&quot;array&quot;)</span></code> file’s Parquet
+schema metadata – the position of each name in the returned list
+matches the position of its value in that file’s <code class="docutils literal notranslate"><span class="pre">features</span></code>
+fixed-size-list column. Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code> naming the path
+if it has no such metadata (e.g. a plain <code class="docutils literal notranslate"><span class="pre">mode=&quot;long&quot;</span></code> file).</p>
 </dd></dl>
 
 </section>
@@ -470,8 +617,10 @@ feature column (see <code class="xref py py-meth docutils literal notranslate"><
 </section>
 <section id="cp-anywhere-segment">
 <h2>cp_anywhere.segment<a class="headerlink" href="#cp-anywhere-segment" title="Link to this heading">#</a></h2>
-<p>Object segmentation (<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects()</span></code>),
-implemented against CellProfiler’s <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> module as
+<p>Object segmentation includes <code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_secondary_objects()</span></code>, and
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_tertiary_objects()</span></code>. The native implementations
+use the corresponding CellProfiler modules as
 the compatibility oracle – see
 <a class="reference external" href="project-docs.html#segmentation-coverage-dashboard">segmentation coverage</a>
 for the declared scope and verification status.</p>
@@ -499,8 +648,40 @@ with no manual conversion needed.</p>
 </pre></div>
 </div>
 <dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SecondaryObjectsResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">SecondaryObjectsResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">small_removed_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#SecondaryObjectsResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.SecondaryObjectsResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Final and pre-filter secondary-object labels.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SecondaryObjectsResult.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SecondaryObjectsResult.labels" title="Link to this definition">#</a></dt>
+<dd><p>2D integer label array, same shape as the input image; 0 is background.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SecondaryObjectsResult.small_removed_labels">
+<span class="sig-name descname"><span class="pre">small_removed_labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SecondaryObjectsResult.small_removed_labels" title="Link to this definition">#</a></dt>
+<dd><p>Pre-filter labels in the original seed numbering, used by neighbors.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SecondaryObjectsResult.threshold">
+<span class="sig-name descname"><span class="pre">threshold</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SecondaryObjectsResult.threshold" title="Link to this definition">#</a></dt>
+<dd><p>The secondary image’s own applied threshold; <code class="docutils literal notranslate"><span class="pre">None</span></code> for
+<code class="docutils literal notranslate"><span class="pre">method=&quot;distance_n&quot;</span></code>, which never thresholds an image.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SecondaryObjectsResult.unedited_labels">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unedited_labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SecondaryObjectsResult.unedited_labels" title="Link to this definition">#</a></dt>
+<dd><p>CellProfiler stores the same grown layer as unedited and small-removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">SegmentationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_removed_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#SegmentationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">SegmentationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">small_removed_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unedited_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#SegmentationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Labels and diagnostics from one <a class="reference internal" href="#src.cp_anywhere.segment.identify_primary_objects" title="src.cp_anywhere.segment.identify_primary_objects"><code class="xref py py-func docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a> call.</p>
 <dl class="py attribute">
@@ -539,6 +720,24 @@ in the same units as the (possibly rescaled) pixels this was run on.</p>
 <span class="sig-name descname"><span class="pre">threshold_map</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.threshold_map" title="Link to this definition">#</a></dt>
 <dd><p>Corrected 2D Adaptive threshold array; None for Global thresholding.</p>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.SegmentationResult.unedited_labels">
+<span class="sig-name descname"><span class="pre">unedited_labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.SegmentationResult.unedited_labels" title="Link to this definition">#</a></dt>
+<dd><p>Labels before border, size, count, or final hole filtering.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.TertiaryObjectsResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">TertiaryObjectsResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#TertiaryObjectsResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.TertiaryObjectsResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Tertiary labels, preserving the larger object’s label numbering.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.TertiaryObjectsResult.labels">
+<span class="sig-name descname"><span class="pre">labels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></span><a class="headerlink" href="#src.cp_anywhere.segment.TertiaryObjectsResult.labels" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -667,6 +866,586 @@ matching <code class="docutils literal notranslate"><span class="pre">automatic_
 only takes effect when <code class="docutils literal notranslate"><span class="pre">min_diameter</span> <span class="pre">&gt;</span> <span class="pre">10.0</span></code> (CellProfiler’s own
 gate); when both are true, maxima are found on a downsampled copy
 of the image for speed – not yet implemented, raises if triggered.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.identify_secondary_objects">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">identify_secondary_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_labels_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'propagation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'otsu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_correction_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_smoothing_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'global'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptive_window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_middle_to_foreground</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_lower_outlier_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_upper_outlier_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_averaging_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_variance_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'sd'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robust_background_number_of_deviations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regularization_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_to_dilate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_holes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.segment.SecondaryObjectsResult" title="src.cp_anywhere.segment.SecondaryObjectsResult"><span class="pre">SecondaryObjectsResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#identify_secondary_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.identify_secondary_objects" title="Link to this definition">#</a></dt>
+<dd><p>Grow a secondary object (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Cells&quot;</span></code>) around each primary
+object (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Nuclei&quot;</span></code>), matching CellProfiler 4.2.8’s
+<code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code> module.</p>
+<p><code class="docutils literal notranslate"><span class="pre">image</span></code> is the secondary stain image (e.g. a cell-membrane or
+whole-cell marker); <code class="docutils literal notranslate"><span class="pre">primary_labels</span></code> is the final, kept primary
+object set (e.g. <a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult.labels" title="src.cp_anywhere.segment.SegmentationResult.labels"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SegmentationResult.labels</span></code></a> from
+<a class="reference internal" href="#src.cp_anywhere.segment.identify_primary_objects" title="src.cp_anywhere.segment.identify_primary_objects"><code class="xref py py-func docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a>) – a grown secondary object is
+kept only if its seed primary object survived there.</p>
+<p><code class="docutils literal notranslate"><span class="pre">primary_labels_in</span></code> accepts the unedited primary labels, before
+size or border filtering. Pass <a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult.unedited_labels" title="src.cp_anywhere.segment.SegmentationResult.unedited_labels"><code class="xref py py-attr docutils literal notranslate"><span class="pre">SegmentationResult.unedited_labels</span></code></a>
+from the upstream primary result. The Rust core retains edge-touching
+seeds and removes other seed pixels wherever <code class="docutils literal notranslate"><span class="pre">primary_labels</span></code> is
+zero, matching CellProfiler. Grown regions are mapped to retained
+primary IDs by overlap, so renumbered primaries stay aligned.
+If omitted, the kept primary array supplies the seeds; excluded
+edge objects cannot participate because their pixels are unavailable.</p>
+<p><code class="docutils literal notranslate"><span class="pre">method</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;propagation&quot;</span></code> (the module’s own default:
+weighted shortest-path region growing, bounded by a threshold of
+<code class="docutils literal notranslate"><span class="pre">image</span></code>, steered by <code class="docutils literal notranslate"><span class="pre">regularization_factor</span></code> – 0 favors image
+intensity, larger values favor Euclidean geometry) or
+<code class="docutils literal notranslate"><span class="pre">&quot;distance_n&quot;</span></code> (a fixed-radius Euclidean expansion bounded by
+<code class="docutils literal notranslate"><span class="pre">distance_to_dilate</span></code>, with no image or threshold involved at
+all). <code class="docutils literal notranslate"><span class="pre">&quot;distance_b&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;watershed_gradient&quot;</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">&quot;watershed_image&quot;</span></code> are explicit, not-yet-implemented gaps.</p>
+<p><code class="docutils literal notranslate"><span class="pre">threshold</span></code>/<code class="docutils literal notranslate"><span class="pre">rescale</span></code>/<code class="docutils literal notranslate"><span class="pre">threshold_correction_factor</span></code>/
+<code class="docutils literal notranslate"><span class="pre">threshold_range</span></code>/<code class="docutils literal notranslate"><span class="pre">threshold_smoothing_scale</span></code>/<code class="docutils literal notranslate"><span class="pre">log_transform</span></code>/
+<code class="docutils literal notranslate"><span class="pre">threshold_scope</span></code>/<code class="docutils literal notranslate"><span class="pre">adaptive_window_size</span></code>/
+<code class="docutils literal notranslate"><span class="pre">assign_middle_to_foreground</span></code>/<code class="docutils literal notranslate"><span class="pre">robust_background_*</span></code> all match
+<a class="reference internal" href="#src.cp_anywhere.segment.identify_primary_objects" title="src.cp_anywhere.segment.identify_primary_objects"><code class="xref py py-func docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a>’s own identically-named
+parameters exactly (the secondary image’s threshold uses the same
+machinery, with no size/border/declump filtering applied to it –
+matching <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code>’s own plain threshold-and-
+binarize step). Ignored entirely for <code class="docutils literal notranslate"><span class="pre">method=&quot;distance_n&quot;</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fill_holes</span></code> uses CellProfiler’s labeled-hole graph, but changes
+only background pixels. Existing nested foreground labels survive.
+<code class="docutils literal notranslate"><span class="pre">small_removed_labels</span></code> retains the grown labels before filtering,
+in the original seed numbering, for downstream neighbor measurements.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.segment.identify_tertiary_objects">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.segment.</span></span><span class="sig-name descname"><span class="pre">identify_tertiary_objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_primary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.segment.TertiaryObjectsResult" title="src.cp_anywhere.segment.TertiaryObjectsResult"><span class="pre">TertiaryObjectsResult</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/segment.html#identify_tertiary_objects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.segment.identify_tertiary_objects" title="Link to this definition">#</a></dt>
+<dd><p>Subtract smaller objects from larger objects on the same 2D grid.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">shrink_primary=True</span></code> (CellProfiler’s default), retain the
+smaller objects’ one-pixel, eight-connected outline. With <code class="docutils literal notranslate"><span class="pre">False</span></code>,
+remove every smaller-object pixel. Output IDs are the larger
+objects’ IDs, not newly numbered connected components. Inputs are
+never modified. Crop/resize metadata and parent measurements are
+not provided by this array API; grids must already match.</p>
+</dd></dl>
+
+</section>
+<section id="cp-anywhere-cppipe">
+<h2>cp_anywhere.cppipe<a class="headerlink" href="#cp-anywhere-cppipe" title="Link to this heading">#</a></h2>
+<p>Importing real CellProfiler <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> pipeline files
+(<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.load_pipeline()</span></code>) – see
+<a class="reference external" href="project-docs.html#cellprofiler-pipeline-cppipe-import">CellProfiler pipeline import</a>
+for the declared scope and every explicit gap.</p>
+<p id="module-src.cp_anywhere.cppipe">Import real CellProfiler <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> pipeline files, translating the
+settings of every module <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code> implements
+(<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensity</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code>) into this
+project’s own configuration – not a full pipeline execution engine.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> text format (header lines, then one block per module:
+<code class="docutils literal notranslate"><span class="pre">ModuleName:[attr:'val'|...]</span></code> followed by indented, strictly
+<em>positional</em> <code class="docutils literal notranslate"><span class="pre">Label:Value</span></code> setting lines – the label text is
+decorative and discarded, exactly as real CellProfiler’s own loader
+discards it) was reverse-engineered <strong>from the real serializer</strong>
+(<code class="docutils literal notranslate"><span class="pre">cellprofiler_core.pipeline.io._v5.dump</span></code>, the pinned 4.2.8 source),
+not guessed: every field order, separator, and value encoding below
+was confirmed by generating real pipeline files with the pinned
+CellProfiler oracle and reading their literal text. See
+<code class="docutils literal notranslate"><span class="pre">spec/cppipe-compatibility.md</span></code> for the full settings-mapping table
+and every explicit gap.</p>
+<p>This module has <strong>no CellProfiler dependency</strong> – replicating that
+would require re-implementing CellProfiler’s own per-module
+<code class="docutils literal notranslate"><span class="pre">upgrade_settings</span></code> version-migration chains (years of legacy-format
+branches per module), which is explicitly out of scope. Instead, this
+importer accepts only the <em>current</em> <code class="docutils literal notranslate"><span class="pre">variable_revision_number</span></code> for
+each supported module (the one the pinned 4.2.8 oracle itself writes)
+and raises a clear, explicit error naming the unsupported revision
+otherwise – asking the user to re-open and re-save the pipeline in a
+current CellProfiler first, rather than silently mis-translating an
+older settings layout.</p>
+<p>Pipeline input/organization modules (<code class="docutils literal notranslate"><span class="pre">Images</span></code>, <code class="docutils literal notranslate"><span class="pre">Metadata</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NamesAndTypes</span></code>, <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, and anything else this module does not
+explicitly translate) are recognized and skipped, not silently
+dropped: see <a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.skipped_modules" title="src.cp_anywhere.cppipe.Pipeline.skipped_modules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Pipeline.skipped_modules</span></code></a>. This importer does not
+replicate CellProfiler’s own file-matching/grouping logic; the caller
+supplies already-loaded image arrays by the same names the pipeline’s
+<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code>/<code class="docutils literal notranslate"><span class="pre">Measure*</span></code> modules reference.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">ColocalizationStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fast_costes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_corr_and_slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_manders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_rwc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_overlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_costes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_image_measurements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_object_measurements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#ColocalizationStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">MeasureColocalization</span></code> module: every requested
+image (every <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">j</span></code> pair is measured, matching real
+CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">get_image_pairs()</span></code>), at most one object set,
+and <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure_colocalization</span></code>’s own keyword settings.
+2D only – real CellProfiler’s 3D volumetric case is an explicit,
+documented gap. “Run all metrics?” is UI-only and not represented
+here; the five <code class="docutils literal notranslate"><span class="pre">do_*</span></code> flags are read directly, matching real
+CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">run()</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.do_corr_and_slope">
+<span class="sig-name descname"><span class="pre">do_corr_and_slope</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.do_corr_and_slope" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.do_costes">
+<span class="sig-name descname"><span class="pre">do_costes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.do_costes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.do_manders">
+<span class="sig-name descname"><span class="pre">do_manders</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.do_manders" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.do_overlap">
+<span class="sig-name descname"><span class="pre">do_overlap</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.do_overlap" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.do_rwc">
+<span class="sig-name descname"><span class="pre">do_rwc</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.do_rwc" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.fast_costes">
+<span class="sig-name descname"><span class="pre">fast_costes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.fast_costes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.threshold_percent">
+<span class="sig-name descname"><span class="pre">threshold_percent</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.threshold_percent" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.wants_image_measurements">
+<span class="sig-name descname"><span class="pre">wants_image_measurements</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.wants_image_measurements" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ColocalizationStep.wants_object_measurements">
+<span class="sig-name descname"><span class="pre">wants_object_measurements</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ColocalizationStep.wants_object_measurements" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.CppipeError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">CppipeError</span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#CppipeError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.CppipeError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></p>
+<p>An explicit, named incompatibility (not a parse failure) –
+e.g. an unsupported module revision, an out-of-scope setting value,
+or a settings combination outside <code class="docutils literal notranslate"><span class="pre">spec/cppipe-compatibility.md</span></code>’s
+declared scope. Always names the offending module/setting/value;
+never a silent fallback.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">ExportToDatabaseStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sqlite_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects_choice</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">if_exists</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#ExportToDatabaseStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">ExportToDatabase</span></code> module. Only SQLite output is
+supported (no MySQL server connection of any kind), and only “one
+table per object type” (<code class="docutils literal notranslate"><span class="pre">separate_object_tables</span></code>’s own
+<code class="docutils literal notranslate"><span class="pre">OT_PER_OBJECT</span></code> – real CellProfiler’s default, “Single object
+table”, combines every selected object’s measurements into one row
+per object and is an explicit, documented gap here; use
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">MeasurementResult.to_parquet(mode=&quot;joined&quot;)</span></code> instead if you want that
+shape). Table prefixes (<code class="docutils literal notranslate"><span class="pre">want_table_prefix</span></code>), the CellProfiler
+Analyst properties file, the object-relationship table, and the
+per-image aggregate (mean/median/std-dev) columns are also explicit,
+documented gaps – none of <code class="docutils literal notranslate"><span class="pre">to_sqlite</span></code>/<code class="docutils literal notranslate"><span class="pre">to_duckdb</span></code> generate them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">sqlite_file</span></code> is the bare filename from the module’s own setting:
+like every other translated step, this project never resolves a
+CellProfiler <code class="docutils literal notranslate"><span class="pre">Directory</span></code> setting’s “Default Output/Input Folder”
+choice to an absolute path – the caller supplies <code class="docutils literal notranslate"><span class="pre">path</span></code> to
+<a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.write" title="src.cp_anywhere.cppipe.ExportToDatabaseStep.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a>, exactly as the caller supplies every image array to
+<a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.run" title="src.cp_anywhere.cppipe.Pipeline.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pipeline.run()</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.if_exists">
+<span class="sig-name descname"><span class="pre">if_exists</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.if_exists" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.objects_choice">
+<span class="sig-name descname"><span class="pre">objects_choice</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.objects_choice" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.selected_scopes">
+<span class="sig-name descname"><span class="pre">selected_scopes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#ExportToDatabaseStep.selected_scopes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.selected_scopes" title="Link to this definition">#</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">result.features</span></code> scopes this step would write.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.sqlite_file">
+<span class="sig-name descname"><span class="pre">sqlite_file</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.sqlite_file" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.ExportToDatabaseStep.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#ExportToDatabaseStep.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep.write" title="Link to this definition">#</a></dt>
+<dd><p>Write <code class="docutils literal notranslate"><span class="pre">result</span></code>’s selected scopes to a SQLite file at
+<code class="docutils literal notranslate"><span class="pre">path</span></code> via <code class="xref py py-meth docutils literal notranslate"><span class="pre">MeasurementResult.to_sqlite()</span></code>, honoring this
+step’s <code class="docutils literal notranslate"><span class="pre">objects_choice</span></code>/<code class="docutils literal notranslate"><span class="pre">objects</span></code> selection and
+<code class="docutils literal notranslate"><span class="pre">if_exists</span></code> overwrite policy.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">GranularityStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_sample_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granular_spectrum_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#GranularityStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">MeasureGranularity</span></code> module: every requested
+image name (each measured independently, matching real
+CellProfiler), the object sets to also measure per-object spectra
+on, and <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure_granularity</span></code>’s own keyword settings.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.element_size">
+<span class="sig-name descname"><span class="pre">element_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.element_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.granular_spectrum_length">
+<span class="sig-name descname"><span class="pre">granular_spectrum_length</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.granular_spectrum_length" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.image_sample_size">
+<span class="sig-name descname"><span class="pre">image_sample_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.image_sample_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.GranularityStep.subsample_size">
+<span class="sig-name descname"><span class="pre">subsample_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.GranularityStep.subsample_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">IntensityDistributionStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_scaled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zernikes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zernike_degree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#IntensityDistributionStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensityDistribution</span></code> module: every
+requested image and object name (each image/object pair measured
+independently, matching real CellProfiler’s own per-image-per-object
+feature columns), and <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure_intensity_distribution</span></code>’s
+own keyword settings. Only the module’s default radial center
+(“These objects”) is supported; any other <code class="docutils literal notranslate"><span class="pre">center_choice</span></code> is an
+explicit, documented gap, rejected at translation time.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.bin_count">
+<span class="sig-name descname"><span class="pre">bin_count</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.bin_count" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.maximum_radius">
+<span class="sig-name descname"><span class="pre">maximum_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.maximum_radius" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.wants_scaled">
+<span class="sig-name descname"><span class="pre">wants_scaled</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.wants_scaled" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.zernike_degree">
+<span class="sig-name descname"><span class="pre">zernike_degree</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.zernike_degree" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep.zernikes">
+<span class="sig-name descname"><span class="pre">zernikes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep.zernikes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">MeasurementStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">family</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_zernikes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calculate_advanced</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_excluded_objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#MeasurementStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">Measure*</span></code> module’s requested image/object
+names and which <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure</span></code> family it activates.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.calculate_advanced">
+<span class="sig-name descname"><span class="pre">calculate_advanced</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.calculate_advanced" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.calculate_zernikes">
+<span class="sig-name descname"><span class="pre">calculate_zernikes</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.calculate_zernikes" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.family">
+<span class="sig-name descname"><span class="pre">family</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.family" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.module_name">
+<span class="sig-name descname"><span class="pre">module_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.module_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.MeasurementStep.wants_excluded_objects">
+<span class="sig-name descname"><span class="pre">wants_excluded_objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.MeasurementStep.wants_excluded_objects" title="Link to this definition">#</a></dt>
+<dd><p>Whether neighbor geometry uses the object’s small-removed layer.</p>
+<p>This matches CellProfiler’s excluded-objects setting. Layer contents
+depend on the upstream segmentation module, not only this flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">Pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SegmentationStep" title="src.cp_anywhere.cppipe.SegmentationStep"><span class="pre">SegmentationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="src.cp_anywhere.cppipe.SecondaryObjectsStep"><span class="pre">SecondaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tertiary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep" title="src.cp_anywhere.cppipe.TertiaryObjectsStep"><span class="pre">TertiaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.MeasurementStep" title="src.cp_anywhere.cppipe.MeasurementStep"><span class="pre">MeasurementStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.GranularityStep" title="src.cp_anywhere.cppipe.GranularityStep"><span class="pre">GranularityStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_distribution_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="src.cp_anywhere.cppipe.IntensityDistributionStep"><span class="pre">IntensityDistributionStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TextureStep" title="src.cp_anywhere.cppipe.TextureStep"><span class="pre">TextureStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colocalization_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ColocalizationStep" title="src.cp_anywhere.cppipe.ColocalizationStep"><span class="pre">ColocalizationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="src.cp_anywhere.cppipe.ExportToDatabaseStep"><span class="pre">ExportToDatabaseStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipped_modules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#Pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> file’s translated, <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code>-runnable steps.</p>
+<p>Not a full pipeline executor: file-matching/grouping modules
+(<code class="docutils literal notranslate"><span class="pre">Images</span></code>, <code class="docutils literal notranslate"><span class="pre">Metadata</span></code>, <code class="docutils literal notranslate"><span class="pre">NamesAndTypes</span></code>, <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, …) are
+listed in <a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.skipped_modules" title="src.cp_anywhere.cppipe.Pipeline.skipped_modules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">skipped_modules</span></code></a>, not run – the caller supplies
+already-loaded image arrays by name via <a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.run" title="src.cp_anywhere.cppipe.Pipeline.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.colocalization_steps">
+<span class="sig-name descname"><span class="pre">colocalization_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ColocalizationStep" title="src.cp_anywhere.cppipe.ColocalizationStep"><span class="pre">ColocalizationStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.colocalization_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.export_steps">
+<span class="sig-name descname"><span class="pre">export_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="src.cp_anywhere.cppipe.ExportToDatabaseStep"><span class="pre">ExportToDatabaseStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.export_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.granularity_steps">
+<span class="sig-name descname"><span class="pre">granularity_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.GranularityStep" title="src.cp_anywhere.cppipe.GranularityStep"><span class="pre">GranularityStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.granularity_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.intensity_distribution_steps">
+<span class="sig-name descname"><span class="pre">intensity_distribution_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="src.cp_anywhere.cppipe.IntensityDistributionStep"><span class="pre">IntensityDistributionStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.intensity_distribution_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.measurement_steps">
+<span class="sig-name descname"><span class="pre">measurement_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.MeasurementStep" title="src.cp_anywhere.cppipe.MeasurementStep"><span class="pre">MeasurementStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.measurement_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult" title="src.cp_anywhere.segment.SegmentationResult"><span class="pre">SegmentationResult</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.SecondaryObjectsResult" title="src.cp_anywhere.segment.SecondaryObjectsResult"><span class="pre">SecondaryObjectsResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.TertiaryObjectsResult" title="src.cp_anywhere.segment.TertiaryObjectsResult"><span class="pre">TertiaryObjectsResult</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#Pipeline.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.run" title="Link to this definition">#</a></dt>
+<dd><p>Run every translated segmentation step, then every
+translated <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code> step (each grows
+around its primary object’s kept labels, using its unedited
+layer to retain excluded edge seeds), then
+tertiary-object subtraction, then one combined measurement call
+over the union of every <code class="docutils literal notranslate"><span class="pre">Measure*</span></code>
+module’s requested images/objects (<code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure</span></code> has
+no per-module feature-subset switch, so a pipeline that
+measures only some image/object combinations gets
+cp_anywhere’s full combination as a superset – every
+requested value is present and correct, but extra columns may
+appear beyond what the source pipeline explicitly selected;
+see spec/cppipe-compatibility.md).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.secondary_steps">
+<span class="sig-name descname"><span class="pre">secondary_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="src.cp_anywhere.cppipe.SecondaryObjectsStep"><span class="pre">SecondaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.secondary_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.segmentation_steps">
+<span class="sig-name descname"><span class="pre">segmentation_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SegmentationStep" title="src.cp_anywhere.cppipe.SegmentationStep"><span class="pre">SegmentationStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.segmentation_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.skipped_modules">
+<span class="sig-name descname"><span class="pre">skipped_modules</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.skipped_modules" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.tertiary_steps">
+<span class="sig-name descname"><span class="pre">tertiary_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep" title="src.cp_anywhere.cppipe.TertiaryObjectsStep"><span class="pre">TertiaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.tertiary_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.texture_steps">
+<span class="sig-name descname"><span class="pre">texture_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TextureStep" title="src.cp_anywhere.cppipe.TextureStep"><span class="pre">TextureStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.texture_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SecondaryObjectsStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">SecondaryObjectsStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#SecondaryObjectsStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code> module: the input
+(secondary stain) image name, the primary object name it grows
+around, the object name it writes, and the
+<code class="docutils literal notranslate"><span class="pre">identify_secondary_objects</span></code> kwargs (matching
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.segment.identify_secondary_objects()</span></code>’s own
+parameter names exactly, so <code class="docutils literal notranslate"><span class="pre">**step.config</span></code> works directly).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SecondaryObjectsStep.config">
+<span class="sig-name descname"><span class="pre">config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep.config" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SecondaryObjectsStep.input_image">
+<span class="sig-name descname"><span class="pre">input_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep.input_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SecondaryObjectsStep.output_object">
+<span class="sig-name descname"><span class="pre">output_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep.output_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SecondaryObjectsStep.primary_object">
+<span class="sig-name descname"><span class="pre">primary_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep.primary_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SegmentationStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">SegmentationStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#SegmentationStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.SegmentationStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> module: an input image
+name, the object name it writes, and the <code class="docutils literal notranslate"><span class="pre">identify_primary_objects</span></code>
+kwargs (matching <code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects()</span></code>’s own
+parameter names exactly, so <code class="docutils literal notranslate"><span class="pre">**step.config</span></code> works directly).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SegmentationStep.config">
+<span class="sig-name descname"><span class="pre">config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SegmentationStep.config" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SegmentationStep.input_image">
+<span class="sig-name descname"><span class="pre">input_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SegmentationStep.input_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SegmentationStep.output_object">
+<span class="sig-name descname"><span class="pre">output_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SegmentationStep.output_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TertiaryObjectsStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">TertiaryObjectsStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primary_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shrink_primary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#TertiaryObjectsStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Subtract smaller objects from larger objects on the same grid.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TertiaryObjectsStep.output_object">
+<span class="sig-name descname"><span class="pre">output_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep.output_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TertiaryObjectsStep.primary_object">
+<span class="sig-name descname"><span class="pre">primary_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep.primary_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TertiaryObjectsStep.secondary_object">
+<span class="sig-name descname"><span class="pre">secondary_object</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep.secondary_object" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TertiaryObjectsStep.shrink_primary">
+<span class="sig-name descname"><span class="pre">shrink_primary</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep.shrink_primary" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">TextureStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gray_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_image_measurements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_object_measurements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#TextureStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">MeasureTexture</span></code> module: every requested image and
+object name (each image measured against every object set, matching
+real CellProfiler’s own full cross-product of feature columns), and
+<code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure_texture</span></code>’s own keyword settings. 2D only –
+real CellProfiler’s 3D volumetric correspondence vectors (13
+directions instead of 4) are an explicit, documented gap.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.gray_levels">
+<span class="sig-name descname"><span class="pre">gray_levels</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.gray_levels" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.objects">
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.scales">
+<span class="sig-name descname"><span class="pre">scales</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.scales" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.wants_image_measurements">
+<span class="sig-name descname"><span class="pre">wants_image_measurements</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.wants_image_measurements" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.TextureStep.wants_object_measurements">
+<span class="sig-name descname"><span class="pre">wants_object_measurements</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.TextureStep.wants_object_measurements" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.load_pipeline">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">load_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline" title="src.cp_anywhere.cppipe.Pipeline"><span class="pre">Pipeline</span></a></span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#load_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.load_pipeline" title="Link to this definition">#</a></dt>
+<dd><p>Parse a real CellProfiler <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> text file into a
+<a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline" title="src.cp_anywhere.cppipe.Pipeline"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pipeline</span></code></a>. Raises <a class="reference internal" href="#src.cp_anywhere.cppipe.CppipeError" title="src.cp_anywhere.cppipe.CppipeError"><code class="xref py py-class docutils literal notranslate"><span class="pre">CppipeError</span></code></a> for any module
+setting outside <code class="docutils literal notranslate"><span class="pre">spec/cppipe-compatibility.md</span></code>’s declared scope
+– never a silent fallback or approximation.</p>
 </dd></dl>
 
 </section>

@@ -405,6 +405,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Labels after the small-object filter only (large objects still</span>
 <span class="sd">    present), matching CellProfiler&#39;s ``objects.small_removed_segmented``.&quot;&quot;&quot;</span>
 
+    <span class="n">unedited_labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Labels before border, size, count, or final hole filtering.&quot;&quot;&quot;</span>
+
     <span class="n">object_count</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The threshold value actually applied, after correction/clamping,</span>
@@ -697,6 +700,7 @@
     <span class="k">return</span> <span class="n">SegmentationResult</span><span class="p">(</span>
         <span class="n">labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
         <span class="n">small_removed_labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;small_removed_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">unedited_labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;unedited_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
         <span class="n">object_count</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;object_count&quot;</span><span class="p">]),</span>
         <span class="n">threshold</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;threshold&quot;</span><span class="p">]),</span>
         <span class="n">threshold_map</span><span class="o">=</span><span class="p">(</span>
@@ -707,6 +711,236 @@
         <span class="n">guide_threshold</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;guide_threshold&quot;</span><span class="p">],</span>
     <span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="SecondaryObjectsResult">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.SecondaryObjectsResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SecondaryObjectsResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Final and pre-filter secondary-object labels.&quot;&quot;&quot;</span>
+
+    <span class="n">small_removed_labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pre-filter labels in the original seed numbering, used by neighbors.&quot;&quot;&quot;</span>
+
+    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;2D integer label array, same shape as the input image; 0 is background.&quot;&quot;&quot;</span>
+
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The secondary image&#39;s own applied threshold; ``None`` for</span>
+<span class="sd">    ``method=&quot;distance_n&quot;``, which never thresholds an image.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unedited_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;CellProfiler stores the same grown layer as unedited and small-removed.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">small_removed_labels</span></div>
+
+
+
+<div class="viewcode-block" id="identify_secondary_objects">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.identify_secondary_objects">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">identify_secondary_objects</span><span class="p">(</span>
+    <span class="n">image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">primary_labels</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">primary_labels_in</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+    <span class="n">mask</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="s2">&quot;otsu&quot;</span><span class="p">,</span>
+    <span class="n">rescale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">threshold_correction_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">threshold_range</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold_smoothing_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">log_transform</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">threshold_scope</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;global&quot;</span><span class="p">,</span>
+    <span class="n">adaptive_window_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">assign_middle_to_foreground</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">robust_background_lower_outlier_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">robust_background_upper_outlier_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">robust_background_averaging_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="n">robust_background_variance_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;sd&quot;</span><span class="p">,</span>
+    <span class="n">robust_background_number_of_deviations</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span>
+    <span class="n">regularization_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">distance_to_dilate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">fill_holes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecondaryObjectsResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Grow a secondary object (e.g. ``&quot;Cells&quot;``) around each primary</span>
+<span class="sd">    object (e.g. ``&quot;Nuclei&quot;``), matching CellProfiler 4.2.8&#39;s</span>
+<span class="sd">    ``IdentifySecondaryObjects`` module.</span>
+
+<span class="sd">    ``image`` is the secondary stain image (e.g. a cell-membrane or</span>
+<span class="sd">    whole-cell marker); ``primary_labels`` is the final, kept primary</span>
+<span class="sd">    object set (e.g. :attr:`SegmentationResult.labels` from</span>
+<span class="sd">    :func:`identify_primary_objects`) -- a grown secondary object is</span>
+<span class="sd">    kept only if its seed primary object survived there.</span>
+
+<span class="sd">    ``primary_labels_in`` accepts the unedited primary labels, before</span>
+<span class="sd">    size or border filtering. Pass :attr:`SegmentationResult.unedited_labels`</span>
+<span class="sd">    from the upstream primary result. The Rust core retains edge-touching</span>
+<span class="sd">    seeds and removes other seed pixels wherever ``primary_labels`` is</span>
+<span class="sd">    zero, matching CellProfiler. Grown regions are mapped to retained</span>
+<span class="sd">    primary IDs by overlap, so renumbered primaries stay aligned.</span>
+<span class="sd">    If omitted, the kept primary array supplies the seeds; excluded</span>
+<span class="sd">    edge objects cannot participate because their pixels are unavailable.</span>
+
+<span class="sd">    ``method`` is ``&quot;propagation&quot;`` (the module&#39;s own default:</span>
+<span class="sd">    weighted shortest-path region growing, bounded by a threshold of</span>
+<span class="sd">    ``image``, steered by ``regularization_factor`` -- 0 favors image</span>
+<span class="sd">    intensity, larger values favor Euclidean geometry) or</span>
+<span class="sd">    ``&quot;distance_n&quot;`` (a fixed-radius Euclidean expansion bounded by</span>
+<span class="sd">    ``distance_to_dilate``, with no image or threshold involved at</span>
+<span class="sd">    all). ``&quot;distance_b&quot;``, ``&quot;watershed_gradient&quot;``, and</span>
+<span class="sd">    ``&quot;watershed_image&quot;`` are explicit, not-yet-implemented gaps.</span>
+
+<span class="sd">    ``threshold``/``rescale``/``threshold_correction_factor``/</span>
+<span class="sd">    ``threshold_range``/``threshold_smoothing_scale``/``log_transform``/</span>
+<span class="sd">    ``threshold_scope``/``adaptive_window_size``/</span>
+<span class="sd">    ``assign_middle_to_foreground``/``robust_background_*`` all match</span>
+<span class="sd">    :func:`identify_primary_objects`&#39;s own identically-named</span>
+<span class="sd">    parameters exactly (the secondary image&#39;s threshold uses the same</span>
+<span class="sd">    machinery, with no size/border/declump filtering applied to it --</span>
+<span class="sd">    matching ``IdentifySecondaryObjects``&#39;s own plain threshold-and-</span>
+<span class="sd">    binarize step). Ignored entirely for ``method=&quot;distance_n&quot;``.</span>
+
+<span class="sd">    ``fill_holes`` uses CellProfiler&#39;s labeled-hole graph, but changes</span>
+<span class="sd">    only background pixels. Existing nested foreground labels survive.</span>
+<span class="sd">    ``small_removed_labels`` retains the grown labels before filtering,</span>
+<span class="sd">    in the original seed numbering, for downstream neighbor measurements.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
+
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_EXPECTED_NDIM</span> <span class="ow">or</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;image must be a nonempty 2D array&quot;</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">primary_array</span> <span class="o">=</span> <span class="n">_label_array</span><span class="p">(</span><span class="n">primary_labels</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">labels_in_array</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">primary_array</span>
+        <span class="k">if</span> <span class="n">primary_labels_in</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="n">_label_array</span><span class="p">(</span><span class="n">primary_labels_in</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;distance_n&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;method must be &#39;propagation&#39; or &#39;distance_n&#39; &quot;</span>
+            <span class="s2">&quot;(&#39;distance_b&#39;, &#39;watershed_gradient&#39;, and &#39;watershed_image&#39; &quot;</span>
+            <span class="s2">&quot;are explicit, not-yet-implemented gaps)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">is_integer_dtype</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;iu&quot;</span>
+    <span class="k">if</span> <span class="n">rescale</span> <span class="ow">and</span> <span class="n">is_integer_dtype</span><span class="p">:</span>
+        <span class="n">divisor</span> <span class="o">=</span> <span class="n">_rescale_divisor</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="o">/</span> <span class="n">divisor</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pixels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">threshold_method</span><span class="p">,</span> <span class="n">threshold_value</span><span class="p">,</span> <span class="n">integer_pixels</span> <span class="o">=</span> <span class="n">_resolve_threshold</span><span class="p">(</span>
+        <span class="n">threshold</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">rescale</span><span class="o">=</span><span class="n">rescale</span><span class="p">,</span> <span class="n">is_integer_dtype</span><span class="o">=</span><span class="n">is_integer_dtype</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">threshold_range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">threshold_range</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">rescale</span> <span class="ow">and</span> <span class="n">is_integer_dtype</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">mask_array</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mask must have the image shape&quot;</span><span class="p">)</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_native</span><span class="o">.</span><span class="n">identify_secondary_objects</span><span class="p">(</span>
+        <span class="n">pixels</span><span class="p">,</span>
+        <span class="n">rows</span><span class="p">,</span>
+        <span class="n">cols</span><span class="p">,</span>
+        <span class="n">labels_in_array</span><span class="p">,</span>
+        <span class="n">primary_array</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">,</span>
+        <span class="n">threshold_method</span><span class="p">,</span>
+        <span class="n">threshold_value</span><span class="o">=</span><span class="n">threshold_value</span><span class="p">,</span>
+        <span class="n">integer_pixels</span><span class="o">=</span><span class="n">integer_pixels</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="n">mask_array</span><span class="p">,</span>
+        <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">threshold_correction_factor</span><span class="p">,</span>
+        <span class="n">threshold_range_min</span><span class="o">=</span><span class="n">threshold_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">threshold_range_max</span><span class="o">=</span><span class="n">threshold_range</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">threshold_smoothing_scale</span><span class="o">=</span><span class="n">threshold_smoothing_scale</span><span class="p">,</span>
+        <span class="n">log_transform</span><span class="o">=</span><span class="n">log_transform</span><span class="p">,</span>
+        <span class="n">threshold_scope</span><span class="o">=</span><span class="n">threshold_scope</span><span class="p">,</span>
+        <span class="n">adaptive_window_size</span><span class="o">=</span><span class="n">adaptive_window_size</span><span class="p">,</span>
+        <span class="n">assign_middle_to_foreground</span><span class="o">=</span><span class="n">assign_middle_to_foreground</span><span class="p">,</span>
+        <span class="n">robust_background_lower_outlier_fraction</span><span class="o">=</span><span class="n">robust_background_lower_outlier_fraction</span><span class="p">,</span>
+        <span class="n">robust_background_upper_outlier_fraction</span><span class="o">=</span><span class="n">robust_background_upper_outlier_fraction</span><span class="p">,</span>
+        <span class="n">robust_background_averaging_method</span><span class="o">=</span><span class="n">robust_background_averaging_method</span><span class="p">,</span>
+        <span class="n">robust_background_variance_method</span><span class="o">=</span><span class="n">robust_background_variance_method</span><span class="p">,</span>
+        <span class="n">robust_background_number_of_deviations</span><span class="o">=</span><span class="n">robust_background_number_of_deviations</span><span class="p">,</span>
+        <span class="n">regularization_factor</span><span class="o">=</span><span class="n">regularization_factor</span><span class="p">,</span>
+        <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">distance_to_dilate</span><span class="p">,</span>
+        <span class="n">fill_holes</span><span class="o">=</span><span class="n">fill_holes</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">SecondaryObjectsResult</span><span class="p">(</span>
+        <span class="n">labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">small_removed_labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;small_removed_labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;threshold&quot;</span><span class="p">],</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TertiaryObjectsResult">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.TertiaryObjectsResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TertiaryObjectsResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tertiary labels, preserving the larger object&#39;s label numbering.&quot;&quot;&quot;</span>
+
+    <span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span></div>
+
+
+
+<div class="viewcode-block" id="identify_tertiary_objects">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.segment.identify_tertiary_objects">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">identify_tertiary_objects</span><span class="p">(</span>
+    <span class="n">primary_labels</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">secondary_labels</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">shrink_primary</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TertiaryObjectsResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subtract smaller objects from larger objects on the same 2D grid.</span>
+
+<span class="sd">    With ``shrink_primary=True`` (CellProfiler&#39;s default), retain the</span>
+<span class="sd">    smaller objects&#39; one-pixel, eight-connected outline. With ``False``,</span>
+<span class="sd">    remove every smaller-object pixel. Output IDs are the larger</span>
+<span class="sd">    objects&#39; IDs, not newly numbered connected components. Inputs are</span>
+<span class="sd">    never modified. Crop/resize metadata and parent measurements are</span>
+<span class="sd">    not provided by this array API; grids must already match.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
+
+    <span class="n">primary</span> <span class="o">=</span> <span class="n">_tertiary_label_array</span><span class="p">(</span><span class="n">primary_labels</span><span class="p">)</span>
+    <span class="n">secondary</span> <span class="o">=</span> <span class="n">_tertiary_label_array</span><span class="p">(</span><span class="n">secondary_labels</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">primary</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">secondary</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;primary and secondary label arrays must have matching shapes&quot;</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">secondary</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="n">_native</span><span class="o">.</span><span class="n">identify_tertiary_objects</span><span class="p">(</span>
+        <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">shrink_primary</span><span class="o">=</span><span class="n">shrink_primary</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">TertiaryObjectsResult</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">secondary</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tertiary_label_array</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_EXPECTED_NDIM</span> <span class="ow">or</span> <span class="mi">0</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label arrays must be nonempty 2D arrays&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;iu&quot;</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">array</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label arrays must contain nonnegative integers&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">array</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label arrays must fit in uint32&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_label_array</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;label arrays must have the image shape&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">array</span>
 </pre></div>
 
                 </article>

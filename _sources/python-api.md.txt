@@ -26,13 +26,29 @@ requiring images to be pre-converted to NumPy arrays first.
 ```{eval-rst}
 cp_anywhere.segment
 -------------------
-Object segmentation (:func:`cp_anywhere.identify_primary_objects`),
-implemented against CellProfiler's ``IdentifyPrimaryObjects`` module as
+Object segmentation includes :func:`cp_anywhere.identify_primary_objects`,
+:func:`cp_anywhere.identify_secondary_objects`, and
+:func:`cp_anywhere.identify_tertiary_objects`. The native implementations
+use the corresponding CellProfiler modules as
 the compatibility oracle -- see
 `segmentation coverage <project-docs.html#segmentation-coverage-dashboard>`_
 for the declared scope and verification status.
 
 .. automodule:: src.cp_anywhere.segment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+```
+
+```{eval-rst}
+cp_anywhere.cppipe
+-------------------
+Importing real CellProfiler ``.cppipe`` pipeline files
+(:func:`cp_anywhere.load_pipeline`) -- see
+`CellProfiler pipeline import <project-docs.html#cellprofiler-pipeline-cppipe-import>`_
+for the declared scope and every explicit gap.
+
+.. automodule:: src.cp_anywhere.cppipe
    :members:
    :undoc-members:
    :show-inheritance:

@@ -2443,6 +2443,282 @@ section). Object labels are unaffected in every case.</p>
 </div>
 </section>
 </section>
+<section id="size-and-shape-measurements">
+<h1>Size and shape measurements<a class="headerlink" href="#size-and-shape-measurements" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">MeasureObjectSizeShape</span></code> is available for 2D label arrays in native Python
+and WASM. It uses the pinned CellProfiler 4.2.8 reference, with
+scikit-image 0.21.0 and centrosome 1.2.3.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">measure</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">cell_labels</span><span class="p">},</span>
+    <span class="n">families</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;object_size_shape&quot;</span><span class="p">],</span>
+    <span class="n">size_shape_calculate_zernikes</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">size_shape_calculate_advanced</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The family measures each supplied object set, without using image intensity
+or the image mask. Images are still required by the shared <code class="docutils literal notranslate"><span class="pre">measure</span></code> API.
+The original three default families are unchanged: request
+<code class="docutils literal notranslate"><span class="pre">object_size_shape</span></code> explicitly to add shape columns.</p>
+<section id="columns-and-settings">
+<h2>Columns and settings<a class="headerlink" href="#columns-and-settings" title="Link to this heading">#</a></h2>
+<p>All columns have the <code class="docutils literal notranslate"><span class="pre">AreaShape_</span></code> prefix. The module supplies:</p>
+<ul class="simple">
+<li><p>25 standard columns: area, perimeter, axes, eccentricity, orientation,
+center coordinates, bounding boxes, form factor, extent, solidity,
+compactness, Euler number, radii, convex area, Feret diameters, and
+equivalent diameter.</p></li>
+<li><p>30 Zernike columns, orders 0 through 9. Enabled by default, matching
+CellProfiler’s <code class="docutils literal notranslate"><span class="pre">calculate_zernikes</span></code> setting.</p></li>
+<li><p>53 advanced columns: spatial, central and normalized moments, Hu moments,
+the inertia tensor and its eigenvalues. Disabled by default, matching
+CellProfiler’s <code class="docutils literal notranslate"><span class="pre">calculate_advanced</span></code> setting.</p></li>
+</ul>
+<p>The two flags select 25, 55, 78, or 108 total columns. Undefined values
+remain NaN or infinity, rather than becoming zero. The normal result
+serialization and export methods retain their existing nonfinite-value
+rules. An empty object set still has the selected schema with empty arrays.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> importer accepts revision 3. Its three settings are the
+object list, Zernike flag, and advanced flag. Each imported module keeps
+its own settings and object selection, even when a pipeline measures
+Nuclei, Cells, and Cytoplasm with different flags.</p>
+</section>
+<section id="limits">
+<h2>Limits<a class="headerlink" href="#limits" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>3D size/shape measurements are not implemented. A 3D request raises a
+clear error rather than returning 2D substitutes.</p></li>
+<li><p>The public measurement API requires consecutive object IDs starting at</p>
+<ol class="arabic simple">
+<li><p>The real reference produces inconsistently packed columns for sparse
+labels. The low-level Rust routines preserve that behavior for numerical
+comparison, but the integrated API rejects it to prevent corrupt row
+alignment in exports. Other measurement families keep their existing
+sparse-label support.</p></li>
+</ol>
+</li>
+<li><p>Numerical checks target the pinned reference environment. Advanced
+moment reductions reproduce its NumPy/OpenBLAS ARMv8 order; this is not
+a claim of bitwise agreement with every BLAS implementation.</p></li>
+</ul>
+</section>
+<section id="verification">
+<h2>Verification<a class="headerlink" href="#verification" title="Link to this heading">#</a></h2>
+<p>Real reference fixtures cover rectangles, rings, diagonal shapes, nested
+objects, multiple objects, border objects, single pixels, and empty images.
+Tests compare every selected column under all four flag combinations.
+Separate real pipelines run primary, secondary, and tertiary segmentation
+before size/shape measurement, with different flags for each compartment.</p>
+<p>The browser check runs both <code class="docutils literal notranslate"><span class="pre">measureJson</span></code> and <code class="docutils literal notranslate"><span class="pre">measureWithOptions</span></code> in real
+Playwright Chromium, not a simulated WASM runtime. The original
+eight-argument <code class="docutils literal notranslate"><span class="pre">measure</span></code> export remains available for existing callers;
+<code class="docutils literal notranslate"><span class="pre">measureWithOptions</span></code> adds diagnostic neighbor layers and shape flags.</p>
+<p>To regenerate and check the reference data:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>scripts/reference/generate_size_shape.py
+<span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>scripts/cppipe/generate_size_shape_pipeline.py
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest<span class="w"> </span>tests/test_size_shape.py<span class="w"> </span>tests/cppipe/test_size_shape_pipeline.py
+wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm_size_shape.py
+</pre></div>
+</div>
+<p>The browser check requires the browser example’s existing Node dependencies
+and Playwright Chromium installation. Building a package does not publish it.</p>
+</section>
+</section>
+<section id="granularity">
+<h1>Granularity<a class="headerlink" href="#granularity" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">MeasureGranularity</span></code> is available for 2D images, in native Python and
+WASM. It uses the pinned CellProfiler 4.2.8 reference, with scipy 1.9.3
+and scikit-image 0.21.0.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_granularity</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">measure_granularity</span><span class="p">(</span>
+    <span class="n">dna_image</span><span class="p">,</span>
+    <span class="n">objects</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">cell_labels</span><span class="p">},</span>
+    <span class="n">subsample_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>  <span class="c1"># CellProfiler&#39;s own defaults</span>
+    <span class="n">image_sample_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">element_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">granular_spectrum_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">image</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># GS1, the image-level granularity spectrum</span>
+<span class="n">result</span><span class="o">.</span><span class="n">objects</span><span class="p">[</span><span class="s2">&quot;Cells&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># GS1, one value per Cells object</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">measure_granularity</span></code> is a standalone function, separate from the
+unified <code class="docutils literal notranslate"><span class="pre">measure()</span></code> family dispatch: CellProfiler’s own module measures
+one image at a time, with its own subsampling/structuring-element
+settings, and its result shape (per-scale spectra, not a flat feature
+table) does not fit the shared <code class="docutils literal notranslate"><span class="pre">measure()</span></code> contract.</p>
+<section id="algorithm">
+<h2>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading">#</a></h2>
+<p>For each image: optionally downsample for the main granularity
+computation (<code class="docutils literal notranslate"><span class="pre">subsample_size</span></code>) and separately for background removal
+(<code class="docutils literal notranslate"><span class="pre">image_sample_size</span></code>), using CellProfiler’s own mix of bilinear
+(order 1) pixel resampling and cubic B-spline (order 3) mask
+resampling. Subtract a grayscale-opened background (erosion then
+dilation with a disk structuring element of <code class="docutils literal notranslate"><span class="pre">element_size</span></code> radius),
+then repeatedly erode with a radius-1 disk and reconstruct by
+dilation, recording the percent change in masked mean brightness at
+each of <code class="docutils literal notranslate"><span class="pre">granular_spectrum_length</span></code> scales.</p>
+<p>Per-object spectra use the same per-scale reconstructed image, rescaled
+back to full resolution, averaged over each object’s unmasked pixels at
+full resolution – not the (possibly subsampled) working image directly.</p>
+<p>An object with zero pixels under the mask reports <code class="docutils literal notranslate"><span class="pre">NaN</span></code> at every scale,
+matching real CellProfiler: its own baseline mean is already <code class="docutils literal notranslate"><span class="pre">NaN</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">NaN</span></code> never recovers through the per-scale subtraction.</p>
+</section>
+<section id="id7">
+<h2>Limits<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>2D only. Real CellProfiler’s own module divides by
+<code class="docutils literal notranslate"><span class="pre">orig_shape[dimension]</span> <span class="pre">-</span> <span class="pre">1</span></code> while rescaling its working image back to
+full resolution, and raises <code class="docutils literal notranslate"><span class="pre">ZeroDivisionError</span></code>, unconditionally, for
+any image with a 1-row or 1-column dimension – confirmed live against
+the pinned reference. <code class="docutils literal notranslate"><span class="pre">measure_granularity</span></code> raises a clear <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+for that case instead of silently producing 0/NaN; there is no real
+oracle value to match for it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">image</span></code> must already be at the same precision real CellProfiler would
+have measured. <code class="docutils literal notranslate"><span class="pre">Image(...,</span> <span class="pre">convert=True)</span></code> rescales integer dtypes by
+their dtype’s max value (<code class="docutils literal notranslate"><span class="pre">identify_primary_objects</span></code> reproduces this
+automatically for segmentation inputs, but <code class="docutils literal notranslate"><span class="pre">measure_granularity</span></code> does
+not – intensity measurements expect already-scaled float input, the
+same contract <code class="docutils literal notranslate"><span class="pre">measure()</span></code>’s other intensity families use) and always
+downcasts through <code class="docutils literal notranslate"><span class="pre">float32</span></code> even for float64 input. The second effect
+is usually negligible (~1e-7 relative) but is a real precision
+difference, not a cp-anywhere rounding bug, when reproducing an exact
+oracle run numerically.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> importer accepts revision 4 (7 settings: images, “measure
+within objects?”, objects, both subsampling factors, element size,
+spectrum length). Every listed image is measured independently and
+merged into the same <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code>, matching real CellProfiler’s
+<code class="docutils literal notranslate"><span class="pre">Granularity_&lt;scale&gt;_&lt;image</span> <span class="pre">name&gt;</span></code> feature-naming convention.</p></li>
+</ul>
+</section>
+<section id="id8">
+<h2>Verification<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<p>Real reference fixtures cover CellProfiler’s own defaults, full
+resolution (no subsampling), uneven subsample/background factors,
+partial and fully-empty masks, zero/constant/negative images, and
+multiple simultaneous object sets – 12 cases total, generated by
+<code class="docutils literal notranslate"><span class="pre">scripts/reference/generate_granularity.py</span></code> against a live pinned
+CellProfiler run. A separate real two-image, two-object-set <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code>
+pipeline (<code class="docutils literal notranslate"><span class="pre">scripts/cppipe/generate_granularity_pipeline.py</span></code>) exercises
+the full <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code> -&gt;
+<code class="docutils literal notranslate"><span class="pre">IdentifyTertiaryObjects</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">MeasureGranularity</span></code> chain end to end.</p>
+<p>The browser check runs <code class="docutils literal notranslate"><span class="pre">measureGranularityJson</span></code> in real Playwright
+Chromium, not a simulated WASM runtime.</p>
+<p>To regenerate and check the reference data:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>scripts/reference/generate_granularity.py
+<span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>scripts/cppipe/generate_granularity_pipeline.py
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest<span class="w"> </span>tests/test_granularity.py<span class="w"> </span>tests/cppipe/test_granularity_pipeline.py
+wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm_granularity.py
+</pre></div>
+</div>
+<p>The browser check requires the browser example’s existing Node
+dependencies and Playwright Chromium installation.</p>
+</section>
+</section>
+<section id="cellprofiler-pipeline-cppipe-import">
+<h1>CellProfiler pipeline (<code class="docutils literal notranslate"><span class="pre">.cppipe</span></code>) import<a class="headerlink" href="#cellprofiler-pipeline-cppipe-import" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">cp_anywhere.load_pipeline(path)</span></code> reads a real CellProfiler <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code>
+file and translates the settings of every module this project
+implements (<code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code>, <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code>,
+<code class="docutils literal notranslate"><span class="pre">IdentifyTertiaryObjects</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensity</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureObjectSizeShape</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureGranularity</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensityDistribution</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureTexture</span></code>, <code class="docutils literal notranslate"><span class="pre">MeasureColocalization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code>) into <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code>’s own configuration – an
+existing pipeline’s settings for those modules carry over 1-for-1,
+with no manual re-entry.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">cp_anywhere</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">load_pipeline</span><span class="p">(</span><span class="s2">&quot;my_pipeline.cppipe&quot;</span><span class="p">)</span>
+<span class="n">segmentations</span><span class="p">,</span> <span class="n">derived_objects</span><span class="p">,</span> <span class="n">measurement</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">,</span> <span class="s2">&quot;Actin&quot;</span><span class="p">:</span> <span class="n">actin_image</span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The second result contains both secondary and tertiary object sets.
+For example, <code class="docutils literal notranslate"><span class="pre">derived_objects[&quot;Cytoplasm&quot;].labels</span></code> contains the tertiary
+labels. The return value remains a three-item tuple.</p>
+<p>This is a <strong>settings importer, not a full pipeline execution engine</strong>:
+file-matching/organization modules (<code class="docutils literal notranslate"><span class="pre">Images</span></code>, <code class="docutils literal notranslate"><span class="pre">Metadata</span></code>,
+<code class="docutils literal notranslate"><span class="pre">NamesAndTypes</span></code>, <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, …) are recognized and skipped –
+<code class="docutils literal notranslate"><span class="pre">pipeline.skipped_modules</span></code> lists them – not executed; you supply
+already-loaded image arrays by name, same as <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure</span></code>.</p>
+<p>Every out-of-scope setting (an older pipeline revision, “basic mode”,
+a non-<code class="docutils literal notranslate"><span class="pre">&quot;Adjacent&quot;</span></code> <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code> distance method, an
+unimplemented <code class="docutils literal notranslate"><span class="pre">IdentifySecondaryObjects</span></code> method, and a handful more)
+raises <code class="docutils literal notranslate"><span class="pre">cp_anywhere.CppipeError</span></code> naming the exact setting, rather than
+silently mis-translating it – see <code class="docutils literal notranslate"><span class="pre">spec/cppipe-compatibility.md</span></code> for
+the full settings-mapping table, every explicit gap, and how it is
+verified (real, oracle-generated <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> fixtures in
+<code class="docutils literal notranslate"><span class="pre">fixtures/cppipe/</span></code>, checked in <code class="docutils literal notranslate"><span class="pre">tests/cppipe/test_cppipe_import.py</span></code>
+against the pinned CellProfiler 4.2.8 oracle’s own segmentation output
+on the same test image). The CLI also accepts a pipeline directly:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cp-anywhere<span class="w"> </span>--pipeline<span class="w"> </span>my_pipeline.cppipe<span class="w"> </span>--image<span class="w"> </span><span class="nv">DNA</span><span class="o">=</span>dna.tif<span class="w"> </span>--output<span class="w"> </span>result.json
+</pre></div>
+</div>
+</section>
+<section id="database-export">
+<h1>Database export<a class="headerlink" href="#database-export" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> can be written directly to a real Parquet file, a
+DuckDB database, or a SQLite database (using <code class="docutils literal notranslate"><span class="pre">STRICT</span></code> tables), on top
+of the existing <code class="docutils literal notranslate"><span class="pre">to_csv</span></code>/<code class="docutils literal notranslate"><span class="pre">to_arrow</span></code>/<code class="docutils literal notranslate"><span class="pre">to_json</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="s2">&quot;result.parquet&quot;</span><span class="p">)</span>  <span class="c1"># same long-form rows as to_arrow</span>
+<span class="n">result</span><span class="o">.</span><span class="n">to_duckdb</span><span class="p">(</span><span class="s2">&quot;results.duckdb&quot;</span><span class="p">)</span>  <span class="c1"># wide Per_Image / Per_Cells / ...</span>
+<span class="n">result</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="s2">&quot;results.sqlite&quot;</span><span class="p">)</span>  <span class="c1"># same, as SQLite STRICT tables</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">to_duckdb</span></code>/<code class="docutils literal notranslate"><span class="pre">to_sqlite</span></code> write <strong>wide</strong> tables named <code class="docutils literal notranslate"><span class="pre">Per_Image</span></code>/
+<code class="docutils literal notranslate"><span class="pre">Per_&lt;ObjectName&gt;</span></code> – matching real CellProfiler’s own
+<code class="docutils literal notranslate"><span class="pre">ExportToDatabase</span></code> naming convention – and default to
+<code class="docutils literal notranslate"><span class="pre">if_exists=&quot;append&quot;</span></code>, so processing many images in a loop and calling
+one of these once per image builds up a single combined dataset, the
+way CellProfiler’s own batch runs do. Pass <code class="docutils literal notranslate"><span class="pre">if_exists=&quot;replace&quot;</span></code> to
+start fresh instead.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_duckdb</span></code> needs the optional <code class="docutils literal notranslate"><span class="pre">duckdb</span></code> dependency
+(<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">cp-anywhere[duckdb]</span></code>); <code class="docutils literal notranslate"><span class="pre">to_parquet</span></code> and <code class="docutils literal notranslate"><span class="pre">to_sqlite</span></code> need
+nothing beyond this project’s own core dependencies.</p>
+<p>For a dense, fixed-size feature array per object instead of long-form
+rows (e.g. to load straight into a <code class="docutils literal notranslate"><span class="pre">(n_rows,</span> <span class="pre">n_features)</span></code> numpy
+array), use <code class="docutils literal notranslate"><span class="pre">to_parquet(...,</span> <span class="pre">mode=&quot;array&quot;)</span></code>: <code class="docutils literal notranslate"><span class="pre">path</span></code> becomes a
+directory, one <code class="docutils literal notranslate"><span class="pre">Per_Image.parquet</span></code>/<code class="docutils literal notranslate"><span class="pre">Per_&lt;ObjectName&gt;.parquet</span></code> file is
+written per scope, and each file’s <code class="docutils literal notranslate"><span class="pre">features</span></code> column is a single
+fixed-size array per row. The exact ordered feature names for that
+array are embedded in the file’s own Parquet schema metadata (no
+sidecar file to go out of sync) – read them back with
+<code class="docutils literal notranslate"><span class="pre">cp_anywhere.read_parquet_feature_names(path)</span></code>. The CLI exposes this
+as <code class="docutils literal notranslate"><span class="pre">--output</span> <span class="pre">&lt;directory&gt;</span> <span class="pre">--parquet-mode</span> <span class="pre">array</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">to_parquet(...,</span> <span class="pre">mode=&quot;wide&quot;)</span></code> writes the same per-scope files as
+<code class="docutils literal notranslate"><span class="pre">mode=&quot;array&quot;</span></code>, but as the traditional tabular shape instead – one
+real, named column per feature, no array/metadata lookup needed
+(<code class="docutils literal notranslate"><span class="pre">--output</span> <span class="pre">&lt;directory&gt;</span> <span class="pre">--parquet-mode</span> <span class="pre">wide</span></code>).</p>
+<p>For one combined, <a class="reference external" href="https://github.com/cytomining/CytoTable">CytoTable</a>
+-style table across every object scope – one row per object, scopes
+joined on <code class="docutils literal notranslate"><span class="pre">object_id</span></code>, feature columns prefixed by scope name – use
+<code class="docutils literal notranslate"><span class="pre">to_parquet(...,</span> <span class="pre">mode=&quot;joined&quot;)</span></code>. <code class="docutils literal notranslate"><span class="pre">path</span></code> is either a single <code class="docutils literal notranslate"><span class="pre">.parquet</span></code>
+file or a directory, in which case it’s written as a real,
+<code class="docutils literal notranslate"><span class="pre">max_rows_per_file</span></code>-paginated Parquet dataset via
+<code class="docutils literal notranslate"><span class="pre">pyarrow.dataset.write_dataset</span></code> that can accumulate across many images
+with <code class="docutils literal notranslate"><span class="pre">if_exists=&quot;append&quot;</span></code> (the default): <code class="docutils literal notranslate"><span class="pre">--output</span> <span class="pre">&lt;file-or-directory&gt;</span> <span class="pre">--parquet-mode</span> <span class="pre">joined</span> <span class="pre">--join</span> <span class="pre">outer|inner</span> <span class="pre">--max-rows-per-file</span> <span class="pre">N</span></code>.</p>
+<p>The CLI dispatches on <code class="docutils literal notranslate"><span class="pre">--output</span></code>’s file extension the same way:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cp-anywhere<span class="w"> </span>--image<span class="w"> </span><span class="nv">DNA</span><span class="o">=</span>dna.tif<span class="w"> </span>--objects<span class="w"> </span><span class="nv">Cells</span><span class="o">=</span>labels.npy<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--output<span class="w"> </span>results.sqlite<span class="w"> </span>--if-exists<span class="w"> </span>append
+</pre></div>
+</div>
+<p>See <code class="docutils literal notranslate"><span class="pre">spec/database-export.md</span></code> for the exact schema (column names and
+types), why SQLite specifically needs <code class="docutils literal notranslate"><span class="pre">STRICT</span></code> tables, and how it’s
+verified (<code class="docutils literal notranslate"><span class="pre">tests/test_database_export.py</span></code>).</p>
+</section>
 <section id="ci-cd">
 <h1>CI/CD<a class="headerlink" href="#ci-cd" title="Link to this heading">#</a></h1>
 <section id="on-every-pull-request-github-workflows-run-tests-yml">
@@ -2487,8 +2763,8 @@ noise).</p>
 <p>See <code class="docutils literal notranslate"><span class="pre">docs/release.md</span></code> for the full publish pipeline (PyPI, crates.io,
 npm, GitHub Release assets).</p>
 </section>
-<section id="id7">
-<h2>Known gaps<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>Known gaps<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>Property-based tests for invariants such as label permutation and
 object ordering (plan section 8) are not implemented. The current test

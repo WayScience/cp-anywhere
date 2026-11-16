@@ -447,6 +447,7 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#module-src.cp_anywhere.api">cp_anywhere.api</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.MeasurementResult"><code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.measure"><code class="docutils literal notranslate"><span class="pre">measure()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.read_parquet_feature_names"><code class="docutils literal notranslate"><span class="pre">read_parquet_feature_names()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-io">cp_anywhere.io</a><ul>
@@ -455,8 +456,27 @@ In addition, consider the following steps to help ensure the project is in good 
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-segment">cp_anywhere.segment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.SecondaryObjectsResult"><code class="docutils literal notranslate"><span class="pre">SecondaryObjectsResult</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.SegmentationResult"><code class="docutils literal notranslate"><span class="pre">SegmentationResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.TertiaryObjectsResult"><code class="docutils literal notranslate"><span class="pre">TertiaryObjectsResult</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_primary_objects"><code class="docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_secondary_objects"><code class="docutils literal notranslate"><span class="pre">identify_secondary_objects()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_tertiary_objects"><code class="docutils literal notranslate"><span class="pre">identify_tertiary_objects()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-cppipe">cp_anywhere.cppipe</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep"><code class="docutils literal notranslate"><span class="pre">ColocalizationStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.CppipeError"><code class="docutils literal notranslate"><span class="pre">CppipeError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.ExportToDatabaseStep"><code class="docutils literal notranslate"><span class="pre">ExportToDatabaseStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.GranularityStep"><code class="docutils literal notranslate"><span class="pre">GranularityStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.IntensityDistributionStep"><code class="docutils literal notranslate"><span class="pre">IntensityDistributionStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep"><code class="docutils literal notranslate"><span class="pre">MeasurementStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.Pipeline"><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.SecondaryObjectsStep"><code class="docutils literal notranslate"><span class="pre">SecondaryObjectsStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.SegmentationStep"><code class="docutils literal notranslate"><span class="pre">SegmentationStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.TertiaryObjectsStep"><code class="docutils literal notranslate"><span class="pre">TertiaryObjectsStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.TextureStep"><code class="docutils literal notranslate"><span class="pre">TextureStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.load_pipeline"><code class="docutils literal notranslate"><span class="pre">load_pipeline()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -524,12 +544,26 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#id6">Reproduce</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#size-and-shape-measurements">Size and shape measurements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#columns-and-settings">Columns and settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#limits">Limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#verification">Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#granularity">Granularity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#algorithm">Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id7">Limits</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id8">Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#cellprofiler-pipeline-cppipe-import">CellProfiler pipeline (<code class="docutils literal notranslate"><span class="pre">.cppipe</span></code>) import</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project-docs.html#database-export">Database export</a></li>
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html#ci-cd">CI/CD</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-every-pull-request-github-workflows-run-tests-yml">On every pull request (<code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#nightly-github-workflows-nightly-full-parity-yml">Nightly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/nightly-full-parity.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#weekly-github-workflows-benchmark-yml">Weekly (<code class="docutils literal notranslate"><span class="pre">.github/workflows/benchmark.yml</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#on-release-github-workflows-publish-yml">On release (<code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-*.yml</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id7">Known gaps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#id9">Known gaps</a></li>
 </ul>
 </li>
 </ul>
