@@ -18,9 +18,18 @@ The golden fixtures cover 2D and 3D runs. Both channels are separate grayscale a
 
 For this initial scope, “full feature set” means the complete 119-column inventory in `spec/features.yaml` and the directed relationship rows. A future implementation cannot claim parity by implementing a subset of those columns. More channels, additional object sets, and different names require new manifests and fixtures before a claim. The checked-in fixture names and settings are the present contract.
 
+## Later extensions
+
+The table above remains the initial golden-fixture contract. Later
+extensions add secondary and tertiary segmentation, broader neighbor
+object selection, and 2D `MeasureObjectSizeShape` with Zernike and
+advanced columns. These have separate real-reference fixtures and
+limits documented in `spec/cppipe-compatibility.md` and
+`docs/size-shape.md`; they do not change the original 119-column inventory.
+
 ## Explicit exclusions
 
-The following CellProfiler 4.2.8 measurement modules are outside this first release scope: `MeasureColocalization`, `MeasureGranularity`, `MeasureImageAreaOccupied`, `MeasureImageOverlap`, `MeasureImageQuality`, `MeasureImageSkeleton`, `MeasureObjectIntensityDistribution`, `MeasureObjectOverlap`, `MeasureObjectSizeShape`, `MeasureObjectSkeleton`, and `MeasureTexture`. Any measurement from other CellProfiler modules is also outside scope.
+The following CellProfiler 4.2.8 measurement modules remain outside this release scope: `MeasureImageAreaOccupied`, `MeasureImageOverlap`, `MeasureImageQuality`, `MeasureImageSkeleton`, `MeasureObjectOverlap`, and `MeasureObjectSkeleton`. (`MeasureGranularity`, `MeasureObjectSizeShape`, `MeasureObjectIntensityDistribution`, `MeasureTexture`, and `MeasureColocalization` have since been implemented with their own real-reference fixtures; see `spec/cppipe-compatibility.md`.) Any measurement from other CellProfiler modules is also outside scope.
 
 Other settings of the selected modules are outside scope: object-restricted `MeasureImageIntensity`; other percentile lists or disabled percentiles; different image or object selections for `MeasureObjectIntensity`; and cross-set, expanded, or distance-based `MeasureObjectNeighbors`. Excluded-object handling and the optional neighbor visualization images are outside scope. Parent-child relationships, upstream segmentation, and calibration-driven value conversion are outside scope. The fixture runner consumes arrays directly in a real CellProfiler `Workspace`; it is not a full file-import pipeline.
 

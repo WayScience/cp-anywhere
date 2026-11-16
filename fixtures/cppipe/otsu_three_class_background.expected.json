@@ -1,0 +1,9 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu_three_class",
+    "assign_middle_to_foreground": false
+  },
+  "has_measure": true,
+  "object_count": 1,
+  "threshold": 0.48828125
+}

@@ -56,6 +56,34 @@ relative-images:
 ---
 ```
 
+```{include} ../size-shape.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```
+
+```{include} ../granularity.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```
+
+```{include} ../cppipe-coverage.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```
+
+```{include} ../database-export.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```
+
 ```{include} ../ci.md
 ---
 relative-docs: docs/src/

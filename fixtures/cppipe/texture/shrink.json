@@ -1,0 +1,269 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "features": {
+    "Image": {
+      "Texture_AngularSecondMoment_Stain_3_00_16": 0.1581519274376419,
+      "Texture_AngularSecondMoment_Stain_3_01_16": 0.05094586854349585,
+      "Texture_AngularSecondMoment_Stain_3_02_16": 0.1040945790080738,
+      "Texture_AngularSecondMoment_Stain_3_03_16": 0.05094586854349585,
+      "Texture_Contrast_Stain_3_00_16": 6.961904761904762,
+      "Texture_Contrast_Stain_3_01_16": 18.834733893557424,
+      "Texture_Contrast_Stain_3_02_16": 11.06862745098039,
+      "Texture_Contrast_Stain_3_03_16": 18.834733893557424,
+      "Texture_Correlation_Stain_3_00_16": 0.7519495335015978,
+      "Texture_Correlation_Stain_3_01_16": 0.357309235700509,
+      "Texture_Correlation_Stain_3_02_16": 0.6076087604671567,
+      "Texture_Correlation_Stain_3_03_16": 0.357309235700509,
+      "Texture_DifferenceEntropy_Stain_3_00_16": 2.463192597057728,
+      "Texture_DifferenceEntropy_Stain_3_01_16": 3.1770090050257744,
+      "Texture_DifferenceEntropy_Stain_3_02_16": 2.757033330381676,
+      "Texture_DifferenceEntropy_Stain_3_03_16": 3.1770090050257744,
+      "Texture_DifferenceVariance_Stain_3_00_16": 0.011552933673469382,
+      "Texture_DifferenceVariance_Stain_3_01_16": 0.003924823605912953,
+      "Texture_DifferenceVariance_Stain_3_02_16": 0.00691891339869281,
+      "Texture_DifferenceVariance_Stain_3_03_16": 0.003924823605912953,
+      "Texture_Entropy_Stain_3_00_16": 4.556355086030058,
+      "Texture_Entropy_Stain_3_01_16": 5.381376860802046,
+      "Texture_Entropy_Stain_3_02_16": 4.840422419058385,
+      "Texture_Entropy_Stain_3_03_16": 5.381376860802046,
+      "Texture_InfoMeas1_Stain_3_00_16": -0.3495945384472688,
+      "Texture_InfoMeas1_Stain_3_01_16": -0.22722608428444915,
+      "Texture_InfoMeas1_Stain_3_02_16": -0.29771800938498016,
+      "Texture_InfoMeas1_Stain_3_03_16": -0.22722608428444915,
+      "Texture_InfoMeas2_Stain_3_00_16": 0.9246043657794057,
+      "Texture_InfoMeas2_Stain_3_01_16": 0.8650438408176729,
+      "Texture_InfoMeas2_Stain_3_02_16": 0.9033574319334372,
+      "Texture_InfoMeas2_Stain_3_03_16": 0.8650438408176729,
+      "Texture_InverseDifferenceMoment_Stain_3_00_16": 0.5450982488629545,
+      "Texture_InverseDifferenceMoment_Stain_3_01_16": 0.3263705634192678,
+      "Texture_InverseDifferenceMoment_Stain_3_02_16": 0.4264479518112733,
+      "Texture_InverseDifferenceMoment_Stain_3_03_16": 0.3263705634192678,
+      "Texture_SumAverage_Stain_3_00_16": 5.980952380952381,
+      "Texture_SumAverage_Stain_3_01_16": 7.03641456582633,
+      "Texture_SumAverage_Stain_3_02_16": 6.186274509803921,
+      "Texture_SumAverage_Stain_3_03_16": 7.03641456582633,
+      "Texture_SumEntropy_Stain_3_00_16": 3.585118767306347,
+      "Texture_SumEntropy_Stain_3_01_16": 3.998758084634466,
+      "Texture_SumEntropy_Stain_3_02_16": 3.792669817065473,
+      "Texture_SumEntropy_Stain_3_03_16": 3.998758084634466,
+      "Texture_SumVariance_Stain_3_00_16": 49.171065759637195,
+      "Texture_SumVariance_Stain_3_01_16": 39.77738546398952,
+      "Texture_SumVariance_Stain_3_02_16": 45.347654748173795,
+      "Texture_SumVariance_Stain_3_03_16": 39.77738546398952,
+      "Texture_Variance_Stain_3_00_16": 14.033242630385486,
+      "Texture_Variance_Stain_3_01_16": 14.653029839386736,
+      "Texture_Variance_Stain_3_02_16": 14.104070549788542,
+      "Texture_Variance_Stain_3_03_16": 14.653029839386736
+    },
+    "Cells": {
+      "Texture_AngularSecondMoment_Stain_3_00_16": [
+        0.026077097505668924,
+        0.026077097505668924
+      ],
+      "Texture_AngularSecondMoment_Stain_3_01_16": [
+        0.028301886792452838,
+        0.028301886792452838
+      ],
+      "Texture_AngularSecondMoment_Stain_3_02_16": [
+        0.025462962962962965,
+        0.025462962962962965
+      ],
+      "Texture_AngularSecondMoment_Stain_3_03_16": [
+        0.028301886792452838,
+        0.028301886792452838
+      ],
+      "Texture_Contrast_Stain_3_00_16": [
+        13.460317460317459,
+        13.460317460317459
+      ],
+      "Texture_Contrast_Stain_3_01_16": [
+        25.358490566037734,
+        25.358490566037734
+      ],
+      "Texture_Contrast_Stain_3_02_16": [
+        18.583333333333336,
+        18.583333333333336
+      ],
+      "Texture_Contrast_Stain_3_03_16": [
+        25.358490566037734,
+        25.358490566037734
+      ],
+      "Texture_Correlation_Stain_3_00_16": [
+        0.28947998404043035,
+        0.28947998404043035
+      ],
+      "Texture_Correlation_Stain_3_01_16": [
+        -0.15161509360752728,
+        -0.15161509360752728
+      ],
+      "Texture_Correlation_Stain_3_02_16": [
+        0.036466563981516056,
+        0.036466563981516056
+      ],
+      "Texture_Correlation_Stain_3_03_16": [
+        -0.15161509360752728,
+        -0.15161509360752728
+      ],
+      "Texture_DifferenceEntropy_Stain_3_00_16": [
+        2.6612067586865313,
+        2.6612067586865313
+      ],
+      "Texture_DifferenceEntropy_Stain_3_01_16": [
+        3.243679833379273,
+        3.243679833379273
+      ],
+      "Texture_DifferenceEntropy_Stain_3_02_16": [
+        2.750658781170067,
+        2.750658781170067
+      ],
+      "Texture_DifferenceEntropy_Stain_3_03_16": [
+        3.243679833379273,
+        3.243679833379273
+      ],
+      "Texture_DifferenceVariance_Stain_3_00_16": [
+        0.006880472096245905,
+        0.006880472096245905
+      ],
+      "Texture_DifferenceVariance_Stain_3_01_16": [
+        0.0033694708971164114,
+        0.0033694708971164114
+      ],
+      "Texture_DifferenceVariance_Stain_3_02_16": [
+        0.005738811728395063,
+        0.005738811728395063
+      ],
+      "Texture_DifferenceVariance_Stain_3_03_16": [
+        0.0033694708971164114,
+        0.0033694708971164114
+      ],
+      "Texture_Entropy_Stain_3_00_16": [
+        5.346249963148114,
+        5.346249963148114
+      ],
+      "Texture_Entropy_Stain_3_01_16": [
+        5.189262435287074,
+        5.189262435287074
+      ],
+      "Texture_Entropy_Stain_3_02_16": [
+        5.371178126382214,
+        5.371178126382214
+      ],
+      "Texture_Entropy_Stain_3_03_16": [
+        5.189262435287074,
+        5.189262435287074
+      ],
+      "Texture_InfoMeas1_Stain_3_00_16": [
+        -0.3771873157986311,
+        -0.3771873157986311
+      ],
+      "Texture_InfoMeas1_Stain_3_01_16": [
+        -0.4766898173588919,
+        -0.4766898173588919
+      ],
+      "Texture_InfoMeas1_Stain_3_02_16": [
+        -0.3628708617380494,
+        -0.3628708617380494
+      ],
+      "Texture_InfoMeas1_Stain_3_03_16": [
+        -0.4766898173588919,
+        -0.4766898173588919
+      ],
+      "Texture_InfoMeas2_Stain_3_00_16": [
+        0.9574415146148408,
+        0.9574415146148408
+      ],
+      "Texture_InfoMeas2_Stain_3_01_16": [
+        0.9803767731211332,
+        0.9803767731211332
+      ],
+      "Texture_InfoMeas2_Stain_3_02_16": [
+        0.9526524275020173,
+        0.9526524275020173
+      ],
+      "Texture_InfoMeas2_Stain_3_03_16": [
+        0.9803767731211332,
+        0.9803767731211332
+      ],
+      "Texture_InverseDifferenceMoment_Stain_3_00_16": [
+        0.19989548695431048,
+        0.19989548695431048
+      ],
+      "Texture_InverseDifferenceMoment_Stain_3_01_16": [
+        0.19345762805539313,
+        0.19345762805539313
+      ],
+      "Texture_InverseDifferenceMoment_Stain_3_02_16": [
+        0.14435958583017405,
+        0.14435958583017405
+      ],
+      "Texture_InverseDifferenceMoment_Stain_3_03_16": [
+        0.19345762805539313,
+        0.19345762805539313
+      ],
+      "Texture_SumAverage_Stain_3_00_16": [
+        13.87301587301587,
+        13.87301587301587
+      ],
+      "Texture_SumAverage_Stain_3_01_16": [
+        13.81132075471698,
+        13.81132075471698
+      ],
+      "Texture_SumAverage_Stain_3_02_16": [
+        14.194444444444445,
+        14.194444444444445
+      ],
+      "Texture_SumAverage_Stain_3_03_16": [
+        13.81132075471698,
+        13.81132075471698
+      ],
+      "Texture_SumEntropy_Stain_3_00_16": [
+        3.905795900261537,
+        3.905795900261537
+      ],
+      "Texture_SumEntropy_Stain_3_01_16": [
+        3.459343902253872,
+        3.459343902253872
+      ],
+      "Texture_SumEntropy_Stain_3_02_16": [
+        3.829239931817578,
+        3.829239931817578
+      ],
+      "Texture_SumEntropy_Stain_3_03_16": [
+        3.459343902253872,
+        3.459343902253872
+      ],
+      "Texture_SumVariance_Stain_3_00_16": [
+        24.428319475938594,
+        24.428319475938594
+      ],
+      "Texture_SumVariance_Stain_3_01_16": [
+        18.681381274474887,
+        18.681381274474887
+      ],
+      "Texture_SumVariance_Stain_3_02_16": [
+        19.989969135802454,
+        19.989969135802454
+      ],
+      "Texture_SumVariance_Stain_3_03_16": [
+        18.681381274474887,
+        18.681381274474887
+      ],
+      "Texture_Variance_Stain_3_00_16": [
+        9.472159234063994,
+        9.472159234063994
+      ],
+      "Texture_Variance_Stain_3_01_16": [
+        11.009967960128158,
+        11.009967960128158
+      ],
+      "Texture_Variance_Stain_3_02_16": [
+        9.643325617283935,
+        9.643325617283935
+      ],
+      "Texture_Variance_Stain_3_03_16": [
+        11.009967960128158,
+        11.009967960128158
+      ]
+    }
+  }
+}

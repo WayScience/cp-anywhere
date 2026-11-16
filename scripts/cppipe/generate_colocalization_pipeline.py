@@ -1,0 +1,88 @@
+# ty: ignore[import-not-found]
+"""Exercise MeasureColocalization settings in a real multi-module pipeline."""
+
+# ruff: noqa: E402
+
+import json
+from pathlib import Path
+
+import cellprofiler_core.preferences
+import numpy as np
+
+cellprofiler_core.preferences.set_headless()
+
+from cellprofiler.modules.measurecolocalization import MeasureColocalization
+from cellprofiler_core.image import Image, ImageSetList
+from cellprofiler_core.measurement import Measurements
+from cellprofiler_core.object import ObjectSet
+from cellprofiler_core.pipeline import Pipeline
+from cellprofiler_core.workspace import Workspace
+
+ROOT = Path(__file__).resolve().parents[2]
+OUT = ROOT / "fixtures/cppipe/colocalization"
+INPUTS = ROOT / "fixtures/cppipe/secondary"
+PREFIX = "identify_secondary_objects_propagation"
+
+
+def generate() -> None:
+    """Chain a real segmentation pipeline with MeasureColocalization."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    for case in ("shrink", "no_shrink"):
+        pipeline = Pipeline()
+        pipeline.load(str(ROOT / f"fixtures/cppipe/tertiary/{case}.cppipe"))
+        module = MeasureColocalization()
+        module.set_module_num(len(pipeline.modules()) + 1)
+        module.images_list.value = "DNA, Stain"
+        module.thr.value = 15.0
+        module.images_or_objects.value = "Both"
+        module.objects_list.value = "Cells"
+        module.do_all.value = True
+        module.fast_costes.value = "Faster"
+        pipeline.add_module(module)
+        with (OUT / f"{case}.cppipe").open("w") as stream:
+            pipeline.dump(stream, save_image_plane_details=False)
+        image_sets = ImageSetList()
+        image_set = image_sets.get_image_set(0)
+        for name, suffix in (("DNA", "dna"), ("Stain", "stain")):
+            pixels = np.load(INPUTS / f"{PREFIX}.{suffix}.npy")
+            image_set.add(name, Image(pixels, convert=True, dimensions=2))
+        objects = ObjectSet()
+        measurements = Measurements()
+        for pipeline_module in pipeline.modules():
+            pipeline_module.run(
+                Workspace(
+                    pipeline,
+                    pipeline_module,
+                    image_set,
+                    objects,
+                    measurements,
+                    image_sets,
+                )
+            )
+        expected = {
+            "reference": "CellProfiler 4.2.8",
+            "features": {
+                scope: {
+                    feature: (
+                        float(measurements.get_current_measurement(scope, feature))
+                        if scope == "Image"
+                        else measurements.get_current_measurement(
+                            scope, feature
+                        ).tolist()
+                    )
+                    for feature in measurements.get_feature_names(scope)
+                    if feature.startswith("Correlation_")
+                }
+                for scope in ("Image", "Cells")
+            },
+        }
+        (OUT / f"{case}.json").write_text(json.dumps(expected, indent=2) + "\n")
+        print(
+            case,
+            {name: len(features) for name, features in expected["features"].items()},
+        )
+        measurements.close()
+
+
+if __name__ == "__main__":
+    generate()

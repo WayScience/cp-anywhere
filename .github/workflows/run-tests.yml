@@ -135,3 +135,17 @@ jobs:
         run: uv run --frozen python scripts/parity/compare_wasm.py
       - name: WASM segmentation golden parity check (browser results)
         run: uv run --frozen python scripts/parity/compare_wasm_segmentation.py
+      - name: WASM size/shape parity check (real Chromium, real oracle)
+        run: uv run --frozen python scripts/parity/compare_wasm_size_shape.py
+      - name: WASM granularity parity check (real Chromium, real oracle)
+        run: uv run --frozen python scripts/parity/compare_wasm_granularity.py
+      - name: WASM intensity distribution parity check (real Chromium)
+        run: |
+          uv run --frozen python \
+            scripts/parity/compare_wasm_intensity_distribution.py
+      - name: WASM texture parity check (real Chromium, real oracle)
+        run: uv run --frozen python scripts/parity/compare_wasm_texture.py
+      - name: WASM colocalization parity check (real Chromium, real oracle)
+        run: |
+          uv run --frozen python \
+            scripts/parity/compare_wasm_colocalization.py

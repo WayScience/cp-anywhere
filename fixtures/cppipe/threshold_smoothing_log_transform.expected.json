@@ -1,0 +1,15 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "threshold_smoothing_scale": 1.3488,
+    "log_transform": true,
+    "threshold_correction_factor": 0.9,
+    "threshold_range": [
+      0.1,
+      0.9
+    ]
+  },
+  "has_measure": true,
+  "object_count": 1,
+  "threshold": 0.1
+}

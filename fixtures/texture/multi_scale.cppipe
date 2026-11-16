@@ -1,0 +1,15 @@
+CellProfiler Pipeline: http://www.cellprofiler.org
+Version:5
+DateRevision:428
+GitHash:
+ModuleCount:1
+HasImagePlaneDetails:False
+
+MeasureTexture:[module_num:1|svn_version:'Unknown'|variable_revision_number:7|show_window:False|notes:[]|batch_state:array([], dtype=uint8)|enabled:True|wants_pause:False]
+    Select images to measure:Input
+    Select objects to measure:Cells
+    Enter how many gray levels to measure the texture at:256
+    Hidden:2
+    Measure whole images or objects?:Both
+    Texture scale to measure:2
+    Texture scale to measure:7

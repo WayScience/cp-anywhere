@@ -1,0 +1,79 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "features": {
+    "Cells": {
+      "RadialDistribution_FracAtD_Stain_1of3": [
+        0.17279909551143646,
+        0.17279909551143646
+      ],
+      "RadialDistribution_FracAtD_Stain_2of3": [
+        0.48248618841171265,
+        0.48248618841171265
+      ],
+      "RadialDistribution_FracAtD_Stain_3of3": [
+        0.3447147011756897,
+        0.3447147011756897
+      ],
+      "RadialDistribution_MeanFrac_Stain_1of3": [
+        1.762550774216648,
+        1.762550774216648
+      ],
+      "RadialDistribution_MeanFrac_Stain_2of3": [
+        1.2950945057367016,
+        1.2950945057367016
+      ],
+      "RadialDistribution_MeanFrac_Stain_3of3": [
+        0.6511277688874136,
+        0.6511277688874136
+      ],
+      "RadialDistribution_RadialCV_Stain_1of3": [
+        0.14050542073269917,
+        0.15348409507039304
+      ],
+      "RadialDistribution_RadialCV_Stain_2of3": [
+        0.19140925804372813,
+        0.19840197767121276
+      ],
+      "RadialDistribution_RadialCV_Stain_3of3": [
+        0.34818062804634053,
+        0.345200778817682
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_0_0": [
+        0.43663186316981034,
+        0.43663186316981034
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_1_1": [
+        0.035881971954235904,
+        0.03588197195423591
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_2_0": [
+        0.14291551148900933,
+        0.14291551148900927
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_2_2": [
+        0.021563398969129205,
+        0.021563398969129205
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_3_1": [
+        0.002255703815235889,
+        0.00225570381523589
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_3_3": [
+        0.009248813457084943,
+        0.009248813457084948
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_4_0": [
+        0.03263170915269905,
+        0.03263170915269904
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_4_2": [
+        0.004610549155866292,
+        0.004610549155866295
+      ],
+      "RadialDistribution_ZernikeMagnitude_Stain_4_4": [
+        0.0035567114911040317,
+        0.003556711491104031
+      ]
+    }
+  }
+}

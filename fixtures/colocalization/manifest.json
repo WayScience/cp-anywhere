@@ -1,0 +1,304 @@
+{
+  "reference": "CellProfiler 4.2.8 @ 2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "numpy": "1.23.5",
+  "scipy": "1.9.3",
+  "module_sha256": "4dedd8faf2ff1fc78f1777be517c7318420293f691e13de81888dd92b2e677f7",
+  "scope": "2D only (volumetric() reports True but is out of scope here, matching this project's house style for every other module); real Module.run, real Measurements and pipeline dumps",
+  "cases": [
+    {
+      "name": "defaults_two_images",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 11
+    },
+    {
+      "name": "flag_off_do_corr_and_slope",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": false,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 9
+    },
+    {
+      "name": "flag_off_do_manders",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": false,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 9
+    },
+    {
+      "name": "flag_off_do_rwc",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": false,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 9
+    },
+    {
+      "name": "flag_off_do_overlap",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": false,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 8
+    },
+    {
+      "name": "flag_off_do_costes",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": false,
+        "fast_costes": "Faster"
+      },
+      "scalars": 9
+    },
+    {
+      "name": "three_images_all_pairs",
+      "image_names": [
+        "Red",
+        "Green",
+        "Blue"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 33
+    },
+    {
+      "name": "empty_mask_pair",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 11
+    },
+    {
+      "name": "costes_fast",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": false,
+        "do_manders": false,
+        "do_rwc": false,
+        "do_overlap": false,
+        "do_costes": true,
+        "fast_costes": "Fast"
+      },
+      "scalars": 2
+    },
+    {
+      "name": "costes_accurate",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": false,
+        "do_manders": false,
+        "do_rwc": false,
+        "do_overlap": false,
+        "do_costes": true,
+        "fast_costes": "Accurate"
+      },
+      "scalars": 2
+    },
+    {
+      "name": "costes_explicit_scale",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Across entire image",
+        "do_corr_and_slope": false,
+        "do_manders": false,
+        "do_rwc": false,
+        "do_overlap": false,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 2
+    },
+    {
+      "name": "objects_both_varied_sizes",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [
+        "Cells"
+      ],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Both",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 41
+    },
+    {
+      "name": "objects_whole_image_mask_empty",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [
+        "Cells"
+      ],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Both",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 31
+    },
+    {
+      "name": "objects_within_sparse_label_gap",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [
+        "Cells"
+      ],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Within objects",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 30
+    },
+    {
+      "name": "objects_zero_objects",
+      "image_names": [
+        "DNA",
+        "GFP"
+      ],
+      "object_names": [
+        "Cells"
+      ],
+      "settings": {
+        "thr": 15.0,
+        "images_or_objects": "Within objects",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "fast_costes": "Faster"
+      },
+      "scalars": 0
+    }
+  ],
+  "total_scalars": 207
+}

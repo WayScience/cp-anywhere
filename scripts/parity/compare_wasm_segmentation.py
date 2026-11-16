@@ -17,6 +17,8 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
+
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_DIR = ROOT / "fixtures/segmentation"
 # Threshold is float32 inside real CellProfiler but float64 here (see
@@ -35,12 +37,7 @@ _KNOWN_THRESHOLD_TOLERANCE_GAP = {
 
 
 def _read_labels_npy(path: Path) -> list[int]:
-    """Read a saved uint32 .npy array's flat values without numpy
-    (this script runs standalone, matching `compare_wasm.py`'s own
-    numpy-free style; the real strictness comes from the exact integer
-    comparison below, not from a numpy dependency)."""
-    import numpy as np  # local import: only this function needs it
-
+    """Read a saved uint32 .npy array's flat values."""
     return np.load(path).astype("uint32").ravel().tolist()
 
 
@@ -52,7 +49,9 @@ def compare_fixture(name: str, actual: dict) -> dict:
     object_count_match = actual["object_count"] == case["object_count"]
     tolerance = _KNOWN_THRESHOLD_TOLERANCE_GAP.get(name, THRESHOLD_TOLERANCE)
     threshold_match = abs(actual["threshold"] - case["threshold"]) <= tolerance
-    status = "pass" if (labels_match and object_count_match and threshold_match) else "fail"
+    status = (
+        "pass" if (labels_match and object_count_match and threshold_match) else "fail"
+    )
     row = {
         "fixture": name,
         "status": status,
@@ -100,7 +99,8 @@ def main() -> None:
     passed = sum(1 for row in rows if row["status"] == "pass")
     payload = {
         "reference": "CellProfiler 4.2.8",
-        "engine": "cp-anywhere WASM identifyPrimaryObjects (Playwright Chromium, real worker)",
+        "engine": "cp-anywhere WASM identifyPrimaryObjects "
+        "(Playwright Chromium, real worker)",
         "fixtures_checked": len(rows),
         "fixtures_declared": len(all_names),
         "missing_fixtures": missing,

@@ -15,21 +15,21 @@ Both native Rust/Python and the WASM (browser) build pass all 100
 fixtures exactly (see `docs/wasm.md` for the WASM-specific run and its
 one documented tolerance exception, identical to the one below).
 
-| Tier                                                            | Status  |
-| ---------------------------------------------------------------- | ------- |
-| Global threshold: Manual, Otsu (two- and three-class), Li, Robust Background | Covered |
-| Adaptive (local) threshold: block-grid + B-spline interpolation, Sauvola    | Covered |
-| `threshold_smoothing_scale`, `threshold_correction_factor`, `threshold_range` | Covered |
-| `log_transform`                                                   | Covered |
-| Border exclusion, size/diameter filtering, object-count limiting   | Covered |
-| Hole filling (`Never`/`After declumping only`/`After both`), including nested-object absorption | Covered |
-| Declumping (`unclump_method`: None/Intensity/Shape)               | Covered |
-| Watershed separation (`watershed_method`: None/Intensity/Shape/Propagate) | Covered |
-| Manual smoothing-filter-size / maxima-suppression-size overrides  | Covered |
-| `unclump_method = "Laplacian of Gaussian"`                        | Not implemented (explicit gap) |
-| `low_res_maxima` downsampled maxima detection                     | Not implemented (explicit gap) |
-| `threshold.global_operation = "Measurement"`                      | Not implemented (explicit gap) |
-| 3D/volumetric segmentation, `IdentifySecondaryObjects`/`IdentifyTertiaryObjects` | Out of scope for this release |
+| Tier                                                                                            | Status                         |
+| ----------------------------------------------------------------------------------------------- | ------------------------------ |
+| Global threshold: Manual, Otsu (two- and three-class), Li, Robust Background                    | Covered                        |
+| Adaptive (local) threshold: block-grid + B-spline interpolation, Sauvola                        | Covered                        |
+| `threshold_smoothing_scale`, `threshold_correction_factor`, `threshold_range`                   | Covered                        |
+| `log_transform`                                                                                 | Covered                        |
+| Border exclusion, size/diameter filtering, object-count limiting                                | Covered                        |
+| Hole filling (`Never`/`After declumping only`/`After both`), including nested-object absorption | Covered                        |
+| Declumping (`unclump_method`: None/Intensity/Shape)                                             | Covered                        |
+| Watershed separation (`watershed_method`: None/Intensity/Shape/Propagate)                       | Covered                        |
+| Manual smoothing-filter-size / maxima-suppression-size overrides                                | Covered                        |
+| `unclump_method = "Laplacian of Gaussian"`                                                      | Not implemented (explicit gap) |
+| `low_res_maxima` downsampled maxima detection                                                   | Not implemented (explicit gap) |
+| `threshold.global_operation = "Measurement"`                                                    | Not implemented (explicit gap) |
+| 3D/volumetric segmentation, `IdentifySecondaryObjects`/`IdentifyTertiaryObjects`                | Out of scope for this release  |
 
 **Every "Covered" row above is independently verified against the real,
 pinned CellProfiler 4.2.8 oracle** — not assumed correct by code

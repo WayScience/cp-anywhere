@@ -1,0 +1,14 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "fill_holes": "after_thresholding_and_declump",
+    "exclude_border_objects": true,
+    "exclude_size": true,
+    "min_diameter": 5.0,
+    "max_diameter": 50.0,
+    "maximum_object_count": 200
+  },
+  "has_measure": true,
+  "object_count": 1,
+  "threshold": 0.287109375
+}

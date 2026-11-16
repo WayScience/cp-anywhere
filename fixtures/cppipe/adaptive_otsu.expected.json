@@ -1,0 +1,10 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "threshold_scope": "adaptive",
+    "adaptive_window_size": 8
+  },
+  "has_measure": true,
+  "object_count": 1,
+  "threshold": 0.24475964903831482
+}

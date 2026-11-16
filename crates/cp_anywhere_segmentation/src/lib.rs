@@ -323,6 +323,8 @@ pub struct SegmentationResult {
     /// Labels after the small-object filter only (large objects not yet
     /// removed), matching CellProfiler's `objects.small_removed_segmented`.
     pub small_removed_labels: Vec<u32>,
+    /// Labels immediately after declumping, before any filtering.
+    pub unedited_labels: Vec<u32>,
     pub object_count: u32,
     /// The threshold actually applied (after correction/clamping).
     pub threshold: f64,
@@ -1861,6 +1863,7 @@ pub fn identify_primary_objects(
         &declump_config,
     )?;
     labels = declumped.labels;
+    let unedited_labels = labels.clone();
 
     filter_on_border(&mut labels, mask, rows, cols, config.exclude_border_objects);
 
@@ -1914,6 +1917,7 @@ pub fn identify_primary_objects(
     Ok(SegmentationResult {
         labels,
         small_removed_labels,
+        unedited_labels,
         object_count,
         threshold,
         threshold_map,
@@ -2519,3 +2523,5 @@ mod tests {
 
 pub mod declump;
 mod holes;
+pub mod secondary;
+pub mod tertiary;

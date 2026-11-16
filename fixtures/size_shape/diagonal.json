@@ -1,0 +1,527 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "settings": {
+    "calculate_advanced": true,
+    "calculate_zernikes": true
+  },
+  "labels": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "features": {
+    "AreaShape_Area": [
+      14.0
+    ],
+    "AreaShape_BoundingBoxArea": [
+      56.0
+    ],
+    "AreaShape_BoundingBoxMaximum_X": [
+      10
+    ],
+    "AreaShape_BoundingBoxMaximum_Y": [
+      9
+    ],
+    "AreaShape_BoundingBoxMinimum_X": [
+      2
+    ],
+    "AreaShape_BoundingBoxMinimum_Y": [
+      2
+    ],
+    "AreaShape_Center_X": [
+      5.5
+    ],
+    "AreaShape_Center_Y": [
+      5.0
+    ],
+    "AreaShape_CentralMoment_0_0": [
+      14.0
+    ],
+    "AreaShape_CentralMoment_0_1": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_0_2": [
+      59.5
+    ],
+    "AreaShape_CentralMoment_0_3": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_0": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_1": [
+      56.0
+    ],
+    "AreaShape_CentralMoment_1_2": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_3": [
+      434.0
+    ],
+    "AreaShape_CentralMoment_2_0": [
+      56.0
+    ],
+    "AreaShape_CentralMoment_2_1": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_2_2": [
+      406.0
+    ],
+    "AreaShape_CentralMoment_2_3": [
+      0.0
+    ],
+    "AreaShape_Compactness": [
+      1.1809839758476892
+    ],
+    "AreaShape_ConvexArea": [
+      14.0
+    ],
+    "AreaShape_Eccentricity": [
+      0.9924008007166892
+    ],
+    "AreaShape_EquivalentDiameter": [
+      4.222008245644752
+    ],
+    "AreaShape_EulerNumber": [
+      1
+    ],
+    "AreaShape_Extent": [
+      0.25
+    ],
+    "AreaShape_FormFactor": [
+      0.8467515397761582
+    ],
+    "AreaShape_HuMoment_0": [
+      0.5892857142857142
+    ],
+    "AreaShape_HuMoment_1": [
+      0.3268494897959183
+    ],
+    "AreaShape_HuMoment_2": [
+      0.0
+    ],
+    "AreaShape_HuMoment_3": [
+      0.0
+    ],
+    "AreaShape_HuMoment_4": [
+      0.0
+    ],
+    "AreaShape_HuMoment_5": [
+      0.0
+    ],
+    "AreaShape_HuMoment_6": [
+      0.0
+    ],
+    "AreaShape_InertiaTensorEigenvalues_0": [
+      8.12695264839553
+    ],
+    "AreaShape_InertiaTensorEigenvalues_1": [
+      0.12304735160446945
+    ],
+    "AreaShape_InertiaTensor_0_0": [
+      4.25
+    ],
+    "AreaShape_InertiaTensor_0_1": [
+      -4.0
+    ],
+    "AreaShape_InertiaTensor_1_0": [
+      -4.0
+    ],
+    "AreaShape_InertiaTensor_1_1": [
+      4.0
+    ],
+    "AreaShape_MajorAxisLength": [
+      11.403124237432849
+    ],
+    "AreaShape_MaxFeretDiameter": [
+      9.219544457292887
+    ],
+    "AreaShape_MaximumRadius": [
+      1.0
+    ],
+    "AreaShape_MeanRadius": [
+      1.0
+    ],
+    "AreaShape_MedianRadius": [
+      1.0
+    ],
+    "AreaShape_MinFeretDiameter": [
+      0.7071067811865476
+    ],
+    "AreaShape_MinorAxisLength": [
+      1.4031242374328479
+    ],
+    "AreaShape_NormalizedMoment_0_0": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_0_1": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_0_2": [
+      0.30357142857142855
+    ],
+    "AreaShape_NormalizedMoment_0_3": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_1_0": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_1_1": [
+      0.2857142857142857
+    ],
+    "AreaShape_NormalizedMoment_1_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_1_3": [
+      0.15816326530612246
+    ],
+    "AreaShape_NormalizedMoment_2_0": [
+      0.2857142857142857
+    ],
+    "AreaShape_NormalizedMoment_2_1": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_2_2": [
+      0.14795918367346939
+    ],
+    "AreaShape_NormalizedMoment_2_3": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_0": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_1": [
+      0.14285714285714285
+    ],
+    "AreaShape_NormalizedMoment_3_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_3": [
+      0.09032694710537276
+    ],
+    "AreaShape_Orientation": [
+      45.89495530412304
+    ],
+    "AreaShape_Perimeter": [
+      14.414213562373096
+    ],
+    "AreaShape_Solidity": [
+      1.0
+    ],
+    "AreaShape_SpatialMoment_0_0": [
+      14.0
+    ],
+    "AreaShape_SpatialMoment_0_1": [
+      49.0
+    ],
+    "AreaShape_SpatialMoment_0_2": [
+      231.0
+    ],
+    "AreaShape_SpatialMoment_0_3": [
+      1225.0
+    ],
+    "AreaShape_SpatialMoment_1_0": [
+      42.0
+    ],
+    "AreaShape_SpatialMoment_1_1": [
+      203.0
+    ],
+    "AreaShape_SpatialMoment_1_2": [
+      1085.0
+    ],
+    "AreaShape_SpatialMoment_1_3": [
+      6167.0
+    ],
+    "AreaShape_SpatialMoment_2_0": [
+      182.0
+    ],
+    "AreaShape_SpatialMoment_2_1": [
+      973.0
+    ],
+    "AreaShape_SpatialMoment_2_2": [
+      5523.0
+    ],
+    "AreaShape_SpatialMoment_2_3": [
+      32641.0
+    ],
+    "AreaShape_Zernike_0_0": [
+      0.2097100426622621
+    ],
+    "AreaShape_Zernike_1_1": [
+      6.652140510250492e-18
+    ],
+    "AreaShape_Zernike_2_0": [
+      0.046876362477446844
+    ],
+    "AreaShape_Zernike_2_2": [
+      0.07898820335316512
+    ],
+    "AreaShape_Zernike_3_1": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_3_3": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_4_0": [
+      0.05575819957843674
+    ],
+    "AreaShape_Zernike_4_2": [
+      0.018064869937510577
+    ],
+    "AreaShape_Zernike_4_4": [
+      0.05228273258636871
+    ],
+    "AreaShape_Zernike_5_1": [
+      0.0
+    ],
+    "AreaShape_Zernike_5_3": [
+      0.0
+    ],
+    "AreaShape_Zernike_5_5": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_6_0": [
+      7.439337386172938e-05
+    ],
+    "AreaShape_Zernike_6_2": [
+      0.047231613405510985
+    ],
+    "AreaShape_Zernike_6_4": [
+      0.010282739726166223
+    ],
+    "AreaShape_Zernike_6_6": [
+      0.040551443177713614
+    ],
+    "AreaShape_Zernike_7_1": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_7_3": [
+      2.3518868321019318e-18
+    ],
+    "AreaShape_Zernike_7_5": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_7_7": [
+      8.315175637813115e-19
+    ],
+    "AreaShape_Zernike_8_0": [
+      0.04568275702204494
+    ],
+    "AreaShape_Zernike_8_2": [
+      0.01324700633920718
+    ],
+    "AreaShape_Zernike_8_4": [
+      0.043981479121887684
+    ],
+    "AreaShape_Zernike_8_6": [
+      0.016648301773634425
+    ],
+    "AreaShape_Zernike_8_8": [
+      0.034147702497644615
+    ],
+    "AreaShape_Zernike_9_1": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_9_3": [
+      0.0
+    ],
+    "AreaShape_Zernike_9_5": [
+      1.663035127562623e-18
+    ],
+    "AreaShape_Zernike_9_7": [
+      0.0
+    ],
+    "AreaShape_Zernike_9_9": [
+      1.663035127562623e-18
+    ]
+  }
+}

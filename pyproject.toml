@@ -26,11 +26,17 @@ dependencies = [
   "pyarrow>=14",
   "tifffile>=2024.1",
 ]
+# Optional: only needed for MeasurementResult.to_duckdb(). Parquet
+# (to_parquet) and SQLite STRICT tables (to_sqlite) need no extra
+# dependency -- pyarrow is already a core dependency, and SQLite is
+# Python's own stdlib sqlite3 module.
+optional-dependencies.duckdb = [ "duckdb>=1.1" ]
 scripts.cp-anywhere = "cp_anywhere.cli:trigger"
 
 [dependency-groups]
 dev = [
   "coverage[toml]>=7.10.6",
+  "duckdb>=1.1",
   "maturin>=1.9,<2",
   "poethepoet>=0.34",
   "pytest>=8.3.5",
@@ -92,6 +98,14 @@ lint.select = [
 ]
 # Ignore `F401` (unused imports) for `__init__.py` file
 lint.per-file-ignores."__init__.py" = [ "F401" ]
+# Ignore `PLC0415` (deferred `functools`/skimage-adapter import, reference-
+# environment-only) and `ANN401` (the selem->footprint compatibility
+# shim forwards arbitrary skimage.morphology call signatures, so its
+# wrapper is necessarily untyped) for the granularity pipeline generator.
+lint.per-file-ignores."scripts/cppipe/generate_granularity_pipeline.py" = [
+  "ANN401",
+  "PLC0415",
+]
 # Ignore `PLC0415`: this M2 comparison script imports `cp_measure` lazily
 # because it is not a project dependency -- it only exists in the
 # separate, isolated comparison environment this script is run inside.
@@ -103,6 +117,17 @@ lint.per-file-ignores."scripts/parity/compare_cp_measure.py" = [ "PLC0415" ]
 # original CellProfiler Workspace construction, not a function to shrink)
 # for the reference generator script.
 lint.per-file-ignores."scripts/reference/generate.py" = [ "PLC0415", "PLR0917" ]
+# Ignore `PLR0913` (_default_settings intentionally exposes every
+# MeasureColocalization setting this generator exercises as a named
+# keyword, matching the real module's own Settings surface) and
+# `PLR0915` (cases()/generate() are long by nature -- one yield per
+# fixture case, one real-pipeline-run step per case -- splitting them
+# would obscure the 1:1 correspondence with CellProfiler's own run(),
+# not simplify anything) for the colocalization reference generator.
+lint.per-file-ignores."scripts/reference/generate_colocalization.py" = [
+  "PLR0913",
+  "PLR0915",
+]
 # Ignore `PLC0415` (deferred CellProfiler/skimage imports, reference-
 # environment-only), `PLR0913`/`PLR0917` (configure_module/fixture
 # kwargs intentionally mirror every Threshold/IdentifyPrimaryObjects
@@ -121,8 +146,32 @@ lint.per-file-ignores."scripts/segmentation/generate_reference.py" = [
   "PLR0917",
 ]
 # Ignore `PLC0415` (import not at top-level) for `api.py`, which defers the
-# native extension import so the pure-Python package stays importable.
-lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415" ]
+# native extension import so the pure-Python package stays importable, and
+# `PLR0913` (measure()'s parameters are each an independent, named part of
+# its public contract -- images/objects/mask/families/neighbors_scopes/
+# neighbors_full_objects -- not incidental complexity to shrink).
+lint.per-file-ignores."src/cp_anywhere/api.py" = [ "PLC0415", "PLR0913" ]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (measure_colocalization's keyword arguments
+# each name one of MeasureColocalization's own CellProfiler settings,
+# not a function to shrink).
+lint.per-file-ignores."src/cp_anywhere/colocalization.py" = [
+  "PLC0415",
+  "PLR0913",
+]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (measure_granularity's keyword arguments each
+# name one of MeasureGranularity's own CellProfiler settings, not a
+# function to shrink) for the granularity API.
+lint.per-file-ignores."src/cp_anywhere/granularity.py" = [ "PLC0415", "PLR0913" ]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (measure_intensity_distribution's keyword
+# arguments each name one of MeasureObjectIntensityDistribution's own
+# CellProfiler settings, not a function to shrink).
+lint.per-file-ignores."src/cp_anywhere/intensity_distribution.py" = [
+  "PLC0415",
+  "PLR0913",
+]
 # Ignore `PLC0415` for `io.py`, which defers `tifffile`/`PIL`/`pandas`
 # imports so loading one file format doesn't require the others, and
 # `measure_files` stays usable without pandas imported at module load.
@@ -135,6 +184,11 @@ lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
 # `return` per supported threshold-method name is the clearest mapping,
 # not a function to shrink) for the segmentation API.
 lint.per-file-ignores."src/cp_anywhere/segment.py" = [ "PLC0415", "PLR0911", "PLR0913" ]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (measure_texture's keyword arguments each name
+# one of MeasureTexture's own CellProfiler settings, not a function to
+# shrink).
+lint.per-file-ignores."src/cp_anywhere/texture.py" = [ "PLC0415", "PLR0913" ]
 
 [tool.vulture]
 paths = [ "src/cp_anywhere", "tests" ]

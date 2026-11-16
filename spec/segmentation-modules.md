@@ -62,8 +62,9 @@ fixture count.
   statistics at all).
 - 3D/volumetric segmentation (`IdentifyPrimaryObjects` itself only
   supports 2D; see CellProfiler's own **Watershed** module for 3D).
-- `IdentifySecondaryObjects`/`IdentifyTertiaryObjects` (this release is
-  primary-object segmentation only).
+- Secondary and tertiary segmentation in WASM. Native Python supports
+  propagation, fixed-radius secondary expansion, and tertiary subtraction.
+  See `spec/cppipe-compatibility.md` for their settings and limits.
 
 A future release extending this scope needs its own fixtures and a
 scope-decision update here, matching this project's existing

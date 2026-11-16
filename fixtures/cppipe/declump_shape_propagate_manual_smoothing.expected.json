@@ -1,0 +1,13 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "min_diameter": 10.0,
+    "unclump_method": "shape",
+    "watershed_method": "propagate",
+    "smoothing_filter_size": 3.0,
+    "maxima_suppression_size": 4.0
+  },
+  "has_measure": true,
+  "object_count": 2,
+  "threshold": 0.287109375
+}

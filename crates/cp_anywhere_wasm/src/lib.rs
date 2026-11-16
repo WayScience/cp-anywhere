@@ -29,6 +29,12 @@ struct WasmInput {
     mask: Option<Vec<bool>>,
     image_id: String,
     families: Vec<String>,
+    #[serde(default)]
+    neighbors_scopes: Vec<String>,
+    #[serde(default)]
+    neighbors_full_objects: std::collections::BTreeMap<String, Vec<u32>>,
+    size_shape_calculate_zernikes: Option<bool>,
+    size_shape_calculate_advanced: Option<bool>,
 }
 
 fn encode_float(value: f64) -> Value {
@@ -54,12 +60,12 @@ fn encode_float(value: f64) -> Value {
 /// `families` arrive as real typed arrays / plain JS values through
 /// wasm-bindgen; only the (small) output is JSON-encoded, matching the
 /// Python `MeasurementResult.to_json()` shape byte-for-byte in meaning.
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = measureWithOptions)]
 #[allow(clippy::too_many_arguments)] // The wasm-bindgen FFI boundary takes
                                      // plain scalars/typed arrays, not a
                                      // struct (see cp_anywhere_python's
                                      // equivalent PyO3 binding).
-pub fn measure(
+pub fn measure_with_options(
     shape: Vec<u32>,
     image_names: Vec<String>,
     images: Vec<f64>,
@@ -68,6 +74,11 @@ pub fn measure(
     mask: Option<Vec<u8>>,
     image_id: String,
     families: Vec<String>,
+    neighbors_scopes: Vec<String>,
+    full_object_names: Vec<String>,
+    full_objects: Vec<u32>,
+    size_shape_calculate_zernikes: Option<bool>,
+    size_shape_calculate_advanced: Option<bool>,
 ) -> Result<String, JsValue> {
     let shape: Vec<usize> = shape.iter().map(|&v| v as usize).collect();
     let size: usize = shape.iter().product();
@@ -81,6 +92,11 @@ pub fn measure(
             "object buffer length does not match shape and names",
         ));
     }
+    if full_objects.len() != full_object_names.len() * size {
+        return Err(JsValue::from_str(
+            "full object buffer length does not match shape and names",
+        ));
+    }
     let image_views: Vec<(&str, &[f64])> = image_names
         .iter()
         .enumerate()
@@ -91,6 +107,11 @@ pub fn measure(
         .enumerate()
         .map(|(i, name)| (name.as_str(), &objects[i * size..(i + 1) * size]))
         .collect();
+    let full_object_views: Vec<(&str, &[u32])> = full_object_names
+        .iter()
+        .enumerate()
+        .map(|(i, name)| (name.as_str(), &full_objects[i * size..(i + 1) * size]))
+        .collect();
     let mask_bools: Option<Vec<bool>> = mask.map(|bytes| bytes.iter().map(|&b| b != 0).collect());
     let mask_slice = mask_bools.as_deref();
     let selected = Families {
@@ -98,12 +119,22 @@ pub fn measure(
         object_intensity: families.iter().any(|f| f == "object_intensity"),
         neighbors: families.iter().any(|f| f == "neighbors"),
     };
+    let neighbors_scope_refs: Vec<&str> = neighbors_scopes.iter().map(String::as_str).collect();
     let input = Input {
         shape: &shape,
         images: &image_views,
         objects: &object_views,
         mask: mask_slice,
         families: selected,
+        neighbors_scopes: &neighbors_scope_refs,
+        size_shape: families
+            .iter()
+            .any(|family| family == "object_size_shape")
+            .then_some(cp_anywhere_core::SizeShapeOptions {
+                calculate_zernikes: size_shape_calculate_zernikes.unwrap_or(true),
+                calculate_advanced: size_shape_calculate_advanced.unwrap_or(false),
+            }),
+        neighbors_full_objects: &full_object_views,
     };
     let result = core_measure(&input).map_err(|e| JsValue::from_str(&e))?;
 
@@ -133,8 +164,9 @@ pub fn measure(
     let relationships: Vec<Value> = result
         .relationships
         .into_iter()
-        .map(|(a, b)| {
+        .map(|(scope, a, b)| {
             let mut row = Map::new();
+            row.insert("object_name".into(), Value::String(scope));
             row.insert("first_image_id".into(), Value::String(image_id.clone()));
             row.insert("first_object_id".into(), Value::from(a));
             row.insert("second_image_id".into(), Value::String(image_id.clone()));
@@ -148,6 +180,37 @@ pub fn measure(
     root.insert("object_ids".into(), Value::Object(object_ids));
     root.insert("relationships".into(), Value::Array(relationships));
     serde_json::to_string(&Value::Object(root)).map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+/// Original eight-argument typed-array entry point. Keep existing callers
+/// working; diagnostic neighbor layers and shape flags use measureWithOptions.
+#[wasm_bindgen]
+#[allow(clippy::too_many_arguments)]
+pub fn measure(
+    shape: Vec<u32>,
+    image_names: Vec<String>,
+    images: Vec<f64>,
+    object_names: Vec<String>,
+    objects: Vec<u32>,
+    mask: Option<Vec<u8>>,
+    image_id: String,
+    families: Vec<String>,
+) -> Result<String, JsValue> {
+    measure_with_options(
+        shape,
+        image_names,
+        images,
+        object_names,
+        objects,
+        mask,
+        image_id,
+        families,
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+        None,
+        None,
+    )
 }
 
 /// JSON-string overload kept for small inputs / debugging from plain JS
@@ -167,10 +230,15 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
         .iter()
         .flat_map(|name| parsed.objects[name].iter().copied())
         .collect();
+    let full_object_names: Vec<String> = parsed.neighbors_full_objects.keys().cloned().collect();
+    let full_objects: Vec<u32> = full_object_names
+        .iter()
+        .flat_map(|name| parsed.neighbors_full_objects[name].iter().copied())
+        .collect();
     let mask = parsed
         .mask
         .map(|bits| bits.into_iter().map(u8::from).collect());
-    measure(
+    measure_with_options(
         shape_u32,
         image_names,
         images,
@@ -179,6 +247,11 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
         mask,
         parsed.image_id,
         parsed.families,
+        parsed.neighbors_scopes,
+        full_object_names,
+        full_objects,
+        parsed.size_shape_calculate_zernikes,
+        parsed.size_shape_calculate_advanced,
     )
 }
 
@@ -190,6 +263,7 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
 pub struct SegmentationResult {
     labels: Vec<u32>,
     small_removed_labels: Vec<u32>,
+    unedited_labels: Vec<u32>,
     object_count: u32,
     threshold: f64,
     threshold_map: Option<Vec<f64>>,
@@ -206,6 +280,11 @@ impl SegmentationResult {
     #[wasm_bindgen(getter, js_name = smallRemovedLabels)]
     pub fn small_removed_labels(&self) -> Vec<u32> {
         self.small_removed_labels.clone()
+    }
+
+    #[wasm_bindgen(getter, js_name = uneditedLabels)]
+    pub fn unedited_labels(&self) -> Vec<u32> {
+        self.unedited_labels.clone()
     }
 
     #[wasm_bindgen(getter, js_name = objectCount)]
@@ -267,6 +346,7 @@ pub fn identify_primary_objects(
     Ok(SegmentationResult {
         labels: result.labels,
         small_removed_labels: result.small_removed_labels,
+        unedited_labels: result.unedited_labels,
         object_count: result.object_count,
         threshold: result.threshold,
         threshold_map: result.threshold_map,
@@ -313,9 +393,460 @@ pub fn identify_primary_objects_json(input: &str) -> Result<SegmentationResult, 
     Ok(SegmentationResult {
         labels: result.labels,
         small_removed_labels: result.small_removed_labels,
+        unedited_labels: result.unedited_labels,
         object_count: result.object_count,
         threshold: result.threshold,
         threshold_map: result.threshold_map,
         guide_threshold: result.guide_threshold,
     })
+}
+
+/// Input for `measureGranularityJson`: `pixels`/`mask` are plain arrays
+/// (small-input JSON convention, matching `WasmInput`), `objects` maps
+/// object-set name to its flattened `u32` label array (same shape as
+/// `pixels`), and the remaining fields mirror
+/// `cp_anywhere_core::granularity::Config` with CellProfiler's own
+/// `MeasureGranularity` module defaults.
+#[derive(Deserialize)]
+struct WasmGranularityInput {
+    pixels: Vec<f64>,
+    rows: usize,
+    cols: usize,
+    mask: Option<Vec<bool>>,
+    #[serde(default)]
+    objects: std::collections::BTreeMap<String, Vec<u32>>,
+    #[serde(default = "default_subsample_size")]
+    subsample_size: f64,
+    #[serde(default = "default_subsample_size")]
+    image_sample_size: f64,
+    #[serde(default = "default_element_size")]
+    element_size: usize,
+    #[serde(default = "default_granular_spectrum_length")]
+    granular_spectrum_length: usize,
+}
+
+fn default_subsample_size() -> f64 {
+    0.25
+}
+
+fn default_element_size() -> usize {
+    10
+}
+
+fn default_granular_spectrum_length() -> usize {
+    16
+}
+
+/// Run CellProfiler's 2D granularity spectrum on typed-array/JSON input --
+/// the same oracle-verified `cp_anywhere_core::granularity` core the
+/// Python binding (`cp_anywhere_python`) calls. Returns a JSON string
+/// `{"image": [...], "objects": {"<name>": [[...], ...]}}` (one inner
+/// array per scale, ascending 1-based object order), matching
+/// `cp_anywhere.measure_granularity`'s own result shape.
+#[wasm_bindgen(js_name = measureGranularityJson)]
+pub fn measure_granularity_json(input: &str) -> Result<String, JsValue> {
+    let parsed: WasmGranularityInput =
+        serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let size = parsed.rows * parsed.cols;
+    if parsed.pixels.len() != size {
+        return Err(JsValue::from_str(
+            "pixels length does not match rows * cols",
+        ));
+    }
+    let object_pairs: Vec<(&str, &[u32])> = parsed
+        .objects
+        .iter()
+        .map(|(name, labels)| (name.as_str(), labels.as_slice()))
+        .collect();
+    let config = cp_anywhere_core::granularity::Config {
+        subsample_size: parsed.subsample_size,
+        image_sample_size: parsed.image_sample_size,
+        element_size: parsed.element_size,
+        granular_spectrum_length: parsed.granular_spectrum_length,
+    };
+    let result = cp_anywhere_core::granularity::measure(
+        &parsed.pixels,
+        &object_pairs,
+        parsed.mask.as_deref(),
+        parsed.rows,
+        parsed.cols,
+        &config,
+    )
+    .map_err(|e| JsValue::from_str(&e))?;
+    let mut root = Map::new();
+    root.insert(
+        "image".into(),
+        Value::Array(result.image.into_iter().map(encode_float).collect()),
+    );
+    let mut objects_out = Map::new();
+    for (name, scales) in result.objects {
+        let scales_json: Vec<Value> = scales
+            .into_iter()
+            .map(|scale| Value::Array(scale.into_iter().map(encode_float).collect()))
+            .collect();
+        objects_out.insert(name, Value::Array(scales_json));
+    }
+    root.insert("objects".into(), Value::Object(objects_out));
+    Ok(Value::Object(root).to_string())
+}
+
+/// Input for `measureIntensityDistributionJson`: `pixels`/`labels` are
+/// plain arrays (small-input JSON convention, matching `WasmInput`), and
+/// the remaining fields mirror
+/// `cp_anywhere_core::intensity_distribution::Config` with CellProfiler's
+/// own `MeasureObjectIntensityDistribution` module defaults.
+#[derive(Deserialize)]
+struct WasmIntensityDistributionInput {
+    pixels: Vec<f64>,
+    labels: Vec<u32>,
+    rows: usize,
+    cols: usize,
+    image_name: String,
+    #[serde(default = "default_bin_count")]
+    bin_count: usize,
+    #[serde(default = "default_wants_scaled")]
+    wants_scaled: bool,
+    #[serde(default = "default_maximum_radius")]
+    maximum_radius: f64,
+    #[serde(default = "default_zernikes")]
+    zernikes: String,
+    #[serde(default = "default_zernike_degree")]
+    zernike_degree: u32,
+}
+
+fn default_bin_count() -> usize {
+    4
+}
+
+fn default_wants_scaled() -> bool {
+    true
+}
+
+fn default_maximum_radius() -> f64 {
+    100.0
+}
+
+fn default_zernikes() -> String {
+    "none".to_string()
+}
+
+fn default_zernike_degree() -> u32 {
+    9
+}
+
+/// Run CellProfiler's 2D radial intensity distribution on typed-array/
+/// JSON input -- the same oracle-verified
+/// `cp_anywhere_core::intensity_distribution` core the Python binding
+/// (`cp_anywhere_python`) calls. Returns a JSON string
+/// `{"<RadialDistribution_... column name>": [...], ...}`, one value per
+/// object in ascending 1-based object ID order, matching
+/// `cp_anywhere.measure_intensity_distribution`'s own result shape.
+#[wasm_bindgen(js_name = measureIntensityDistributionJson)]
+pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValue> {
+    use cp_anywhere_core::intensity_distribution::{Config, ZernikeOption};
+
+    let parsed: WasmIntensityDistributionInput =
+        serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let size = parsed.rows * parsed.cols;
+    if parsed.pixels.len() != size || parsed.labels.len() != size {
+        return Err(JsValue::from_str(
+            "pixels/labels length does not match rows * cols",
+        ));
+    }
+    let zernikes = match parsed.zernikes.as_str() {
+        "none" => ZernikeOption::None,
+        "magnitudes" => ZernikeOption::Magnitudes {
+            degree: parsed.zernike_degree,
+        },
+        "magnitudes_and_phase" => ZernikeOption::MagnitudesAndPhase {
+            degree: parsed.zernike_degree,
+        },
+        other => {
+            return Err(JsValue::from_str(&format!(
+                "unsupported zernikes option: {other:?}"
+            )))
+        }
+    };
+    let config = Config {
+        image_name: parsed.image_name,
+        bin_count: parsed.bin_count,
+        wants_scaled: parsed.wants_scaled,
+        maximum_radius: parsed.maximum_radius,
+        zernikes,
+    };
+    let result = cp_anywhere_core::intensity_distribution::measure(
+        &parsed.pixels,
+        &parsed.labels,
+        parsed.rows,
+        parsed.cols,
+        &config,
+    )
+    .map_err(|e| JsValue::from_str(&e))?;
+    let mut root = Map::new();
+    for (name, values) in result.columns {
+        root.insert(
+            name,
+            Value::Array(values.into_iter().map(encode_float).collect()),
+        );
+    }
+    Ok(Value::Object(root).to_string())
+}
+
+/// Input for `measureTextureJson`: `pixels`/`labels` are plain arrays
+/// (small-input JSON convention, matching `WasmInput`), and the
+/// remaining fields mirror `cp_anywhere_core::texture::Config` with
+/// CellProfiler's own `MeasureTexture` module defaults.
+#[derive(Deserialize)]
+struct WasmTextureInput {
+    pixels: Vec<f64>,
+    labels: Vec<u32>,
+    rows: usize,
+    cols: usize,
+    image_name: String,
+    #[serde(default = "default_texture_gray_levels")]
+    gray_levels: u32,
+    scales: Vec<u32>,
+    #[serde(default = "default_wants_image_measurements")]
+    wants_image_measurements: bool,
+    #[serde(default = "default_wants_object_measurements")]
+    wants_object_measurements: bool,
+}
+
+fn default_texture_gray_levels() -> u32 {
+    256
+}
+
+fn default_wants_image_measurements() -> bool {
+    true
+}
+
+fn default_wants_object_measurements() -> bool {
+    true
+}
+
+/// Run CellProfiler's 2D Haralick texture measurements on typed-array/
+/// JSON input -- the same oracle-verified `cp_anywhere_core::texture`
+/// core the Python binding (`cp_anywhere_python`) calls. Returns a JSON
+/// string `{"image": {"<Texture_... column name>": <float>, ...},
+/// "objects": {"<column name>": [...one per object], ...}}`, matching
+/// `cp_anywhere.measure_texture`'s own result shape.
+#[wasm_bindgen(js_name = measureTextureJson)]
+pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
+    use cp_anywhere_core::texture::Config;
+
+    let parsed: WasmTextureInput =
+        serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let size = parsed.rows * parsed.cols;
+    if parsed.pixels.len() != size || parsed.labels.len() != size {
+        return Err(JsValue::from_str(
+            "pixels/labels length does not match rows * cols",
+        ));
+    }
+    let config = Config {
+        gray_levels: parsed.gray_levels,
+        scales: parsed.scales,
+        wants_image_measurements: parsed.wants_image_measurements,
+        wants_object_measurements: parsed.wants_object_measurements,
+    };
+    let result = cp_anywhere_core::texture::measure(
+        &parsed.pixels,
+        parsed.rows,
+        parsed.cols,
+        &parsed.labels,
+        &parsed.image_name,
+        &config,
+    )
+    .map_err(|e| JsValue::from_str(&e))?;
+    let mut image_map = Map::new();
+    for (name, value) in result.image {
+        image_map.insert(name, encode_float(value));
+    }
+    let mut objects_map = Map::new();
+    for (name, values) in result.objects {
+        objects_map.insert(
+            name,
+            Value::Array(values.into_iter().map(encode_float).collect()),
+        );
+    }
+    let mut root = Map::new();
+    root.insert("image".to_string(), Value::Object(image_map));
+    root.insert("objects".to_string(), Value::Object(objects_map));
+    Ok(Value::Object(root).to_string())
+}
+
+/// Input for `measureColocalizationJson`: `images` is an ORDERED array
+/// of `{name, pixels}` entries (small-input JSON convention) -- order
+/// matters, because real CellProfiler's `get_image_pairs()` yields
+/// `(images[i], images[j])` for `i < j`, and the asymmetric Correlation
+/// and Slope columns name the pair in exactly that order. Plus the
+/// rows/cols shape and `cp_anywhere_core::colocalization::Config`
+/// fields with CellProfiler's own `MeasureColocalization` module
+/// defaults.
+#[derive(Deserialize)]
+struct WasmNamedPixels {
+    name: String,
+    pixels: Vec<f64>,
+}
+
+#[derive(Deserialize)]
+struct WasmColocalizationInput {
+    images: Vec<WasmNamedPixels>,
+    rows: usize,
+    cols: usize,
+    #[serde(default)]
+    masks: Option<std::collections::BTreeMap<String, Vec<bool>>>,
+    #[serde(default)]
+    labels: Option<Vec<u32>>,
+    #[serde(default = "default_threshold_percent")]
+    threshold_percent: f64,
+    #[serde(default = "default_fast_costes")]
+    fast_costes: String,
+    #[serde(default = "default_costes_scale_max")]
+    costes_scale_max: f64,
+    #[serde(default = "default_true")]
+    do_corr_and_slope: bool,
+    #[serde(default = "default_true")]
+    do_manders: bool,
+    #[serde(default = "default_true")]
+    do_rwc: bool,
+    #[serde(default = "default_true")]
+    do_overlap: bool,
+    #[serde(default = "default_true")]
+    do_costes: bool,
+    #[serde(default = "default_true")]
+    wants_image_measurements: bool,
+    #[serde(default = "default_colocalization_wants_objects")]
+    wants_object_measurements: bool,
+}
+
+fn default_threshold_percent() -> f64 {
+    15.0
+}
+
+fn default_fast_costes() -> String {
+    "faster".to_string()
+}
+
+fn default_costes_scale_max() -> f64 {
+    255.0
+}
+
+fn default_true() -> bool {
+    true
+}
+
+fn default_colocalization_wants_objects() -> bool {
+    false
+}
+
+/// Run CellProfiler's 2D pairwise colocalization on JSON input -- the
+/// same oracle-verified `cp_anywhere_core::colocalization` core the
+/// Python binding (`cp_anywhere_python`) calls. Returns a JSON string
+/// `{"image": {"<Correlation_... column name>": <float>, ...},
+/// "objects": {"<column name>": [...one per object], ...}}`, matching
+/// `cp_anywhere.measure_colocalization`'s own result shape.
+#[wasm_bindgen(js_name = measureColocalizationJson)]
+pub fn measure_colocalization_json(input: &str) -> Result<String, JsValue> {
+    use cp_anywhere_core::colocalization::{Config, FastCostesMode};
+
+    let parsed: WasmColocalizationInput =
+        serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
+    let size = parsed.rows * parsed.cols;
+    if parsed.images.len() < 2 {
+        return Err(JsValue::from_str("at least two images are required"));
+    }
+    let mut image_pairs: Vec<(&str, &[f64])> = Vec::with_capacity(parsed.images.len());
+    let mut image_names: Vec<&str> = Vec::with_capacity(parsed.images.len());
+    for image in &parsed.images {
+        if image.pixels.len() != size {
+            return Err(JsValue::from_str(&format!(
+                "image '{}' length does not match rows * cols",
+                image.name
+            )));
+        }
+        image_names.push(image.name.as_str());
+        image_pairs.push((image.name.as_str(), image.pixels.as_slice()));
+    }
+    if let Some(masks) = &parsed.masks {
+        for (name, mask) in masks {
+            if mask.len() != size {
+                return Err(JsValue::from_str(&format!(
+                    "mask '{name}' length does not match rows * cols"
+                )));
+            }
+            if !image_names.contains(&name.as_str()) {
+                return Err(JsValue::from_str(&format!(
+                    "mask given for unknown image '{name}'"
+                )));
+            }
+        }
+    }
+    if let Some(labels) = &parsed.labels {
+        if labels.len() != size {
+            return Err(JsValue::from_str(
+                "labels length does not match rows * cols",
+            ));
+        }
+    }
+    let fast_costes = match parsed.fast_costes.as_str() {
+        "faster" => FastCostesMode::Faster,
+        "fast" => FastCostesMode::Fast,
+        "accurate" => FastCostesMode::Accurate,
+        other => {
+            return Err(JsValue::from_str(&format!(
+                "unsupported fast_costes option: {other:?}; use 'faster', 'fast', or 'accurate'"
+            )))
+        }
+    };
+    let config = Config {
+        threshold_percent: parsed.threshold_percent,
+        fast_costes,
+        costes_scale_max: parsed.costes_scale_max,
+        do_corr_and_slope: parsed.do_corr_and_slope,
+        do_manders: parsed.do_manders,
+        do_rwc: parsed.do_rwc,
+        do_overlap: parsed.do_overlap,
+        do_costes: parsed.do_costes,
+        wants_image_measurements: parsed.wants_image_measurements,
+        wants_object_measurements: parsed.wants_object_measurements,
+    };
+    let mask_pairs: Vec<(&str, &[bool])> = parsed
+        .masks
+        .as_ref()
+        .map(|masks| {
+            masks
+                .iter()
+                .map(|(name, mask)| (name.as_str(), mask.as_slice()))
+                .collect()
+        })
+        .unwrap_or_default();
+    let mask_option = if mask_pairs.is_empty() {
+        None
+    } else {
+        Some(mask_pairs.as_slice())
+    };
+    let result = cp_anywhere_core::colocalization::measure(
+        &image_pairs,
+        parsed.rows,
+        parsed.cols,
+        mask_option,
+        parsed.labels.as_deref(),
+        &config,
+    )
+    .map_err(|e| JsValue::from_str(&e))?;
+    let mut image_map = Map::new();
+    for (name, value) in result.image {
+        image_map.insert(name, encode_float(value));
+    }
+    let mut objects_map = Map::new();
+    for (name, values) in result.objects {
+        objects_map.insert(
+            name,
+            Value::Array(values.into_iter().map(encode_float).collect()),
+        );
+    }
+    let mut root = Map::new();
+    root.insert("image".to_string(), Value::Object(image_map));
+    root.insert("objects".to_string(), Value::Object(objects_map));
+    Ok(Value::Object(root).to_string())
 }

@@ -1,0 +1,65 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "features": {
+    "Image": {
+      "Granularity_1_Stain": 8.837833230109942,
+      "Granularity_2_Stain": 30.45785512948072,
+      "Granularity_3_Stain": 60.70431164040934,
+      "Granularity_4_Stain": 0.0,
+      "Granularity_5_Stain": 0.0,
+      "Granularity_6_Stain": 0.0
+    },
+    "Nuclei": {
+      "Granularity_1_Stain": [
+        17.228233203650564,
+        17.823881940062602
+      ],
+      "Granularity_2_Stain": [
+        38.315007828051534,
+        37.729627643879546
+      ],
+      "Granularity_3_Stain": [
+        44.4567589682979,
+        44.44649041605785
+      ],
+      "Granularity_4_Stain": [
+        0.0,
+        0.0
+      ],
+      "Granularity_5_Stain": [
+        0.0,
+        0.0
+      ],
+      "Granularity_6_Stain": [
+        0.0,
+        0.0
+      ]
+    },
+    "Cells": {
+      "Granularity_1_Stain": [
+        9.731148295121642,
+        4.444164100278251
+      ],
+      "Granularity_2_Stain": [
+        32.59976694606601,
+        35.38157156169747
+      ],
+      "Granularity_3_Stain": [
+        57.66908475881235,
+        60.17426433802428
+      ],
+      "Granularity_4_Stain": [
+        0.0,
+        0.0
+      ],
+      "Granularity_5_Stain": [
+        0.0,
+        0.0
+      ],
+      "Granularity_6_Stain": [
+        0.0,
+        0.0
+      ]
+    }
+  }
+}

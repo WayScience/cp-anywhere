@@ -1,0 +1,60 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "features": {
+    "Image": {
+      "Correlation_Correlation_DNA_Stain": 0.6774229650704225,
+      "Correlation_Costes_DNA_Stain": 1.0,
+      "Correlation_Costes_Stain_DNA": 0.4380108416080475,
+      "Correlation_K_DNA_Stain": 1.5048996210098267,
+      "Correlation_K_Stain_DNA": 0.5977539420127869,
+      "Correlation_Manders_DNA_Stain": 1.0,
+      "Correlation_Manders_Stain_DNA": 0.36753159761428833,
+      "Correlation_Overlap_DNA_Stain": 0.9484512209892273,
+      "Correlation_RWC_DNA_Stain": 0.29166664767010547,
+      "Correlation_RWC_Stain_DNA": 0.10719672036578465,
+      "Correlation_Slope_DNA_Stain": 1.2567235231399536
+    },
+    "Cells": {
+      "Correlation_Correlation_DNA_Stain": [
+        0.7749465711583096,
+        0.7749465711583097
+      ],
+      "Correlation_Costes_DNA_Stain": [
+        1.0,
+        1.0
+      ],
+      "Correlation_Costes_Stain_DNA": [
+        0.4380108693032304,
+        0.4380108693032304
+      ],
+      "Correlation_K_DNA_Stain": [
+        1.5048996036633524,
+        1.5048996036633524
+      ],
+      "Correlation_K_Stain_DNA": [
+        0.5977539421455718,
+        0.5977539421455718
+      ],
+      "Correlation_Manders_DNA_Stain": [
+        1.0,
+        1.0
+      ],
+      "Correlation_Manders_Stain_DNA": [
+        0.3675316392305104,
+        0.3675316392305104
+      ],
+      "Correlation_Overlap_DNA_Stain": [
+        0.9484511956991132,
+        0.9484511956991132
+      ],
+      "Correlation_RWC_DNA_Stain": [
+        0.3499999999999999,
+        0.3499999999999999
+      ],
+      "Correlation_RWC_Stain_DNA": [
+        0.12863607373067862,
+        0.12863607373067862
+      ]
+    }
+  }
+}

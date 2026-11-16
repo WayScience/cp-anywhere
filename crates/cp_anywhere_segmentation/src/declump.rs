@@ -397,7 +397,7 @@ fn shrink(mut pixels: Vec<bool>, w: usize, h: usize) -> Vec<bool> {
     }
     pixels
 }
-fn neighbor(p: usize, w: usize, h: usize, dy: isize, dx: isize) -> Option<usize> {
+pub(crate) fn neighbor(p: usize, w: usize, h: usize, dy: isize, dx: isize) -> Option<usize> {
     let y = (p / w).checked_add_signed(dy)?;
     let x = (p % w).checked_add_signed(dx)?;
     (y < h && x < w).then_some(y * w + x)
@@ -474,7 +474,7 @@ fn edt_1d(f: &[f64]) -> Vec<f64> {
 /// the Euclidean distance to the nearest background (false) pixel;
 /// background pixels are 0. Separable: a vertical pass then a
 /// horizontal pass of 1D squared-distance transforms, final sqrt.
-fn distance_transform_edt(foreground: &[bool], w: usize, h: usize) -> Vec<f64> {
+pub(crate) fn distance_transform_edt(foreground: &[bool], w: usize, h: usize) -> Vec<f64> {
     // A large *finite* sentinel, not f64::INFINITY: the parabola
     // intersection formula subtracts two f-values, and inf - inf is
     // NaN, which silently breaks the lower-envelope comparisons.
@@ -760,18 +760,18 @@ mod tests {
 }
 // A deliberately non-stable min heap: equal-priority seed entries must use
 // scikit-image's exact swap/pop behavior (not a Rust BinaryHeap tiebreaker).
-struct MinHeap<T> {
+pub(crate) struct MinHeap<T> {
     data: Vec<T>,
     smaller: fn(&T, &T) -> bool,
 }
 impl<T> MinHeap<T> {
-    fn new(smaller: fn(&T, &T) -> bool) -> Self {
+    pub(crate) fn new(smaller: fn(&T, &T) -> bool) -> Self {
         Self {
             data: Vec::new(),
             smaller,
         }
     }
-    fn push(&mut self, value: T) {
+    pub(crate) fn push(&mut self, value: T) {
         let mut child = self.data.len();
         self.data.push(value);
         while child > 0 {
@@ -783,7 +783,7 @@ impl<T> MinHeap<T> {
             child = parent;
         }
     }
-    fn pop(&mut self) -> Option<T> {
+    pub(crate) fn pop(&mut self) -> Option<T> {
         if self.data.is_empty() {
             return None;
         }
@@ -817,7 +817,13 @@ struct Flood {
     age: usize,
     pixel: usize,
 }
-fn watershed(image: &[f64], labels: &[u32], markers: &[u32], w: usize, h: usize) -> Vec<u32> {
+pub(crate) fn watershed(
+    image: &[f64],
+    labels: &[u32],
+    markers: &[u32],
+    w: usize,
+    h: usize,
+) -> Vec<u32> {
     let mut out = markers
         .iter()
         .zip(labels)

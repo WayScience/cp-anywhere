@@ -52,6 +52,9 @@ fn bench_measure(c: &mut Criterion) {
                 object_intensity: true,
                 neighbors: true,
             },
+            neighbors_scopes: &[],
+            size_shape: None,
+            neighbors_full_objects: &[],
         };
         group.bench_with_input(BenchmarkId::from_parameter(name), &input, |b, input| {
             b.iter(|| measure(input).unwrap());
@@ -80,6 +83,9 @@ fn bench_measure(c: &mut Criterion) {
                 object_intensity: true,
                 neighbors: false,
             },
+            neighbors_scopes: &[],
+            size_shape: None,
+            neighbors_full_objects: &[],
         };
         split.bench_with_input(
             BenchmarkId::new("object_intensity", name),
@@ -96,6 +102,9 @@ fn bench_measure(c: &mut Criterion) {
                 object_intensity: false,
                 neighbors: true,
             },
+            neighbors_scopes: &[],
+            size_shape: None,
+            neighbors_full_objects: &[],
         };
         split.bench_with_input(
             BenchmarkId::new("neighbors", name),

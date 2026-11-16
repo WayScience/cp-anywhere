@@ -52,6 +52,9 @@ class SegmentationResult:
     """Labels after the small-object filter only (large objects still
     present), matching CellProfiler's ``objects.small_removed_segmented``."""
 
+    unedited_labels: np.ndarray
+    """Labels before border, size, count, or final hole filtering."""
+
     object_count: int
     threshold: float
     """The threshold value actually applied, after correction/clamping,
@@ -341,6 +344,7 @@ def identify_primary_objects(
     return SegmentationResult(
         labels=raw["labels"].reshape(array.shape),
         small_removed_labels=raw["small_removed_labels"].reshape(array.shape),
+        unedited_labels=raw["unedited_labels"].reshape(array.shape),
         object_count=int(raw["object_count"]),
         threshold=float(raw["threshold"]),
         threshold_map=(
@@ -350,3 +354,221 @@ def identify_primary_objects(
         ),
         guide_threshold=raw["guide_threshold"],
     )
+
+
+@dataclass(frozen=True)
+class SecondaryObjectsResult:
+    """Final and pre-filter secondary-object labels."""
+
+    small_removed_labels: np.ndarray
+    """Pre-filter labels in the original seed numbering, used by neighbors."""
+
+    labels: np.ndarray
+    """2D integer label array, same shape as the input image; 0 is background."""
+
+    threshold: float | None
+    """The secondary image's own applied threshold; ``None`` for
+    ``method="distance_n"``, which never thresholds an image."""
+
+    @property
+    def unedited_labels(self) -> np.ndarray:
+        """CellProfiler stores the same grown layer as unedited and small-removed."""
+        return self.small_removed_labels
+
+
+def identify_secondary_objects(
+    image: object,
+    primary_labels: object,
+    *,
+    primary_labels_in: object | None = None,
+    method: str = "propagation",
+    mask: object | None = None,
+    threshold: str | float | int = "otsu",
+    rescale: bool = True,
+    threshold_correction_factor: float = 1.0,
+    threshold_range: tuple[float, float] | None = None,
+    threshold_smoothing_scale: float = 0.0,
+    log_transform: bool = False,
+    threshold_scope: str = "global",
+    adaptive_window_size: int = 50,
+    assign_middle_to_foreground: bool = True,
+    robust_background_lower_outlier_fraction: float = 0.05,
+    robust_background_upper_outlier_fraction: float = 0.05,
+    robust_background_averaging_method: str = "mean",
+    robust_background_variance_method: str = "sd",
+    robust_background_number_of_deviations: float = 2.0,
+    regularization_factor: float = 0.05,
+    distance_to_dilate: float = 10.0,
+    fill_holes: bool = False,
+) -> SecondaryObjectsResult:
+    """Grow a secondary object (e.g. ``"Cells"``) around each primary
+    object (e.g. ``"Nuclei"``), matching CellProfiler 4.2.8's
+    ``IdentifySecondaryObjects`` module.
+
+    ``image`` is the secondary stain image (e.g. a cell-membrane or
+    whole-cell marker); ``primary_labels`` is the final, kept primary
+    object set (e.g. :attr:`SegmentationResult.labels` from
+    :func:`identify_primary_objects`) -- a grown secondary object is
+    kept only if its seed primary object survived there.
+
+    ``primary_labels_in`` accepts the unedited primary labels, before
+    size or border filtering. Pass :attr:`SegmentationResult.unedited_labels`
+    from the upstream primary result. The Rust core retains edge-touching
+    seeds and removes other seed pixels wherever ``primary_labels`` is
+    zero, matching CellProfiler. Grown regions are mapped to retained
+    primary IDs by overlap, so renumbered primaries stay aligned.
+    If omitted, the kept primary array supplies the seeds; excluded
+    edge objects cannot participate because their pixels are unavailable.
+
+    ``method`` is ``"propagation"`` (the module's own default:
+    weighted shortest-path region growing, bounded by a threshold of
+    ``image``, steered by ``regularization_factor`` -- 0 favors image
+    intensity, larger values favor Euclidean geometry) or
+    ``"distance_n"`` (a fixed-radius Euclidean expansion bounded by
+    ``distance_to_dilate``, with no image or threshold involved at
+    all). ``"distance_b"``, ``"watershed_gradient"``, and
+    ``"watershed_image"`` are explicit, not-yet-implemented gaps.
+
+    ``threshold``/``rescale``/``threshold_correction_factor``/
+    ``threshold_range``/``threshold_smoothing_scale``/``log_transform``/
+    ``threshold_scope``/``adaptive_window_size``/
+    ``assign_middle_to_foreground``/``robust_background_*`` all match
+    :func:`identify_primary_objects`'s own identically-named
+    parameters exactly (the secondary image's threshold uses the same
+    machinery, with no size/border/declump filtering applied to it --
+    matching ``IdentifySecondaryObjects``'s own plain threshold-and-
+    binarize step). Ignored entirely for ``method="distance_n"``.
+
+    ``fill_holes`` uses CellProfiler's labeled-hole graph, but changes
+    only background pixels. Existing nested foreground labels survive.
+    ``small_removed_labels`` retains the grown labels before filtering,
+    in the original seed numbering, for downstream neighbor measurements.
+    """
+    from cp_anywhere import _native
+
+    array = np.asarray(image)
+    if array.ndim != _EXPECTED_NDIM or 0 in array.shape:
+        raise ValueError("image must be a nonempty 2D array")
+    rows, cols = array.shape
+
+    primary_array = _label_array(primary_labels, array.shape)
+    labels_in_array = (
+        primary_array
+        if primary_labels_in is None
+        else _label_array(primary_labels_in, array.shape)
+    )
+
+    if method not in ("propagation", "distance_n"):
+        raise ValueError(
+            "method must be 'propagation' or 'distance_n' "
+            "('distance_b', 'watershed_gradient', and 'watershed_image' "
+            "are explicit, not-yet-implemented gaps)"
+        )
+
+    is_integer_dtype = array.dtype.kind in "iu"
+    if rescale and is_integer_dtype:
+        divisor = _rescale_divisor(array.dtype)
+        pixels = np.ascontiguousarray(array, dtype=np.float64) / divisor
+    else:
+        pixels = np.ascontiguousarray(array, dtype=np.float64)
+
+    threshold_method, threshold_value, integer_pixels = _resolve_threshold(
+        threshold, array, rescale=rescale, is_integer_dtype=is_integer_dtype
+    )
+    if threshold_range is None:
+        threshold_range = (
+            (0.0, 1.0) if (rescale and is_integer_dtype) else (-np.inf, np.inf)
+        )
+
+    mask_array = None
+    if mask is not None:
+        mask_array = np.ascontiguousarray(np.asarray(mask), dtype=bool)
+        if mask_array.shape != array.shape:
+            raise ValueError("mask must have the image shape")
+
+    raw = _native.identify_secondary_objects(
+        pixels,
+        rows,
+        cols,
+        labels_in_array,
+        primary_array,
+        method,
+        threshold_method,
+        threshold_value=threshold_value,
+        integer_pixels=integer_pixels,
+        mask=mask_array,
+        threshold_correction_factor=threshold_correction_factor,
+        threshold_range_min=threshold_range[0],
+        threshold_range_max=threshold_range[1],
+        threshold_smoothing_scale=threshold_smoothing_scale,
+        log_transform=log_transform,
+        threshold_scope=threshold_scope,
+        adaptive_window_size=adaptive_window_size,
+        assign_middle_to_foreground=assign_middle_to_foreground,
+        robust_background_lower_outlier_fraction=robust_background_lower_outlier_fraction,
+        robust_background_upper_outlier_fraction=robust_background_upper_outlier_fraction,
+        robust_background_averaging_method=robust_background_averaging_method,
+        robust_background_variance_method=robust_background_variance_method,
+        robust_background_number_of_deviations=robust_background_number_of_deviations,
+        regularization_factor=regularization_factor,
+        distance_to_dilate=distance_to_dilate,
+        fill_holes=fill_holes,
+    )
+    return SecondaryObjectsResult(
+        labels=raw["labels"].reshape(array.shape),
+        small_removed_labels=raw["small_removed_labels"].reshape(array.shape),
+        threshold=raw["threshold"],
+    )
+
+
+@dataclass(frozen=True)
+class TertiaryObjectsResult:
+    """Tertiary labels, preserving the larger object's label numbering."""
+
+    labels: np.ndarray
+
+
+def identify_tertiary_objects(
+    primary_labels: object,
+    secondary_labels: object,
+    *,
+    shrink_primary: bool = True,
+) -> TertiaryObjectsResult:
+    """Subtract smaller objects from larger objects on the same 2D grid.
+
+    With ``shrink_primary=True`` (CellProfiler's default), retain the
+    smaller objects' one-pixel, eight-connected outline. With ``False``,
+    remove every smaller-object pixel. Output IDs are the larger
+    objects' IDs, not newly numbered connected components. Inputs are
+    never modified. Crop/resize metadata and parent measurements are
+    not provided by this array API; grids must already match.
+    """
+    from cp_anywhere import _native
+
+    primary = _tertiary_label_array(primary_labels)
+    secondary = _tertiary_label_array(secondary_labels)
+    if primary.shape != secondary.shape:
+        raise ValueError("primary and secondary label arrays must have matching shapes")
+    rows, cols = secondary.shape
+    labels = _native.identify_tertiary_objects(
+        primary, secondary, rows, cols, shrink_primary=shrink_primary
+    )
+    return TertiaryObjectsResult(labels=labels.reshape(secondary.shape))
+
+
+def _tertiary_label_array(value: object) -> np.ndarray:
+    array = np.asarray(value)
+    if array.ndim != _EXPECTED_NDIM or 0 in array.shape:
+        raise ValueError("label arrays must be nonempty 2D arrays")
+    if array.dtype.kind not in "iu" or np.any(array < 0):
+        raise ValueError("label arrays must contain nonnegative integers")
+    if np.any(array > np.iinfo(np.uint32).max):
+        raise ValueError("label arrays must fit in uint32")
+    return np.ascontiguousarray(array, dtype=np.uint32)
+
+
+def _label_array(value: object, shape: tuple[int, ...]) -> np.ndarray:
+    array = np.ascontiguousarray(np.asarray(value), dtype=np.uint32)
+    if array.shape != shape:
+        raise ValueError("label arrays must have the image shape")
+    return array

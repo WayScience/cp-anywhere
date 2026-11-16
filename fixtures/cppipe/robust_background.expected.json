@@ -1,0 +1,13 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "robust_background",
+    "robust_background_lower_outlier_fraction": 0.1,
+    "robust_background_upper_outlier_fraction": 0.02,
+    "robust_background_averaging_method": "median",
+    "robust_background_variance_method": "mad",
+    "robust_background_number_of_deviations": 3.0
+  },
+  "has_measure": true,
+  "object_count": 1,
+  "threshold": 0.34106966853141785
+}

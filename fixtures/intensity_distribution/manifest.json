@@ -1,0 +1,116 @@
+{
+  "reference": "CellProfiler 4.2.8 @ 2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "numpy": "1.23.5",
+  "scipy": "1.9.3",
+  "skimage": "0.21.0",
+  "module_sha256": "e012998562d0871d38e490e0e89a545c17755089e95116137b467388f957965a",
+  "compatibility_adapter": "Rename only selem->footprint in skimage.morphology erosion/dilation/reconstruction; forward to installed implementations. Installed defensively; this module does not call skimage.morphology directly.",
+  "scope": "2D only; center_choice == 'These objects' (default) only; real Module.run, real Measurements and pipeline dumps",
+  "cases": [
+    {
+      "name": "defaults",
+      "shape": [
+        21,
+        23
+      ],
+      "settings": {
+        "bin_count": 4,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "None",
+        "zernike_degree": 9
+      },
+      "n_columns": 12
+    },
+    {
+      "name": "multi_object_border_and_small",
+      "shape": [
+        30,
+        34
+      ],
+      "settings": {
+        "bin_count": 5,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "Magnitudes and phase",
+        "zernike_degree": 4
+      },
+      "n_columns": 33
+    },
+    {
+      "name": "ring_shape",
+      "shape": [
+        25,
+        25
+      ],
+      "settings": {
+        "bin_count": 6,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "Magnitudes only",
+        "zernike_degree": 6
+      },
+      "n_columns": 34
+    },
+    {
+      "name": "c_shape_unscaled_overflow",
+      "shape": [
+        28,
+        28
+      ],
+      "settings": {
+        "bin_count": 3,
+        "wants_scaled": false,
+        "maximum_radius": 4,
+        "wants_zernikes": "None",
+        "zernike_degree": 9
+      },
+      "n_columns": 12
+    },
+    {
+      "name": "high_bins_high_degree",
+      "shape": [
+        20,
+        20
+      ],
+      "settings": {
+        "bin_count": 8,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "Magnitudes and phase",
+        "zernike_degree": 7
+      },
+      "n_columns": 64
+    },
+    {
+      "name": "sparse_label_gap",
+      "shape": [
+        15,
+        15
+      ],
+      "settings": {
+        "bin_count": 3,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "Magnitudes only",
+        "zernike_degree": 2
+      },
+      "n_columns": 13
+    },
+    {
+      "name": "no_objects",
+      "shape": [
+        6,
+        7
+      ],
+      "settings": {
+        "bin_count": 3,
+        "wants_scaled": true,
+        "maximum_radius": 100,
+        "wants_zernikes": "Magnitudes and phase",
+        "zernike_degree": 3
+      },
+      "n_columns": 21
+    }
+  ]
+}

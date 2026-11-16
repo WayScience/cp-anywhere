@@ -399,6 +399,11 @@ dependencies = [
     { name = "tifffile", version = "2026.11.12", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 
+[package.optional-dependencies]
+duckdb = [
+    { name = "duckdb" },
+]
+
 [package.dev-dependencies]
 demo-assets = [
     { name = "duckdb" },
@@ -406,6 +411,7 @@ demo-assets = [
 ]
 dev = [
     { name = "coverage", extra = ["toml"] },
+    { name = "duckdb" },
     { name = "maturin" },
     { name = "poethepoet" },
     { name = "pytest" },
@@ -421,12 +427,14 @@ docs = [
 
 [package.metadata]
 requires-dist = [
+    { name = "duckdb", marker = "extra == 'duckdb'", specifier = ">=1.1" },
     { name = "numpy", specifier = ">=1.26" },
     { name = "pandas", specifier = ">=2" },
     { name = "pillow", specifier = ">=10" },
     { name = "pyarrow", specifier = ">=14" },
     { name = "tifffile", specifier = ">=2024.1" },
 ]
+provides-extras = ["duckdb"]
 
 [package.metadata.requires-dev]
 demo-assets = [
@@ -435,6 +443,7 @@ demo-assets = [
 ]
 dev = [
     { name = "coverage", extras = ["toml"], specifier = ">=7.10.6" },
+    { name = "duckdb", specifier = ">=1.1" },
     { name = "maturin", specifier = ">=1.9,<2" },
     { name = "poethepoet", specifier = ">=0.34" },
     { name = "pytest", specifier = ">=8.3.5" },

@@ -1,0 +1,41 @@
+{
+  "reference": "CellProfiler 4.2.8 @ 2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "mahotas": "1.4.18",
+  "module_sha256": "3af3c00ac9b7f6f38146e370f5cf670665e43006325ef006b547ae721127763a",
+  "scope": "2D only; real mahotas.features.haralick, real Module.run",
+  "cases": [
+    {
+      "name": "defaults",
+      "scalars": 156
+    },
+    {
+      "name": "low_gray_levels",
+      "scalars": 156
+    },
+    {
+      "name": "multi_scale",
+      "scalars": 312
+    },
+    {
+      "name": "image_only",
+      "scalars": 52
+    },
+    {
+      "name": "objects_only",
+      "scalars": 104
+    },
+    {
+      "name": "tiny_object_value_error",
+      "scalars": 104
+    },
+    {
+      "name": "no_objects",
+      "scalars": 0
+    },
+    {
+      "name": "uniform_image",
+      "scalars": 104
+    }
+  ],
+  "total_scalars": 988
+}

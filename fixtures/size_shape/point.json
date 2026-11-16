@@ -1,0 +1,527 @@
+{
+  "reference": "CellProfiler 4.2.8",
+  "settings": {
+    "calculate_advanced": true,
+    "calculate_zernikes": true
+  },
+  "labels": [
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "features": {
+    "AreaShape_Area": [
+      1.0
+    ],
+    "AreaShape_BoundingBoxArea": [
+      1.0
+    ],
+    "AreaShape_BoundingBoxMaximum_X": [
+      6
+    ],
+    "AreaShape_BoundingBoxMaximum_Y": [
+      6
+    ],
+    "AreaShape_BoundingBoxMinimum_X": [
+      5
+    ],
+    "AreaShape_BoundingBoxMinimum_Y": [
+      5
+    ],
+    "AreaShape_Center_X": [
+      5.0
+    ],
+    "AreaShape_Center_Y": [
+      5.0
+    ],
+    "AreaShape_CentralMoment_0_0": [
+      1.0
+    ],
+    "AreaShape_CentralMoment_0_1": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_0_2": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_0_3": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_0": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_1": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_2": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_1_3": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_2_0": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_2_1": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_2_2": [
+      0.0
+    ],
+    "AreaShape_CentralMoment_2_3": [
+      0.0
+    ],
+    "AreaShape_Compactness": [
+      0.0
+    ],
+    "AreaShape_ConvexArea": [
+      1.0
+    ],
+    "AreaShape_Eccentricity": [
+      0.0
+    ],
+    "AreaShape_EquivalentDiameter": [
+      1.1283791670955126
+    ],
+    "AreaShape_EulerNumber": [
+      1
+    ],
+    "AreaShape_Extent": [
+      1.0
+    ],
+    "AreaShape_FormFactor": [
+      Infinity
+    ],
+    "AreaShape_HuMoment_0": [
+      0.0
+    ],
+    "AreaShape_HuMoment_1": [
+      0.0
+    ],
+    "AreaShape_HuMoment_2": [
+      0.0
+    ],
+    "AreaShape_HuMoment_3": [
+      0.0
+    ],
+    "AreaShape_HuMoment_4": [
+      0.0
+    ],
+    "AreaShape_HuMoment_5": [
+      0.0
+    ],
+    "AreaShape_HuMoment_6": [
+      0.0
+    ],
+    "AreaShape_InertiaTensorEigenvalues_0": [
+      0.0
+    ],
+    "AreaShape_InertiaTensorEigenvalues_1": [
+      0.0
+    ],
+    "AreaShape_InertiaTensor_0_0": [
+      0.0
+    ],
+    "AreaShape_InertiaTensor_0_1": [
+      -0.0
+    ],
+    "AreaShape_InertiaTensor_1_0": [
+      -0.0
+    ],
+    "AreaShape_InertiaTensor_1_1": [
+      0.0
+    ],
+    "AreaShape_MajorAxisLength": [
+      0.0
+    ],
+    "AreaShape_MaxFeretDiameter": [
+      0.0
+    ],
+    "AreaShape_MaximumRadius": [
+      1.0
+    ],
+    "AreaShape_MeanRadius": [
+      1.0
+    ],
+    "AreaShape_MedianRadius": [
+      1.0
+    ],
+    "AreaShape_MinFeretDiameter": [
+      0.0
+    ],
+    "AreaShape_MinorAxisLength": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_0_0": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_0_1": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_0_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_0_3": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_1_0": [
+      NaN
+    ],
+    "AreaShape_NormalizedMoment_1_1": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_1_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_1_3": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_2_0": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_2_1": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_2_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_2_3": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_0": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_1": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_2": [
+      0.0
+    ],
+    "AreaShape_NormalizedMoment_3_3": [
+      0.0
+    ],
+    "AreaShape_Orientation": [
+      -45.0
+    ],
+    "AreaShape_Perimeter": [
+      0.0
+    ],
+    "AreaShape_Solidity": [
+      1.0
+    ],
+    "AreaShape_SpatialMoment_0_0": [
+      1.0
+    ],
+    "AreaShape_SpatialMoment_0_1": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_0_2": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_0_3": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_1_0": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_1_1": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_1_2": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_1_3": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_2_0": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_2_1": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_2_2": [
+      0.0
+    ],
+    "AreaShape_SpatialMoment_2_3": [
+      0.0
+    ],
+    "AreaShape_Zernike_0_0": [
+      NaN
+    ],
+    "AreaShape_Zernike_1_1": [
+      NaN
+    ],
+    "AreaShape_Zernike_2_0": [
+      NaN
+    ],
+    "AreaShape_Zernike_2_2": [
+      NaN
+    ],
+    "AreaShape_Zernike_3_1": [
+      NaN
+    ],
+    "AreaShape_Zernike_3_3": [
+      NaN
+    ],
+    "AreaShape_Zernike_4_0": [
+      NaN
+    ],
+    "AreaShape_Zernike_4_2": [
+      NaN
+    ],
+    "AreaShape_Zernike_4_4": [
+      NaN
+    ],
+    "AreaShape_Zernike_5_1": [
+      NaN
+    ],
+    "AreaShape_Zernike_5_3": [
+      NaN
+    ],
+    "AreaShape_Zernike_5_5": [
+      NaN
+    ],
+    "AreaShape_Zernike_6_0": [
+      NaN
+    ],
+    "AreaShape_Zernike_6_2": [
+      NaN
+    ],
+    "AreaShape_Zernike_6_4": [
+      NaN
+    ],
+    "AreaShape_Zernike_6_6": [
+      NaN
+    ],
+    "AreaShape_Zernike_7_1": [
+      NaN
+    ],
+    "AreaShape_Zernike_7_3": [
+      NaN
+    ],
+    "AreaShape_Zernike_7_5": [
+      NaN
+    ],
+    "AreaShape_Zernike_7_7": [
+      NaN
+    ],
+    "AreaShape_Zernike_8_0": [
+      NaN
+    ],
+    "AreaShape_Zernike_8_2": [
+      NaN
+    ],
+    "AreaShape_Zernike_8_4": [
+      NaN
+    ],
+    "AreaShape_Zernike_8_6": [
+      NaN
+    ],
+    "AreaShape_Zernike_8_8": [
+      NaN
+    ],
+    "AreaShape_Zernike_9_1": [
+      NaN
+    ],
+    "AreaShape_Zernike_9_3": [
+      NaN
+    ],
+    "AreaShape_Zernike_9_5": [
+      NaN
+    ],
+    "AreaShape_Zernike_9_7": [
+      NaN
+    ],
+    "AreaShape_Zernike_9_9": [
+      NaN
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "min_diameter": 10.0,
+    "unclump_method": "intensity",
+    "watershed_method": "intensity"
+  },
+  "has_measure": true,
+  "object_count": 2,
+  "threshold": 0.287109375
+}
