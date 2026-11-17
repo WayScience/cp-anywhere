@@ -384,6 +384,7 @@
 <p><strong>Correct illumination → segment cells → measure features → save results.</strong></p>
 <p>This notebook demonstrates <strong>illumination correction, segmentation, and measurements</strong> with <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>.
 The main workflow uses corrected images to find cells and calculate their features.
+We add a clearly labeled simulated lighting gradient to the real images so correction has a known, visible target.
 You can use image files or NumPy arrays, work with pandas tables, and save results for later analysis.
 The measurement engine runs in Rust. No CellProfiler application is needed for this example.</p>
 <p>We use a bundled real DNA/actin image from <a class="reference external" href="https://bbbc.broadinstitute.org/BBBC007">BBBC007</a>.
@@ -400,6 +401,7 @@ Run the cells in order.</p>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
@@ -442,54 +444,121 @@ For your own data, change the file paths and use the correct intensity scale.</p
 </section>
 <section id="correct-illumination">
 <h2>2. Correct illumination<a class="headerlink" href="#correct-illumination" title="Link to this heading">#</a></h2>
-<p>Estimate a smooth correction function separately for DNA and actin.
-Then divide each channel by its own function.
-The corrected images feed the segmentation and measurement steps below.</p>
-<p>Here we use a 64-pixel smoothing width and relative median scaling.
-These are demonstration choices, not a calibrated correction for this microscope.
-For real experiments, use appropriate reference images for each channel and inspect the results.</p>
+<p><strong>Controlled demonstration: real cells, simulated uneven lighting.</strong>
+A small crop alone does not tell us its true microscope illumination.
+Instead, add a known lighting gradient: 25% brightness at the left edge and 100% at the right.
+The unmodified images are the reference for this added distortion, not proof that the original lighting was uniform.</p>
+<p>Our simulated flat-field reference contains only this gradient, without cells.
+<code class="docutils literal notranslate"><span class="pre">calculate_illumination</span></code> fits a smooth function to that reference.
+<code class="docutils literal notranslate"><span class="pre">apply_illumination</span></code> divides the shaded images by that function.
+We use the same simulated lighting for both channels in this example.
+<code class="docutils literal notranslate"><span class="pre">rescale_option=&quot;No&quot;</span></code> keeps the original intensity scale.</p>
+<p>The corrected images feed segmentation and measurements below.
+For real experiments, use measured calibration images or suitable representative images for each channel.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dna_illumination</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">calculate_illumination</span><span class="p">(</span>
-    <span class="n">dna</span><span class="p">,</span>
-    <span class="n">automatic_object_width</span><span class="o">=</span><span class="s2">&quot;Manually&quot;</span><span class="p">,</span>
-    <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">rescale_option</span><span class="o">=</span><span class="s2">&quot;Median&quot;</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">actin_illumination</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">calculate_illumination</span><span class="p">(</span>
-    <span class="n">actin</span><span class="p">,</span>
-    <span class="n">automatic_object_width</span><span class="o">=</span><span class="s2">&quot;Manually&quot;</span><span class="p">,</span>
-    <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-    <span class="n">rescale_option</span><span class="o">=</span><span class="s2">&quot;Median&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate less light on the left side of the field.</span>
+<span class="n">flat_field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="p">(</span><span class="n">dna</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span>
+<span class="n">dna_shaded</span> <span class="o">=</span> <span class="n">dna</span> <span class="o">*</span> <span class="n">flat_field</span>
+<span class="n">actin_shaded</span> <span class="o">=</span> <span class="n">actin</span> <span class="o">*</span> <span class="n">flat_field</span>
 
-<span class="n">dna_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">dna_illumination</span><span class="p">)</span>
-<span class="n">actin_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">actin_illumination</span><span class="p">)</span>
+<span class="c1"># Estimate the correction from the flat-field reference, not from the cells.</span>
+<span class="n">illumination</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">calculate_illumination</span><span class="p">(</span>
+    <span class="n">flat_field</span><span class="p">,</span> <span class="n">smoothing_method</span><span class="o">=</span><span class="s2">&quot;Fit Polynomial&quot;</span><span class="p">,</span> <span class="n">rescale_option</span><span class="o">=</span><span class="s2">&quot;No&quot;</span>
+<span class="p">)</span>
+<span class="n">dna_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">dna_shaded</span><span class="p">,</span> <span class="n">illumination</span><span class="p">)</span>
+<span class="n">actin_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">actin_shaded</span><span class="p">,</span> <span class="n">illumination</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Each pair uses the same display range so brightness stays comparable.</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA before correction&quot;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA after correction&quot;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin before correction&quot;</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin after correction&quot;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># All three images in each row use the reference image&#39;s display range.</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna_shaded</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">dna</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA: simulated uneven light&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">dna</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA: after correction&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">dna</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA: unmodified reference&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin_shaded</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">actin</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin: simulated uneven light&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">actin</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin: after correction&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">actin</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin: unmodified reference&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/c2cb0c844ba6f50ffc263c3c5346dbef88de7f138eb8f1bb8e8c88fcdf2699f6.png" src="_images/c2cb0c844ba6f50ffc263c3c5346dbef88de7f138eb8f1bb8e8c88fcdf2699f6.png" />
+<img alt="_images/b2cab14f480786df26c6c77845fef7af6df22307b280de45065b4ab1c2d08225.png" src="_images/b2cab14f480786df26c6c77845fef7af6df22307b280de45065b4ab1c2d08225.png" />
 </div>
 </div>
+<section id="did-the-correction-work">
+<h3>Did the correction work?<a class="headerlink" href="#did-the-correction-work" title="Link to this heading">#</a></h3>
+<p>Compare mean absolute pixel error against the unmodified reference. Smaller is better.
+This measures recovery from the simulated lighting, not the accuracy of a real instrument calibration.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;Before correction&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dna_shaded</span> <span class="o">-</span> <span class="n">dna</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">actin_shaded</span> <span class="o">-</span> <span class="n">actin</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;After correction&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dna_corrected</span> <span class="o">-</span> <span class="n">dna</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">actin_corrected</span> <span class="o">-</span> <span class="n">actin</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span>
+        <span class="p">],</span>
+    <span class="p">},</span>
+    <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DNA&quot;</span><span class="p">,</span> <span class="s2">&quot;Actin&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">errors</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Before correction</th>
+      <th>After correction</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>DNA</th>
+      <td>0.010761</td>
+      <td>1.234982e-09</td>
+    </tr>
+    <tr>
+      <th>Actin</th>
+      <td>0.038748</td>
+      <td>3.652901e-09</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
 </section>
 <section id="segment-nuclei-cells-and-cytoplasm">
 <h2>3. Segment nuclei, cells, and cytoplasm<a class="headerlink" href="#segment-nuclei-cells-and-cytoplasm" title="Link to this heading">#</a></h2>
@@ -517,7 +586,7 @@ These are new segmentations, not the dataset’s manual ground truth.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 7 cells
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 5 cells
 </pre></div>
 </div>
 </div>
@@ -536,7 +605,7 @@ These are new segmentations, not the dataset’s manual ground truth.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/877a1aeee8c3c19bdd8ae15c37e412c1f3361c1d1e42a386be9c00e8dbfceaa5.png" src="_images/877a1aeee8c3c19bdd8ae15c37e412c1f3361c1d1e42a386be9c00e8dbfceaa5.png" />
+<img alt="_images/99b52e0b100a1397ea35679d05c4670ffe10deb2ce68dc5f1bf767027d71bdb1.png" src="_images/99b52e0b100a1397ea35679d05c4670ffe10deb2ce68dc5f1bf767027d71bdb1.png" />
 </div>
 </div>
 </section>
@@ -585,7 +654,7 @@ The full table contains all cell features. Here we show a few useful columns.</p
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7 cells, 104 features per cell
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>5 cells, 104 features per cell
 </pre></div>
 </div>
 <div class="output text_html"><div>
@@ -622,51 +691,37 @@ The full table contains all cell features. Here we show a few useful columns.</p
   <tbody>
     <tr>
       <th>1</th>
-      <td>340.0</td>
-      <td>0.096</td>
-      <td>0.188</td>
-      <td>0</td>
+      <td>1601.0</td>
+      <td>0.070</td>
+      <td>0.273</td>
+      <td>1</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>124.0</td>
-      <td>0.198</td>
-      <td>0.140</td>
-      <td>0</td>
+      <td>509.0</td>
+      <td>0.088</td>
+      <td>0.199</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>1683.0</td>
-      <td>0.049</td>
-      <td>0.194</td>
-      <td>1</td>
+      <td>438.0</td>
+      <td>0.107</td>
+      <td>0.196</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>359.0</td>
-      <td>0.089</td>
-      <td>0.151</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>405.0</td>
-      <td>0.078</td>
-      <td>0.157</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>420.0</td>
-      <td>0.082</td>
-      <td>0.188</td>
+      <td>368.0</td>
+      <td>0.129</td>
+      <td>0.220</td>
       <td>1</td>
     </tr>
     <tr>
-      <th>7</th>
-      <td>648.0</td>
-      <td>0.076</td>
-      <td>0.175</td>
+      <th>5</th>
+      <td>505.0</td>
+      <td>0.210</td>
+      <td>0.163</td>
       <td>0</td>
     </tr>
   </tbody>
@@ -682,13 +737,13 @@ The full table contains all cell features. Here we show a few useful columns.</p
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/ad09e3b0c0f27be93b944f5882ea9eaaa4ebec36cc7f7e5bc667dfba47fbfe8f.png" src="_images/ad09e3b0c0f27be93b944f5882ea9eaaa4ebec36cc7f7e5bc667dfba47fbfe8f.png" />
+<img alt="_images/ce41408a6b41314e0440beaad3f3e614149cf0a8d012198c6a00a9d9b7410bc7.png" src="_images/ce41408a6b41314e0440beaad3f3e614149cf0a8d012198c6a00a9d9b7410bc7.png" />
 </div>
 </div>
 </section>
 <section id="save-the-results">
 <h2>5. Save the results<a class="headerlink" href="#save-the-results" title="Link to this heading">#</a></h2>
-<p>Save the cell table as CSV or Parquet. Save the labels and correction functions as NPY.
+<p>Save the cell table as CSV or Parquet. Save the labels and correction function as NPY.
 Save the corrected images as TIFF.
 You can also save all compartments together, or export to SQLite.</p>
 <p>These example files go into <code class="docutils literal notranslate"><span class="pre">docs/_build/notebook-output</span></code>.
@@ -701,8 +756,8 @@ Change <code class="docutils literal notranslate"><span class="pre">output</span
 <span class="n">profiles</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cell_profiles.csv&quot;</span><span class="p">)</span>
 <span class="n">profiles</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cell_profiles.parquet&quot;</span><span class="p">)</span>
 <span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cells.npy&quot;</span><span class="p">)</span>
-<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">dna_illumination</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;dna_illumination.npy&quot;</span><span class="p">)</span>
-<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">actin_illumination</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;actin_illumination.npy&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">flat_field</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;flat_field_reference.npy&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">illumination</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;illumination.npy&quot;</span><span class="p">)</span>
 <span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span>
     <span class="n">dna_corrected</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;dna_corrected.tiff&quot;</span><span class="p">,</span> <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;32-bit floating point&quot;</span>
 <span class="p">)</span>
@@ -801,123 +856,123 @@ Change <code class="docutils literal notranslate"><span class="pre">output</span
   <tbody>
     <tr>
       <th>1</th>
-      <td>340.0</td>
-      <td>481.0</td>
-      <td>104.0</td>
-      <td>13.0</td>
-      <td>67.0</td>
-      <td>0.0</td>
-      <td>84.432353</td>
-      <td>4.691176</td>
-      <td>1.710629</td>
-      <td>355.0</td>
+      <td>1601.0</td>
+      <td>2236.0</td>
+      <td>55.0</td>
+      <td>75.0</td>
+      <td>12.0</td>
+      <td>23.0</td>
+      <td>31.665209</td>
+      <td>47.071205</td>
+      <td>1.501705</td>
+      <td>1770.0</td>
       <td>...</td>
+      <td>51.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>0.0</td>
-      <td>135.854732</td>
-      <td>39.366530</td>
+      <td>24.671783</td>
+      <td>30.845242</td>
       <td>2</td>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>65.921691</td>
+      <td>1</td>
+      <td>25.120773</td>
+      <td>47.879350</td>
       <td>3</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>124.0</td>
-      <td>171.0</td>
-      <td>128.0</td>
-      <td>19.0</td>
-      <td>119.0</td>
-      <td>0.0</td>
-      <td>123.725806</td>
-      <td>7.088710</td>
-      <td>1.411578</td>
-      <td>131.0</td>
-      <td>...</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>46.903497</td>
-      <td>39.366530</td>
-      <td>1</td>
-      <td>0</td>
-      <td>0.000000</td>
-      <td>95.972382</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>1683.0</td>
-      <td>3380.0</td>
-      <td>77.0</td>
-      <td>75.0</td>
-      <td>12.0</td>
-      <td>23.0</td>
-      <td>34.420083</td>
-      <td>47.638146</td>
-      <td>3.613773</td>
-      <td>2364.0</td>
-      <td>...</td>
-      <td>50.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>16.382890</td>
-      <td>32.080940</td>
-      <td>4</td>
-      <td>1</td>
-      <td>3.283582</td>
-      <td>47.184620</td>
-      <td>5</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>359.0</td>
-      <td>693.0</td>
-      <td>70.0</td>
+      <td>509.0</td>
+      <td>1813.0</td>
+      <td>76.0</td>
       <td>84.0</td>
-      <td>37.0</td>
-      <td>63.0</td>
-      <td>54.008357</td>
-      <td>73.044568</td>
-      <td>2.969364</td>
-      <td>495.0</td>
+      <td>27.0</td>
+      <td>47.0</td>
+      <td>54.703340</td>
+      <td>67.581532</td>
+      <td>6.844658</td>
+      <td>1031.0</td>
       <td>...</td>
       <td>68.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>134.738882</td>
-      <td>18.736090</td>
-      <td>5</td>
-      <td>2</td>
-      <td>19.708029</td>
-      <td>32.080940</td>
+      <td>122.359160</td>
+      <td>23.659939</td>
       <td>3</td>
+      <td>2</td>
+      <td>32.031250</td>
+      <td>30.845242</td>
+      <td>1</td>
     </tr>
     <tr>
-      <th>5</th>
-      <td>405.0</td>
-      <td>910.0</td>
-      <td>71.0</td>
+      <th>3</th>
+      <td>438.0</td>
+      <td>924.0</td>
+      <td>69.0</td>
       <td>106.0</td>
       <td>36.0</td>
-      <td>80.0</td>
-      <td>51.520988</td>
-      <td>91.614815</td>
-      <td>2.743337</td>
-      <td>553.0</td>
+      <td>78.0</td>
+      <td>50.872146</td>
+      <td>90.929224</td>
+      <td>2.924945</td>
+      <td>636.0</td>
       <td>...</td>
       <td>91.0</td>
       <td>0.0</td>
       <td>0.0</td>
-      <td>122.673806</td>
-      <td>18.573363</td>
-      <td>6</td>
-      <td>2</td>
-      <td>38.356164</td>
-      <td>18.736090</td>
+      <td>123.457987</td>
+      <td>18.673789</td>
       <td>4</td>
+      <td>2</td>
+      <td>41.772152</td>
+      <td>23.659939</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>368.0</td>
+      <td>650.0</td>
+      <td>78.0</td>
+      <td>116.0</td>
+      <td>53.0</td>
+      <td>90.0</td>
+      <td>64.578804</td>
+      <td>103.611413</td>
+      <td>2.373903</td>
+      <td>496.0</td>
+      <td>...</td>
+      <td>108.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>31.895405</td>
+      <td>18.673789</td>
+      <td>3</td>
+      <td>1</td>
+      <td>28.346457</td>
+      <td>37.358762</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>505.0</td>
+      <td>720.0</td>
+      <td>128.0</td>
+      <td>128.0</td>
+      <td>98.0</td>
+      <td>104.0</td>
+      <td>114.211881</td>
+      <td>116.659406</td>
+      <td>3.864603</td>
+      <td>609.0</td>
+      <td>...</td>
+      <td>125.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>7.379061</td>
+      <td>51.319513</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>68.366398</td>
+      <td>3</td>
     </tr>
   </tbody>
 </table>
@@ -1009,123 +1064,123 @@ These independent examples do not change the profiles saved above.</p>
   <tbody>
     <tr>
       <th>1</th>
-      <td>0.002914</td>
-      <td>0.003446</td>
-      <td>0.003419</td>
-      <td>0.003030</td>
-      <td>135.857143</td>
-      <td>139.862832</td>
-      <td>165.547414</td>
-      <td>142.377193</td>
-      <td>0.520097</td>
-      <td>0.390512</td>
+      <td>0.000668</td>
+      <td>0.000664</td>
+      <td>0.000736</td>
+      <td>0.000649</td>
+      <td>439.307212</td>
+      <td>536.130917</td>
+      <td>317.030199</td>
+      <td>461.980268</td>
+      <td>0.605328</td>
+      <td>0.500375</td>
       <td>...</td>
-      <td>5.846646</td>
-      <td>5.911256</td>
-      <td>430.328275</td>
-      <td>319.088750</td>
-      <td>368.283870</td>
-      <td>387.816020</td>
-      <td>141.546354</td>
-      <td>114.737895</td>
-      <td>133.457821</td>
-      <td>132.548303</td>
+      <td>7.202684</td>
+      <td>7.170636</td>
+      <td>1786.881343</td>
+      <td>1610.002126</td>
+      <td>1875.455745</td>
+      <td>1760.330580</td>
+      <td>556.547139</td>
+      <td>536.533261</td>
+      <td>548.121486</td>
+      <td>555.577712</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>0.011762</td>
-      <td>0.012626</td>
-      <td>0.012316</td>
-      <td>0.014418</td>
-      <td>55.260870</td>
-      <td>41.015152</td>
-      <td>15.104167</td>
-      <td>70.792453</td>
-      <td>-0.041125</td>
-      <td>0.103541</td>
+      <td>0.002032</td>
+      <td>0.002407</td>
+      <td>0.002300</td>
+      <td>0.002249</td>
+      <td>120.460843</td>
+      <td>243.901141</td>
+      <td>185.329032</td>
+      <td>168.348534</td>
+      <td>0.752329</td>
+      <td>0.519222</td>
       <td>...</td>
-      <td>4.831029</td>
-      <td>4.176244</td>
-      <td>50.895190</td>
-      <td>50.489669</td>
-      <td>81.769097</td>
-      <td>26.815237</td>
-      <td>26.539015</td>
-      <td>22.876205</td>
-      <td>24.218316</td>
-      <td>24.401922</td>
+      <td>6.482114</td>
+      <td>6.508872</td>
+      <td>852.288313</td>
+      <td>770.709277</td>
+      <td>846.016400</td>
+      <td>801.797367</td>
+      <td>243.187289</td>
+      <td>253.652604</td>
+      <td>257.836358</td>
+      <td>242.536475</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>0.000950</td>
-      <td>0.000857</td>
-      <td>0.001023</td>
-      <td>0.000912</td>
-      <td>223.950685</td>
-      <td>288.758595</td>
-      <td>164.685160</td>
-      <td>232.908120</td>
-      <td>0.546868</td>
-      <td>0.435074</td>
+      <td>0.002363</td>
+      <td>0.002122</td>
+      <td>0.002305</td>
+      <td>0.002340</td>
+      <td>181.111111</td>
+      <td>390.394040</td>
+      <td>254.645963</td>
+      <td>223.557432</td>
+      <td>0.584886</td>
+      <td>0.057455</td>
       <td>...</td>
-      <td>6.728159</td>
-      <td>6.656299</td>
-      <td>764.506735</td>
-      <td>733.530498</td>
-      <td>849.155392</td>
-      <td>761.441199</td>
-      <td>247.114355</td>
-      <td>255.572273</td>
-      <td>253.460138</td>
-      <td>248.587330</td>
+      <td>6.306840</td>
+      <td>6.264215</td>
+      <td>691.474411</td>
+      <td>437.988696</td>
+      <td>577.218124</td>
+      <td>730.934886</td>
+      <td>218.146381</td>
+      <td>207.095684</td>
+      <td>207.966022</td>
+      <td>238.623080</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>0.003046</td>
-      <td>0.002953</td>
-      <td>0.003005</td>
-      <td>0.003089</td>
-      <td>70.363985</td>
-      <td>168.897778</td>
-      <td>115.486792</td>
-      <td>93.676471</td>
-      <td>0.794765</td>
-      <td>0.481415</td>
+      <td>0.002477</td>
+      <td>0.002595</td>
+      <td>0.002638</td>
+      <td>0.003069</td>
+      <td>140.702128</td>
+      <td>313.657371</td>
+      <td>129.455224</td>
+      <td>102.114173</td>
+      <td>0.751156</td>
+      <td>0.415451</td>
       <td>...</td>
-      <td>6.219102</td>
-      <td>6.171044</td>
-      <td>615.326845</td>
-      <td>482.481106</td>
-      <td>560.831100</td>
-      <td>615.589453</td>
-      <td>171.422707</td>
-      <td>162.844721</td>
-      <td>169.079473</td>
-      <td>177.316481</td>
+      <td>6.429325</td>
+      <td>6.333099</td>
+      <td>990.143604</td>
+      <td>759.502929</td>
+      <td>1006.184562</td>
+      <td>1061.272816</td>
+      <td>282.711433</td>
+      <td>268.290075</td>
+      <td>283.909947</td>
+      <td>290.846747</td>
     </tr>
     <tr>
       <th>5</th>
-      <td>0.002512</td>
-      <td>0.002698</td>
-      <td>0.002606</td>
-      <td>0.002677</td>
-      <td>125.314465</td>
-      <td>269.303571</td>
-      <td>182.153846</td>
-      <td>151.797909</td>
-      <td>0.594742</td>
-      <td>0.078407</td>
+      <td>0.006010</td>
+      <td>0.007232</td>
+      <td>0.006347</td>
+      <td>0.006566</td>
+      <td>58.195545</td>
+      <td>71.420420</td>
+      <td>85.896648</td>
+      <td>86.452096</td>
+      <td>0.750438</td>
+      <td>0.615900</td>
       <td>...</td>
-      <td>6.065072</td>
-      <td>6.054497</td>
-      <td>493.127883</td>
-      <td>315.127028</td>
-      <td>414.391204</td>
-      <td>545.262927</td>
-      <td>154.610587</td>
-      <td>146.107650</td>
-      <td>149.136262</td>
-      <td>174.265209</td>
+      <td>5.529878</td>
+      <td>5.347700</td>
+      <td>408.185343</td>
+      <td>300.464158</td>
+      <td>363.063583</td>
+      <td>355.387509</td>
+      <td>116.595222</td>
+      <td>92.971145</td>
+      <td>112.240058</td>
+      <td>110.459901</td>
     </tr>
   </tbody>
 </table>
