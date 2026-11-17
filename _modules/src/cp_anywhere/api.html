@@ -982,6 +982,17 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">converted</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_active_neighbors_scopes</span><span class="p">(</span>
+    <span class="n">names</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">active_scopes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">setting_name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise if any ``names`` is not one of the active neighbors scopes</span>
+<span class="sd">    -- shared by ``neighbors_expand``&#39;s and ``neighbors_full_objects``&#39;s</span>
+<span class="sd">    identical &quot;only scopes actually being measured&quot; validation.&quot;&quot;&quot;</span>
+    <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">active_scopes</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">setting_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> are not requested neighbors scopes&quot;</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="measure">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.api.measure">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">measure</span><span class="p">(</span>
@@ -992,6 +1003,7 @@
     <span class="n">image_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Image&quot;</span><span class="p">,</span>
     <span class="n">families</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neighbors_scopes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">neighbors_expand</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neighbors_full_objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">size_shape_calculate_zernikes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">size_shape_calculate_advanced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1021,6 +1033,19 @@
 <span class="sd">    independently, with its own feature columns and relationship rows</span>
 <span class="sd">    tagged by an ``&quot;object_name&quot;`` key, matching how real CellProfiler</span>
 <span class="sd">    pipelines invoke ``MeasureObjectNeighbors`` once per object set.</span>
+
+<span class="sd">    ``neighbors_expand`` names which of those scopes use CellProfiler&#39;s</span>
+<span class="sd">    &quot;Expand until adjacent&quot; distance method instead of the default</span>
+<span class="sd">    &quot;Adjacent&quot;: every background pixel of that scope&#39;s own geometry</span>
+<span class="sd">    (``neighbors_full_objects`` when supplied, else its own labels) is</span>
+<span class="sd">    first assigned to its nearest foreground pixel&#39;s label (a 2D-only</span>
+<span class="sd">    Voronoi expansion -- raises if the image is 3D), and touching/</span>
+<span class="sd">    relationship-edge detection runs on that fully covered label image;</span>
+<span class="sd">    object centers and the closest-object/distance/angle columns still</span>
+<span class="sd">    use the original, unexpanded geometry, exactly matching real</span>
+<span class="sd">    CellProfiler&#39;s own ``run()``. Each name must be one of the active</span>
+<span class="sd">    neighbors scopes. Columns get an ``_Expanded`` suffix instead of</span>
+<span class="sd">    ``_Adjacent`` for every scope named here.</span>
 
 <span class="sd">    ``neighbors_full_objects`` supplies each scope&#39;s diagnostic geometry</span>
 <span class="sd">    (CellProfiler&#39;s ``objects.small_removed_segmented``). Both primary and</span>
@@ -1053,17 +1078,21 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;neighbors_scopes </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2"> are not provided object sets&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">in</span> <span class="n">selected</span> <span class="ow">and</span> <span class="s2">&quot;Cells&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;neighbors require a Cells object set&quot;</span><span class="p">)</span>
+    <span class="n">active_neighbors_scopes</span> <span class="o">=</span> <span class="n">resolved_neighbors_scopes</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="p">[</span><span class="s2">&quot;Cells&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">in</span> <span class="n">selected</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span>
+    <span class="n">resolved_neighbors_expand</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">neighbors_expand</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">resolved_neighbors_expand</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">neighbors_expand</span><span class="p">)</span>
+        <span class="n">_require_active_neighbors_scopes</span><span class="p">(</span>
+            <span class="n">resolved_neighbors_expand</span><span class="p">,</span> <span class="n">active_neighbors_scopes</span><span class="p">,</span> <span class="s2">&quot;neighbors_expand&quot;</span>
+        <span class="p">)</span>
     <span class="n">converted_full_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">neighbors_full_objects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">converted_full_objects</span> <span class="o">=</span> <span class="n">_convert_objects</span><span class="p">(</span><span class="n">neighbors_full_objects</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
-        <span class="n">active_scopes</span> <span class="o">=</span> <span class="n">resolved_neighbors_scopes</span> <span class="ow">or</span> <span class="p">(</span>
-            <span class="p">[</span><span class="s2">&quot;Cells&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">in</span> <span class="n">selected</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="n">_require_active_neighbors_scopes</span><span class="p">(</span>
+            <span class="n">converted_full_objects</span><span class="p">,</span> <span class="n">active_neighbors_scopes</span><span class="p">,</span> <span class="s2">&quot;neighbors_full_objects&quot;</span>
         <span class="p">)</span>
-        <span class="n">extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">converted_full_objects</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">active_scopes</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;neighbors_full_objects </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> are not requested neighbors scopes&quot;</span>
-            <span class="p">)</span>
     <span class="n">converted_mask</span> <span class="o">=</span> <span class="n">_convert_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">_native</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span>
         <span class="n">shape</span><span class="p">,</span>
@@ -1073,6 +1102,7 @@
         <span class="n">image_id</span><span class="p">,</span>
         <span class="n">selected</span><span class="p">,</span>
         <span class="n">resolved_neighbors_scopes</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resolved_neighbors_expand</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">converted_full_objects</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size_shape_calculate_zernikes</span><span class="p">,</span>
         <span class="n">size_shape_calculate_advanced</span><span class="p">,</span>

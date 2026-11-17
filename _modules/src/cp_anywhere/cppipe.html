@@ -954,6 +954,13 @@
 
 <span class="sd">    This matches CellProfiler&#39;s excluded-objects setting. Layer contents</span>
 <span class="sd">    depend on the upstream segmentation module, not only this flag.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wants_expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether this ``neighbors`` step uses CellProfiler&#39;s &quot;Expand until</span>
+<span class="sd">    adjacent&quot; distance method (``measure(..., neighbors_expand=...)``)</span>
+<span class="sd">    instead of the default &quot;Adjacent&quot;. Only meaningful when</span>
+<span class="sd">    ``family == &quot;neighbors&quot;``; ``&quot;Within X pixels&quot;`` remains a separate,</span>
+<span class="sd">    out-of-scope gap -- see ``spec/compatibility.md``.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -1496,10 +1503,10 @@
         <span class="s2">&quot;(see spec/compatibility.md)&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">_require</span><span class="p">(</span>
-        <span class="n">distance_method</span> <span class="o">==</span> <span class="s2">&quot;Adjacent&quot;</span><span class="p">,</span>
+        <span class="n">distance_method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Adjacent&quot;</span><span class="p">,</span> <span class="s2">&quot;Expand until adjacent&quot;</span><span class="p">),</span>
         <span class="sa">f</span><span class="s2">&quot;MeasureObjectNeighbors distance method </span><span class="si">{</span><span class="n">distance_method</span><span class="si">!r}</span><span class="s2"> is &quot;</span>
-        <span class="s2">&quot;an explicit, out-of-scope gap (only &#39;Adjacent&#39; is supported; &quot;</span>
-        <span class="s2">&quot;&#39;Expand until adjacent&#39; and &#39;Within X pixels&#39; are not yet &quot;</span>
+        <span class="s2">&quot;an explicit, out-of-scope gap (only &#39;Adjacent&#39; and &#39;Expand &quot;</span>
+        <span class="s2">&quot;until adjacent&#39; are supported; &#39;Within X pixels&#39; is not yet &quot;</span>
         <span class="s2">&quot;implemented)&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">MeasurementStep</span><span class="p">(</span>
@@ -1508,6 +1515,7 @@
         <span class="n">images</span><span class="o">=</span><span class="p">(),</span>
         <span class="n">objects</span><span class="o">=</span><span class="p">(</span><span class="n">object_name</span><span class="p">,),</span>
         <span class="n">wants_excluded_objects</span><span class="o">=</span><span class="n">_YES_NO</span><span class="p">[</span><span class="n">wants_excluded_objects</span><span class="p">],</span>
+        <span class="n">wants_expand</span><span class="o">=</span><span class="n">distance_method</span> <span class="o">==</span> <span class="s2">&quot;Expand until adjacent&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
 
@@ -1732,6 +1740,14 @@
                 <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span>
             <span class="p">}</span>
         <span class="p">)</span>
+        <span class="n">neighbors_expand</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">name</span>
+                <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_steps</span>
+                <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">family</span> <span class="o">==</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">and</span> <span class="n">step</span><span class="o">.</span><span class="n">wants_expand</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="n">neighbors_full_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_steps</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">family</span> <span class="o">!=</span> <span class="s2">&quot;neighbors&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">step</span><span class="o">.</span><span class="n">wants_excluded_objects</span><span class="p">:</span>
@@ -1759,6 +1775,7 @@
                 <span class="n">measure_objects</span><span class="p">,</span>
                 <span class="n">families</span><span class="o">=</span><span class="n">families</span><span class="p">,</span>
                 <span class="n">neighbors_scopes</span><span class="o">=</span><span class="n">neighbors_scopes</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">neighbors_expand</span><span class="o">=</span><span class="n">neighbors_expand</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">neighbors_full_objects</span><span class="o">=</span><span class="n">neighbors_full_objects</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">families</span>
