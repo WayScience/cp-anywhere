@@ -1,0 +1,100 @@
+{
+  "reference": "CellProfiler 4.2.8 MeasureObjectNeighbors D_EXPAND",
+  "labels": [
+    [
+      1,
+      1,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "features": {
+    "Neighbors_NumberOfNeighbors_Expanded": [
+      1.0,
+      2.0,
+      1.0
+    ],
+    "Neighbors_PercentTouching_Expanded": [
+      33.333333333333336,
+      90.0,
+      83.33333333333333
+    ],
+    "Neighbors_FirstClosestObjectNumber_Expanded": [
+      2,
+      3,
+      2
+    ],
+    "Neighbors_FirstClosestDistance_Expanded": [
+      4.6785562825394,
+      2.8284271247461903,
+      2.8284271247461903
+    ],
+    "Neighbors_SecondClosestObjectNumber_Expanded": [
+      3,
+      1,
+      1
+    ],
+    "Neighbors_SecondClosestDistance_Expanded": [
+      6.871842709362768,
+      4.6785562825394,
+      6.871842709362768
+    ],
+    "Neighbors_AngleBetweenNeighbors_Expanded": [
+      18.121860247901374,
+      130.91438322002512,
+      30.96375653207352
+    ]
+  },
+  "relationships": [
+    [
+      1,
+      2
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      2
+    ]
+  ]
+}

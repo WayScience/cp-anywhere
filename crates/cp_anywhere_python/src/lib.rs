@@ -7,7 +7,7 @@ use pyo3::types::{PyDict, PyList};
 
 #[allow(clippy::too_many_arguments)]
 #[pyfunction]
-#[pyo3(signature = (shape, images, objects, mask, image_id, families, neighbors_scopes=None, neighbors_full_objects=None, size_shape_calculate_zernikes=true, size_shape_calculate_advanced=false))]
+#[pyo3(signature = (shape, images, objects, mask, image_id, families, neighbors_scopes=None, neighbors_expand=None, neighbors_full_objects=None, size_shape_calculate_zernikes=true, size_shape_calculate_advanced=false))]
 fn measure<'py>(
     py: Python<'py>,
     shape: Vec<usize>,
@@ -17,6 +17,7 @@ fn measure<'py>(
     image_id: String,
     families: Vec<String>,
     neighbors_scopes: Option<Vec<String>>,
+    neighbors_expand: Option<Vec<String>>,
     neighbors_full_objects: Option<&Bound<'py, PyDict>>,
     size_shape_calculate_zernikes: bool,
     size_shape_calculate_advanced: bool,
@@ -92,6 +93,8 @@ fn measure<'py>(
     };
     let neighbors_scopes = neighbors_scopes.unwrap_or_default();
     let neighbors_scope_refs: Vec<&str> = neighbors_scopes.iter().map(String::as_str).collect();
+    let neighbors_expand = neighbors_expand.unwrap_or_default();
+    let neighbors_expand_refs: Vec<&str> = neighbors_expand.iter().map(String::as_str).collect();
     let input = cp_anywhere_core::Input {
         shape: &shape,
         images: &image_views,
@@ -99,6 +102,7 @@ fn measure<'py>(
         mask: mask_view,
         families: selected,
         neighbors_scopes: &neighbors_scope_refs,
+        neighbors_expand: &neighbors_expand_refs,
         size_shape: families
             .iter()
             .any(|family| family == "object_size_shape")

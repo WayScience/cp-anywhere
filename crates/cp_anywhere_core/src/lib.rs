@@ -66,6 +66,19 @@ pub struct Input<'a> {
     /// matching real CellProfiler's own per-object-set
     /// `MeasureObjectNeighbors` invocations.
     pub neighbors_scopes: &'a [&'a str],
+    /// Scope names using real CellProfiler's "Expand until adjacent"
+    /// distance method instead of the default "Adjacent" -- every
+    /// background pixel of that scope's geometry is first assigned to
+    /// its nearest foreground pixel's label (a 2D-only Voronoi
+    /// expansion; `measure` errors if combined with 3D), and perimeter/
+    /// touching/relationship-edge detection then runs on that fully
+    /// covered label image. Object centers, areas accumulation, and the
+    /// kept/full ID mapping are unaffected -- they always use the
+    /// original (unexpanded) geometry, matching real CellProfiler's own
+    /// `run()` (it only reassigns its local `labels` variable, never
+    /// `objects.small_removed_segmented` itself). A scope absent here
+    /// uses "Adjacent" (distance 1, no expansion).
+    pub neighbors_expand: &'a [&'a str],
     /// Optional diagnostic geometry, corresponding to CellProfiler's
     /// `small_removed_segmented` layer. Its contents depend on the
     /// upstream module: primary segmentation already excluded border
@@ -367,7 +380,13 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
                 .iter()
                 .find(|(name, _)| *name == scope)
                 .map(|(_, arr)| *arr);
-            neighbors(&mut result, scope, labels, full_labels, input.shape);
+            let expand = input.neighbors_expand.contains(&scope);
+            if expand && input.shape.len() != 2 {
+                return Err("MeasureObjectNeighbors 'Expand until adjacent' currently \
+                     supports 2D labels only"
+                    .into());
+            }
+            neighbors(&mut result, scope, labels, full_labels, input.shape, expand);
         }
     } else if input.families.neighbors {
         let labels = input
@@ -381,7 +400,20 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
             .iter()
             .find(|(name, _)| *name == "Cells")
             .map(|(_, arr)| *arr);
-        neighbors(&mut result, "Cells", labels, full_labels, input.shape);
+        let expand = input.neighbors_expand.contains(&"Cells");
+        if expand && input.shape.len() != 2 {
+            return Err("MeasureObjectNeighbors 'Expand until adjacent' currently \
+                 supports 2D labels only"
+                .into());
+        }
+        neighbors(
+            &mut result,
+            "Cells",
+            labels,
+            full_labels,
+            input.shape,
+            expand,
+        );
     }
     if let Some(options) = input.size_shape {
         if input.shape.len() != 2 {
@@ -621,6 +653,7 @@ fn neighbors(
     labels: &[u32],
     full_labels: Option<&[u32]>,
     shape: &[usize],
+    expand: bool,
 ) {
     // Geometry uses CP's small-removed diagnostic layer when supplied.
     // Kept labels govern rows and relationships; their IDs may differ
@@ -732,10 +765,24 @@ fn neighbors(
                     / std::f64::consts::PI;
             }
         }
-        let outline = neighbor_outline(geometry_labels, shape);
+        // "Expand until adjacent" pre-fills every background pixel
+        // with its nearest foreground pixel's label (real
+        // CellProfiler's own D_EXPAND preprocessing) before this
+        // outline/perimeter/touching/edge-detection block runs --
+        // everything above (centers, areas, the kept/full ID mapping)
+        // stays on the original, unexpanded geometry_labels, matching
+        // real CellProfiler's `run()` (it never touches
+        // `objects.small_removed_segmented` itself).
+        let expanded_labels = if expand {
+            Some(nearest_label_fill(geometry_labels, shape))
+        } else {
+            None
+        };
+        let touching_labels: &[u32] = expanded_labels.as_deref().unwrap_or(geometry_labels);
+        let outline = neighbor_outline(touching_labels, shape);
         let mut perimeters = vec![0usize; full_max];
         let mut overlap = vec![0usize; full_max];
-        for (i, &id) in geometry_labels.iter().enumerate() {
+        for (i, &id) in touching_labels.iter().enumerate() {
             if id == 0 {
                 continue;
             }
@@ -772,7 +819,7 @@ fn neighbors(
                 };
                 for &delta in candidate_deltas {
                     if let Some(j) = shifted(i, shape, delta) {
-                        let other = geometry_labels[j];
+                        let other = touching_labels[j];
                         if other != 0 && other != id {
                             touching_other = true;
                             break;
@@ -796,7 +843,7 @@ fn neighbors(
                 ]
             } {
                 if let Some(j) = shifted(i, shape, delta) {
-                    let other = geometry_labels[j];
+                    let other = touching_labels[j];
                     if other > 0 && other != id {
                         let edge = (id as i64, other as i64);
                         if !full_edges.contains(&edge) {
@@ -877,22 +924,23 @@ fn neighbors(
         }
     }
 
+    let scale = if expand { "Expanded" } else { "Adjacent" };
     put_int(
         result,
         scope,
-        "Neighbors_NumberOfNeighbors_Adjacent".into(),
+        format!("Neighbors_NumberOfNeighbors_{scale}"),
         count,
     );
     put_int(
         result,
         scope,
-        "Neighbors_FirstClosestObjectNumber_Adjacent".into(),
+        format!("Neighbors_FirstClosestObjectNumber_{scale}"),
         first,
     );
     put_int(
         result,
         scope,
-        "Neighbors_SecondClosestObjectNumber_Adjacent".into(),
+        format!("Neighbors_SecondClosestObjectNumber_{scale}"),
         second,
     );
     for (name, values) in [
@@ -901,7 +949,7 @@ fn neighbors(
         ("AngleBetweenNeighbors", angle),
         ("PercentTouching", touching),
     ] {
-        put_float(result, scope, format!("Neighbors_{name}_Adjacent"), values);
+        put_float(result, scope, format!("Neighbors_{name}_{scale}"), values);
     }
 }
 
@@ -940,6 +988,89 @@ fn neighbor_outline(labels: &[u32], shape: &[usize]) -> Vec<bool> {
     out
 }
 
+/// 2D "Voronoi expand": every background (id == 0) pixel is assigned
+/// the id of its nearest foreground pixel (Euclidean, ties broken the
+/// same way `scipy.ndimage.distance_transform_edt`'s own separable
+/// construction breaks them). Foreground pixels pass through
+/// unchanged. This is real CellProfiler's own `MeasureObjectNeighbors`
+/// "Expand until adjacent" distance method's first step
+/// (`distance_transform_edt(labels == 0, return_indices=True)` then
+/// `labels[i, j]`) -- oracle-verified against real scipy, see
+/// `scripts/reference/generate_neighbors_expand.py` and
+/// `fixtures/neighbors_expand/*.json`.
+fn nearest_label_fill(labels: &[u32], shape: &[usize]) -> Vec<u32> {
+    let rows = shape[0];
+    let cols = shape[1];
+    let inf = ((rows * rows + cols * cols) as f64) * 1e6 + 1e6;
+    // Pass 1: per column, nearest foreground row and its source index.
+    let mut d1 = vec![0.0f64; labels.len()];
+    let mut src1 = vec![0usize; labels.len()];
+    for x in 0..cols {
+        let f: Vec<f64> = (0..rows)
+            .map(|y| if labels[y * cols + x] != 0 { 0.0 } else { inf })
+            .collect();
+        let payload: Vec<usize> = (0..rows).map(|y| y * cols + x).collect();
+        let (d, src) = edt_1d_indexed(&f, &payload);
+        for y in 0..rows {
+            d1[y * cols + x] = d[y];
+            src1[y * cols + x] = src[y];
+        }
+    }
+    // Pass 2: per row, minimize over columns using pass 1's distance
+    // as the base cost, carrying pass 1's source pixel as the payload.
+    let mut source = vec![0usize; labels.len()];
+    for y in 0..rows {
+        let row_f: Vec<f64> = (0..cols).map(|x| d1[y * cols + x]).collect();
+        let row_payload: Vec<usize> = (0..cols).map(|x| src1[y * cols + x]).collect();
+        let (_, src) = edt_1d_indexed(&row_f, &row_payload);
+        for x in 0..cols {
+            source[y * cols + x] = src[x];
+        }
+    }
+    source.iter().map(|&i| labels[i]).collect()
+}
+
+/// Lower-envelope 1D distance transform (Felzenszwalb & Huttenlocher),
+/// generalized to carry a `payload[v]` through to the winning sample
+/// at each query point `q` instead of returning only `v` itself --
+/// needed to recover which *pixel* (not just distance) was nearest.
+#[allow(clippy::needless_range_loop)]
+fn edt_1d_indexed(f: &[f64], payload: &[usize]) -> (Vec<f64>, Vec<usize>) {
+    let n = f.len();
+    let mut v = vec![0usize; n];
+    let mut z = vec![0.0f64; n + 1];
+    let mut k = 0usize;
+    z[0] = f64::NEG_INFINITY;
+    z[1] = f64::INFINITY;
+    for q in 1..n {
+        let mut s = ((f[q] + (q * q) as f64) - (f[v[k]] + (v[k] * v[k]) as f64))
+            / (2.0 * q as f64 - 2.0 * v[k] as f64);
+        while k > 0 && s <= z[k] {
+            k -= 1;
+            s = ((f[q] + (q * q) as f64) - (f[v[k]] + (v[k] * v[k]) as f64))
+                / (2.0 * q as f64 - 2.0 * v[k] as f64);
+        }
+        k += 1;
+        v[k] = q;
+        z[k] = s;
+        if k + 1 < z.len() {
+            z[k + 1] = f64::INFINITY;
+        }
+    }
+    let mut d = vec![0.0f64; n];
+    let mut source = vec![0usize; n];
+    let mut k = 0usize;
+    for q in 0..n {
+        while k < n && z[k + 1] < q as f64 {
+            k += 1;
+        }
+        let dq = (q as f64 - v[k] as f64).powi(2) + f[v[k]];
+        d[q] = dq;
+        source[q] = payload[v[k]];
+    }
+    (d, source)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -954,6 +1085,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[]
         })
@@ -967,6 +1099,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[]
         })
@@ -990,6 +1123,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         })
@@ -1014,6 +1148,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &["Nuclei"],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         })
@@ -1039,6 +1174,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &["Cells", "Nuclei"],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         })
@@ -1071,6 +1207,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &["Nuclei"],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         })
@@ -1098,6 +1235,7 @@ mod tests {
             mask: None,
             families: Families::ALL,
             neighbors_scopes: &["Cells"],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[("Cells", &full[..])],
         })
@@ -1127,5 +1265,254 @@ mod tests {
             result.relationships,
             vec![("Cells".to_owned(), 1, 2), ("Cells".to_owned(), 2, 1),]
         );
+    }
+
+    // Oracle: scipy.ndimage.distance_transform_edt(labels == 0,
+    // return_indices=True), the exact primitive real CellProfiler's
+    // MeasureObjectNeighbors uses for its "Expand until adjacent"
+    // distance method -- see
+    // scripts/reference/generate_neighbors_expand.py and
+    // fixtures/neighbors_expand/*.json (this test transcribes them).
+    #[test]
+    fn nearest_label_fill_two_distant_objects() {
+        let labels: [u32; 24] = [
+            1, 0, 0, 0, 0, 0, 0, 2, //
+            0, 0, 0, 0, 0, 0, 0, 0, //
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+        let expanded = nearest_label_fill(&labels, &[3, 8]);
+        assert_eq!(
+            expanded,
+            vec![
+                1, 1, 1, 1, 2, 2, 2, 2, //
+                1, 1, 1, 1, 2, 2, 2, 2, //
+                1, 1, 1, 1, 2, 2, 2, 2,
+            ]
+        );
+    }
+
+    #[test]
+    fn nearest_label_fill_three_objects_uneven() {
+        let labels: [u32; 32] = [
+            1, 1, 0, 0, 0, 2, 0, 0, //
+            1, 0, 0, 0, 0, 0, 0, 0, //
+            0, 0, 0, 0, 0, 0, 0, 3, //
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+        let expanded = nearest_label_fill(&labels, &[4, 8]);
+        assert_eq!(
+            expanded,
+            vec![
+                1, 1, 1, 1, 2, 2, 2, 2, //
+                1, 1, 1, 1, 2, 2, 2, 3, //
+                1, 1, 1, 1, 2, 2, 3, 3, //
+                1, 1, 1, 1, 2, 3, 3, 3,
+            ]
+        );
+    }
+
+    #[test]
+    fn nearest_label_fill_single_object_fills_everything() {
+        let labels: [u32; 9] = [
+            0, 0, 0, //
+            0, 1, 0, //
+            0, 0, 0,
+        ];
+        let expanded = nearest_label_fill(&labels, &[3, 3]);
+        assert_eq!(expanded, vec![1; 9]);
+    }
+
+    #[test]
+    fn nearest_label_fill_sparse_ids_with_gap_keeps_original_ids() {
+        let labels: [u32; 10] = [
+            5, 0, 0, 0, 9, //
+            0, 0, 0, 0, 0,
+        ];
+        let expanded = nearest_label_fill(&labels, &[2, 5]);
+        assert_eq!(expanded, vec![5, 5, 5, 9, 9, 5, 5, 5, 9, 9]);
+    }
+
+    #[test]
+    fn nearest_label_fill_already_touching_is_unchanged() {
+        let labels: [u32; 8] = [
+            1, 1, 2, 2, //
+            1, 1, 2, 2,
+        ];
+        let expanded = nearest_label_fill(&labels, &[2, 4]);
+        assert_eq!(expanded, labels);
+    }
+
+    #[test]
+    fn nearest_label_fill_all_foreground_is_unchanged() {
+        let labels: [u32; 4] = [1, 2, 1, 2];
+        let expanded = nearest_label_fill(&labels, &[2, 2]);
+        assert_eq!(expanded, labels);
+    }
+
+    #[test]
+    fn nearest_label_fill_all_background_stays_zero() {
+        let labels: [u32; 4] = [0, 0, 0, 0];
+        let expanded = nearest_label_fill(&labels, &[2, 2]);
+        assert_eq!(expanded, vec![0; 4]);
+    }
+
+    // Oracle: real CellProfiler 4.2.8 MeasureObjectNeighbors,
+    // distance_method = "Expand until adjacent" -- see
+    // scripts/reference/generate_neighbors_expand_module.py and
+    // fixtures/neighbors_expand/module_*.json.
+    #[test]
+    fn neighbors_expand_computes_voronoi_adjacency_for_distant_objects() {
+        // 2 rows x 4 cols: [[1,0,0,2],[1,0,0,2]] -- not Adjacent (two
+        // background columns apart), but their Voronoi territories
+        // (cols 0-1 vs cols 2-3) share the whole vertical boundary.
+        let labels: [u32; 8] = [1, 0, 0, 2, 1, 0, 0, 2];
+        let objects = [("Cells", &labels[..])];
+        let images = [("DNA", &[0.0; 8][..])];
+        let result = measure(&Input {
+            shape: &[2, 4],
+            images: &images,
+            objects: &objects,
+            mask: None,
+            families: Families::ALL,
+            neighbors_scopes: &["Cells"],
+            neighbors_expand: &["Cells"],
+            size_shape: None,
+            neighbors_full_objects: &[],
+        })
+        .unwrap();
+        let features = &result.features["Cells"];
+        let get_int = |name: &str| match &features[name] {
+            Column::Int(v) => v.clone(),
+            Column::Float(_) => panic!("expected int column {name}"),
+        };
+        let get_float = |name: &str| match &features[name] {
+            Column::Float(v) => v.clone(),
+            Column::Int(_) => panic!("expected float column {name}"),
+        };
+        assert!(features.contains_key("Neighbors_NumberOfNeighbors_Expanded"));
+        assert!(!features.contains_key("Neighbors_NumberOfNeighbors_Adjacent"));
+        assert_eq!(get_int("Neighbors_NumberOfNeighbors_Expanded"), vec![1, 1]);
+        assert_eq!(
+            get_int("Neighbors_FirstClosestObjectNumber_Expanded"),
+            vec![2, 1]
+        );
+        let touching = get_float("Neighbors_PercentTouching_Expanded");
+        assert!((touching[0] - 50.0).abs() < 1e-9);
+        assert!((touching[1] - 50.0).abs() < 1e-9);
+        let distance = get_float("Neighbors_FirstClosestDistance_Expanded");
+        assert!((distance[0] - 3.0).abs() < 1e-9);
+        assert!((distance[1] - 3.0).abs() < 1e-9);
+        assert_eq!(
+            result.relationships,
+            vec![("Cells".to_owned(), 1, 2), ("Cells".to_owned(), 2, 1)]
+        );
+    }
+
+    #[test]
+    fn neighbors_expand_computes_all_columns_for_three_uneven_objects() {
+        // Real CP oracle: fixtures/neighbors_expand/module_three_objects_uneven.json
+        let labels: [u32; 32] = [
+            1, 1, 0, 0, 0, 2, 0, 0, //
+            1, 0, 0, 0, 0, 0, 0, 0, //
+            0, 0, 0, 0, 0, 0, 0, 3, //
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ];
+        let objects = [("Cells", &labels[..])];
+        let images = [("DNA", &[0.0; 32][..])];
+        let result = measure(&Input {
+            shape: &[4, 8],
+            images: &images,
+            objects: &objects,
+            mask: None,
+            families: Families::ALL,
+            neighbors_scopes: &["Cells"],
+            neighbors_expand: &["Cells"],
+            size_shape: None,
+            neighbors_full_objects: &[],
+        })
+        .unwrap();
+        let features = &result.features["Cells"];
+        let get_int = |name: &str| match &features[name] {
+            Column::Int(v) => v.clone(),
+            Column::Float(_) => panic!("expected int column {name}"),
+        };
+        let get_float = |name: &str| match &features[name] {
+            Column::Float(v) => v.clone(),
+            Column::Int(_) => panic!("expected float column {name}"),
+        };
+        assert_eq!(
+            get_int("Neighbors_NumberOfNeighbors_Expanded"),
+            vec![1, 2, 1]
+        );
+        assert_eq!(
+            get_int("Neighbors_FirstClosestObjectNumber_Expanded"),
+            vec![2, 3, 2]
+        );
+        assert_eq!(
+            get_int("Neighbors_SecondClosestObjectNumber_Expanded"),
+            vec![3, 1, 1]
+        );
+        let assert_close = |actual: &[f64], expected: &[f64]| {
+            for (a, e) in actual.iter().zip(expected) {
+                assert!((a - e).abs() < 1e-9, "{actual:?} != {expected:?}");
+            }
+        };
+        assert_close(
+            &get_float("Neighbors_PercentTouching_Expanded"),
+            &[33.333_333_333_333_336, 90.0, 83.333_333_333_333_33],
+        );
+        assert_close(
+            &get_float("Neighbors_FirstClosestDistance_Expanded"),
+            &[
+                4.678_556_282_539_4,
+                2.828_427_124_746_190_3,
+                2.828_427_124_746_190_3,
+            ],
+        );
+        assert_close(
+            &get_float("Neighbors_SecondClosestDistance_Expanded"),
+            &[
+                6.871_842_709_362_768,
+                4.678_556_282_539_4,
+                6.871_842_709_362_768,
+            ],
+        );
+        assert_close(
+            &get_float("Neighbors_AngleBetweenNeighbors_Expanded"),
+            &[
+                18.121_860_247_901_374,
+                130.914_383_220_025_12,
+                30.963_756_532_073_52,
+            ],
+        );
+        assert_eq!(
+            result.relationships,
+            vec![
+                ("Cells".to_owned(), 1, 2),
+                ("Cells".to_owned(), 2, 1),
+                ("Cells".to_owned(), 2, 3),
+                ("Cells".to_owned(), 3, 2),
+            ]
+        );
+    }
+
+    #[test]
+    fn neighbors_expand_requires_2d() {
+        let labels = [1u32, 2];
+        let objects = [("Cells", &labels[..])];
+        let images = [("DNA", &[0.0; 2][..])];
+        let err = measure(&Input {
+            shape: &[1, 1, 2],
+            images: &images,
+            objects: &objects,
+            mask: None,
+            families: Families::ALL,
+            neighbors_scopes: &["Cells"],
+            neighbors_expand: &["Cells"],
+            size_shape: None,
+            neighbors_full_objects: &[],
+        })
+        .unwrap_err();
+        assert!(err.contains("2D"), "unexpected error: {err}");
     }
 }

@@ -1,0 +1,37 @@
+{
+  "reference": "scipy distance_transform_edt(..., return_indices=True)",
+  "labels": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0
+    ]
+  ],
+  "expanded": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ]
+}

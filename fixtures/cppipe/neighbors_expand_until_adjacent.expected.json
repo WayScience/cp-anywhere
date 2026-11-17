@@ -1,0 +1,30 @@
+{
+  "ipo_kwargs": {
+    "threshold_method": "otsu",
+    "min_diameter": 8.0,
+    "unclump_method": "shape",
+    "watershed_method": "shape",
+    "exclude_border_objects": true
+  },
+  "has_measure": true,
+  "object_count": 2,
+  "threshold": 0.255859375,
+  "neighbors_expand": {
+    "count": [
+      1,
+      1
+    ],
+    "first": [
+      2,
+      1
+    ],
+    "touching": [
+      35.714285714285715,
+      26.31578947368421
+    ],
+    "distance": [
+      8.206896551724139,
+      8.206896551724139
+    ]
+  }
+}

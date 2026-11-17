@@ -164,3 +164,66 @@ def test_neighbors_full_objects_rejects_a_scope_not_requested() -> None:
             families=["neighbors"],
             neighbors_full_objects={"Nuclei": objects["Nuclei"]},
         )
+
+
+def test_neighbors_expand_matches_real_oracle_for_distant_objects() -> None:
+    """Real CellProfiler 4.2.8, MeasureObjectNeighbors distance_method =
+    "Expand until adjacent", on a 2x4 grid where two single-column
+    objects are two background columns apart (0 neighbors under the
+    default "Adjacent" method) -- their Voronoi territories still
+    share the whole boundary once expanded. Oracle: count=[1,1],
+    first=[2,1], touching=[50.0,50.0]%, distance=[3.0,3.0] (centers
+    stay on the ORIGINAL geometry, not the expanded Voronoi cells),
+    relate=[(1,2),(2,1)]. See
+    fixtures/neighbors_expand/module_two_far_columns.json."""
+    labels = np.array([[1, 0, 0, 2], [1, 0, 0, 2]], dtype=np.uint32)
+    result = measure(
+        {"DNA": np.zeros((2, 4))},
+        {"Cells": labels},
+        families=["neighbors"],
+        neighbors_scopes=["Cells"],
+        neighbors_expand=["Cells"],
+    )
+    features = result.features["Cells"]
+    assert "Neighbors_NumberOfNeighbors_Adjacent" not in features
+    assert _array(features["Neighbors_NumberOfNeighbors_Expanded"]).tolist() == [1, 1]
+    assert _array(features["Neighbors_FirstClosestObjectNumber_Expanded"]).tolist() == [
+        2,
+        1,
+    ]
+    touching = _array(features["Neighbors_PercentTouching_Expanded"])
+    assert touching[0] == pytest.approx(50.0)
+    assert touching[1] == pytest.approx(50.0)
+    distance = _array(features["Neighbors_FirstClosestDistance_Expanded"])
+    assert distance[0] == pytest.approx(3.0)
+    assert distance[1] == pytest.approx(3.0)
+    assert [
+        (row["first_object_id"], row["second_object_id"])
+        for row in result.relationships
+    ] == [(1, 2), (2, 1)]
+
+
+def test_neighbors_expand_rejects_a_3d_image() -> None:
+    labels = np.zeros((2, 2, 2), dtype=np.uint32)
+    labels[0, 0, 0] = 1
+    labels[1, 1, 1] = 2
+    with pytest.raises(ValueError, match="2D"):
+        measure(
+            {"DNA": np.zeros((2, 2, 2))},
+            {"Cells": labels},
+            families=["neighbors"],
+            neighbors_scopes=["Cells"],
+            neighbors_expand=["Cells"],
+        )
+
+
+def test_neighbors_expand_rejects_a_scope_not_requested() -> None:
+    images, objects = _inputs()
+    with pytest.raises(ValueError, match="Nuclei"):
+        measure(
+            images,
+            objects,
+            families=["neighbors"],
+            neighbors_scopes=["Cells"],
+            neighbors_expand=["Nuclei"],
+        )

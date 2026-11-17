@@ -12,6 +12,7 @@ def measure(
     image_id: str,
     families: tuple[str, ...],
     neighbors_scopes: list[str] | None = None,
+    neighbors_expand: list[str] | None = None,
     neighbors_full_objects: dict[str, np.ndarray] | None = None,
     size_shape_calculate_zernikes: bool = ...,
     size_shape_calculate_advanced: bool = ...,

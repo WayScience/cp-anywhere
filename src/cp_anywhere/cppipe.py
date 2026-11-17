@@ -569,6 +569,13 @@ class MeasurementStep:
     This matches CellProfiler's excluded-objects setting. Layer contents
     depend on the upstream segmentation module, not only this flag.
     """
+    wants_expand: bool = False
+    """Whether this ``neighbors`` step uses CellProfiler's "Expand until
+    adjacent" distance method (``measure(..., neighbors_expand=...)``)
+    instead of the default "Adjacent". Only meaningful when
+    ``family == "neighbors"``; ``"Within X pixels"`` remains a separate,
+    out-of-scope gap -- see ``spec/compatibility.md``.
+    """
 
 
 def _translate_threshold_tail(values: dict[str, str]) -> dict[str, object]:
@@ -1109,10 +1116,10 @@ def _translate_measure_object_neighbors(raw: _RawModule) -> MeasurementStep:
         "(see spec/compatibility.md)",
     )
     _require(
-        distance_method == "Adjacent",
+        distance_method in ("Adjacent", "Expand until adjacent"),
         f"MeasureObjectNeighbors distance method {distance_method!r} is "
-        "an explicit, out-of-scope gap (only 'Adjacent' is supported; "
-        "'Expand until adjacent' and 'Within X pixels' are not yet "
+        "an explicit, out-of-scope gap (only 'Adjacent' and 'Expand "
+        "until adjacent' are supported; 'Within X pixels' is not yet "
         "implemented)",
     )
     return MeasurementStep(
@@ -1121,6 +1128,7 @@ def _translate_measure_object_neighbors(raw: _RawModule) -> MeasurementStep:
         images=(),
         objects=(object_name,),
         wants_excluded_objects=_YES_NO[wants_excluded_objects],
+        wants_expand=distance_method == "Expand until adjacent",
     )
 
 
@@ -1341,6 +1349,14 @@ class Pipeline:
                 for name in step.objects
             }
         )
+        neighbors_expand = sorted(
+            {
+                name
+                for step in self.measurement_steps
+                if step.family == "neighbors" and step.wants_expand
+                for name in step.objects
+            }
+        )
         neighbors_full_objects: dict[str, np.ndarray] = {}
         for step in self.measurement_steps:
             if step.family != "neighbors" or not step.wants_excluded_objects:
@@ -1368,6 +1384,7 @@ class Pipeline:
                 measure_objects,
                 families=families,
                 neighbors_scopes=neighbors_scopes or None,
+                neighbors_expand=neighbors_expand or None,
                 neighbors_full_objects=neighbors_full_objects or None,
             )
             if families

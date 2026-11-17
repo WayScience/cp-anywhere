@@ -604,6 +604,17 @@ def _convert_mask(mask: object | None, shape: tuple[int, ...]) -> np.ndarray | N
     return np.ascontiguousarray(converted)
 
 
+def _require_active_neighbors_scopes(
+    names: Iterable[str], active_scopes: Sequence[str], setting_name: str
+) -> None:
+    """Raise if any ``names`` is not one of the active neighbors scopes
+    -- shared by ``neighbors_expand``'s and ``neighbors_full_objects``'s
+    identical "only scopes actually being measured" validation."""
+    extra = [name for name in names if name not in active_scopes]
+    if extra:
+        raise ValueError(f"{setting_name} {extra} are not requested neighbors scopes")
+
+
 def measure(
     images: Mapping[str, object],
     objects: Mapping[str, object],
@@ -612,6 +623,7 @@ def measure(
     image_id: str = "Image",
     families: Sequence[str] | None = None,
     neighbors_scopes: Sequence[str] | None = None,
+    neighbors_expand: Sequence[str] | None = None,
     neighbors_full_objects: Mapping[str, object] | None = None,
     size_shape_calculate_zernikes: bool = True,
     size_shape_calculate_advanced: bool = False,
@@ -641,6 +653,19 @@ def measure(
     independently, with its own feature columns and relationship rows
     tagged by an ``"object_name"`` key, matching how real CellProfiler
     pipelines invoke ``MeasureObjectNeighbors`` once per object set.
+
+    ``neighbors_expand`` names which of those scopes use CellProfiler's
+    "Expand until adjacent" distance method instead of the default
+    "Adjacent": every background pixel of that scope's own geometry
+    (``neighbors_full_objects`` when supplied, else its own labels) is
+    first assigned to its nearest foreground pixel's label (a 2D-only
+    Voronoi expansion -- raises if the image is 3D), and touching/
+    relationship-edge detection runs on that fully covered label image;
+    object centers and the closest-object/distance/angle columns still
+    use the original, unexpanded geometry, exactly matching real
+    CellProfiler's own ``run()``. Each name must be one of the active
+    neighbors scopes. Columns get an ``_Expanded`` suffix instead of
+    ``_Adjacent`` for every scope named here.
 
     ``neighbors_full_objects`` supplies each scope's diagnostic geometry
     (CellProfiler's ``objects.small_removed_segmented``). Both primary and
@@ -673,17 +698,21 @@ def measure(
             raise ValueError(f"neighbors_scopes {missing} are not provided object sets")
     elif "neighbors" in selected and "Cells" not in objects:
         raise ValueError("neighbors require a Cells object set")
+    active_neighbors_scopes = resolved_neighbors_scopes or (
+        ["Cells"] if "neighbors" in selected else []
+    )
+    resolved_neighbors_expand: list[str] = []
+    if neighbors_expand is not None:
+        resolved_neighbors_expand = list(neighbors_expand)
+        _require_active_neighbors_scopes(
+            resolved_neighbors_expand, active_neighbors_scopes, "neighbors_expand"
+        )
     converted_full_objects: dict[str, np.ndarray] = {}
     if neighbors_full_objects is not None:
         converted_full_objects = _convert_objects(neighbors_full_objects, shape)
-        active_scopes = resolved_neighbors_scopes or (
-            ["Cells"] if "neighbors" in selected else []
+        _require_active_neighbors_scopes(
+            converted_full_objects, active_neighbors_scopes, "neighbors_full_objects"
         )
-        extra = [name for name in converted_full_objects if name not in active_scopes]
-        if extra:
-            raise ValueError(
-                f"neighbors_full_objects {extra} are not requested neighbors scopes"
-            )
     converted_mask = _convert_mask(mask, shape)
     raw = _native.measure(
         shape,
@@ -693,6 +722,7 @@ def measure(
         image_id,
         selected,
         resolved_neighbors_scopes or None,
+        resolved_neighbors_expand or None,
         converted_full_objects or None,
         size_shape_calculate_zernikes,
         size_shape_calculate_advanced,

@@ -32,6 +32,8 @@ struct WasmInput {
     #[serde(default)]
     neighbors_scopes: Vec<String>,
     #[serde(default)]
+    neighbors_expand: Vec<String>,
+    #[serde(default)]
     neighbors_full_objects: std::collections::BTreeMap<String, Vec<u32>>,
     size_shape_calculate_zernikes: Option<bool>,
     size_shape_calculate_advanced: Option<bool>,
@@ -75,6 +77,7 @@ pub fn measure_with_options(
     image_id: String,
     families: Vec<String>,
     neighbors_scopes: Vec<String>,
+    neighbors_expand: Vec<String>,
     full_object_names: Vec<String>,
     full_objects: Vec<u32>,
     size_shape_calculate_zernikes: Option<bool>,
@@ -120,6 +123,7 @@ pub fn measure_with_options(
         neighbors: families.iter().any(|f| f == "neighbors"),
     };
     let neighbors_scope_refs: Vec<&str> = neighbors_scopes.iter().map(String::as_str).collect();
+    let neighbors_expand_refs: Vec<&str> = neighbors_expand.iter().map(String::as_str).collect();
     let input = Input {
         shape: &shape,
         images: &image_views,
@@ -127,6 +131,7 @@ pub fn measure_with_options(
         mask: mask_slice,
         families: selected,
         neighbors_scopes: &neighbors_scope_refs,
+        neighbors_expand: &neighbors_expand_refs,
         size_shape: families
             .iter()
             .any(|family| family == "object_size_shape")
@@ -208,6 +213,7 @@ pub fn measure(
         Vec::new(),
         Vec::new(),
         Vec::new(),
+        Vec::new(),
         None,
         None,
     )
@@ -248,6 +254,7 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
         parsed.image_id,
         parsed.families,
         parsed.neighbors_scopes,
+        parsed.neighbors_expand,
         full_object_names,
         full_objects,
         parsed.size_shape_calculate_zernikes,

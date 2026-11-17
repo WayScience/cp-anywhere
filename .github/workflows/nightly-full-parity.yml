@@ -97,6 +97,10 @@ jobs:
         run: |
           uv run --frozen python \
             scripts/parity/compare_wasm_colocalization.py
+      - name: WASM neighbors expand parity check (real Chromium, real oracle)
+        run: |
+          uv run --frozen python \
+            scripts/parity/compare_wasm_neighbors_expand.py
       - name: Upload parity reports
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7

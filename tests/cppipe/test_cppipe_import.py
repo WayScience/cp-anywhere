@@ -122,6 +122,44 @@ def test_neighbors_excluded_border_object_matches_a_fresh_oracle_run() -> None:
         assert actual == pytest.approx(want)
 
 
+def test_neighbors_expand_until_adjacent_matches_a_fresh_oracle_run() -> None:
+    """``distance_method = "Expand until adjacent"`` end to end through
+    the full cppipe import + run() path: columns get an ``_Expanded``
+    suffix instead of ``_Adjacent``, and values match a real,
+    freshly-run CellProfiler oracle's own numbers exactly for this
+    fixture's real kept labels (see
+    scripts/cppipe/generate_fixtures.py's `_real_neighbors_expand`)."""
+    name = "neighbors_expand_until_adjacent"
+    expected = _load_case(name)
+    image = _test_image(name)
+    pipeline = load_pipeline(FIXTURE_DIR / f"{name}.cppipe")
+
+    neighbors_steps = [s for s in pipeline.measurement_steps if s.family == "neighbors"]
+    assert len(neighbors_steps) == 1
+    assert neighbors_steps[0].wants_expand is True
+
+    segmentations, _secondary, result = pipeline.run({"DNA": image})
+    assert result is not None
+    assert segmentations["Cells"].object_count == expected["object_count"]
+    features = result.features["Cells"]
+    ground_truth = expected["neighbors_expand"]
+    assert "Neighbors_NumberOfNeighbors_Adjacent" not in features
+    count = features["Neighbors_NumberOfNeighbors_Expanded"]
+    assert isinstance(count, np.ndarray)
+    assert count.tolist() == [int(v) for v in ground_truth["count"]]
+    first = features["Neighbors_FirstClosestObjectNumber_Expanded"]
+    assert isinstance(first, np.ndarray)
+    assert first.tolist() == ground_truth["first"]
+    touching = features["Neighbors_PercentTouching_Expanded"]
+    assert isinstance(touching, np.ndarray)
+    for actual, want in zip(touching, ground_truth["touching"], strict=True):
+        assert actual == pytest.approx(want)
+    distance = features["Neighbors_FirstClosestDistance_Expanded"]
+    assert isinstance(distance, np.ndarray)
+    for actual, want in zip(distance, ground_truth["distance"], strict=True):
+        assert actual == pytest.approx(want)
+
+
 def test_unknown_leading_pipeline_modules_are_skipped_not_dropped_silently(
     tmp_path: Path,
 ) -> None:

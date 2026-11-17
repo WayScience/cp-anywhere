@@ -88,6 +88,7 @@ def build_pipeline(
     *,
     measure: bool = True,
     wants_excluded: bool = False,
+    distance_method: str = "Adjacent",
     test_image: np.ndarray | None = None,
 ) -> None:
     image = TEST_IMAGE if test_image is None else test_image
@@ -117,7 +118,7 @@ def build_pipeline(
         m4.set_module_num(4)
         m4.object_name.value = "Cells"
         m4.neighbors_name.value = "Cells"
-        m4.distance_method.value = "Adjacent"
+        m4.distance_method.value = distance_method
         m4.wants_excluded_objects.value = wants_excluded
         pipeline.add_module(m4)
 
@@ -144,6 +145,11 @@ def build_pipeline(
         # Yes, run directly (not hand-derived) against this case's own
         # real kept/small_removed label pair.
         expected["neighbors_excluded"] = _real_neighbors_excluded(labels, small_removed)
+    if measure and distance_method == "Expand until adjacent":
+        # Real oracle ground truth for "Expand until adjacent", run
+        # directly (not hand-derived) against this case's own real
+        # kept labels.
+        expected["neighbors_expand"] = _real_neighbors_expand(labels)
     (OUT_DIR / f"{name}.expected.json").write_text(
         json.dumps(expected, indent=2) + "\n"
     )
@@ -185,6 +191,52 @@ def _real_neighbors_excluded(labels: np.ndarray, small_removed: np.ndarray) -> d
         "touching": list(
             measurements.get_current_measurement(
                 "Cells", "Neighbors_PercentTouching_Adjacent"
+            )
+        ),
+    }
+
+
+def _real_neighbors_expand(labels: np.ndarray) -> dict:
+    pipeline = Pipeline()
+    neighbors = MeasureObjectNeighbors()
+    neighbors.set_module_num(1)
+    neighbors.object_name.value = "Cells"
+    neighbors.neighbors_name.value = "Cells"
+    neighbors.distance_method.value = "Expand until adjacent"
+    neighbors.wants_excluded_objects.value = False
+    pipeline.add_module(neighbors)
+    image_set_list = ImageSetList()
+    image_set = image_set_list.get_image_set(0)
+    object_set = ObjectSet()
+    objects = Objects()
+    objects.segmented = labels
+    object_set.add_objects(objects, "Cells")
+    measurements = Measurements()
+    workspace = Workspace(
+        pipeline, neighbors, image_set, object_set, measurements, image_set_list
+    )
+    neighbors.run(workspace)
+    return {
+        "count": [
+            int(v)
+            for v in measurements.get_current_measurement(
+                "Cells", "Neighbors_NumberOfNeighbors_Expanded"
+            )
+        ],
+        "first": [
+            int(v)
+            for v in measurements.get_current_measurement(
+                "Cells", "Neighbors_FirstClosestObjectNumber_Expanded"
+            )
+        ],
+        "touching": list(
+            measurements.get_current_measurement(
+                "Cells", "Neighbors_PercentTouching_Expanded"
+            )
+        ),
+        "distance": list(
+            measurements.get_current_measurement(
+                "Cells", "Neighbors_FirstClosestDistance_Expanded"
             )
         ),
     }
@@ -260,6 +312,17 @@ _NEIGHBORS_EXCLUDED_CASE = (
     },
 )
 
+_NEIGHBORS_EXPAND_CASE = (
+    "neighbors_expand_until_adjacent",
+    {
+        "threshold_method": "otsu",
+        "min_diameter": 8.0,
+        "unclump_method": "shape",
+        "watershed_method": "shape",
+        "exclude_border_objects": True,
+    },
+)
+
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -274,7 +337,15 @@ def main() -> None:
         wants_excluded=True,
         test_image=_NEIGHBORS_EXCLUDED_IMAGE,
     )
-    print(json.dumps({"written": len(CASES) + 1, "out_dir": str(OUT_DIR)}))
+    name, kwargs = _NEIGHBORS_EXPAND_CASE
+    build_pipeline(
+        name,
+        kwargs,
+        measure=True,
+        distance_method="Expand until adjacent",
+        test_image=_NEIGHBORS_EXCLUDED_IMAGE,
+    )
+    print(json.dumps({"written": len(CASES) + 2, "out_dir": str(OUT_DIR)}))
 
 
 if __name__ == "__main__":

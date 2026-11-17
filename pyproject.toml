@@ -98,6 +98,12 @@ lint.select = [
 ]
 # Ignore `F401` (unused imports) for `__init__.py` file
 lint.per-file-ignores."__init__.py" = [ "F401" ]
+# Ignore `PLR0913`: build_pipeline's keyword-only options
+# (measure/wants_excluded/distance_method/test_image) each gate a
+# distinct, independently-added MeasureObjectNeighbors fixture
+# variant; splitting them into a settings object would not simplify
+# anything over named keywords here.
+lint.per-file-ignores."scripts/cppipe/generate_fixtures.py" = [ "PLR0913" ]
 # Ignore `PLC0415` (deferred `functools`/skimage-adapter import, reference-
 # environment-only) and `ANN401` (the selem->footprint compatibility
 # shim forwards arbitrary skimage.morphology call signatures, so its

@@ -253,7 +253,35 @@ The measurement modules each used by 8-10 of the 10 surveyed pipelines
 (`MeasureGranularity`, `MeasureObjectIntensityDistribution`,
 `MeasureTexture`, and `MeasureColocalization`) are all implemented
 now, with real-reference fixtures for each module's own settings
-surface.
+surface. `MeasureObjectNeighbors`'s `"Expand until adjacent"` distance
+method -- the one remaining blocker from the survey -- has since been
+implemented too (see this file's own section below); every surveyed
+pipeline now loads and runs end to end.
+
+## `MeasureObjectNeighbors`: "Expand until adjacent"
+
+`distance_method = "Expand until adjacent"` (CellProfiler's own
+`D_EXPAND`) is translated into `MeasurementStep.wants_expand = True`
+and threaded through `measure(..., neighbors_expand=[...])`. Real
+CellProfiler's own algorithm: every background pixel of the object's
+geometry (`neighbors_full_objects` when supplied, else its own kept
+labels) is first assigned the label of its nearest foreground pixel
+(a Euclidean nearest-label fill -- real CellProfiler's own
+`scipy.ndimage.distance_transform_edt(labels == 0, return_indices=True)` then `labels[i, j]`, oracle-verified against
+real scipy; see `scripts/reference/generate_neighbors_expand.py` and
+`fixtures/neighbors_expand/*.json`), and then the exact same
+touching/relationship-edge detection used for `"Adjacent"` runs on
+that fully covered label image. Object centers and the closest-
+object/distance/angle columns are unaffected -- they always use the
+original, unexpanded geometry, matching real CellProfiler's own
+`run()` (it only reassigns a local variable, never
+`objects.small_removed_segmented` itself). Feature columns get an
+`_Expanded` suffix instead of `_Adjacent`
+(`Neighbors_PercentTouching_Expanded`, etc. -- CellProfiler's own
+`S_EXPANDED` scale string). 2D only: a 2D+3D mixed pipeline's 3D scope
+would need volumetric nearest-label fill, an explicit, out-of-scope
+gap (raises a clear error naming the scope). `"Within X pixels"`
+(`D_WITHIN`) remains a separate, out-of-scope gap.
 
 ## `MeasureObjectIntensityDistribution`, `MeasureTexture`, `MeasureColocalization`: settings mapping and limits
 

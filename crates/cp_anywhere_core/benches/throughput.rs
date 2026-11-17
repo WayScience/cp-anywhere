@@ -53,6 +53,7 @@ fn bench_measure(c: &mut Criterion) {
                 neighbors: true,
             },
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         };
@@ -84,6 +85,7 @@ fn bench_measure(c: &mut Criterion) {
                 neighbors: false,
             },
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         };
@@ -103,6 +105,7 @@ fn bench_measure(c: &mut Criterion) {
                 neighbors: true,
             },
             neighbors_scopes: &[],
+            neighbors_expand: &[],
             size_shape: None,
             neighbors_full_objects: &[],
         };
