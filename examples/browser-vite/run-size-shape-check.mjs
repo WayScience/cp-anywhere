@@ -43,7 +43,7 @@ try {
       const typed = JSON.parse(wasm.measureWithOptions(
         new Uint32Array(input.shape), ["DNA"], new Float64Array(input.images.DNA),
         ["Cells"], new Uint32Array(input.objects.Cells), undefined,
-        input.image_id, input.families, [], [], new Uint32Array(),
+        input.image_id, input.families, [], [], [], new Uint32Array(),
         input.size_shape_calculate_zernikes, input.size_shape_calculate_advanced,
       ));
       return { json, typed };

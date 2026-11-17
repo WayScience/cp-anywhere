@@ -18,8 +18,8 @@
     "touching_gradient",
     "volume_3d"
   ],
-  "memory_bytes": 3538944,
-  "wasm_transfer_bytes": 206043,
+  "memory_bytes": 4456448,
+  "wasm_transfer_bytes": 377616,
   "summary": {
     "pass_exact": 1533,
     "pass_tolerance": 27
