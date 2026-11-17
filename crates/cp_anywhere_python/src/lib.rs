@@ -561,6 +561,232 @@ fn measure_granularity<'py>(
     Ok(root)
 }
 
+#[pyfunction]
+#[pyo3(signature = (
+    pixels, rows, cols, mask=None,
+    intensity_choice="Regular", block_size=60,
+    dilate_objects=false, object_dilation_radius=1,
+    smoothing_method="Gaussian Filter",
+    automatic_object_width="Automatic", object_width=10.0,
+    size_of_smoothing_filter=10.0,
+    rescale_option="Yes",
+))]
+#[allow(clippy::too_many_arguments)]
+fn calculate_illumination_each<'py>(
+    py: Python<'py>,
+    pixels: PyReadonlyArrayDyn<'py, f64>,
+    rows: usize,
+    cols: usize,
+    mask: Option<PyReadonlyArrayDyn<'py, bool>>,
+    intensity_choice: &str,
+    block_size: usize,
+    dilate_objects: bool,
+    object_dilation_radius: usize,
+    smoothing_method: &str,
+    automatic_object_width: &str,
+    object_width: f64,
+    size_of_smoothing_filter: f64,
+    rescale_option: &str,
+) -> PyResult<Bound<'py, PyArray1<f64>>> {
+    use cp_anywhere_core::illumination::{
+        Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
+    };
+    let pixels_slice = pixels
+        .as_slice()
+        .map_err(|_| PyValueError::new_err("pixels must be C-contiguous"))?;
+    let mask_slice = mask
+        .as_ref()
+        .map(|array| {
+            array
+                .as_slice()
+                .map_err(|_| PyValueError::new_err("mask must be C-contiguous"))
+        })
+        .transpose()?;
+    let intensity_choice = match intensity_choice {
+        "Regular" => IntensityChoice::Regular,
+        "Background" => IntensityChoice::Background,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown intensity_choice {other:?}; expected 'Regular' or 'Background'"
+            )));
+        }
+    };
+    let smoothing_method = match smoothing_method {
+        "No smoothing" => SmoothingMethod::None,
+        "Median Filter" => SmoothingMethod::MedianFilter,
+        "Gaussian Filter" => SmoothingMethod::GaussianFilter,
+        "Fit Polynomial" => SmoothingMethod::FitPolynomial,
+        "Smooth to Average" => SmoothingMethod::ToAverage,
+        "Convex Hull" => SmoothingMethod::ConvexHull,
+        "Splines" => SmoothingMethod::Splines,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown smoothing_method {other:?}"
+            )));
+        }
+    };
+    let automatic_object_width = match automatic_object_width {
+        "Automatic" => FilterSizeMethod::Automatic,
+        "Object size" => FilterSizeMethod::ObjectSize,
+        "Manually" => FilterSizeMethod::Manually,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown automatic_object_width {other:?}"
+            )));
+        }
+    };
+    let rescale_option = match rescale_option {
+        "Yes" => RescaleOption::Yes,
+        "No" => RescaleOption::No,
+        "Median" => RescaleOption::Median,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown rescale_option {other:?}"
+            )));
+        }
+    };
+    let config = Config {
+        intensity_choice,
+        block_size,
+        dilate_objects,
+        object_dilation_radius,
+        smoothing_method,
+        automatic_object_width,
+        object_width,
+        size_of_smoothing_filter,
+        rescale_option,
+    };
+    let result = py
+        .detach(|| {
+            cp_anywhere_core::illumination::calculate_each(
+                pixels_slice,
+                mask_slice,
+                rows,
+                cols,
+                &config,
+            )
+        })
+        .map_err(PyValueError::new_err)?;
+    Ok(PyArray1::from_vec(py, result))
+}
+
+#[pyfunction]
+#[pyo3(signature = (
+    images, rows, cols,
+    intensity_choice="Regular", block_size=60,
+    dilate_objects=false, object_dilation_radius=1,
+    smoothing_method="Gaussian Filter",
+    automatic_object_width="Automatic", object_width=10.0,
+    size_of_smoothing_filter=10.0,
+    rescale_option="Yes",
+))]
+#[allow(clippy::too_many_arguments)]
+fn calculate_illumination_across<'py>(
+    py: Python<'py>,
+    images: Vec<(
+        PyReadonlyArrayDyn<'py, f64>,
+        Option<PyReadonlyArrayDyn<'py, bool>>,
+    )>,
+    rows: usize,
+    cols: usize,
+    intensity_choice: &str,
+    block_size: usize,
+    dilate_objects: bool,
+    object_dilation_radius: usize,
+    smoothing_method: &str,
+    automatic_object_width: &str,
+    object_width: f64,
+    size_of_smoothing_filter: f64,
+    rescale_option: &str,
+) -> PyResult<Bound<'py, PyArray1<f64>>> {
+    use cp_anywhere_core::illumination::{
+        Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
+    };
+    let mut pixel_slices: Vec<&[f64]> = Vec::with_capacity(images.len());
+    let mut mask_slices: Vec<Option<&[bool]>> = Vec::with_capacity(images.len());
+    for (pixels, mask) in &images {
+        pixel_slices.push(
+            pixels
+                .as_slice()
+                .map_err(|_| PyValueError::new_err("pixels must be C-contiguous"))?,
+        );
+        mask_slices.push(
+            mask.as_ref()
+                .map(|array| {
+                    array
+                        .as_slice()
+                        .map_err(|_| PyValueError::new_err("mask must be C-contiguous"))
+                })
+                .transpose()?,
+        );
+    }
+    let image_pairs: Vec<(&[f64], Option<&[bool]>)> = pixel_slices
+        .iter()
+        .copied()
+        .zip(mask_slices.iter().copied())
+        .collect();
+    let intensity_choice = match intensity_choice {
+        "Regular" => IntensityChoice::Regular,
+        "Background" => IntensityChoice::Background,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown intensity_choice {other:?}; expected 'Regular' or 'Background'"
+            )));
+        }
+    };
+    let smoothing_method = match smoothing_method {
+        "No smoothing" => SmoothingMethod::None,
+        "Median Filter" => SmoothingMethod::MedianFilter,
+        "Gaussian Filter" => SmoothingMethod::GaussianFilter,
+        "Fit Polynomial" => SmoothingMethod::FitPolynomial,
+        "Smooth to Average" => SmoothingMethod::ToAverage,
+        "Convex Hull" => SmoothingMethod::ConvexHull,
+        "Splines" => SmoothingMethod::Splines,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown smoothing_method {other:?}"
+            )));
+        }
+    };
+    let automatic_object_width = match automatic_object_width {
+        "Automatic" => FilterSizeMethod::Automatic,
+        "Object size" => FilterSizeMethod::ObjectSize,
+        "Manually" => FilterSizeMethod::Manually,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown automatic_object_width {other:?}"
+            )));
+        }
+    };
+    let rescale_option = match rescale_option {
+        "Yes" => RescaleOption::Yes,
+        "No" => RescaleOption::No,
+        "Median" => RescaleOption::Median,
+        other => {
+            return Err(PyValueError::new_err(format!(
+                "unknown rescale_option {other:?}"
+            )));
+        }
+    };
+    let config = Config {
+        intensity_choice,
+        block_size,
+        dilate_objects,
+        object_dilation_radius,
+        smoothing_method,
+        automatic_object_width,
+        object_width,
+        size_of_smoothing_filter,
+        rescale_option,
+    };
+    let result = py
+        .detach(|| {
+            cp_anywhere_core::illumination::calculate_across(&image_pairs, rows, cols, &config)
+        })
+        .map_err(PyValueError::new_err)?;
+    Ok(PyArray1::from_vec(py, result))
+}
+
 #[pymodule]
 fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(measure, module)?)?;
@@ -571,6 +797,8 @@ fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(measure_intensity_distribution, module)?)?;
     module.add_function(wrap_pyfunction!(measure_texture, module)?)?;
     module.add_function(wrap_pyfunction!(measure_colocalization, module)?)?;
+    module.add_function(wrap_pyfunction!(calculate_illumination_each, module)?)?;
+    module.add_function(wrap_pyfunction!(calculate_illumination_across, module)?)?;
     Ok(())
 }
 

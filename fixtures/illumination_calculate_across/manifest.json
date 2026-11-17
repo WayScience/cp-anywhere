@@ -1,0 +1,8 @@
+{
+  "cases": [
+    "regular_none",
+    "regular_mixed",
+    "background_none",
+    "background_mixed"
+  ]
+}

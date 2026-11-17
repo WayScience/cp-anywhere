@@ -7,6 +7,7 @@ pub const MAX_LABEL: u32 = 1_000_000;
 
 pub mod colocalization;
 pub mod granularity;
+pub mod illumination;
 pub mod intensity_distribution;
 pub mod size_shape;
 pub mod size_shape_moments;

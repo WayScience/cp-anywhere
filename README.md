@@ -1,8 +1,21 @@
 # cp-anywhere
 
-CellProfiler-compatible measurements for native Python and web browsers
+CellProfiler-compatible cell profiling in Python and the browser, powered by Rust.
+Correct illumination, segment images, measure cell features, and export analysis-ready tables.
+
+cp-anywhere turns microscopy images into per-cell feature tables without requiring
+the CellProfiler desktop application. Use image files or NumPy arrays in Python,
+work with pandas tables, or run the shared measurement engine in a browser through
+WebAssembly. Supported modules and settings are listed in `spec/compatibility.md`.
 
 ## Usage
+
+For a hands-on tour, open
+[Cell Profiling Anywhere](docs/src/cell-profiling-anywhere.ipynb).
+The notebook follows a complete Python workflow: illumination correction,
+segmentation, measurements, plots, and image/table exports.
+Run `uv sync --frozen --group docs` first, then select the repository's `.venv`
+Python interpreter in your notebook editor.
 
 The simplest way to call cp-anywhere is `measure_files`, which accepts
 TIFF/OME-TIFF, PNG, or saved NumPy array file paths directly (or

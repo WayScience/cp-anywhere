@@ -1,0 +1,12 @@
+{
+  "cases": [
+    "divide_tl1_th1",
+    "divide_tl1_th0",
+    "divide_tl0_th1",
+    "divide_tl0_th0",
+    "subtract_tl1_th1",
+    "subtract_tl1_th0",
+    "subtract_tl0_th1",
+    "subtract_tl0_th0"
+  ]
+}

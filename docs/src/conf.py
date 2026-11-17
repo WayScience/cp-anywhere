@@ -83,3 +83,9 @@ autodoc_preserve_defaults = True
 
 # enable anchor creation
 myst_heading_anchors = 3
+
+# Re-run the example notebook on every docs build. Execution failures must
+# fail the build instead of publishing an incomplete tutorial.
+nb_execution_mode = "force"
+nb_execution_timeout = 120
+nb_execution_raise_on_error = True

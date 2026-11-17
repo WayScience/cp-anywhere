@@ -136,3 +136,32 @@ def measure_colocalization(
     wants_image_measurements: bool = ...,
     wants_object_measurements: bool = ...,
 ) -> tuple[dict[str, float], dict[str, np.ndarray]]: ...
+def calculate_illumination_each(
+    pixels: np.ndarray,
+    rows: int,
+    cols: int,
+    mask: np.ndarray | None = ...,
+    intensity_choice: str = ...,
+    block_size: int = ...,
+    dilate_objects: bool = ...,
+    object_dilation_radius: int = ...,
+    smoothing_method: str = ...,
+    automatic_object_width: str = ...,
+    object_width: float = ...,
+    size_of_smoothing_filter: float = ...,
+    rescale_option: str = ...,
+) -> np.ndarray: ...
+def calculate_illumination_across(
+    images: list[tuple[np.ndarray, np.ndarray | None]],
+    rows: int,
+    cols: int,
+    intensity_choice: str = ...,
+    block_size: int = ...,
+    dilate_objects: bool = ...,
+    object_dilation_radius: int = ...,
+    smoothing_method: str = ...,
+    automatic_object_width: str = ...,
+    object_width: float = ...,
+    size_of_smoothing_filter: float = ...,
+    rescale_option: str = ...,
+) -> np.ndarray: ...

@@ -44,6 +44,7 @@ dev = [
   "pyyaml>=6,<7",
 ]
 docs = [
+  "matplotlib>=3.9",
   "myst-nb>=1.2",
   "pydata-sphinx-theme>=0.16.1",
   "sphinx>=8.2.3",
@@ -171,6 +172,14 @@ lint.per-file-ignores."src/cp_anywhere/colocalization.py" = [
 # function to shrink) for the granularity API.
 lint.per-file-ignores."src/cp_anywhere/granularity.py" = [ "PLC0415", "PLR0913" ]
 # Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (calculate_illumination's keyword arguments
+# each name one of CorrectIlluminationCalculate's own CellProfiler
+# settings, not a function to shrink).
+lint.per-file-ignores."src/cp_anywhere/illumination.py" = [
+  "PLC0415",
+  "PLR0913",
+]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
 # api.py) and `PLR0913` (measure_intensity_distribution's keyword
 # arguments each name one of MeasureObjectIntensityDistribution's own
 # CellProfiler settings, not a function to shrink).
@@ -182,6 +191,10 @@ lint.per-file-ignores."src/cp_anywhere/intensity_distribution.py" = [
 # imports so loading one file format doesn't require the others, and
 # `measure_files` stays usable without pandas imported at module load.
 lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
+# Ignore `PLC0415` for `save_images.py`, same reason as `io.py` above:
+# defers `tifffile`/`PIL` imports so writing one file format doesn't
+# require the other.
+lint.per-file-ignores."src/cp_anywhere/save_images.py" = [ "PLC0415" ]
 # Ignore `PLC0415` (deferred native-extension import, same reason as
 # api.py), `PLR0913` (identify_primary_objects intentionally exposes
 # every IdentifyPrimaryObjects/Threshold setting this release covers as

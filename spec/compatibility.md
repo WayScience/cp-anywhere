@@ -27,6 +27,15 @@ advanced columns. These have separate real-reference fixtures and
 limits documented in `spec/cppipe-compatibility.md` and
 `docs/size-shape.md`; they do not change the original 119-column inventory.
 
+Illumination correction and array output are later, partial extensions.
+Native Python supports five calculation smoothers, shared-function aggregation,
+divide/subtract application, and common image formats.
+The `.cppipe` importer also reads a restricted subset of their configuration.
+`SaveImagesStep.write()` requires a caller-supplied array and destination.
+`Pipeline.run()` does not save corrected images automatically.
+`spec/illumination.md` records the supported configuration, reference evidence,
+and remaining gaps, including Convex Hull, Splines, HDF5, movie stacks, and WASM.
+
 ## Explicit exclusions
 
 The following CellProfiler 4.2.8 measurement modules remain outside this release scope: `MeasureImageAreaOccupied`, `MeasureImageOverlap`, `MeasureImageQuality`, `MeasureImageSkeleton`, `MeasureObjectOverlap`, and `MeasureObjectSkeleton`. (`MeasureGranularity`, `MeasureObjectSizeShape`, `MeasureObjectIntensityDistribution`, `MeasureTexture`, and `MeasureColocalization` have since been implemented with their own real-reference fixtures; see `spec/cppipe-compatibility.md`.) Any measurement from other CellProfiler modules is also outside scope.

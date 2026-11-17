@@ -47,7 +47,9 @@ import numpy as np
 from cp_anywhere.api import MeasurementResult, measure
 from cp_anywhere.colocalization import measure_colocalization
 from cp_anywhere.granularity import measure_granularity
+from cp_anywhere.illumination import apply_illumination, calculate_illumination
 from cp_anywhere.intensity_distribution import measure_intensity_distribution
+from cp_anywhere.save_images import BIT_DEPTH_8, save_array
 from cp_anywhere.segment import (
     SecondaryObjectsResult,
     identify_primary_objects,
@@ -154,6 +156,44 @@ _MC_FAST_COSTES = {
     "Accurate": "accurate",
 }
 _MIN_COLOCALIZATION_IMAGES = 2
+_ICALC_REVISION = 2
+# CorrectIlluminationCalculate's own fixed settings (confirmed against
+# a real pipeline.dump() of the pinned oracle -- see
+# scripts/reference/generate_illumination_calculate.py). The four
+# save_average_image/average_image_name/save_dilated_image/
+# dilated_image_name settings are consumed positionally but never
+# read (this project has no "retain an intermediate image" concept);
+# the six spline_* settings are likewise consumed positionally, only
+# read far enough to raise a clear error when Splines is requested.
+_ICALC_FIELDS = (
+    "input_image",
+    "output_image",
+    "intensity_choice",
+    "dilate_objects",
+    "object_dilation_radius",
+    "block_size",
+    "rescale_option",
+    "each_or_all",
+    "smoothing_method",
+    "automatic_object_width",
+    "object_width",
+    "size_of_smoothing_filter",
+    "save_average_image",
+    "average_image_name",
+    "save_dilated_image",
+    "dilated_image_name",
+    "automatic_splines",
+    "spline_mode",
+    "spline_points",
+    "spline_threshold",
+    "spline_rescale",
+    "spline_maxiter",
+    "spline_convergence",
+)
+_ICALC_EACH_OR_ALL = {"Each", "All: First cycle", "All: Across cycles"}
+_IAPPLY_REVISION = 5
+_IAPPLY_SETTINGS_PER_IMAGE = 4
+_IAPPLY_TRAILING_SETTINGS = 2
 _ETD_REVISION = 28
 # ExportToDatabase's own fixed leading settings (indices 0-38, confirmed
 # against a real pipeline.dump() of the pinned oracle -- see
@@ -501,6 +541,155 @@ class ColocalizationStep:
     do_costes: bool
     wants_image_measurements: bool
     wants_object_measurements: bool
+
+
+@dataclass(frozen=True)
+class IlluminationCalculateStep:
+    """One translated ``CorrectIlluminationCalculate`` module, ``"Each"``
+    mode only: ``"All: First cycle"``/``"All: Across cycles"`` need the
+    full image set list (every cycle's own image, not just one), which
+    does not fit :meth:`Pipeline.run`'s single-image-set signature --
+    an explicit, documented gap (use
+    :func:`cp_anywhere.calculate_illumination_across` directly on your
+    own loaded image sequence instead). ``Convex Hull`` and ``Splines``
+    smoothing methods are separate, not-yet-implemented gaps (see
+    :func:`cp_anywhere.calculate_illumination`); "Retain the
+    averaged/dilated image?" has no equivalent here (this project has
+    no "intermediate image" concept) and is silently not represented
+    -- CellProfiler's own `SaveImages` module would be needed to save
+    those, not this translator.
+    """
+
+    input_image: str
+    output_image: str
+    intensity_choice: str
+    dilate_objects: bool
+    object_dilation_radius: int
+    block_size: int
+    rescale_option: str
+    smoothing_method: str
+    automatic_object_width: str
+    object_width: float
+    size_of_smoothing_filter: float
+
+
+@dataclass(frozen=True)
+class IlluminationApplyImage:
+    """One of ``CorrectIlluminationApply``'s repeated image groups."""
+
+    input_image: str
+    output_image: str
+    illumination_function_image: str
+    divide_or_subtract: str
+
+
+@dataclass(frozen=True)
+class IlluminationApplyStep:
+    """One translated ``CorrectIlluminationApply`` module: every
+    configured image group (CellProfiler lets one module instance
+    apply correction to several images at once, sharing the same
+    truncate settings)."""
+
+    images: tuple[IlluminationApplyImage, ...]
+    truncate_low: bool
+    truncate_high: bool
+
+
+_SAVE_IMAGES_REVISION = 16
+# SaveImages' own fixed 18-setting positional layout (confirmed against
+# a real pipeline.dump() of the pinned oracle -- see
+# scripts/cppipe/generate_save_images_pipeline.py). Settings not listed
+# as a SaveImagesStep field below are consumed positionally to validate
+# the settings count. Some settings apply only to rejected modes.
+# Others (directory resolution, cycle timing, filename measurements,
+# subfolders, and TIFF compression) are not executed by this importer.
+_SAVE_IMAGES_FIELDS = (
+    "save_image_or_figure",
+    "image_name",
+    "file_name_method",
+    "file_image_name",
+    "single_file_name",
+    "number_of_digits",
+    "wants_file_name_suffix",
+    "file_name_suffix",
+    "file_format",
+    "pathname",
+    "bit_depth",
+    "overwrite",
+    "when_to_save",
+    "update_file_names",
+    "create_subdirectories",
+    "root_dir",
+    "stack_axis",
+    "tiff_compress",
+)
+_SAVE_IMAGES_FILE_FORMATS = {"tiff", "png", "jpeg", "npy"}
+
+
+@dataclass(frozen=True)
+class SaveImagesStep:
+    """One translated ``SaveImages`` module.
+
+    Only ``save_image_or_figure == "Image"`` (not ``"Mask"``,
+    ``"Cropping"``, or ``"Movie/Stack"``, which need a cropping mask or
+    multi-cycle frame-stacking concept this project does not have) and
+    ``file_name_method == "Single name"`` (not ``"From image
+    filename"``/``"Sequential numbers"``, which need per-image-set
+    source-file/metadata tracking this project does not have) are
+    supported -- explicit, documented gaps. ``"h5"`` (``FF_H5``) is a
+    separate, not-yet-implemented gap (see
+    :func:`cp_anywhere.save_images.save_array`'s own module docstring);
+    ``"tiff"``/``"png"``/``"jpeg"``/``"npy"`` are supported.
+
+    Like :class:`ExportToDatabaseStep`, this project never resolves a
+    CellProfiler ``Directory`` setting's "Default Output/Input Folder"
+    choice to an absolute path -- the caller supplies ``path`` to
+    :meth:`write`, exactly as the caller supplies every image array to
+    :meth:`Pipeline.run`. ``file_name`` is kept as the module's raw
+    name setting. The directory setting is not retained, and
+    ``write()`` uses only the caller-supplied destination.
+
+    ``Pipeline.run()`` does not execute these save steps automatically.
+    Cycle timing, filename measurements, subfolders, and TIFF compression
+    settings are not implemented. See ``spec/illumination.md``.
+
+    Real CellProfiler's own ``get_bit_depth()`` forces 8-bit for every
+    file format except TIFF/HDF5, regardless of the ``bit_depth``
+    setting's own value -- :attr:`effective_bit_depth` already applies
+    that rule.
+    """
+
+    image_name: str
+    file_name: str
+    file_format: str
+    bit_depth: str
+    overwrite: bool
+
+    @property
+    def effective_bit_depth(self) -> str:
+        """The bit depth real CellProfiler would actually apply --
+        ``bit_depth`` is only honored for TIFF; every other supported
+        format (PNG/JPEG/NPY) is always forced to 8-bit integer (NPY's
+        own writer then ignores bit depth entirely regardless)."""
+        if self.file_format == "tiff":
+            return self.bit_depth
+        return BIT_DEPTH_8
+
+    def write(
+        self, image: np.ndarray, path: str | Path, *, bit_depth: str | None = None
+    ) -> None:
+        """Write ``image`` to ``path`` via
+        :func:`cp_anywhere.save_images.save_array`, using
+        :attr:`effective_bit_depth` unless ``bit_depth`` overrides it.
+        Honors this step's own ``overwrite`` setting."""
+        destination = Path(path)
+        if not self.overwrite and destination.exists():
+            msg = (
+                f"SaveImages: {destination} already exists and this "
+                "module's Overwrite setting is No"
+            )
+            raise CppipeError(msg)
+        save_array(image, destination, bit_depth=bit_depth or self.effective_bit_depth)
 
 
 @dataclass(frozen=True)
@@ -983,6 +1172,159 @@ def _translate_measure_colocalization(raw: _RawModule) -> ColocalizationStep:
     )
 
 
+def _translate_correct_illumination_calculate(
+    raw: _RawModule,
+) -> IlluminationCalculateStep:
+    _require(
+        raw.variable_revision_number == _ICALC_REVISION,
+        "CorrectIlluminationCalculate variable_revision_number="
+        f"{raw.variable_revision_number} is not supported (only "
+        f"{_ICALC_REVISION} is)",
+    )
+    _require(
+        len(raw.settings) == len(_ICALC_FIELDS),
+        f"CorrectIlluminationCalculate has {len(raw.settings)} settings, "
+        f"expected {len(_ICALC_FIELDS)} for revision {_ICALC_REVISION}",
+    )
+    values = dict(zip(_ICALC_FIELDS, raw.settings, strict=True))
+    _require(
+        values["each_or_all"] in _ICALC_EACH_OR_ALL,
+        f"unknown CorrectIlluminationCalculate each_or_all {values['each_or_all']!r}",
+    )
+    _require(
+        values["each_or_all"] == "Each",
+        f"CorrectIlluminationCalculate each_or_all={values['each_or_all']!r} needs "
+        "the full image set list (every cycle's own image), which does not fit "
+        "load_pipeline's single-image-set Pipeline.run(); call "
+        "cp_anywhere.calculate_illumination_across(...) directly on your own "
+        "loaded image sequence instead",
+    )
+    _require(
+        values["smoothing_method"]
+        in {
+            "No smoothing",
+            "Median Filter",
+            "Gaussian Filter",
+            "Fit Polynomial",
+            "Smooth to Average",
+        },
+        f"CorrectIlluminationCalculate smoothing_method={values['smoothing_method']!r} "
+        "is an explicit, out-of-scope gap (Convex Hull and Splines are not yet "
+        "implemented)",
+    )
+    _require(
+        values["dilate_objects"] in _YES_NO,
+        "CorrectIlluminationCalculate requires a Yes/No "
+        "'Dilate objects in the final averaged image?' flag",
+    )
+    return IlluminationCalculateStep(
+        input_image=values["input_image"],
+        output_image=values["output_image"],
+        intensity_choice=values["intensity_choice"],
+        dilate_objects=_YES_NO[values["dilate_objects"]],
+        object_dilation_radius=int(values["object_dilation_radius"]),
+        block_size=int(values["block_size"]),
+        rescale_option=values["rescale_option"],
+        smoothing_method=values["smoothing_method"],
+        automatic_object_width=values["automatic_object_width"],
+        object_width=float(values["object_width"]),
+        size_of_smoothing_filter=float(values["size_of_smoothing_filter"]),
+    )
+
+
+def _translate_correct_illumination_apply(raw: _RawModule) -> IlluminationApplyStep:
+    _require(
+        raw.variable_revision_number == _IAPPLY_REVISION,
+        "CorrectIlluminationApply variable_revision_number="
+        f"{raw.variable_revision_number} is not supported (only "
+        f"{_IAPPLY_REVISION} is)",
+    )
+    _require(
+        len(raw.settings) % _IAPPLY_SETTINGS_PER_IMAGE == _IAPPLY_TRAILING_SETTINGS,
+        f"CorrectIlluminationApply has {len(raw.settings)} settings, which is "
+        "not a valid image-group count plus the trailing truncate_low/"
+        "truncate_high settings",
+    )
+    image_count = len(raw.settings) // _IAPPLY_SETTINGS_PER_IMAGE
+    images = []
+    for i in range(image_count):
+        offset = i * _IAPPLY_SETTINGS_PER_IMAGE
+        input_image, output_image, illum_image, divide_or_subtract = raw.settings[
+            offset : offset + _IAPPLY_SETTINGS_PER_IMAGE
+        ]
+        _require(
+            divide_or_subtract in ("Divide", "Subtract"),
+            "unknown CorrectIlluminationApply divide_or_subtract "
+            f"{divide_or_subtract!r}",
+        )
+        images.append(
+            IlluminationApplyImage(
+                input_image=input_image,
+                output_image=output_image,
+                illumination_function_image=illum_image,
+                divide_or_subtract=divide_or_subtract,
+            )
+        )
+    truncate_low, truncate_high = raw.settings[
+        image_count * _IAPPLY_SETTINGS_PER_IMAGE :
+    ]
+    _require(
+        truncate_low in _YES_NO and truncate_high in _YES_NO,
+        "CorrectIlluminationApply requires Yes/No truncate_low/truncate_high flags",
+    )
+    return IlluminationApplyStep(
+        images=tuple(images),
+        truncate_low=_YES_NO[truncate_low],
+        truncate_high=_YES_NO[truncate_high],
+    )
+
+
+def _translate_save_images(raw: _RawModule) -> SaveImagesStep:
+    _require(
+        raw.variable_revision_number == _SAVE_IMAGES_REVISION,
+        f"SaveImages variable_revision_number={raw.variable_revision_number} "
+        f"is not supported (only {_SAVE_IMAGES_REVISION} is)",
+    )
+    _require(
+        len(raw.settings) == len(_SAVE_IMAGES_FIELDS),
+        f"SaveImages has {len(raw.settings)} settings, expected "
+        f"{len(_SAVE_IMAGES_FIELDS)} for revision {_SAVE_IMAGES_REVISION}",
+    )
+    values = dict(zip(_SAVE_IMAGES_FIELDS, raw.settings, strict=True))
+    _require(
+        values["save_image_or_figure"] == "Image",
+        "SaveImages save_image_or_figure="
+        f"{values['save_image_or_figure']!r} is an explicit, out-of-scope "
+        'gap (only "Image" is supported, not "Mask"/"Cropping"/'
+        '"Movie/Stack")',
+    )
+    _require(
+        values["file_name_method"] == "Single name",
+        "SaveImages file_name_method="
+        f"{values['file_name_method']!r} is an explicit, out-of-scope gap "
+        '(only "Single name" is supported -- "From image filename"/'
+        '"Sequential numbers" need per-image-set source-file/metadata '
+        "tracking this project does not have)",
+    )
+    _require(
+        values["file_format"] in _SAVE_IMAGES_FILE_FORMATS,
+        f"SaveImages file_format={values['file_format']!r} is an explicit, "
+        f"out-of-scope gap (only {sorted(_SAVE_IMAGES_FILE_FORMATS)!r} are "
+        'supported, not "h5")',
+    )
+    _require(
+        values["overwrite"] in _YES_NO,
+        "SaveImages requires a Yes/No Overwrite flag",
+    )
+    return SaveImagesStep(
+        image_name=values["image_name"],
+        file_name=values["single_file_name"],
+        file_format=values["file_format"],
+        bit_depth=values["bit_depth"],
+        overwrite=_YES_NO[values["overwrite"]],
+    )
+
+
 def _translate_export_to_database(raw: _RawModule) -> ExportToDatabaseStep:
     _require(
         raw.variable_revision_number == _ETD_REVISION,
@@ -1142,6 +1484,9 @@ _TRANSLATORS = {
     "MeasureTexture": _translate_measure_texture,
     "MeasureColocalization": _translate_measure_colocalization,
     "ExportToDatabase": _translate_export_to_database,
+    "CorrectIlluminationCalculate": _translate_correct_illumination_calculate,
+    "CorrectIlluminationApply": _translate_correct_illumination_apply,
+    "SaveImages": _translate_save_images,
     "IdentifySecondaryObjects": _translate_identify_secondary_objects,
     "IdentifyTertiaryObjects": _translate_identify_tertiary_objects,
     "MeasureObjectIntensity": _translate_measure_object_intensity,
@@ -1196,6 +1541,11 @@ class Pipeline:
     texture_steps: list[TextureStep] = field(default_factory=list)
     colocalization_steps: list[ColocalizationStep] = field(default_factory=list)
     export_steps: list[ExportToDatabaseStep] = field(default_factory=list)
+    illumination_calculate_steps: list[IlluminationCalculateStep] = field(
+        default_factory=list
+    )
+    illumination_apply_steps: list[IlluminationApplyStep] = field(default_factory=list)
+    save_images_steps: list[SaveImagesStep] = field(default_factory=list)
     skipped_modules: list[str] = field(default_factory=list)
 
     # Keep the execution stages together so label provenance remains visible.
@@ -1222,6 +1572,46 @@ class Pipeline:
         """
         segmentations: dict[str, SegmentationResult] = {}
         all_images: dict[str, np.ndarray] = dict(images)
+        for step in self.illumination_calculate_steps:
+            if step.input_image not in all_images:
+                msg = (
+                    "CorrectIlluminationCalculate needs image "
+                    f"{step.input_image!r}, not provided to run()"
+                )
+                raise CppipeError(msg)
+            all_images[step.output_image] = calculate_illumination(
+                _cp_converted_pixels(all_images[step.input_image]),
+                intensity_choice=step.intensity_choice,
+                block_size=step.block_size,
+                dilate_objects=step.dilate_objects,
+                object_dilation_radius=step.object_dilation_radius,
+                smoothing_method=step.smoothing_method,
+                automatic_object_width=step.automatic_object_width,
+                object_width=step.object_width,
+                size_of_smoothing_filter=step.size_of_smoothing_filter,
+                rescale_option=step.rescale_option,
+            )
+        for step in self.illumination_apply_steps:
+            for image_config in step.images:
+                for name in (
+                    image_config.input_image,
+                    image_config.illumination_function_image,
+                ):
+                    if name not in all_images:
+                        msg = (
+                            f"CorrectIlluminationApply needs image {name!r}, "
+                            "not provided to run()"
+                        )
+                        raise CppipeError(msg)
+                all_images[image_config.output_image] = apply_illumination(
+                    _cp_converted_pixels(all_images[image_config.input_image]),
+                    _cp_converted_pixels(
+                        all_images[image_config.illumination_function_image]
+                    ),
+                    divide_or_subtract=image_config.divide_or_subtract,
+                    truncate_low=step.truncate_low,
+                    truncate_high=step.truncate_high,
+                )
         # Real CellProfiler's ImageSet holds every image converted by
         # Image(convert=True): integer pixels rescaled to [0, 1] float32,
         # float pixels downcast to float32 (see cellprofiler_core's
@@ -1229,7 +1619,9 @@ class Pipeline:
         # run() hands them this converted view; segmentation keeps the
         # raw arrays because identify_primary_objects applies the same
         # integer rescale itself while thresholding (its own
-        # oracle-verified numerics).
+        # oracle-verified numerics). Corrected images (above) are
+        # already in that converted domain, so re-converting them here
+        # is a no-op.
         measurement_images = {
             name: _cp_converted_pixels(array) for name, array in all_images.items()
         }
@@ -1680,13 +2072,20 @@ def _append_step(
         | TextureStep
         | ColocalizationStep
         | ExportToDatabaseStep
+        | IlluminationCalculateStep
+        | IlluminationApplyStep
+        | SaveImagesStep
         | MeasurementStep
     ),
 ) -> None:
     """Route one translated step onto its matching :class:`Pipeline`
     list, by type -- a plain ``Measure*`` translation (anything not one
     of the dedicated step types) falls through to ``measurement_steps``."""
-    if isinstance(step, SegmentationStep):
+    if isinstance(
+        step, (IlluminationCalculateStep, IlluminationApplyStep, SaveImagesStep)
+    ):
+        _append_output_step(pipeline, step)
+    elif isinstance(step, SegmentationStep):
         pipeline.segmentation_steps.append(step)
     elif isinstance(step, SecondaryObjectsStep):
         pipeline.secondary_steps.append(step)
@@ -1704,6 +2103,22 @@ def _append_step(
         pipeline.export_steps.append(step)
     else:
         pipeline.measurement_steps.append(step)
+
+
+def _append_output_step(
+    pipeline: Pipeline,
+    step: IlluminationCalculateStep | IlluminationApplyStep | SaveImagesStep,
+) -> None:
+    """The ``CorrectIlluminationCalculate``/``CorrectIlluminationApply``/
+    ``SaveImages`` half of :func:`_append_step`'s dispatch, split out to
+    keep that function's own branch count under the complexity-lint
+    threshold."""
+    if isinstance(step, IlluminationCalculateStep):
+        pipeline.illumination_calculate_steps.append(step)
+    elif isinstance(step, IlluminationApplyStep):
+        pipeline.illumination_apply_steps.append(step)
+    else:
+        pipeline.save_images_steps.append(step)
 
 
 def load_pipeline(path: str | Path) -> Pipeline:

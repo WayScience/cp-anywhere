@@ -1,0 +1,1771 @@
+{
+  "reference": "CellProfiler 4.2.8 @ 2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "module_sha256": "4720036663d66dcd9615c8b5a91e0b8d79f376a7e2fd461b21b9ba40189c4a9b",
+  "scope": "2D, 'Each' mode only; 5 of 7 smoothing methods (everything except Convex Hull and Splines)",
+  "cases": [
+    {
+      "name": "small_none_regular_no_smoothing_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_no_smoothing_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_no_smoothing_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_no_smoothing_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_no_smoothing_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_no_smoothing_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_median_filter_manually_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_gaussian_filter_object_size_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_fit_polynomial_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_regular_smooth_to_average_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_no_smoothing_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_no_smoothing_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_no_smoothing_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_manually_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_manually_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_median_filter_manually_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_object_size_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_object_size_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_gaussian_filter_object_size_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_fit_polynomial_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_fit_polynomial_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_fit_polynomial_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_smooth_to_average_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_smooth_to_average_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_none_background_smooth_to_average_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_no_smoothing_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_median_filter_manually_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_gaussian_filter_object_size_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_fit_polynomial_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_yes_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_no_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_regular_smooth_to_average_automatic_median_dilated",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_no_smoothing_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_no_smoothing_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_no_smoothing_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_manually_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_manually_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_median_filter_manually_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_object_size_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_object_size_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_gaussian_filter_object_size_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_fit_polynomial_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_fit_polynomial_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_fit_polynomial_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_smooth_to_average_automatic_yes",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_smooth_to_average_automatic_no",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "small_partial_background_smooth_to_average_automatic_median",
+      "shape": [
+        24,
+        28
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_no_smoothing_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_median_filter_manually_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_gaussian_filter_object_size_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_fit_polynomial_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_regular_smooth_to_average_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_no_smoothing_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_no_smoothing_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_no_smoothing_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_manually_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_manually_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_median_filter_manually_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_object_size_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_object_size_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_gaussian_filter_object_size_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_fit_polynomial_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_fit_polynomial_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_fit_polynomial_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_smooth_to_average_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_smooth_to_average_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_none_background_smooth_to_average_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_no_smoothing_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_median_filter_manually_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_gaussian_filter_object_size_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_fit_polynomial_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_yes_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_no_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_regular_smooth_to_average_automatic_median_dilated",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_no_smoothing_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_no_smoothing_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_no_smoothing_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_manually_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_manually_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_median_filter_manually_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_object_size_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_object_size_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_gaussian_filter_object_size_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_fit_polynomial_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_fit_polynomial_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_fit_polynomial_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_smooth_to_average_automatic_yes",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_smooth_to_average_automatic_no",
+      "shape": [
+        31,
+        19
+      ]
+    },
+    {
+      "name": "tall_partial_background_smooth_to_average_automatic_median",
+      "shape": [
+        31,
+        19
+      ]
+    }
+  ]
+}

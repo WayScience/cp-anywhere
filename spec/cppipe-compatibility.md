@@ -9,10 +9,12 @@ implements (`IdentifyPrimaryObjects`, `IdentifySecondaryObjects`,
 `MeasureImageIntensity`, `MeasureObjectIntensity`, `MeasureObjectSizeShape`,
 `MeasureGranularity`, `MeasureObjectIntensityDistribution`,
 `MeasureTexture`, `MeasureColocalization`,
-`MeasureObjectNeighbors`, `ExportToDatabase`) into this project's own
-configuration, so an existing CellProfiler pipeline's settings for
-those modules can be reused 1-for-1, instead of re-entering them by
-hand.
+`MeasureObjectNeighbors`, `ExportToDatabase`,
+`CorrectIlluminationCalculate`, `CorrectIlluminationApply`, and `SaveImages`)
+into this project's own configuration.
+Supported configuration can be reused without manual re-entry.
+The limits below apply to each module.
+Import success does not imply full CellProfiler execution or automatic output.
 
 **This is a settings importer, not a full pipeline execution engine.**
 File-matching/organization modules (`Images`, `Metadata`,
@@ -234,7 +236,8 @@ Per `spec/compatibility.md`'s own declared scope:
   geometry. Closest-object numbers and relationship rows use retained
   IDs. An object set supplied only as a raw array has no diagnostic layer;
   requesting excluded-object geometry for it raises `CppipeError`.
-  Cross-object-set neighbors and non-`"Adjacent"` methods (`"Expand until adjacent"`, `"Within X pixels"`) remain explicit gaps.
+  Cross-object-set neighbors and `"Within X pixels"` remain explicit gaps.
+  The 2D `"Expand until adjacent"` method is implemented as described below.
 
 ### Real-world coverage note
 
@@ -343,6 +346,51 @@ aggregates). `load_pipeline` validates the real module's four
 "Hidden:" group counts (image/group-field/filter-field/
 workspace-measurement groups) to confirm the settings list's total
 length, but never reads their content -- none of that is implemented.
+
+## Illumination correction: configuration and limits
+
+`CorrectIlluminationCalculate` revision 2 maps its 23 positional fields to
+`IlluminationCalculateStep`.
+The importer supports `Each` mode and five smoothing methods:
+`No smoothing`, `Median Filter`, `Gaussian Filter`, `Fit Polynomial`, and
+`Smooth to Average`.
+It rejects Convex Hull, Splines, and both `All` modes.
+The standalone `calculate_illumination_across` API supplies shared-function
+calculation without CellProfiler's cycle scheduling.
+Retained averaged/dilated image configuration has no effect.
+
+`CorrectIlluminationApply` revision 5 maps repeated four-field image groups
+and two trailing clipping flags to `IlluminationApplyStep`.
+Each group identifies the source, output, correction image, and divide/subtract method.
+
+`Pipeline.run()` calculates correction images before application, segmentation,
+and measurements.
+It groups calculation and application modules rather than preserving arbitrary
+interleaving from the source pipeline.
+A later calculation that depends on an earlier application is therefore not supported.
+The runner also does not return intermediate correction images.
+`spec/illumination.md` gives the standalone API and numerical evidence.
+
+## `SaveImages`: explicit writes, not automatic pipeline output
+
+Revision 16 has 18 positional fields and maps to `SaveImagesStep`.
+The importer accepts `Image`, `Single name`, and TIFF/PNG/JPEG/NPY output.
+It rejects mask/cropping output, movie stacks, HDF5, and other naming methods.
+
+`step.write(image, path)` writes a caller-supplied array to an explicit destination.
+Its overwrite check respects the imported `overwrite` flag.
+`effective_bit_depth` honors the imported depth for TIFF and forces 8-bit
+conversion for PNG/JPEG.
+NPY bypasses conversion.
+The direct `save_array` API instead uses the caller's explicit bit depth.
+
+`Pipeline.run()` does not execute save steps or expose corrected arrays for them.
+Callers use the standalone correction API for explicit image output.
+Directory resolution, metadata substitution, cycle timing, filename measurements,
+subfolders, and TIFF compression configuration are not implemented.
+The importer currently consumes some unsupported configuration without rejecting it.
+These are compatibility gaps, not guarantees from a successful import.
+`spec/illumination.md` records the full current scope and reproduction commands.
 
 ## A combined-measurement superset, not a subset
 
