@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=7058058b" />
   
   <!-- So that users can add custom icons -->
   <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -130,6 +130,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../python-api.html">
     Python API
@@ -236,6 +243,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../python-api.html">
     Python API
@@ -398,7 +412,9 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">MeasurementResult</span><span class="p">,</span> <span class="n">measure</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.colocalization</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_colocalization</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.granularity</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_granularity</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.illumination</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_illumination</span><span class="p">,</span> <span class="n">calculate_illumination</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.intensity_distribution</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_intensity_distribution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.save_images</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIT_DEPTH_8</span><span class="p">,</span> <span class="n">save_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.segment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SecondaryObjectsResult</span><span class="p">,</span>
     <span class="n">identify_primary_objects</span><span class="p">,</span>
@@ -505,6 +521,44 @@
     <span class="s2">&quot;Accurate&quot;</span><span class="p">:</span> <span class="s2">&quot;accurate&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 <span class="n">_MIN_COLOCALIZATION_IMAGES</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_ICALC_REVISION</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="c1"># CorrectIlluminationCalculate&#39;s own fixed settings (confirmed against</span>
+<span class="c1"># a real pipeline.dump() of the pinned oracle -- see</span>
+<span class="c1"># scripts/reference/generate_illumination_calculate.py). The four</span>
+<span class="c1"># save_average_image/average_image_name/save_dilated_image/</span>
+<span class="c1"># dilated_image_name settings are consumed positionally but never</span>
+<span class="c1"># read (this project has no &quot;retain an intermediate image&quot; concept);</span>
+<span class="c1"># the six spline_* settings are likewise consumed positionally, only</span>
+<span class="c1"># read far enough to raise a clear error when Splines is requested.</span>
+<span class="n">_ICALC_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;input_image&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_image&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;intensity_choice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dilate_objects&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;object_dilation_radius&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_size&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rescale_option&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;each_or_all&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;smoothing_method&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;automatic_object_width&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;object_width&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;size_of_smoothing_filter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;save_average_image&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;average_image_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;save_dilated_image&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dilated_image_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;automatic_splines&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_mode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_points&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_threshold&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_rescale&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_maxiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spline_convergence&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">_ICALC_EACH_OR_ALL</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Each&quot;</span><span class="p">,</span> <span class="s2">&quot;All: First cycle&quot;</span><span class="p">,</span> <span class="s2">&quot;All: Across cycles&quot;</span><span class="p">}</span>
+<span class="n">_IAPPLY_REVISION</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">_IAPPLY_TRAILING_SETTINGS</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">_ETD_REVISION</span> <span class="o">=</span> <span class="mi">28</span>
 <span class="c1"># ExportToDatabase&#39;s own fixed leading settings (indices 0-38, confirmed</span>
 <span class="c1"># against a real pipeline.dump() of the pinned oracle -- see</span>
@@ -875,6 +929,170 @@
     <span class="n">do_costes</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">wants_image_measurements</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">wants_object_measurements</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<div class="viewcode-block" id="IlluminationCalculateStep">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IlluminationCalculateStep</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One translated ``CorrectIlluminationCalculate`` module, ``&quot;Each&quot;``</span>
+<span class="sd">    mode only: ``&quot;All: First cycle&quot;``/``&quot;All: Across cycles&quot;`` need the</span>
+<span class="sd">    full image set list (every cycle&#39;s own image, not just one), which</span>
+<span class="sd">    does not fit :meth:`Pipeline.run`&#39;s single-image-set signature --</span>
+<span class="sd">    an explicit, documented gap (use</span>
+<span class="sd">    :func:`cp_anywhere.calculate_illumination_across` directly on your</span>
+<span class="sd">    own loaded image sequence instead). ``Convex Hull`` and ``Splines``</span>
+<span class="sd">    smoothing methods are separate, not-yet-implemented gaps (see</span>
+<span class="sd">    :func:`cp_anywhere.calculate_illumination`); &quot;Retain the</span>
+<span class="sd">    averaged/dilated image?&quot; has no equivalent here (this project has</span>
+<span class="sd">    no &quot;intermediate image&quot; concept) and is silently not represented</span>
+<span class="sd">    -- CellProfiler&#39;s own `SaveImages` module would be needed to save</span>
+<span class="sd">    those, not this translator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">input_image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">output_image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">intensity_choice</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">dilate_objects</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">object_dilation_radius</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">block_size</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">rescale_option</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">smoothing_method</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">automatic_object_width</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">object_width</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">size_of_smoothing_filter</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<div class="viewcode-block" id="IlluminationApplyImage">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.IlluminationApplyImage">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IlluminationApplyImage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One of ``CorrectIlluminationApply``&#39;s repeated image groups.&quot;&quot;&quot;</span>
+
+    <span class="n">input_image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">output_image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">illumination_function_image</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">divide_or_subtract</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+
+<div class="viewcode-block" id="IlluminationApplyStep">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.IlluminationApplyStep">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">IlluminationApplyStep</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One translated ``CorrectIlluminationApply`` module: every</span>
+<span class="sd">    configured image group (CellProfiler lets one module instance</span>
+<span class="sd">    apply correction to several images at once, sharing the same</span>
+<span class="sd">    truncate settings).&quot;&quot;&quot;</span>
+
+    <span class="n">images</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">IlluminationApplyImage</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">truncate_low</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">truncate_high</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<span class="n">_SAVE_IMAGES_REVISION</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="c1"># SaveImages&#39; own fixed 18-setting positional layout (confirmed against</span>
+<span class="c1"># a real pipeline.dump() of the pinned oracle -- see</span>
+<span class="c1"># scripts/cppipe/generate_save_images_pipeline.py). Settings not listed</span>
+<span class="c1"># as a SaveImagesStep field below are consumed positionally to validate</span>
+<span class="c1"># the settings count. Some settings apply only to rejected modes.</span>
+<span class="c1"># Others (directory resolution, cycle timing, filename measurements,</span>
+<span class="c1"># subfolders, and TIFF compression) are not executed by this importer.</span>
+<span class="n">_SAVE_IMAGES_FIELDS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;save_image_or_figure&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;image_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_name_method&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_image_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;single_file_name&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;number_of_digits&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wants_file_name_suffix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_name_suffix&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file_format&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pathname&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bit_depth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;overwrite&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;when_to_save&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;update_file_names&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_subdirectories&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;root_dir&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stack_axis&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tiff_compress&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">_SAVE_IMAGES_FILE_FORMATS</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;tiff&quot;</span><span class="p">,</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;npy&quot;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="SaveImagesStep">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.SaveImagesStep">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SaveImagesStep</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One translated ``SaveImages`` module.</span>
+
+<span class="sd">    Only ``save_image_or_figure == &quot;Image&quot;`` (not ``&quot;Mask&quot;``,</span>
+<span class="sd">    ``&quot;Cropping&quot;``, or ``&quot;Movie/Stack&quot;``, which need a cropping mask or</span>
+<span class="sd">    multi-cycle frame-stacking concept this project does not have) and</span>
+<span class="sd">    ``file_name_method == &quot;Single name&quot;`` (not ``&quot;From image</span>
+<span class="sd">    filename&quot;``/``&quot;Sequential numbers&quot;``, which need per-image-set</span>
+<span class="sd">    source-file/metadata tracking this project does not have) are</span>
+<span class="sd">    supported -- explicit, documented gaps. ``&quot;h5&quot;`` (``FF_H5``) is a</span>
+<span class="sd">    separate, not-yet-implemented gap (see</span>
+<span class="sd">    :func:`cp_anywhere.save_images.save_array`&#39;s own module docstring);</span>
+<span class="sd">    ``&quot;tiff&quot;``/``&quot;png&quot;``/``&quot;jpeg&quot;``/``&quot;npy&quot;`` are supported.</span>
+
+<span class="sd">    Like :class:`ExportToDatabaseStep`, this project never resolves a</span>
+<span class="sd">    CellProfiler ``Directory`` setting&#39;s &quot;Default Output/Input Folder&quot;</span>
+<span class="sd">    choice to an absolute path -- the caller supplies ``path`` to</span>
+<span class="sd">    :meth:`write`, exactly as the caller supplies every image array to</span>
+<span class="sd">    :meth:`Pipeline.run`. ``file_name`` is kept as the module&#39;s raw</span>
+<span class="sd">    name setting. The directory setting is not retained, and</span>
+<span class="sd">    ``write()`` uses only the caller-supplied destination.</span>
+
+<span class="sd">    ``Pipeline.run()`` does not execute these save steps automatically.</span>
+<span class="sd">    Cycle timing, filename measurements, subfolders, and TIFF compression</span>
+<span class="sd">    settings are not implemented. See ``spec/illumination.md``.</span>
+
+<span class="sd">    Real CellProfiler&#39;s own ``get_bit_depth()`` forces 8-bit for every</span>
+<span class="sd">    file format except TIFF/HDF5, regardless of the ``bit_depth``</span>
+<span class="sd">    setting&#39;s own value -- :attr:`effective_bit_depth` already applies</span>
+<span class="sd">    that rule.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">image_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">file_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bit_depth</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">effective_bit_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The bit depth real CellProfiler would actually apply --</span>
+<span class="sd">        ``bit_depth`` is only honored for TIFF; every other supported</span>
+<span class="sd">        format (PNG/JPEG/NPY) is always forced to 8-bit integer (NPY&#39;s</span>
+<span class="sd">        own writer then ignores bit depth entirely regardless).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file_format</span> <span class="o">==</span> <span class="s2">&quot;tiff&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bit_depth</span>
+        <span class="k">return</span> <span class="n">BIT_DEPTH_8</span>
+
+<div class="viewcode-block" id="SaveImagesStep.write">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.SaveImagesStep.write">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bit_depth</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write ``image`` to ``path`` via</span>
+<span class="sd">        :func:`cp_anywhere.save_images.save_array`, using</span>
+<span class="sd">        :attr:`effective_bit_depth` unless ``bit_depth`` overrides it.</span>
+<span class="sd">        Honors this step&#39;s own ``overwrite`` setting.&quot;&quot;&quot;</span>
+        <span class="n">destination</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite</span> <span class="ow">and</span> <span class="n">destination</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;SaveImages: </span><span class="si">{</span><span class="n">destination</span><span class="si">}</span><span class="s2"> already exists and this &quot;</span>
+                <span class="s2">&quot;module&#39;s Overwrite setting is No&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">save_array</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">bit_depth</span><span class="o">=</span><span class="n">bit_depth</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">effective_bit_depth</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -1370,6 +1588,159 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_correct_illumination_calculate</span><span class="p">(</span>
+    <span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IlluminationCalculateStep</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_ICALC_REVISION</span><span class="p">,</span>
+        <span class="s2">&quot;CorrectIlluminationCalculate variable_revision_number=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span><span class="si">}</span><span class="s2"> is not supported (only &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_ICALC_REVISION</span><span class="si">}</span><span class="s2"> is)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ICALC_FIELDS</span><span class="p">),</span>
+        <span class="sa">f</span><span class="s2">&quot;CorrectIlluminationCalculate has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span><span class="si">}</span><span class="s2"> settings, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;expected </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">_ICALC_FIELDS</span><span class="p">)</span><span class="si">}</span><span class="s2"> for revision </span><span class="si">{</span><span class="n">_ICALC_REVISION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">_ICALC_FIELDS</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;each_or_all&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_ICALC_EACH_OR_ALL</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;unknown CorrectIlluminationCalculate each_or_all </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;each_or_all&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;each_or_all&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Each&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;CorrectIlluminationCalculate each_or_all=</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;each_or_all&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> needs &quot;</span>
+        <span class="s2">&quot;the full image set list (every cycle&#39;s own image), which does not fit &quot;</span>
+        <span class="s2">&quot;load_pipeline&#39;s single-image-set Pipeline.run(); call &quot;</span>
+        <span class="s2">&quot;cp_anywhere.calculate_illumination_across(...) directly on your own &quot;</span>
+        <span class="s2">&quot;loaded image sequence instead&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;smoothing_method&quot;</span><span class="p">]</span>
+        <span class="ow">in</span> <span class="p">{</span>
+            <span class="s2">&quot;No smoothing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Median Filter&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Gaussian Filter&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Fit Polynomial&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Smooth to Average&quot;</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="sa">f</span><span class="s2">&quot;CorrectIlluminationCalculate smoothing_method=</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;smoothing_method&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> &quot;</span>
+        <span class="s2">&quot;is an explicit, out-of-scope gap (Convex Hull and Splines are not yet &quot;</span>
+        <span class="s2">&quot;implemented)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;dilate_objects&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_YES_NO</span><span class="p">,</span>
+        <span class="s2">&quot;CorrectIlluminationCalculate requires a Yes/No &quot;</span>
+        <span class="s2">&quot;&#39;Dilate objects in the final averaged image?&#39; flag&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">IlluminationCalculateStep</span><span class="p">(</span>
+        <span class="n">input_image</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;input_image&quot;</span><span class="p">],</span>
+        <span class="n">output_image</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;output_image&quot;</span><span class="p">],</span>
+        <span class="n">intensity_choice</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;intensity_choice&quot;</span><span class="p">],</span>
+        <span class="n">dilate_objects</span><span class="o">=</span><span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;dilate_objects&quot;</span><span class="p">]],</span>
+        <span class="n">object_dilation_radius</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;object_dilation_radius&quot;</span><span class="p">]),</span>
+        <span class="n">block_size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;block_size&quot;</span><span class="p">]),</span>
+        <span class="n">rescale_option</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;rescale_option&quot;</span><span class="p">],</span>
+        <span class="n">smoothing_method</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;smoothing_method&quot;</span><span class="p">],</span>
+        <span class="n">automatic_object_width</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;automatic_object_width&quot;</span><span class="p">],</span>
+        <span class="n">object_width</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;object_width&quot;</span><span class="p">]),</span>
+        <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;size_of_smoothing_filter&quot;</span><span class="p">]),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_correct_illumination_apply</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IlluminationApplyStep</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_IAPPLY_REVISION</span><span class="p">,</span>
+        <span class="s2">&quot;CorrectIlluminationApply variable_revision_number=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span><span class="si">}</span><span class="s2"> is not supported (only &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_IAPPLY_REVISION</span><span class="si">}</span><span class="s2"> is)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="o">%</span> <span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span> <span class="o">==</span> <span class="n">_IAPPLY_TRAILING_SETTINGS</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;CorrectIlluminationApply has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span><span class="si">}</span><span class="s2"> settings, which is &quot;</span>
+        <span class="s2">&quot;not a valid image-group count plus the trailing truncate_low/&quot;</span>
+        <span class="s2">&quot;truncate_high settings&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">image_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="o">//</span> <span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">image_count</span><span class="p">):</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">i</span> <span class="o">*</span> <span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span>
+        <span class="n">input_image</span><span class="p">,</span> <span class="n">output_image</span><span class="p">,</span> <span class="n">illum_image</span><span class="p">,</span> <span class="n">divide_or_subtract</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span>
+            <span class="n">offset</span> <span class="p">:</span> <span class="n">offset</span> <span class="o">+</span> <span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span>
+        <span class="p">]</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">divide_or_subtract</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Divide&quot;</span><span class="p">,</span> <span class="s2">&quot;Subtract&quot;</span><span class="p">),</span>
+            <span class="s2">&quot;unknown CorrectIlluminationApply divide_or_subtract &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">divide_or_subtract</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">IlluminationApplyImage</span><span class="p">(</span>
+                <span class="n">input_image</span><span class="o">=</span><span class="n">input_image</span><span class="p">,</span>
+                <span class="n">output_image</span><span class="o">=</span><span class="n">output_image</span><span class="p">,</span>
+                <span class="n">illumination_function_image</span><span class="o">=</span><span class="n">illum_image</span><span class="p">,</span>
+                <span class="n">divide_or_subtract</span><span class="o">=</span><span class="n">divide_or_subtract</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">truncate_low</span><span class="p">,</span> <span class="n">truncate_high</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span>
+        <span class="n">image_count</span> <span class="o">*</span> <span class="n">_IAPPLY_SETTINGS_PER_IMAGE</span> <span class="p">:</span>
+    <span class="p">]</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">truncate_low</span> <span class="ow">in</span> <span class="n">_YES_NO</span> <span class="ow">and</span> <span class="n">truncate_high</span> <span class="ow">in</span> <span class="n">_YES_NO</span><span class="p">,</span>
+        <span class="s2">&quot;CorrectIlluminationApply requires Yes/No truncate_low/truncate_high flags&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">IlluminationApplyStep</span><span class="p">(</span>
+        <span class="n">images</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">images</span><span class="p">),</span>
+        <span class="n">truncate_low</span><span class="o">=</span><span class="n">_YES_NO</span><span class="p">[</span><span class="n">truncate_low</span><span class="p">],</span>
+        <span class="n">truncate_high</span><span class="o">=</span><span class="n">_YES_NO</span><span class="p">[</span><span class="n">truncate_high</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_save_images</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SaveImagesStep</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_SAVE_IMAGES_REVISION</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;SaveImages variable_revision_number=</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;is not supported (only </span><span class="si">{</span><span class="n">_SAVE_IMAGES_REVISION</span><span class="si">}</span><span class="s2"> is)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_SAVE_IMAGES_FIELDS</span><span class="p">),</span>
+        <span class="sa">f</span><span class="s2">&quot;SaveImages has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span><span class="si">}</span><span class="s2"> settings, expected &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">_SAVE_IMAGES_FIELDS</span><span class="p">)</span><span class="si">}</span><span class="s2"> for revision </span><span class="si">{</span><span class="n">_SAVE_IMAGES_REVISION</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">_SAVE_IMAGES_FIELDS</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;save_image_or_figure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Image&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SaveImages save_image_or_figure=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;save_image_or_figure&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is an explicit, out-of-scope &quot;</span>
+        <span class="s1">&#39;gap (only &quot;Image&quot; is supported, not &quot;Mask&quot;/&quot;Cropping&quot;/&#39;</span>
+        <span class="s1">&#39;&quot;Movie/Stack&quot;)&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;file_name_method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;Single name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;SaveImages file_name_method=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;file_name_method&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is an explicit, out-of-scope gap &quot;</span>
+        <span class="s1">&#39;(only &quot;Single name&quot; is supported -- &quot;From image filename&quot;/&#39;</span>
+        <span class="s1">&#39;&quot;Sequential numbers&quot; need per-image-set source-file/metadata &#39;</span>
+        <span class="s2">&quot;tracking this project does not have)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;file_format&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_SAVE_IMAGES_FILE_FORMATS</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;SaveImages file_format=</span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;file_format&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is an explicit, &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;out-of-scope gap (only </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">_SAVE_IMAGES_FILE_FORMATS</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> are &quot;</span>
+        <span class="s1">&#39;supported, not &quot;h5&quot;)&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_YES_NO</span><span class="p">,</span>
+        <span class="s2">&quot;SaveImages requires a Yes/No Overwrite flag&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">SaveImagesStep</span><span class="p">(</span>
+        <span class="n">image_name</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;image_name&quot;</span><span class="p">],</span>
+        <span class="n">file_name</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;single_file_name&quot;</span><span class="p">],</span>
+        <span class="n">file_format</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;file_format&quot;</span><span class="p">],</span>
+        <span class="n">bit_depth</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;bit_depth&quot;</span><span class="p">],</span>
+        <span class="n">overwrite</span><span class="o">=</span><span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;overwrite&quot;</span><span class="p">]],</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_translate_export_to_database</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportToDatabaseStep</span><span class="p">:</span>
     <span class="n">_require</span><span class="p">(</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_ETD_REVISION</span><span class="p">,</span>
@@ -1529,6 +1900,9 @@
     <span class="s2">&quot;MeasureTexture&quot;</span><span class="p">:</span> <span class="n">_translate_measure_texture</span><span class="p">,</span>
     <span class="s2">&quot;MeasureColocalization&quot;</span><span class="p">:</span> <span class="n">_translate_measure_colocalization</span><span class="p">,</span>
     <span class="s2">&quot;ExportToDatabase&quot;</span><span class="p">:</span> <span class="n">_translate_export_to_database</span><span class="p">,</span>
+    <span class="s2">&quot;CorrectIlluminationCalculate&quot;</span><span class="p">:</span> <span class="n">_translate_correct_illumination_calculate</span><span class="p">,</span>
+    <span class="s2">&quot;CorrectIlluminationApply&quot;</span><span class="p">:</span> <span class="n">_translate_correct_illumination_apply</span><span class="p">,</span>
+    <span class="s2">&quot;SaveImages&quot;</span><span class="p">:</span> <span class="n">_translate_save_images</span><span class="p">,</span>
     <span class="s2">&quot;IdentifySecondaryObjects&quot;</span><span class="p">:</span> <span class="n">_translate_identify_secondary_objects</span><span class="p">,</span>
     <span class="s2">&quot;IdentifyTertiaryObjects&quot;</span><span class="p">:</span> <span class="n">_translate_identify_tertiary_objects</span><span class="p">,</span>
     <span class="s2">&quot;MeasureObjectIntensity&quot;</span><span class="p">:</span> <span class="n">_translate_measure_object_intensity</span><span class="p">,</span>
@@ -1585,6 +1959,11 @@
     <span class="n">texture_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TextureStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">colocalization_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ColocalizationStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">export_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ExportToDatabaseStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">illumination_calculate_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IlluminationCalculateStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span>
+    <span class="p">)</span>
+    <span class="n">illumination_apply_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IlluminationApplyStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">save_images_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SaveImagesStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">skipped_modules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="c1"># Keep the execution stages together so label provenance remains visible.</span>
@@ -1613,6 +1992,46 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">segmentations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">all_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">illumination_calculate_steps</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">input_image</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_images</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;CorrectIlluminationCalculate needs image &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">input_image</span><span class="si">!r}</span><span class="s2">, not provided to run()&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">all_images</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">output_image</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_illumination</span><span class="p">(</span>
+                <span class="n">_cp_converted_pixels</span><span class="p">(</span><span class="n">all_images</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">input_image</span><span class="p">]),</span>
+                <span class="n">intensity_choice</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">intensity_choice</span><span class="p">,</span>
+                <span class="n">block_size</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">block_size</span><span class="p">,</span>
+                <span class="n">dilate_objects</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">dilate_objects</span><span class="p">,</span>
+                <span class="n">object_dilation_radius</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">object_dilation_radius</span><span class="p">,</span>
+                <span class="n">smoothing_method</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">smoothing_method</span><span class="p">,</span>
+                <span class="n">automatic_object_width</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">automatic_object_width</span><span class="p">,</span>
+                <span class="n">object_width</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">object_width</span><span class="p">,</span>
+                <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">size_of_smoothing_filter</span><span class="p">,</span>
+                <span class="n">rescale_option</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">rescale_option</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">illumination_apply_steps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">image_config</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span>
+                    <span class="n">image_config</span><span class="o">.</span><span class="n">input_image</span><span class="p">,</span>
+                    <span class="n">image_config</span><span class="o">.</span><span class="n">illumination_function_image</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">all_images</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;CorrectIlluminationApply needs image </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, &quot;</span>
+                            <span class="s2">&quot;not provided to run()&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">all_images</span><span class="p">[</span><span class="n">image_config</span><span class="o">.</span><span class="n">output_image</span><span class="p">]</span> <span class="o">=</span> <span class="n">apply_illumination</span><span class="p">(</span>
+                    <span class="n">_cp_converted_pixels</span><span class="p">(</span><span class="n">all_images</span><span class="p">[</span><span class="n">image_config</span><span class="o">.</span><span class="n">input_image</span><span class="p">]),</span>
+                    <span class="n">_cp_converted_pixels</span><span class="p">(</span>
+                        <span class="n">all_images</span><span class="p">[</span><span class="n">image_config</span><span class="o">.</span><span class="n">illumination_function_image</span><span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="n">divide_or_subtract</span><span class="o">=</span><span class="n">image_config</span><span class="o">.</span><span class="n">divide_or_subtract</span><span class="p">,</span>
+                    <span class="n">truncate_low</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">truncate_low</span><span class="p">,</span>
+                    <span class="n">truncate_high</span><span class="o">=</span><span class="n">step</span><span class="o">.</span><span class="n">truncate_high</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="c1"># Real CellProfiler&#39;s ImageSet holds every image converted by</span>
         <span class="c1"># Image(convert=True): integer pixels rescaled to [0, 1] float32,</span>
         <span class="c1"># float pixels downcast to float32 (see cellprofiler_core&#39;s</span>
@@ -1620,7 +2039,9 @@
         <span class="c1"># run() hands them this converted view; segmentation keeps the</span>
         <span class="c1"># raw arrays because identify_primary_objects applies the same</span>
         <span class="c1"># integer rescale itself while thresholding (its own</span>
-        <span class="c1"># oracle-verified numerics).</span>
+        <span class="c1"># oracle-verified numerics). Corrected images (above) are</span>
+        <span class="c1"># already in that converted domain, so re-converting them here</span>
+        <span class="c1"># is a no-op.</span>
         <span class="n">measurement_images</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">name</span><span class="p">:</span> <span class="n">_cp_converted_pixels</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">all_images</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
@@ -2073,13 +2494,20 @@
         <span class="o">|</span> <span class="n">TextureStep</span>
         <span class="o">|</span> <span class="n">ColocalizationStep</span>
         <span class="o">|</span> <span class="n">ExportToDatabaseStep</span>
+        <span class="o">|</span> <span class="n">IlluminationCalculateStep</span>
+        <span class="o">|</span> <span class="n">IlluminationApplyStep</span>
+        <span class="o">|</span> <span class="n">SaveImagesStep</span>
         <span class="o">|</span> <span class="n">MeasurementStep</span>
     <span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Route one translated step onto its matching :class:`Pipeline`</span>
 <span class="sd">    list, by type -- a plain ``Measure*`` translation (anything not one</span>
 <span class="sd">    of the dedicated step types) falls through to ``measurement_steps``.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SegmentationStep</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">IlluminationCalculateStep</span><span class="p">,</span> <span class="n">IlluminationApplyStep</span><span class="p">,</span> <span class="n">SaveImagesStep</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="n">_append_output_step</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SegmentationStep</span><span class="p">):</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">segmentation_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SecondaryObjectsStep</span><span class="p">):</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">secondary_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
@@ -2097,6 +2525,22 @@
         <span class="n">pipeline</span><span class="o">.</span><span class="n">export_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">measurement_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_append_output_step</span><span class="p">(</span>
+    <span class="n">pipeline</span><span class="p">:</span> <span class="n">Pipeline</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="n">IlluminationCalculateStep</span> <span class="o">|</span> <span class="n">IlluminationApplyStep</span> <span class="o">|</span> <span class="n">SaveImagesStep</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``CorrectIlluminationCalculate``/``CorrectIlluminationApply``/</span>
+<span class="sd">    ``SaveImages`` half of :func:`_append_step`&#39;s dispatch, split out to</span>
+<span class="sd">    keep that function&#39;s own branch count under the complexity-lint</span>
+<span class="sd">    threshold.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">IlluminationCalculateStep</span><span class="p">):</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">illumination_calculate_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">IlluminationApplyStep</span><span class="p">):</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">illumination_apply_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">save_images_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="load_pipeline">

@@ -1,0 +1,439 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cell-00",
+   "metadata": {},
+   "source": [
+    "# Cell Profiling Anywhere\n",
+    "\n",
+    "## From microscopy images to cell profiles\n",
+    "\n",
+    "**Correct illumination → segment cells → measure features → save results.**\n",
+    "\n",
+    "This notebook demonstrates **illumination correction, segmentation, and measurements** with `cp-anywhere`.\n",
+    "The main workflow uses corrected images to find cells and calculate their features.\n",
+    "You can use image files or NumPy arrays, work with pandas tables, and save results for later analysis.\n",
+    "The measurement engine runs in Rust. No CellProfiler application is needed for this example.\n",
+    "\n",
+    "We use a bundled real DNA/actin image from [BBBC007](https://bbbc.broadinstitute.org/BBBC007).\n",
+    "No image download is needed. The sample is a small crop, not a complete biological experiment.\n",
+    "\n",
+    "### Start here\n",
+    "\n",
+    "From the repository root, run `uv sync --frozen --group docs`.\n",
+    "Open this notebook and select the repository's `.venv` Python interpreter.\n",
+    "Run the cells in order."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-01",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%matplotlib inline\n",
+    "\n",
+    "from pathlib import Path\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import pandas as pd\n",
+    "\n",
+    "import cp_anywhere as cp\n",
+    "\n",
+    "# Work from either the repository root or this notebook's folder.\n",
+    "project = Path.cwd()\n",
+    "if not (project / \"fixtures\").exists():\n",
+    "    project = Path(\"../..\")\n",
+    "\n",
+    "sample = project / \"fixtures/real/real_bbbc007\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-02",
+   "metadata": {},
+   "source": [
+    "## 1. Load two images\n",
+    "\n",
+    "`load_array` reads NPY, TIFF, PNG, and other supported image formats.\n",
+    "These sample images are 8-bit, so dividing by `255` puts intensities between zero and one.\n",
+    "For your own data, change the file paths and use the correct intensity scale."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-03",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "dna = cp.load_array(sample / \"DNA.npy\").astype(float) / 255\n",
+    "actin = cp.load_array(sample / \"Actin.npy\").astype(float) / 255\n",
+    "\n",
+    "fig, axes = plt.subplots(1, 2, figsize=(7, 3))\n",
+    "axes[0].imshow(dna, cmap=\"gray\")\n",
+    "axes[0].set_title(\"DNA\")\n",
+    "axes[1].imshow(actin, cmap=\"gray\")\n",
+    "axes[1].set_title(\"Actin\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## 2. Correct illumination\n",
+    "\n",
+    "Estimate a smooth correction function separately for DNA and actin.\n",
+    "Then divide each channel by its own function.\n",
+    "The corrected images feed the segmentation and measurement steps below.\n",
+    "\n",
+    "Here we use a 64-pixel smoothing width and relative median scaling.\n",
+    "These are demonstration choices, not a calibrated correction for this microscope.\n",
+    "For real experiments, use appropriate reference images for each channel and inspect the results."
+   ],
+   "id": "cell-04"
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "dna_illumination = cp.calculate_illumination(\n",
+    "    dna,\n",
+    "    automatic_object_width=\"Manually\",\n",
+    "    size_of_smoothing_filter=64,\n",
+    "    rescale_option=\"Median\",\n",
+    ")\n",
+    "actin_illumination = cp.calculate_illumination(\n",
+    "    actin,\n",
+    "    automatic_object_width=\"Manually\",\n",
+    "    size_of_smoothing_filter=64,\n",
+    "    rescale_option=\"Median\",\n",
+    ")\n",
+    "\n",
+    "dna_corrected = cp.apply_illumination(dna, dna_illumination)\n",
+    "actin_corrected = cp.apply_illumination(actin, actin_illumination)"
+   ],
+   "id": "cell-05"
+  },
+  {
+   "cell_type": "code",
+   "metadata": {},
+   "execution_count": null,
+   "outputs": [],
+   "source": [
+    "# Each pair uses the same display range so brightness stays comparable.\n",
+    "fig, axes = plt.subplots(2, 2, figsize=(7, 6))\n",
+    "axes[0, 0].imshow(dna, cmap=\"gray\", vmin=0, vmax=1)\n",
+    "axes[0, 0].set_title(\"DNA before correction\")\n",
+    "axes[0, 1].imshow(dna_corrected, cmap=\"gray\", vmin=0, vmax=1)\n",
+    "axes[0, 1].set_title(\"DNA after correction\")\n",
+    "axes[1, 0].imshow(actin, cmap=\"gray\", vmin=0, vmax=1)\n",
+    "axes[1, 0].set_title(\"Actin before correction\")\n",
+    "axes[1, 1].imshow(actin_corrected, cmap=\"gray\", vmin=0, vmax=1)\n",
+    "axes[1, 1].set_title(\"Actin after correction\")\n",
+    "plt.tight_layout()\n",
+    "plt.show()"
+   ],
+   "id": "cell-06"
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-07",
+   "metadata": {},
+   "source": [
+    "## 3. Segment nuclei, cells, and cytoplasm\n",
+    "\n",
+    "Find nuclei in the corrected DNA image. Grow cell regions around them using the corrected actin image.\n",
+    "Then remove the nuclei from those regions to get cytoplasm.\n",
+    "\n",
+    "The nucleus size limits are in pixels. They suit this example, not every dataset.\n",
+    "These are new segmentations, not the dataset's manual ground truth."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-08",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "nuclei = cp.identify_primary_objects(\n",
+    "    dna_corrected,\n",
+    "    min_diameter=10,\n",
+    "    max_diameter=40,\n",
+    "    exclude_size=True,\n",
+    ")\n",
+    "cells = cp.identify_secondary_objects(actin_corrected, nuclei.labels)\n",
+    "cytoplasm = cp.identify_tertiary_objects(\n",
+    "    nuclei.labels,\n",
+    "    cells.labels,\n",
+    "    shrink_primary=False,\n",
+    ")\n",
+    "\n",
+    "print(f\"Found {nuclei.object_count} cells\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-09",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "fig, axes = plt.subplots(1, 3, figsize=(10, 3))\n",
+    "axes[0].imshow(nuclei.labels, cmap=\"nipy_spectral\")\n",
+    "axes[0].set_title(\"Nuclei\")\n",
+    "axes[1].imshow(cells.labels, cmap=\"nipy_spectral\")\n",
+    "axes[1].set_title(\"Cells\")\n",
+    "axes[2].imshow(cytoplasm.labels, cmap=\"nipy_spectral\")\n",
+    "axes[2].set_title(\"Cytoplasm\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-10",
+   "metadata": {},
+   "source": [
+    "## 4. Measure cell features\n",
+    "\n",
+    "Give `measure` the corrected images and the labels from segmentation.\n",
+    "The names become part of the output, so your channels and compartments stay identifiable.\n",
+    "\n",
+    "This call measures intensity, size/shape, and neighboring cells.\n",
+    "All three compartments share cell IDs because we created them together.\n",
+    "The areas use pixel units."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-11",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "images = {\"DNA\": dna_corrected, \"Actin\": actin_corrected}\n",
+    "objects = {\n",
+    "    \"Cells\": cells.labels,\n",
+    "    \"Nuclei\": nuclei.labels,\n",
+    "    \"Cytoplasm\": cytoplasm.labels,\n",
+    "}\n",
+    "\n",
+    "result = cp.measure(\n",
+    "    images,\n",
+    "    objects,\n",
+    "    families=[\"image_intensity\", \"object_intensity\", \"object_size_shape\", \"neighbors\"],\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-12",
+   "metadata": {},
+   "source": [
+    "Make a pandas table with one row per cell.\n",
+    "The full table contains all cell features. Here we show a few useful columns."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-13",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "profiles = pd.DataFrame(result.features[\"Cells\"], index=result.object_ids[\"Cells\"])\n",
+    "profiles.index.name = \"cell_id\"\n",
+    "\n",
+    "print(f\"{len(profiles)} cells, {len(profiles.columns)} features per cell\")\n",
+    "profiles[\n",
+    "    [\n",
+    "        \"AreaShape_Area\",\n",
+    "        \"Intensity_MeanIntensity_DNA\",\n",
+    "        \"Intensity_MeanIntensity_Actin\",\n",
+    "        \"Neighbors_NumberOfNeighbors_Adjacent\",\n",
+    "    ]\n",
+    "].round(3)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-14",
+   "metadata": {},
+   "source": [
+    "Now use ordinary pandas plotting. Each point is one cell."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-15",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "profiles.plot.scatter(x=\"AreaShape_Area\", y=\"Intensity_MeanIntensity_DNA\")\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-16",
+   "metadata": {},
+   "source": [
+    "## 5. Save the results\n",
+    "\n",
+    "Save the cell table as CSV or Parquet. Save the labels and correction functions as NPY.\n",
+    "Save the corrected images as TIFF.\n",
+    "You can also save all compartments together, or export to SQLite.\n",
+    "\n",
+    "These example files go into `docs/_build/notebook-output`.\n",
+    "Change `output` to a directory of your choice. Rerunning these cells replaces the example files."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-17",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "output = project / \"docs/_build/notebook-output\"\n",
+    "output.mkdir(parents=True, exist_ok=True)\n",
+    "\n",
+    "profiles.to_csv(output / \"cell_profiles.csv\")\n",
+    "profiles.to_parquet(output / \"cell_profiles.parquet\")\n",
+    "cp.save_array(cells.labels, output / \"cells.npy\")\n",
+    "cp.save_array(dna_illumination, output / \"dna_illumination.npy\")\n",
+    "cp.save_array(actin_illumination, output / \"actin_illumination.npy\")\n",
+    "cp.save_array(\n",
+    "    dna_corrected, output / \"dna_corrected.tiff\", bit_depth=\"32-bit floating point\"\n",
+    ")\n",
+    "cp.save_array(\n",
+    "    actin_corrected, output / \"actin_corrected.tiff\", bit_depth=\"32-bit floating point\"\n",
+    ")\n",
+    "\n",
+    "# Keep all compartments in one table, with one row per cell.\n",
+    "result.to_parquet(output / \"all_compartments.parquet\", mode=\"joined\")\n",
+    "result.to_sqlite(output / \"profiles.sqlite\", if_exists=\"replace\")\n",
+    "\n",
+    "print(f\"Saved files to {output}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-18",
+   "metadata": {},
+   "source": [
+    "Read the table back whenever you need it."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-19",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "saved_profiles = pd.read_parquet(output / \"cell_profiles.parquet\")\n",
+    "saved_profiles.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-20",
+   "metadata": {},
+   "source": [
+    "## A few optional extras\n",
+    "\n",
+    "The same arrays work with more of the Python API.\n",
+    "These independent examples do not change the profiles saved above."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-21",
+   "metadata": {},
+   "source": [
+    "### Add texture measurements\n",
+    "\n",
+    "Measure actin texture within the same cells. The result has one row per cell."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-22",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "texture = cp.measure_texture(actin_corrected, cells.labels, image_name=\"Actin\")\n",
+    "texture_profiles = pd.DataFrame(texture.objects, index=profiles.index)\n",
+    "texture_profiles.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-23",
+   "metadata": {},
+   "source": [
+    "### Already have images and labels on disk?\n",
+    "\n",
+    "`measure_files` skips the segmentation steps and returns a pandas table directly.\n",
+    "Here we use the bundled manual-derived labels, so these measurements differ from our new segmentation.\n",
+    "This example keeps the original 8-bit intensity scale."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "cell-24",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "file_measurements = cp.measure_files(sample / \"DNA.npy\", sample / \"labels.npy\")\n",
+    "file_measurements.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "cell-25",
+   "metadata": {},
+   "source": [
+    "## Take it anywhere\n",
+    "\n",
+    "Replace the sample files with your own aligned images.\n",
+    "Use existing labels or create them in Python.\n",
+    "Measure, inspect, and export without leaving your analysis environment.\n",
+    "\n",
+    "The bundled sample is a 128 × 128 crop of BBBC007v1 Drosophila Kc167 cells, field `A9 p10`, with a CC0 waiver.\n",
+    "Its provenance is recorded in `reference/vendor/bbbc007/README.md`.\n",
+    "\n",
+    "This notebook covers supported native Python features, not every CellProfiler module or the browser API.\n",
+    "Inspect segmentation before interpreting measurements.\n",
+    "The docs build runs every code cell, so the example stays executable."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.11"
+  },
+  "mystnb": {
+   "execution_raise_on_error": true,
+   "execution_timeout": 120
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=7058058b" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -48,7 +48,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Project documentation" href="project-docs.html" />
-    <link rel="prev" title="cp-anywhere" href="index.html" />
+    <link rel="prev" title="Cell Profiling Anywhere" href="cell-profiling-anywhere.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -133,6 +133,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     Python API
@@ -237,6 +244,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
     Python API
@@ -1153,6 +1167,132 @@ on, and <code class="docutils literal notranslate"><span class="pre">cp_anywhere
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyImage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">IlluminationApplyImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">illumination_function_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">divide_or_subtract</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#IlluminationApplyImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyImage" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One of <code class="docutils literal notranslate"><span class="pre">CorrectIlluminationApply</span></code>’s repeated image groups.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyImage.divide_or_subtract">
+<span class="sig-name descname"><span class="pre">divide_or_subtract</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyImage.divide_or_subtract" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyImage.illumination_function_image">
+<span class="sig-name descname"><span class="pre">illumination_function_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyImage.illumination_function_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyImage.input_image">
+<span class="sig-name descname"><span class="pre">input_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyImage.input_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyImage.output_image">
+<span class="sig-name descname"><span class="pre">output_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyImage.output_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">IlluminationApplyStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationApplyImage" title="src.cp_anywhere.cppipe.IlluminationApplyImage"><span class="pre">IlluminationApplyImage</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_low</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">truncate_high</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#IlluminationApplyStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">CorrectIlluminationApply</span></code> module: every
+configured image group (CellProfiler lets one module instance
+apply correction to several images at once, sharing the same
+truncate settings).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyStep.images">
+<span class="sig-name descname"><span class="pre">images</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationApplyImage" title="src.cp_anywhere.cppipe.IlluminationApplyImage"><span class="pre">IlluminationApplyImage</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyStep.images" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyStep.truncate_high">
+<span class="sig-name descname"><span class="pre">truncate_high</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyStep.truncate_high" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationApplyStep.truncate_low">
+<span class="sig-name descname"><span class="pre">truncate_low</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationApplyStep.truncate_low" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">IlluminationCalculateStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_choice</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dilate_objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_dilation_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescale_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">automatic_object_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_of_smoothing_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#IlluminationCalculateStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">CorrectIlluminationCalculate</span></code> module, <code class="docutils literal notranslate"><span class="pre">&quot;Each&quot;</span></code>
+mode only: <code class="docutils literal notranslate"><span class="pre">&quot;All:</span> <span class="pre">First</span> <span class="pre">cycle&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;All:</span> <span class="pre">Across</span> <span class="pre">cycles&quot;</span></code> need the
+full image set list (every cycle’s own image, not just one), which
+does not fit <a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.run" title="src.cp_anywhere.cppipe.Pipeline.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pipeline.run()</span></code></a>’s single-image-set signature –
+an explicit, documented gap (use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.calculate_illumination_across()</span></code> directly on your
+own loaded image sequence instead). <code class="docutils literal notranslate"><span class="pre">Convex</span> <span class="pre">Hull</span></code> and <code class="docutils literal notranslate"><span class="pre">Splines</span></code>
+smoothing methods are separate, not-yet-implemented gaps (see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.calculate_illumination()</span></code>); “Retain the
+averaged/dilated image?” has no equivalent here (this project has
+no “intermediate image” concept) and is silently not represented
+– CellProfiler’s own <cite>SaveImages</cite> module would be needed to save
+those, not this translator.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.automatic_object_width">
+<span class="sig-name descname"><span class="pre">automatic_object_width</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.automatic_object_width" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.block_size">
+<span class="sig-name descname"><span class="pre">block_size</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.block_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.dilate_objects">
+<span class="sig-name descname"><span class="pre">dilate_objects</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.dilate_objects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.input_image">
+<span class="sig-name descname"><span class="pre">input_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.input_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.intensity_choice">
+<span class="sig-name descname"><span class="pre">intensity_choice</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.intensity_choice" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.object_dilation_radius">
+<span class="sig-name descname"><span class="pre">object_dilation_radius</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.object_dilation_radius" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.object_width">
+<span class="sig-name descname"><span class="pre">object_width</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.object_width" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.output_image">
+<span class="sig-name descname"><span class="pre">output_image</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.output_image" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.rescale_option">
+<span class="sig-name descname"><span class="pre">rescale_option</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.rescale_option" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.size_of_smoothing_filter">
+<span class="sig-name descname"><span class="pre">size_of_smoothing_filter</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.size_of_smoothing_filter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IlluminationCalculateStep.smoothing_method">
+<span class="sig-name descname"><span class="pre">smoothing_method</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep.smoothing_method" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.cppipe.IntensityDistributionStep">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">IntensityDistributionStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objects</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wants_scaled</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zernikes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zernike_degree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#IntensityDistributionStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -1258,7 +1398,7 @@ out-of-scope gap – see <code class="docutils literal notranslate"><span class=
 
 <dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">Pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SegmentationStep" title="src.cp_anywhere.cppipe.SegmentationStep"><span class="pre">SegmentationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="src.cp_anywhere.cppipe.SecondaryObjectsStep"><span class="pre">SecondaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tertiary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep" title="src.cp_anywhere.cppipe.TertiaryObjectsStep"><span class="pre">TertiaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.MeasurementStep" title="src.cp_anywhere.cppipe.MeasurementStep"><span class="pre">MeasurementStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.GranularityStep" title="src.cp_anywhere.cppipe.GranularityStep"><span class="pre">GranularityStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_distribution_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="src.cp_anywhere.cppipe.IntensityDistributionStep"><span class="pre">IntensityDistributionStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TextureStep" title="src.cp_anywhere.cppipe.TextureStep"><span class="pre">TextureStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colocalization_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ColocalizationStep" title="src.cp_anywhere.cppipe.ColocalizationStep"><span class="pre">ColocalizationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="src.cp_anywhere.cppipe.ExportToDatabaseStep"><span class="pre">ExportToDatabaseStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipped_modules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#Pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">Pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">segmentation_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SegmentationStep" title="src.cp_anywhere.cppipe.SegmentationStep"><span class="pre">SegmentationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">secondary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="src.cp_anywhere.cppipe.SecondaryObjectsStep"><span class="pre">SecondaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tertiary_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TertiaryObjectsStep" title="src.cp_anywhere.cppipe.TertiaryObjectsStep"><span class="pre">TertiaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.MeasurementStep" title="src.cp_anywhere.cppipe.MeasurementStep"><span class="pre">MeasurementStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">granularity_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.GranularityStep" title="src.cp_anywhere.cppipe.GranularityStep"><span class="pre">GranularityStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intensity_distribution_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IntensityDistributionStep" title="src.cp_anywhere.cppipe.IntensityDistributionStep"><span class="pre">IntensityDistributionStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">texture_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TextureStep" title="src.cp_anywhere.cppipe.TextureStep"><span class="pre">TextureStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colocalization_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ColocalizationStep" title="src.cp_anywhere.cppipe.ColocalizationStep"><span class="pre">ColocalizationStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="src.cp_anywhere.cppipe.ExportToDatabaseStep"><span class="pre">ExportToDatabaseStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">illumination_calculate_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep" title="src.cp_anywhere.cppipe.IlluminationCalculateStep"><span class="pre">IlluminationCalculateStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">illumination_apply_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationApplyStep" title="src.cp_anywhere.cppipe.IlluminationApplyStep"><span class="pre">IlluminationApplyStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_images_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SaveImagesStep" title="src.cp_anywhere.cppipe.SaveImagesStep"><span class="pre">SaveImagesStep</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipped_modules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#Pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> file’s translated, <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code>-runnable steps.</p>
 <p>Not a full pipeline executor: file-matching/grouping modules
@@ -1278,6 +1418,16 @@ already-loaded image arrays by name via <a class="reference internal" href="#src
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.granularity_steps">
 <span class="sig-name descname"><span class="pre">granularity_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.GranularityStep" title="src.cp_anywhere.cppipe.GranularityStep"><span class="pre">GranularityStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.granularity_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.illumination_apply_steps">
+<span class="sig-name descname"><span class="pre">illumination_apply_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationApplyStep" title="src.cp_anywhere.cppipe.IlluminationApplyStep"><span class="pre">IlluminationApplyStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.illumination_apply_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.illumination_calculate_steps">
+<span class="sig-name descname"><span class="pre">illumination_calculate_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.IlluminationCalculateStep" title="src.cp_anywhere.cppipe.IlluminationCalculateStep"><span class="pre">IlluminationCalculateStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.illumination_calculate_steps" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1309,6 +1459,11 @@ see spec/cppipe-compatibility.md).</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.save_images_steps">
+<span class="sig-name descname"><span class="pre">save_images_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SaveImagesStep" title="src.cp_anywhere.cppipe.SaveImagesStep"><span class="pre">SaveImagesStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.save_images_steps" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.secondary_steps">
 <span class="sig-name descname"><span class="pre">secondary_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.SecondaryObjectsStep" title="src.cp_anywhere.cppipe.SecondaryObjectsStep"><span class="pre">SecondaryObjectsStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.secondary_steps" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
@@ -1332,6 +1487,80 @@ see spec/cppipe-compatibility.md).</p>
 <dt class="sig sig-object py" id="src.cp_anywhere.cppipe.Pipeline.texture_steps">
 <span class="sig-name descname"><span class="pre">texture_steps</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.cppipe.TextureStep" title="src.cp_anywhere.cppipe.TextureStep"><span class="pre">TextureStep</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.Pipeline.texture_steps" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.cppipe.</span></span><span class="sig-name descname"><span class="pre">SaveImagesStep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bit_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#SaveImagesStep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>One translated <code class="docutils literal notranslate"><span class="pre">SaveImages</span></code> module.</p>
+<p>Only <code class="docutils literal notranslate"><span class="pre">save_image_or_figure</span> <span class="pre">==</span> <span class="pre">&quot;Image&quot;</span></code> (not <code class="docutils literal notranslate"><span class="pre">&quot;Mask&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;Cropping&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;Movie/Stack&quot;</span></code>, which need a cropping mask or
+multi-cycle frame-stacking concept this project does not have) and
+<code class="docutils literal notranslate"><span class="pre">file_name_method</span> <span class="pre">==</span> <span class="pre">&quot;Single</span> <span class="pre">name&quot;</span></code> (not <code class="docutils literal notranslate"><span class="pre">&quot;From</span> <span class="pre">image</span>
+<span class="pre">filename&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;Sequential</span> <span class="pre">numbers&quot;</span></code>, which need per-image-set
+source-file/metadata tracking this project does not have) are
+supported – explicit, documented gaps. <code class="docutils literal notranslate"><span class="pre">&quot;h5&quot;</span></code> (<code class="docutils literal notranslate"><span class="pre">FF_H5</span></code>) is a
+separate, not-yet-implemented gap (see
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.save_images.save_array()</span></code>’s own module docstring);
+<code class="docutils literal notranslate"><span class="pre">&quot;tiff&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;png&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;jpeg&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;npy&quot;</span></code> are supported.</p>
+<p>Like <a class="reference internal" href="#src.cp_anywhere.cppipe.ExportToDatabaseStep" title="src.cp_anywhere.cppipe.ExportToDatabaseStep"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExportToDatabaseStep</span></code></a>, this project never resolves a
+CellProfiler <code class="docutils literal notranslate"><span class="pre">Directory</span></code> setting’s “Default Output/Input Folder”
+choice to an absolute path – the caller supplies <code class="docutils literal notranslate"><span class="pre">path</span></code> to
+<a class="reference internal" href="#src.cp_anywhere.cppipe.SaveImagesStep.write" title="src.cp_anywhere.cppipe.SaveImagesStep.write"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write()</span></code></a>, exactly as the caller supplies every image array to
+<a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline.run" title="src.cp_anywhere.cppipe.Pipeline.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Pipeline.run()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">file_name</span></code> is kept as the module’s raw
+name setting. The directory setting is not retained, and
+<code class="docutils literal notranslate"><span class="pre">write()</span></code> uses only the caller-supplied destination.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Pipeline.run()</span></code> does not execute these save steps automatically.
+Cycle timing, filename measurements, subfolders, and TIFF compression
+settings are not implemented. See <code class="docutils literal notranslate"><span class="pre">spec/illumination.md</span></code>.</p>
+<p>Real CellProfiler’s own <code class="docutils literal notranslate"><span class="pre">get_bit_depth()</span></code> forces 8-bit for every
+file format except TIFF/HDF5, regardless of the <code class="docutils literal notranslate"><span class="pre">bit_depth</span></code>
+setting’s own value – <a class="reference internal" href="#src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth" title="src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">effective_bit_depth</span></code></a> already applies
+that rule.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.bit_depth">
+<span class="sig-name descname"><span class="pre">bit_depth</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.bit_depth" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">effective_bit_depth</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth" title="Link to this definition">#</a></dt>
+<dd><p>The bit depth real CellProfiler would actually apply –
+<code class="docutils literal notranslate"><span class="pre">bit_depth</span></code> is only honored for TIFF; every other supported
+format (PNG/JPEG/NPY) is always forced to 8-bit integer (NPY’s
+own writer then ignores bit depth entirely regardless).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.file_format">
+<span class="sig-name descname"><span class="pre">file_format</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.file_format" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.file_name">
+<span class="sig-name descname"><span class="pre">file_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.file_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.image_name">
+<span class="sig-name descname"><span class="pre">image_name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.image_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.overwrite">
+<span class="sig-name descname"><span class="pre">overwrite</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.overwrite" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.cp_anywhere.cppipe.SaveImagesStep.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">bit_depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/cppipe.html#SaveImagesStep.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.cppipe.SaveImagesStep.write" title="Link to this definition">#</a></dt>
+<dd><p>Write <code class="docutils literal notranslate"><span class="pre">image</span></code> to <code class="docutils literal notranslate"><span class="pre">path</span></code> via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.save_images.save_array()</span></code>, using
+<a class="reference internal" href="#src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth" title="src.cp_anywhere.cppipe.SaveImagesStep.effective_bit_depth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">effective_bit_depth</span></code></a> unless <code class="docutils literal notranslate"><span class="pre">bit_depth</span></code> overrides it.
+Honors this step’s own <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> setting.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1484,12 +1713,12 @@ setting outside <code class="docutils literal notranslate"><span class="pre">spe
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="cell-profiling-anywhere.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">cp-anywhere</p>
+        <p class="prev-next-title">Cell Profiling Anywhere</p>
       </div>
     </a>
     <a class="right-next"

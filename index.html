@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=7058058b" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
@@ -47,7 +47,7 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Python API" href="python-api.html" />
+    <link rel="next" title="Cell Profiling Anywhere" href="cell-profiling-anywhere.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -132,6 +132,13 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="python-api.html">
     Python API
@@ -239,6 +246,13 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="python-api.html">
     Python API
   </a>
@@ -326,9 +340,20 @@
   <!-- include contents from the root readme -->
 <section id="cp-anywhere">
 <h1>cp-anywhere<a class="headerlink" href="#cp-anywhere" title="Link to this heading">#</a></h1>
-<p>CellProfiler-compatible measurements for native Python and web browsers</p>
+<p>CellProfiler-compatible cell profiling in Python and the browser, powered by Rust.
+Correct illumination, segment images, measure cell features, and export analysis-ready tables.</p>
+<p>cp-anywhere turns microscopy images into per-cell feature tables without requiring
+the CellProfiler desktop application. Use image files or NumPy arrays in Python,
+work with pandas tables, or run the shared measurement engine in a browser through
+WebAssembly. Supported modules and settings are listed in <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>.</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>For a hands-on tour, open
+<a class="reference internal" href="cell-profiling-anywhere.html"><span class="std std-doc">Cell Profiling Anywhere</span></a>.
+The notebook follows a complete Python workflow: illumination correction,
+segmentation, measurements, plots, and image/table exports.
+Run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--frozen</span> <span class="pre">--group</span> <span class="pre">docs</span></code> first, then select the repository’s <code class="docutils literal notranslate"><span class="pre">.venv</span></code>
+Python interpreter in your notebook editor.</p>
 <p>The simplest way to call cp-anywhere is <code class="docutils literal notranslate"><span class="pre">measure_files</span></code>, which accepts
 TIFF/OME-TIFF, PNG, or saved NumPy array file paths directly (or
 already-loaded arrays) and returns a tidy <code class="docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code>:</p>
@@ -440,9 +465,28 @@ In addition, consider the following steps to help ensure the project is in good 
 <li><p>[ ] Update the GitHub repository description.</p></li>
 <li><p>[ ] Remove these instructions!</p></li>
 </ul>
+<p><a class="reference download internal" download="" href="_downloads/ba4a16b48dc10d3fb2c660a45956fd1f/cell-profiling-anywhere.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">Python</span> <span class="pre">example</span> <span class="pre">notebook</span></code></a></p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="cell-profiling-anywhere.html">Cell Profiling Anywhere</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#from-microscopy-images-to-cell-profiles">From microscopy images to cell profiles</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cell-profiling-anywhere.html#start-here">Start here</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#load-two-images">1. Load two images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#correct-illumination">2. Correct illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#segment-nuclei-cells-and-cytoplasm">3. Segment nuclei, cells, and cytoplasm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#measure-cell-features">4. Measure cell features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#save-the-results">5. Save the results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#a-few-optional-extras">A few optional extras</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cell-profiling-anywhere.html#add-texture-measurements">Add texture measurements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cell-profiling-anywhere.html#already-have-images-and-labels-on-disk">Already have images and labels on disk?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#take-it-anywhere">Take it anywhere</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="python-api.html">Python API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#module-src.cp_anywhere.api">cp_anywhere.api</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.api.MeasurementResult"><code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code></a></li>
@@ -469,9 +513,13 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.CppipeError"><code class="docutils literal notranslate"><span class="pre">CppipeError</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.ExportToDatabaseStep"><code class="docutils literal notranslate"><span class="pre">ExportToDatabaseStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.GranularityStep"><code class="docutils literal notranslate"><span class="pre">GranularityStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.IlluminationApplyImage"><code class="docutils literal notranslate"><span class="pre">IlluminationApplyImage</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.IlluminationApplyStep"><code class="docutils literal notranslate"><span class="pre">IlluminationApplyStep</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep"><code class="docutils literal notranslate"><span class="pre">IlluminationCalculateStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.IntensityDistributionStep"><code class="docutils literal notranslate"><span class="pre">IntensityDistributionStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep"><code class="docutils literal notranslate"><span class="pre">MeasurementStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.Pipeline"><code class="docutils literal notranslate"><span class="pre">Pipeline</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep"><code class="docutils literal notranslate"><span class="pre">SaveImagesStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.SecondaryObjectsStep"><code class="docutils literal notranslate"><span class="pre">SecondaryObjectsStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.SegmentationStep"><code class="docutils literal notranslate"><span class="pre">SegmentationStep</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.TertiaryObjectsStep"><code class="docutils literal notranslate"><span class="pre">TertiaryObjectsStep</span></code></a></li>
@@ -582,11 +630,11 @@ In addition, consider the following steps to help ensure the project is in good 
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="python-api.html"
+       href="cell-profiling-anywhere.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Python API</p>
+        <p class="prev-next-title">Cell Profiling Anywhere</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

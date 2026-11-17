@@ -1,0 +1,1328 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Cell Profiling Anywhere &#8212; cp-anywhere  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=7058058b" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'cell-profiling-anywhere';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="python-api.html" />
+    <link rel="prev" title="cp-anywhere" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cp-anywhere</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Cell Profiling Anywhere</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="cell-profiling-anywhere">
+<h1>Cell Profiling Anywhere<a class="headerlink" href="#cell-profiling-anywhere" title="Link to this heading">#</a></h1>
+<section id="from-microscopy-images-to-cell-profiles">
+<h2>From microscopy images to cell profiles<a class="headerlink" href="#from-microscopy-images-to-cell-profiles" title="Link to this heading">#</a></h2>
+<p><strong>Correct illumination → segment cells → measure features → save results.</strong></p>
+<p>This notebook demonstrates <strong>illumination correction, segmentation, and measurements</strong> with <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>.
+The main workflow uses corrected images to find cells and calculate their features.
+You can use image files or NumPy arrays, work with pandas tables, and save results for later analysis.
+The measurement engine runs in Rust. No CellProfiler application is needed for this example.</p>
+<p>We use a bundled real DNA/actin image from <a class="reference external" href="https://bbbc.broadinstitute.org/BBBC007">BBBC007</a>.
+No image download is needed. The sample is a small crop, not a complete biological experiment.</p>
+<section id="start-here">
+<h3>Start here<a class="headerlink" href="#start-here" title="Link to this heading">#</a></h3>
+<p>From the repository root, run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--frozen</span> <span class="pre">--group</span> <span class="pre">docs</span></code>.
+Open this notebook and select the repository’s <code class="docutils literal notranslate"><span class="pre">.venv</span></code> Python interpreter.
+Run the cells in order.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+
+<span class="c1"># Work from either the repository root or this notebook&#39;s folder.</span>
+<span class="n">project</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">project</span> <span class="o">/</span> <span class="s2">&quot;fixtures&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+
+<span class="n">sample</span> <span class="o">=</span> <span class="n">project</span> <span class="o">/</span> <span class="s2">&quot;fixtures/real/real_bbbc007&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="load-two-images">
+<h2>1. Load two images<a class="headerlink" href="#load-two-images" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">load_array</span></code> reads NPY, TIFF, PNG, and other supported image formats.
+These sample images are 8-bit, so dividing by <code class="docutils literal notranslate"><span class="pre">255</span></code> puts intensities between zero and one.
+For your own data, change the file paths and use the correct intensity scale.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dna</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">load_array</span><span class="p">(</span><span class="n">sample</span> <span class="o">/</span> <span class="s2">&quot;DNA.npy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="n">actin</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">load_array</span><span class="p">(</span><span class="n">sample</span> <span class="o">/</span> <span class="s2">&quot;Actin.npy&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/b92fd0debe00cbef255d750456f341f92cacddd0ecb014221403dd75f808f5fd.png" src="_images/b92fd0debe00cbef255d750456f341f92cacddd0ecb014221403dd75f808f5fd.png" />
+</div>
+</div>
+</section>
+<section id="correct-illumination">
+<h2>2. Correct illumination<a class="headerlink" href="#correct-illumination" title="Link to this heading">#</a></h2>
+<p>Estimate a smooth correction function separately for DNA and actin.
+Then divide each channel by its own function.
+The corrected images feed the segmentation and measurement steps below.</p>
+<p>Here we use a 64-pixel smoothing width and relative median scaling.
+These are demonstration choices, not a calibrated correction for this microscope.
+For real experiments, use appropriate reference images for each channel and inspect the results.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dna_illumination</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">calculate_illumination</span><span class="p">(</span>
+    <span class="n">dna</span><span class="p">,</span>
+    <span class="n">automatic_object_width</span><span class="o">=</span><span class="s2">&quot;Manually&quot;</span><span class="p">,</span>
+    <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">rescale_option</span><span class="o">=</span><span class="s2">&quot;Median&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">actin_illumination</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">calculate_illumination</span><span class="p">(</span>
+    <span class="n">actin</span><span class="p">,</span>
+    <span class="n">automatic_object_width</span><span class="o">=</span><span class="s2">&quot;Manually&quot;</span><span class="p">,</span>
+    <span class="n">size_of_smoothing_filter</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">rescale_option</span><span class="o">=</span><span class="s2">&quot;Median&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">dna_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">dna_illumination</span><span class="p">)</span>
+<span class="n">actin_corrected</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">apply_illumination</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">actin_illumination</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Each pair uses the same display range so brightness stays comparable.</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA before correction&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">dna_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;DNA after correction&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin before correction&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">actin_corrected</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Actin after correction&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/c2cb0c844ba6f50ffc263c3c5346dbef88de7f138eb8f1bb8e8c88fcdf2699f6.png" src="_images/c2cb0c844ba6f50ffc263c3c5346dbef88de7f138eb8f1bb8e8c88fcdf2699f6.png" />
+</div>
+</div>
+</section>
+<section id="segment-nuclei-cells-and-cytoplasm">
+<h2>3. Segment nuclei, cells, and cytoplasm<a class="headerlink" href="#segment-nuclei-cells-and-cytoplasm" title="Link to this heading">#</a></h2>
+<p>Find nuclei in the corrected DNA image. Grow cell regions around them using the corrected actin image.
+Then remove the nuclei from those regions to get cytoplasm.</p>
+<p>The nucleus size limits are in pixels. They suit this example, not every dataset.
+These are new segmentations, not the dataset’s manual ground truth.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nuclei</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span>
+    <span class="n">dna_corrected</span><span class="p">,</span>
+    <span class="n">min_diameter</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">max_diameter</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">exclude_size</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">cells</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">identify_secondary_objects</span><span class="p">(</span><span class="n">actin_corrected</span><span class="p">,</span> <span class="n">nuclei</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+<span class="n">cytoplasm</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">identify_tertiary_objects</span><span class="p">(</span>
+    <span class="n">nuclei</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+    <span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+    <span class="n">shrink_primary</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nuclei</span><span class="o">.</span><span class="n">object_count</span><span class="si">}</span><span class="s2"> cells&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Found 7 cells
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">nuclei</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;nipy_spectral&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Nuclei&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;nipy_spectral&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cells&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cytoplasm</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;nipy_spectral&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Cytoplasm&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/877a1aeee8c3c19bdd8ae15c37e412c1f3361c1d1e42a386be9c00e8dbfceaa5.png" src="_images/877a1aeee8c3c19bdd8ae15c37e412c1f3361c1d1e42a386be9c00e8dbfceaa5.png" />
+</div>
+</div>
+</section>
+<section id="measure-cell-features">
+<h2>4. Measure cell features<a class="headerlink" href="#measure-cell-features" title="Link to this heading">#</a></h2>
+<p>Give <code class="docutils literal notranslate"><span class="pre">measure</span></code> the corrected images and the labels from segmentation.
+The names become part of the output, so your channels and compartments stay identifiable.</p>
+<p>This call measures intensity, size/shape, and neighboring cells.
+All three compartments share cell IDs because we created them together.
+The areas use pixel units.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">images</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_corrected</span><span class="p">,</span> <span class="s2">&quot;Actin&quot;</span><span class="p">:</span> <span class="n">actin_corrected</span><span class="p">}</span>
+<span class="n">objects</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+    <span class="s2">&quot;Nuclei&quot;</span><span class="p">:</span> <span class="n">nuclei</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+    <span class="s2">&quot;Cytoplasm&quot;</span><span class="p">:</span> <span class="n">cytoplasm</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">measure</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">,</span>
+    <span class="n">objects</span><span class="p">,</span>
+    <span class="n">families</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;image_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;object_intensity&quot;</span><span class="p">,</span> <span class="s2">&quot;object_size_shape&quot;</span><span class="p">,</span> <span class="s2">&quot;neighbors&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Make a pandas table with one row per cell.
+The full table contains all cell features. Here we show a few useful columns.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">profiles</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">features</span><span class="p">[</span><span class="s2">&quot;Cells&quot;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">object_ids</span><span class="p">[</span><span class="s2">&quot;Cells&quot;</span><span class="p">])</span>
+<span class="n">profiles</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;cell_id&quot;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">profiles</span><span class="p">)</span><span class="si">}</span><span class="s2"> cells, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">profiles</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> features per cell&quot;</span><span class="p">)</span>
+<span class="n">profiles</span><span class="p">[</span>
+    <span class="p">[</span>
+        <span class="s2">&quot;AreaShape_Area&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Intensity_MeanIntensity_DNA&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Intensity_MeanIntensity_Actin&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Neighbors_NumberOfNeighbors_Adjacent&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>7 cells, 104 features per cell
+</pre></div>
+</div>
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>AreaShape_Area</th>
+      <th>Intensity_MeanIntensity_DNA</th>
+      <th>Intensity_MeanIntensity_Actin</th>
+      <th>Neighbors_NumberOfNeighbors_Adjacent</th>
+    </tr>
+    <tr>
+      <th>cell_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>340.0</td>
+      <td>0.096</td>
+      <td>0.188</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>124.0</td>
+      <td>0.198</td>
+      <td>0.140</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1683.0</td>
+      <td>0.049</td>
+      <td>0.194</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>359.0</td>
+      <td>0.089</td>
+      <td>0.151</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>405.0</td>
+      <td>0.078</td>
+      <td>0.157</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>420.0</td>
+      <td>0.082</td>
+      <td>0.188</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>648.0</td>
+      <td>0.076</td>
+      <td>0.175</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<p>Now use ordinary pandas plotting. Each point is one cell.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">profiles</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s2">&quot;AreaShape_Area&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;Intensity_MeanIntensity_DNA&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/ad09e3b0c0f27be93b944f5882ea9eaaa4ebec36cc7f7e5bc667dfba47fbfe8f.png" src="_images/ad09e3b0c0f27be93b944f5882ea9eaaa4ebec36cc7f7e5bc667dfba47fbfe8f.png" />
+</div>
+</div>
+</section>
+<section id="save-the-results">
+<h2>5. Save the results<a class="headerlink" href="#save-the-results" title="Link to this heading">#</a></h2>
+<p>Save the cell table as CSV or Parquet. Save the labels and correction functions as NPY.
+Save the corrected images as TIFF.
+You can also save all compartments together, or export to SQLite.</p>
+<p>These example files go into <code class="docutils literal notranslate"><span class="pre">docs/_build/notebook-output</span></code>.
+Change <code class="docutils literal notranslate"><span class="pre">output</span></code> to a directory of your choice. Rerunning these cells replaces the example files.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">project</span> <span class="o">/</span> <span class="s2">&quot;docs/_build/notebook-output&quot;</span>
+<span class="n">output</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">profiles</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cell_profiles.csv&quot;</span><span class="p">)</span>
+<span class="n">profiles</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cell_profiles.parquet&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cells.npy&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">dna_illumination</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;dna_illumination.npy&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">actin_illumination</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;actin_illumination.npy&quot;</span><span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span>
+    <span class="n">dna_corrected</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;dna_corrected.tiff&quot;</span><span class="p">,</span> <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;32-bit floating point&quot;</span>
+<span class="p">)</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span>
+    <span class="n">actin_corrected</span><span class="p">,</span> <span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;actin_corrected.tiff&quot;</span><span class="p">,</span> <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;32-bit floating point&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Keep all compartments in one table, with one row per cell.</span>
+<span class="n">result</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;all_compartments.parquet&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;joined&quot;</span><span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">to_sqlite</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;profiles.sqlite&quot;</span><span class="p">,</span> <span class="n">if_exists</span><span class="o">=</span><span class="s2">&quot;replace&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved files to </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Saved files to ../../docs/_build/notebook-output
+</pre></div>
+</div>
+</div>
+</div>
+<p>Read the table back whenever you need it.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">saved_profiles</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">output</span> <span class="o">/</span> <span class="s2">&quot;cell_profiles.parquet&quot;</span><span class="p">)</span>
+<span class="n">saved_profiles</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>AreaShape_Area</th>
+      <th>AreaShape_BoundingBoxArea</th>
+      <th>AreaShape_BoundingBoxMaximum_X</th>
+      <th>AreaShape_BoundingBoxMaximum_Y</th>
+      <th>AreaShape_BoundingBoxMinimum_X</th>
+      <th>AreaShape_BoundingBoxMinimum_Y</th>
+      <th>AreaShape_Center_X</th>
+      <th>AreaShape_Center_Y</th>
+      <th>AreaShape_Compactness</th>
+      <th>AreaShape_ConvexArea</th>
+      <th>...</th>
+      <th>Location_MaxIntensity_Y_DNA</th>
+      <th>Location_MaxIntensity_Z_Actin</th>
+      <th>Location_MaxIntensity_Z_DNA</th>
+      <th>Neighbors_AngleBetweenNeighbors_Adjacent</th>
+      <th>Neighbors_FirstClosestDistance_Adjacent</th>
+      <th>Neighbors_FirstClosestObjectNumber_Adjacent</th>
+      <th>Neighbors_NumberOfNeighbors_Adjacent</th>
+      <th>Neighbors_PercentTouching_Adjacent</th>
+      <th>Neighbors_SecondClosestDistance_Adjacent</th>
+      <th>Neighbors_SecondClosestObjectNumber_Adjacent</th>
+    </tr>
+    <tr>
+      <th>cell_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>340.0</td>
+      <td>481.0</td>
+      <td>104.0</td>
+      <td>13.0</td>
+      <td>67.0</td>
+      <td>0.0</td>
+      <td>84.432353</td>
+      <td>4.691176</td>
+      <td>1.710629</td>
+      <td>355.0</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>135.854732</td>
+      <td>39.366530</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>65.921691</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>124.0</td>
+      <td>171.0</td>
+      <td>128.0</td>
+      <td>19.0</td>
+      <td>119.0</td>
+      <td>0.0</td>
+      <td>123.725806</td>
+      <td>7.088710</td>
+      <td>1.411578</td>
+      <td>131.0</td>
+      <td>...</td>
+      <td>4.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>46.903497</td>
+      <td>39.366530</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0.000000</td>
+      <td>95.972382</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1683.0</td>
+      <td>3380.0</td>
+      <td>77.0</td>
+      <td>75.0</td>
+      <td>12.0</td>
+      <td>23.0</td>
+      <td>34.420083</td>
+      <td>47.638146</td>
+      <td>3.613773</td>
+      <td>2364.0</td>
+      <td>...</td>
+      <td>50.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>16.382890</td>
+      <td>32.080940</td>
+      <td>4</td>
+      <td>1</td>
+      <td>3.283582</td>
+      <td>47.184620</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>359.0</td>
+      <td>693.0</td>
+      <td>70.0</td>
+      <td>84.0</td>
+      <td>37.0</td>
+      <td>63.0</td>
+      <td>54.008357</td>
+      <td>73.044568</td>
+      <td>2.969364</td>
+      <td>495.0</td>
+      <td>...</td>
+      <td>68.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>134.738882</td>
+      <td>18.736090</td>
+      <td>5</td>
+      <td>2</td>
+      <td>19.708029</td>
+      <td>32.080940</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>405.0</td>
+      <td>910.0</td>
+      <td>71.0</td>
+      <td>106.0</td>
+      <td>36.0</td>
+      <td>80.0</td>
+      <td>51.520988</td>
+      <td>91.614815</td>
+      <td>2.743337</td>
+      <td>553.0</td>
+      <td>...</td>
+      <td>91.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>122.673806</td>
+      <td>18.573363</td>
+      <td>6</td>
+      <td>2</td>
+      <td>38.356164</td>
+      <td>18.736090</td>
+      <td>4</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 104 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="a-few-optional-extras">
+<h2>A few optional extras<a class="headerlink" href="#a-few-optional-extras" title="Link to this heading">#</a></h2>
+<p>The same arrays work with more of the Python API.
+These independent examples do not change the profiles saved above.</p>
+<section id="add-texture-measurements">
+<h3>Add texture measurements<a class="headerlink" href="#add-texture-measurements" title="Link to this heading">#</a></h3>
+<p>Measure actin texture within the same cells. The result has one row per cell.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">texture</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">measure_texture</span><span class="p">(</span><span class="n">actin_corrected</span><span class="p">,</span> <span class="n">cells</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">image_name</span><span class="o">=</span><span class="s2">&quot;Actin&quot;</span><span class="p">)</span>
+<span class="n">texture_profiles</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">texture</span><span class="o">.</span><span class="n">objects</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">profiles</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+<span class="n">texture_profiles</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Texture_AngularSecondMoment_Actin_3_00_256</th>
+      <th>Texture_AngularSecondMoment_Actin_3_01_256</th>
+      <th>Texture_AngularSecondMoment_Actin_3_02_256</th>
+      <th>Texture_AngularSecondMoment_Actin_3_03_256</th>
+      <th>Texture_Contrast_Actin_3_00_256</th>
+      <th>Texture_Contrast_Actin_3_01_256</th>
+      <th>Texture_Contrast_Actin_3_02_256</th>
+      <th>Texture_Contrast_Actin_3_03_256</th>
+      <th>Texture_Correlation_Actin_3_00_256</th>
+      <th>Texture_Correlation_Actin_3_01_256</th>
+      <th>...</th>
+      <th>Texture_SumEntropy_Actin_3_02_256</th>
+      <th>Texture_SumEntropy_Actin_3_03_256</th>
+      <th>Texture_SumVariance_Actin_3_00_256</th>
+      <th>Texture_SumVariance_Actin_3_01_256</th>
+      <th>Texture_SumVariance_Actin_3_02_256</th>
+      <th>Texture_SumVariance_Actin_3_03_256</th>
+      <th>Texture_Variance_Actin_3_00_256</th>
+      <th>Texture_Variance_Actin_3_01_256</th>
+      <th>Texture_Variance_Actin_3_02_256</th>
+      <th>Texture_Variance_Actin_3_03_256</th>
+    </tr>
+    <tr>
+      <th>cell_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>0.002914</td>
+      <td>0.003446</td>
+      <td>0.003419</td>
+      <td>0.003030</td>
+      <td>135.857143</td>
+      <td>139.862832</td>
+      <td>165.547414</td>
+      <td>142.377193</td>
+      <td>0.520097</td>
+      <td>0.390512</td>
+      <td>...</td>
+      <td>5.846646</td>
+      <td>5.911256</td>
+      <td>430.328275</td>
+      <td>319.088750</td>
+      <td>368.283870</td>
+      <td>387.816020</td>
+      <td>141.546354</td>
+      <td>114.737895</td>
+      <td>133.457821</td>
+      <td>132.548303</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.011762</td>
+      <td>0.012626</td>
+      <td>0.012316</td>
+      <td>0.014418</td>
+      <td>55.260870</td>
+      <td>41.015152</td>
+      <td>15.104167</td>
+      <td>70.792453</td>
+      <td>-0.041125</td>
+      <td>0.103541</td>
+      <td>...</td>
+      <td>4.831029</td>
+      <td>4.176244</td>
+      <td>50.895190</td>
+      <td>50.489669</td>
+      <td>81.769097</td>
+      <td>26.815237</td>
+      <td>26.539015</td>
+      <td>22.876205</td>
+      <td>24.218316</td>
+      <td>24.401922</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.000950</td>
+      <td>0.000857</td>
+      <td>0.001023</td>
+      <td>0.000912</td>
+      <td>223.950685</td>
+      <td>288.758595</td>
+      <td>164.685160</td>
+      <td>232.908120</td>
+      <td>0.546868</td>
+      <td>0.435074</td>
+      <td>...</td>
+      <td>6.728159</td>
+      <td>6.656299</td>
+      <td>764.506735</td>
+      <td>733.530498</td>
+      <td>849.155392</td>
+      <td>761.441199</td>
+      <td>247.114355</td>
+      <td>255.572273</td>
+      <td>253.460138</td>
+      <td>248.587330</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.003046</td>
+      <td>0.002953</td>
+      <td>0.003005</td>
+      <td>0.003089</td>
+      <td>70.363985</td>
+      <td>168.897778</td>
+      <td>115.486792</td>
+      <td>93.676471</td>
+      <td>0.794765</td>
+      <td>0.481415</td>
+      <td>...</td>
+      <td>6.219102</td>
+      <td>6.171044</td>
+      <td>615.326845</td>
+      <td>482.481106</td>
+      <td>560.831100</td>
+      <td>615.589453</td>
+      <td>171.422707</td>
+      <td>162.844721</td>
+      <td>169.079473</td>
+      <td>177.316481</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.002512</td>
+      <td>0.002698</td>
+      <td>0.002606</td>
+      <td>0.002677</td>
+      <td>125.314465</td>
+      <td>269.303571</td>
+      <td>182.153846</td>
+      <td>151.797909</td>
+      <td>0.594742</td>
+      <td>0.078407</td>
+      <td>...</td>
+      <td>6.065072</td>
+      <td>6.054497</td>
+      <td>493.127883</td>
+      <td>315.127028</td>
+      <td>414.391204</td>
+      <td>545.262927</td>
+      <td>154.610587</td>
+      <td>146.107650</td>
+      <td>149.136262</td>
+      <td>174.265209</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 52 columns</p>
+</div></div></div>
+</div>
+</section>
+<section id="already-have-images-and-labels-on-disk">
+<h3>Already have images and labels on disk?<a class="headerlink" href="#already-have-images-and-labels-on-disk" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">measure_files</span></code> skips the segmentation steps and returns a pandas table directly.
+Here we use the bundled manual-derived labels, so these measurements differ from our new segmentation.
+This example keeps the original 8-bit intensity scale.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file_measurements</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">measure_files</span><span class="p">(</span><span class="n">sample</span> <span class="o">/</span> <span class="s2">&quot;DNA.npy&quot;</span><span class="p">,</span> <span class="n">sample</span> <span class="o">/</span> <span class="s2">&quot;labels.npy&quot;</span><span class="p">)</span>
+<span class="n">file_measurements</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>image_id</th>
+      <th>scope</th>
+      <th>object_id</th>
+      <th>feature</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Image</td>
+      <td>Cells</td>
+      <td>1</td>
+      <td>Intensity_IntegratedIntensityEdge_DNA</td>
+      <td>366.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Image</td>
+      <td>Cells</td>
+      <td>2</td>
+      <td>Intensity_IntegratedIntensityEdge_DNA</td>
+      <td>482.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>Image</td>
+      <td>Cells</td>
+      <td>3</td>
+      <td>Intensity_IntegratedIntensityEdge_DNA</td>
+      <td>1207.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>Image</td>
+      <td>Cells</td>
+      <td>4</td>
+      <td>Intensity_IntegratedIntensityEdge_DNA</td>
+      <td>737.0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>Image</td>
+      <td>Cells</td>
+      <td>1</td>
+      <td>Intensity_IntegratedIntensity_DNA</td>
+      <td>27788.0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+</section>
+</section>
+<section id="take-it-anywhere">
+<h2>Take it anywhere<a class="headerlink" href="#take-it-anywhere" title="Link to this heading">#</a></h2>
+<p>Replace the sample files with your own aligned images.
+Use existing labels or create them in Python.
+Measure, inspect, and export without leaving your analysis environment.</p>
+<p>The bundled sample is a 128 × 128 crop of BBBC007v1 Drosophila Kc167 cells, field <code class="docutils literal notranslate"><span class="pre">A9</span> <span class="pre">p10</span></code>, with a CC0 waiver.
+Its provenance is recorded in <code class="docutils literal notranslate"><span class="pre">reference/vendor/bbbc007/README.md</span></code>.</p>
+<p>This notebook covers supported native Python features, not every CellProfiler module or the browser API.
+Inspect segmentation before interpreting measurements.
+The docs build runs every code cell, so the example stays executable.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">cp-anywhere</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="python-api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Python API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, DBMI Community.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
