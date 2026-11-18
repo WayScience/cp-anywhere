@@ -949,6 +949,29 @@ not provided by this array API; grids must already match.</p>
 </dd></dl>
 
 </section>
+<section id="segmentation-preview">
+<h2>Segmentation preview<a class="headerlink" href="#segmentation-preview" title="Link to this heading">#</a></h2>
+<p>Use <code class="xref py py-func docutils literal notranslate"><span class="pre">cp_anywhere.preview_segmentation()</span></code> to inspect object boundaries over
+a grayscale image or view labels as filled colors. This is a 2D display helper,
+not an implementation of the CellProfiler desktop window or a pipeline module.</p>
+<p id="module-src.cp_anywhere.preview">Display 2D segmentation results without changing the source arrays.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.preview.preview_segmentation">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.preview.</span></span><span class="sig-name descname"><span class="pre">preview_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'outlines'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'labels'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outlines'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">uint8</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/preview.html#preview_segmentation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.preview.preview_segmentation" title="Link to this definition">#</a></dt>
+<dd><p>Return an 8-bit RGB preview of one 2D label image.</p>
+<p>Zero is background. Positive integers are object IDs and may have gaps.
+In <code class="docutils literal notranslate"><span class="pre">outlines</span></code> mode, draw green lines on the object side of boundaries.
+A boundary touches a different label or the image edge along a pixel side.
+Supply a same-shape grayscale <code class="docutils literal notranslate"><span class="pre">image</span></code> to see the outlines in context.
+The finite image range maps to black through white. Nonfinite pixels and
+constant images display as black. With no image, the background is black.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">labels</span></code> mode, omit <code class="docutils literal notranslate"><span class="pre">image</span></code>. Each object gets a color based on its
+original ID, and the palette repeats. The background stays black.</p>
+<p>This function does not change the image or labels. Use the returned array
+for display or export, not as a substitute for the original labels.</p>
+</dd></dl>
+
+</section>
 <section id="cp-anywhere-cppipe">
 <h2>cp_anywhere.cppipe<a class="headerlink" href="#cp-anywhere-cppipe" title="Link to this heading">#</a></h2>
 <p>Importing real CellProfiler <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> pipeline files
@@ -1760,7 +1783,7 @@ setting outside <code class="docutils literal notranslate"><span class="pre">spe
 
   <p class="copyright">
     
-      © Copyright 2024, DBMI Community.
+      © Copyright 2026, Dave Bunten.
       <br/>
     
   </p>

@@ -346,9 +346,11 @@ Correct illumination, segment images, measure cell features, and export analysis
 <p>cp-anywhere turns microscopy images into per-cell feature tables without requiring
 the CellProfiler desktop application. Use image files or NumPy arrays in Python,
 work with pandas tables, or run the shared measurement engine in a browser through
-WebAssembly. Supported modules and settings are listed in <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>.</p>
+WebAssembly. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/compatibility.md">compatibility guide</a> for supported modules and settings.</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>To run from this repository, install Rust and uv, then run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--frozen</span></code>.
+Run the Python examples with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span></code> or in the repository’s virtual environment.</p>
 <p>For a hands-on tour, read
 <a class="reference external" href="https://d33bs.github.io/cp-anywhere/cell-profiling-anywhere.html">Cell Profiling Anywhere</a>
 or open the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb">source notebook</a>.
@@ -372,7 +374,7 @@ already-loaded arrays) and returns a tidy <code class="docutils literal notransl
 </pre></div>
 </div>
 <p>The same file formats work from the command line:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cp-anywhere<span class="w"> </span><span class="se">\</span>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>cp-anywhere<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--image<span class="w"> </span><span class="nv">DNA</span><span class="o">=</span>dna.tif<span class="w"> </span>--image<span class="w"> </span><span class="nv">Actin</span><span class="o">=</span>actin.tif<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--objects<span class="w"> </span><span class="nv">Cells</span><span class="o">=</span>cells.tif<span class="w"> </span>--objects<span class="w"> </span><span class="nv">Nuclei</span><span class="o">=</span>nuclei.tif<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--output<span class="w"> </span>result.json
@@ -385,87 +387,40 @@ DataFrame can be written the same way with <code class="docutils literal notrans
 <p>For arrays already in memory, <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code> is the lower-level
 entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>;
 it has matching <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">to_csv</span></code>/<code class="docutils literal notranslate"><span class="pre">to_arrow</span></code> methods
-(see <code class="docutils literal notranslate"><span class="pre">docs/src/python-api.md</span></code>).</p>
+(see the <a class="reference external" href="https://d33bs.github.io/cp-anywhere/python-api.html">Python API reference</a>).</p>
 <section id="segmentation">
 <h3>Segmentation<a class="headerlink" href="#segmentation" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects(...)</span></code> segments a 2D grayscale image
-into labeled objects (CellProfiler’s <code class="docutils literal notranslate"><span class="pre">IdentifyPrimaryObjects</span></code>, Global Otsu
-or a manual threshold – see <code class="docutils literal notranslate"><span class="pre">spec/segmentation-modules.md</span></code> for the exact
-scope), and its output chains directly into <code class="docutils literal notranslate"><span class="pre">measure</span></code>:</p>
+into labeled objects. You can pass those labels directly to <code class="docutils literal notranslate"><span class="pre">measure</span></code>.
+See <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/segmentation-modules.md">segmentation coverage</a> for supported settings.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span><span class="n">dna_image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;otsu&quot;</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure</span><span class="p">({</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Cells&quot;</span><span class="p">:</span> <span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">})</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure</span><span class="p">({</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Nuclei&quot;</span><span class="p">:</span> <span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>Verified against real CellProfiler 4.2.8, exact label-for-label, on both
-synthetic and real microscopy fixtures: <code class="docutils literal notranslate"><span class="pre">tests/segmentation/</span></code>,
-<code class="docutils literal notranslate"><span class="pre">fixtures/segmentation/</span></code>. Performance: <code class="docutils literal notranslate"><span class="pre">docs/segmentation-performance.md</span></code>.</p>
-</section>
-</section>
-<section id="high-level-overview">
-<h2>High-level overview<a class="headerlink" href="#high-level-overview" title="Link to this heading">#</a></h2>
-<p>This template gives you a ready-to-run Python research software project with:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">uv</span></code>-managed environments and dependencies</p></li>
-<li><p>Testing and coverage defaults via <code class="docutils literal notranslate"><span class="pre">pytest</span></code> + <code class="docutils literal notranslate"><span class="pre">coverage.py</span></code></p></li>
-<li><p>Pre-commit automation for formatting, linting, and type checks</p></li>
-<li><p>GitHub Actions workflows for linting, tests, docs, and release-related automation</p></li>
-<li><p>Starter package + CLI scaffold under <code class="docutils literal notranslate"><span class="pre">src/</span></code></p></li>
-<li><p>Optional high-performance Rust bindings (PyO3 + maturin) with a Cargo workspace under <code class="docutils literal notranslate"><span class="pre">crates/</span></code></p></li>
-<li><p>Documentation scaffold under <code class="docutils literal notranslate"><span class="pre">docs/</span></code></p></li>
-<li><p>Poe task entrypoints for common local workflows (including a full local pipeline task)</p></li>
-</ul>
-</section>
-<section id="included-agent-skills">
-<h2>Included agent skills<a class="headerlink" href="#included-agent-skills" title="Link to this heading">#</a></h2>
-<p>This project includes agent guidance in <code class="docutils literal notranslate"><span class="pre">.agents/skills/</span></code> with common skills for:</p>
-<ul class="simple">
-<li><p>Test-driven development</p></li>
-<li><p>Incremental implementation</p></li>
-<li><p>Code review and quality checks</p></li>
-<li><p>CI/CD and automation workflow alignment</p></li>
-<li><p>Targeted correctness properties and honest verification reports (<code class="docutils literal notranslate"><span class="pre">formal-verification</span></code>)</p></li>
-<li><p>Debugging and error recovery</p></li>
-<li><p>Optional learning exercises (<code class="docutils literal notranslate"><span class="pre">learning-opportunities</span></code>)</p></li>
-<li><p>Simplified Technical English (ASD-STE100) writing checks (<code class="docutils literal notranslate"><span class="pre">simple-english</span></code>)</p></li>
-</ul>
-<p>If you do not want to use local agent guidance in your project, remove <code class="docutils literal notranslate"><span class="pre">AGENTS.md</span></code> and the <code class="docutils literal notranslate"><span class="pre">.agents/</span></code> directory.</p>
-</section>
-<section id="working-with-the-rust-bindings">
-<h2>Working with the Rust bindings<a class="headerlink" href="#working-with-the-rust-bindings" title="Link to this heading">#</a></h2>
-<p>This project includes a native extension written in Rust. The performance-critical work lives in a Cargo workspace under <code class="docutils literal notranslate"><span class="pre">crates/</span></code>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core</span></code> — a plain Rust library with the core routines (unit-tested with <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">test</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_python</span></code> — a thin <a class="reference external" href="https://pyo3.rs/">PyO3</a> layer that exposes them to Python as the native module <code class="docutils literal notranslate"><span class="pre">cp_anywhere._native</span></code></p></li>
-</ul>
-<p>The Python package under <code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/</span></code> calls into the compiled extension, so build it into your environment before running the Python code:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># build the native extension into the active uv environment</span>
-uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop
+<p>The <a class="reference external" href="https://github.com/d33bs/cp-anywhere/tree/main/tests/segmentation">segmentation tests</a> compare labels with CellProfiler 4.2.8 on synthetic and real microscopy fixtures.</p>
+<section id="preview-segmented-objects">
+<h4>Preview segmented objects<a class="headerlink" href="#preview-segmented-objects" title="Link to this heading">#</a></h4>
+<p>Use <code class="docutils literal notranslate"><span class="pre">preview_segmentation</span></code> to draw object outlines on the input image or show
+the objects as filled colors. The preview does not change the image or labels.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">overlay</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">preview_segmentation</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">dna_image</span><span class="p">)</span>
+<span class="n">colored</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">preview_segmentation</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;labels&quot;</span><span class="p">)</span>
 
-<span class="c1"># or use the provided poe task</span>
-uv<span class="w"> </span>run<span class="w"> </span>poe<span class="w"> </span>develop
+<span class="n">cp_anywhere</span><span class="o">.</span><span class="n">save_array</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="s2">&quot;segmentation-preview.png&quot;</span><span class="p">,</span> <span class="n">bit_depth</span><span class="o">=</span><span class="s2">&quot;No conversion&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">poe</span> <span class="pre">test</span></code> rebuilds the extension and runs the Python tests; <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">poe</span> <span class="pre">pipeline</span></code> runs the Rust tests, rebuilds, lints, and runs the Python tests. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CONTRIBUTING.md#versioning">versioning notes</a> for how release versions flow from git tags into the built wheel.</p>
+<p>To inspect the overlay in a notebook, use <code class="docutils literal notranslate"><span class="pre">plt.imshow(overlay)</span></code> with Matplotlib.</p>
 </section>
-<section id="post-template-copy-instructions">
-<h2>Post template copy instructions<a class="headerlink" href="#post-template-copy-instructions" title="Link to this heading">#</a></h2>
-<p>While we provide some customizations to the files in this template based on your specification there’s likely a chance some things aren’t perfect.
-We recommend taking a look at each file used within this template to ensure it meets your expectations for the project you’re working on.
-In addition, consider the following steps to help ensure the project is in good shape before proceeding too far.</p>
+</section>
+</section>
+<section id="project-links">
+<h2>Project links<a class="headerlink" href="#project-links" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p>[ ] Remove files you plan on not using (e.g. <code class="docutils literal notranslate"><span class="pre">src/notebooks</span></code>, <code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-pypi.yml</span></code>, etc.).</p></li>
-<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">LICENSE</span></code> file based on the project.</p></li>
-<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">CITATION.cff</span></code> file based on the project.</p></li>
-<li><p>[ ] Update <code class="docutils literal notranslate"><span class="pre">.github/CODEOWNERS</span></code> with the right GitHub handle(s) for review ownership, and expand it to additional owners/teams and path-specific ownership rules as the project grows.</p></li>
-<li><p>[ ] Update the project dependencies using <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">remove</span></code> or <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">add</span></code>.</p></li>
-<li><p>[ ] Update the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file based on the project.</p></li>
-<li><p>[ ] Enable <code class="docutils literal notranslate"><span class="pre">pre-commit-lite</span></code> to help automate corrections to code during pull request updates. Otherwise, consider removing the step: labeled with: <code class="docutils literal notranslate"><span class="pre">pre-commit-ci/lite-action</span></code> within <code class="docutils literal notranslate"><span class="pre">.github/workflows/run-tests.yml</span></code>.</p></li>
-<li><p>[ ] Enable private security vulnerability issue reporting within the repo settings (e.g. https://github.com/repo_org/repo_name/settings/security_analysis)</p></li>
-<li><p>[ ] Enable <a class="reference external" href="https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule">branch protection rules</a> to require one pull request review approval per pull request to help with maintainer expectations.</p></li>
-<li><p>[ ] Add collaborators to access the repository.</p></li>
-<li><p>[ ] Create a <code class="docutils literal notranslate"><span class="pre">pages</span></code> branch and enable GitHub Pages on the repository (for documentation).</p></li>
-<li><p>[ ] Update the GitHub repository description.</p></li>
-<li><p>[ ] Remove these instructions!</p></li>
+<li><p><a class="reference external" href="https://d33bs.github.io/cp-anywhere/">Documentation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/wasm.md">Browser and WebAssembly integration</a></p></li>
+<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CONTRIBUTING.md">Development and contributing</a></p></li>
+<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/security/advisories/new">Report a security vulnerability</a></p></li>
+<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CITATION.cff">Citation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/LICENSE">BSD 3-Clause license</a></p></li>
 </ul>
 <p><a class="reference download internal" download="" href="_downloads/ba4a16b48dc10d3fb2c660a45956fd1f/cell-profiling-anywhere.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">Python</span> <span class="pre">example</span> <span class="pre">notebook</span></code></a></p>
 <div class="toctree-wrapper compound">
@@ -511,6 +466,10 @@ In addition, consider the following steps to help ensure the project is in good 
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_primary_objects"><code class="docutils literal notranslate"><span class="pre">identify_primary_objects()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_secondary_objects"><code class="docutils literal notranslate"><span class="pre">identify_secondary_objects()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.segment.identify_tertiary_objects"><code class="docutils literal notranslate"><span class="pre">identify_tertiary_objects()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#segmentation-preview">Segmentation preview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.preview.preview_segmentation"><code class="docutils literal notranslate"><span class="pre">preview_segmentation()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#cp-anywhere-cppipe">cp_anywhere.cppipe</a><ul>
@@ -673,7 +632,7 @@ In addition, consider the following steps to help ensure the project is in good 
 
   <p class="copyright">
     
-      © Copyright 2024, DBMI Community.
+      © Copyright 2026, Dave Bunten.
       <br/>
     
   </p>
