@@ -1,5 +1,4 @@
 ---
-# used for running tests
 name: tests
 
 on:
@@ -13,8 +12,6 @@ permissions:
 
 jobs:
   pre_commit_checks:
-    permissions:
-      contents: write
     runs-on: ubuntu-26.04
     steps:
       # checks out the repo
@@ -38,11 +35,7 @@ jobs:
       # above.
       - name: Sync all dependency groups
         run: uv sync --all-groups --frozen
-      # use prek for speedy precommit results
       - uses: j178/prek-action@v3.1.0
-      # run pre-commit ci lite for automated fixes
-      - uses: pre-commit-ci/lite-action@v1.2.0
-        if: ${{ !cancelled() }}
   run_tests:
     needs: pre_commit_checks
     strategy:
