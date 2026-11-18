@@ -1,0 +1,1634 @@
+{
+  "status": "fail",
+  "production_readiness": "not_established",
+  "zernike_context": {
+    "status": "unresolved",
+    "affected_objects": {"Nuclei": [6, 34], "Cells": [6]},
+    "mismatched_scalar_values": 90,
+    "max_abs_error": 0.010756678912417182,
+    "evidence": "fixtures/size_shape/zernike_context/README.md",
+    "oracle_reproduction_exit_status": 0,
+    "native_check_exit_status": 1,
+    "production_code_changed": false
+  },
+  "dataset": {
+    "dataset": "BBBC007v1",
+    "source_url": "https://bbbc.broadinstitute.org/BBBC007",
+    "license": "CC0 waiver, see dataset source page",
+    "archives": {
+      "images": {
+        "name": "BBBC007_v1_images.zip",
+        "sha256": "b7009e2fce0a3152a5c9adda916eaa699d09696f4bd02a7d05d12d041e30c6d1"
+      },
+      "outlines": {
+        "name": "BBBC007_v1_outlines.zip",
+        "sha256": "6a5246f9a9d743d22eafdb409fae638a8461af97e9ff9c4a92f25eba236224d3"
+      }
+    },
+    "normalization": "uint8 divided by 255 then stored as float32 for both engines",
+    "cohorts": {
+      "A9": [
+        "A9-A9-p10",
+        "A9-A9-p5",
+        "A9-A9-p7",
+        "A9-A9-p9"
+      ],
+      "f96 (17)": [
+        "f96-17-17P1-POS0007",
+        "f96-17-17P1-POS0011",
+        "f96-17-17P1-POS0013"
+      ],
+      "f9620": [
+        "f9620-20P1-POS0002",
+        "f9620-20P1-POS0007",
+        "f9620-20P1-POS0008"
+      ]
+    },
+    "excluded": [
+      {
+        "id": "f113-AS-09125-040701150004-A02f00",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            512,
+            512,
+            3
+          ],
+          "Actin": [
+            512,
+            512,
+            3
+          ]
+        }
+      },
+      {
+        "id": "f96-17-17P1-POS0006",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            400,
+            400,
+            3
+          ],
+          "Actin": [
+            400,
+            400,
+            3
+          ]
+        }
+      },
+      {
+        "id": "f96-17-17P1-POS0014",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            400,
+            400,
+            3
+          ],
+          "Actin": [
+            400,
+            400,
+            3
+          ]
+        }
+      },
+      {
+        "id": "f9620-20P1-POS0005",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            400,
+            400,
+            3
+          ],
+          "Actin": [
+            400,
+            400,
+            3
+          ]
+        }
+      },
+      {
+        "id": "f9620-20P1-POS0010",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            400,
+            400,
+            3
+          ],
+          "Actin": [
+            400,
+            400,
+            3
+          ]
+        }
+      },
+      {
+        "id": "f9620-20P1-POS0011",
+        "reason": "non-grayscale source",
+        "shapes": {
+          "DNA": [
+            400,
+            400,
+            3
+          ],
+          "Actin": [
+            400,
+            400,
+            3
+          ]
+        }
+      }
+    ]
+  },
+  "settings": {
+    "illumination": {
+      "intensity_choice": "Regular",
+      "smoothing_method": "Gaussian Filter",
+      "automatic_object_width": "Manually",
+      "size_of_smoothing_filter": 128.0,
+      "rescale_option": "Median"
+    },
+    "shape_scopes": [
+      "Nuclei",
+      "Cells"
+    ],
+    "primary": {
+      "threshold": "otsu",
+      "min_diameter": 10.0,
+      "max_diameter": 40.0,
+      "exclude_size": true,
+      "unclump_method": "shape",
+      "watershed_method": "propagate"
+    },
+    "secondary": {
+      "method": "propagation",
+      "regularization_factor": 0.05,
+      "fill_holes": true
+    },
+    "tertiary": {
+      "shrink_primary": false
+    }
+  },
+  "groups": [
+    {
+      "id": "A9--A9-A9-p10",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "A9-A9-p5",
+        "A9-A9-p7",
+        "A9-A9-p9"
+      ],
+      "validation": [
+        "A9-A9-p10"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "A9--A9-A9-p5",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "A9-A9-p10",
+        "A9-A9-p7",
+        "A9-A9-p9"
+      ],
+      "validation": [
+        "A9-A9-p5"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "A9--A9-A9-p7",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "A9-A9-p10",
+        "A9-A9-p5",
+        "A9-A9-p9"
+      ],
+      "validation": [
+        "A9-A9-p7"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "A9--A9-A9-p9",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "A9-A9-p10",
+        "A9-A9-p5",
+        "A9-A9-p7"
+      ],
+      "validation": [
+        "A9-A9-p9"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f96-17---f96-17-17P1-POS0007",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f96-17-17P1-POS0011",
+        "f96-17-17P1-POS0013"
+      ],
+      "validation": [
+        "f96-17-17P1-POS0007"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f96-17---f96-17-17P1-POS0011",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f96-17-17P1-POS0007",
+        "f96-17-17P1-POS0013"
+      ],
+      "validation": [
+        "f96-17-17P1-POS0011"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f96-17---f96-17-17P1-POS0013",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f96-17-17P1-POS0007",
+        "f96-17-17P1-POS0011"
+      ],
+      "validation": [
+        "f96-17-17P1-POS0013"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f9620--f9620-20P1-POS0002",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f9620-20P1-POS0007",
+        "f9620-20P1-POS0008"
+      ],
+      "validation": [
+        "f9620-20P1-POS0002"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f9620--f9620-20P1-POS0007",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f9620-20P1-POS0002",
+        "f9620-20P1-POS0008"
+      ],
+      "validation": [
+        "f9620-20P1-POS0007"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "f9620--f9620-20P1-POS0008",
+      "kind": "real_leave_one_out",
+      "calibration": [
+        "f9620-20P1-POS0002",
+        "f9620-20P1-POS0007"
+      ],
+      "validation": [
+        "f9620-20P1-POS0008"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "controlled-noisy-calibration",
+      "kind": "controlled_stress",
+      "calibration": [
+        "independent-flat-0",
+        "independent-flat-1",
+        "independent-flat-2"
+      ],
+      "validation": [
+        "A9-A9-p10-vignette",
+        "A9-A9-p5-vignette"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Fit Polynomial",
+        "automatic_object_width": "Automatic",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "No"
+      }
+    },
+    {
+      "id": "stress-empty-field",
+      "kind": "empty_stress",
+      "calibration": [
+        "A9-A9-p5",
+        "A9-A9-p7",
+        "A9-A9-p9"
+      ],
+      "validation": [
+        "A9-A9-p10-empty"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    },
+    {
+      "id": "stress-saturated-field",
+      "kind": "saturated_stress",
+      "calibration": [
+        "A9-A9-p5",
+        "A9-A9-p7",
+        "A9-A9-p9"
+      ],
+      "validation": [
+        "A9-A9-p10-saturated"
+      ],
+      "illumination": {
+        "intensity_choice": "Regular",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Manually",
+        "size_of_smoothing_filter": 128.0,
+        "rescale_option": "Median"
+      }
+    }
+  ],
+  "environment": {
+    "python": "3.11.13 (main, Jul 11 2025, 22:26:10) [Clang 20.1.4 ]",
+    "platform": "macOS-26.7.2-arm64-arm-64bit",
+    "cp_anywhere": "0.1.0",
+    "numpy": "2.4.6"
+  },
+  "reference": {
+    "source_commit": "2df090ff281cff80943fe679a1c3192fbda9cd6d",
+    "executed": true
+  },
+  "held_out_cases": 14,
+  "limitations": [
+    "No treatment/control metadata or instrument flat-field truth: real-data QC is diagnostic, not evidence that correction preserves biological differences.",
+    "RGB sources are excluded explicitly rather than silently converted.",
+    "Boundary scoring uses eight-neighbor relevant-pixel exclusion and Euclidean two-pixel matching; do not equate results to the published benchmark without matching all conventions.",
+    "Real-field calibration folds are leave-one-out within the same source cohort; controlled noise and saturation are labeled synthetic stress inputs.",
+    "Shape measurements exclude Cytoplasm because empty regions leave sparse IDs, an explicitly unsupported shape setting. Cytoplasm intensity measurements retain the original IDs.",
+    "Location_Center_X/Y/Z from CP identification modules and CP relationship rows are outside this measurement comparison; they are reported explicitly rather than counted as passing."
+  ],
+  "input_manifest_sha256": "353aaea770c4a76fe1b6f019fd3380a95c5da55aeb2ddc7a241612965a765720",
+  "source_report_sha256": "2860f0afca949583a390ac9f0b106098dff189dd5fad2b3937bdac8fb2d0a0fe",
+  "oracle": {
+    "source_commit": "2df090ff281cff80943fe679a1c3192fbda9cd6d",
+    "module_sha256": {
+      "cellprofiler/modules/correctilluminationcalculate.py": "4720036663d66dcd9615c8b5a91e0b8d79f376a7e2fd461b21b9ba40189c4a9b",
+      "cellprofiler/modules/correctilluminationapply.py": "8a3a9d247b7591e605becb1f7f8e8edfa056c863fab8e86d7a45c13e2efdbc7f",
+      "cellprofiler/modules/identifyprimaryobjects.py": "b7389cae9e9fa63d2a0b3b1de6210b210298e2c965360a6622b249b7bcbfea7f",
+      "cellprofiler/modules/identifysecondaryobjects.py": "5676b68aff9d967d2d27e52769fcfb638f25a0eb9beed24b17a98d845e1bc352",
+      "cellprofiler/modules/identifytertiaryobjects.py": "e9fe32bbd1176b199eae2f170c24551e3b2e87af66884cff583164e8a55800d2",
+      "cellprofiler/modules/measureimageintensity.py": "661f3c415bbf22139f76a5a931a676df82c316055ed17dd5d4cb3253ffdd3068",
+      "cellprofiler/modules/measureobjectintensity.py": "3fac73fe3eab74f5c54a24599b8b979b3616ff61fdd97cbaf97e066f9d69e1d5",
+      "cellprofiler/modules/measureobjectsizeshape.py": "66b35e81be80ffa78e44eb5c5e68777d2150205666ad6a60b980c3a878df5292",
+      "cellprofiler/modules/measureobjectneighbors.py": "1f7578f423790c6c802344fda60f9208d76086aca5a55230ac22bdfc6439ca23"
+    },
+    "versions": {
+      "python": "3.9.25",
+      "cellprofiler": "4.2.8",
+      "cellprofiler-core": "4.2.8",
+      "centrosome": "1.2.3",
+      "numpy": "1.23.5",
+      "scipy": "1.9.3",
+      "scikit-image": "0.21.0",
+      "h5py": "3.11.0",
+      "mahotas": "1.4.18"
+    },
+    "runner_sha256": "0d3d4254e160ba8379848d73a6242b50ec2348539c427bf5558b8fd35669e802"
+  },
+  "checks": {
+    "illumination": {
+      "cases": 14,
+      "cases_passing": 14,
+      "mismatch_checks": 0,
+      "scalars_checked": 0
+    },
+    "arrays": {
+      "cases": 14,
+      "cases_passing": 14,
+      "mismatch_checks": 0,
+      "scalars_checked": 0
+    },
+    "features": {
+      "cases": 14,
+      "cases_passing": 1,
+      "mismatch_checks": 1430,
+      "scalars_checked": 308591
+    },
+    "measurements_on_reference_inputs": {
+      "cases": 14,
+      "cases_passing": 13,
+      "mismatch_checks": 60,
+      "scalars_checked": 308591
+    }
+  },
+  "cases": [
+    {
+      "group": "A9--A9-A9-p10",
+      "kind": "real_leave_one_out",
+      "field": "A9-A9-p10",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 97,
+        "Cells": 97,
+        "Cytoplasm": 91
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.05140605568885803,
+            "mean_after": 0.05015939351686357,
+            "segmentation": {
+              "foreground_dice": 0.6868079993133637,
+              "manual_enclosed_objects": 87,
+              "predicted_objects": 97
+            },
+            "background_spatial_cv_before": 0.3749482958521915,
+            "background_spatial_cv_after": 0.3829926214023711
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.11888185143470764,
+            "mean_after": 0.11729248863177168,
+            "segmentation": {
+              "foreground_dice": 0.6972405752040419,
+              "manual_enclosed_objects": 98,
+              "predicted_objects": 97
+            },
+            "background_spatial_cv_before": 0.4209439928921559,
+            "background_spatial_cv_after": 0.4365579517388506,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 3499,
+              "within_two_pixels": 2686,
+              "fraction": 0.7676478993998285
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.3322964169783518
+    },
+    {
+      "group": "A9--A9-A9-p5",
+      "kind": "real_leave_one_out",
+      "field": "A9-A9-p5",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 105,
+        "Cells": 105,
+        "Cytoplasm": 84
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.00029135802469135803,
+            "mean_before": 0.05041539669036865,
+            "mean_after": 0.05445836720022913,
+            "segmentation": {
+              "foreground_dice": 0.74111273285011,
+              "manual_enclosed_objects": 90,
+              "predicted_objects": 105
+            },
+            "background_spatial_cv_before": 0.7386352627354987,
+            "background_spatial_cv_after": 0.829261295085837
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.002419753086419753,
+            "mean_before": 0.08851130306720734,
+            "mean_after": 0.10114156454624953,
+            "segmentation": {
+              "foreground_dice": 0.6666924094257112,
+              "manual_enclosed_objects": 96,
+              "predicted_objects": 105
+            },
+            "background_spatial_cv_before": 0.7586554665033409,
+            "background_spatial_cv_after": 0.9088922005079475,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 3729,
+              "within_two_pixels": 2484,
+              "fraction": 0.666130329847144
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.8909641669597477
+    },
+    {
+      "group": "A9--A9-A9-p7",
+      "kind": "real_leave_one_out",
+      "field": "A9-A9-p7",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 154,
+        "Cells": 154,
+        "Cytoplasm": 111
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 7.901234567901235e-05,
+            "mean_before": 0.07421690225601196,
+            "mean_after": 0.07333232186571062,
+            "segmentation": {
+              "foreground_dice": 0.7667397431882242,
+              "manual_enclosed_objects": 126,
+              "predicted_objects": 154
+            },
+            "background_spatial_cv_before": 0.2848188006107698,
+            "background_spatial_cv_after": 0.32691789525297243
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.179380401968956,
+            "mean_after": 0.17846493360145407,
+            "segmentation": {
+              "foreground_dice": 0.6847440930040862,
+              "manual_enclosed_objects": 148,
+              "predicted_objects": 154
+            },
+            "background_spatial_cv_before": 0.39928196364883706,
+            "background_spatial_cv_after": 0.44197735905452135,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 6698,
+              "within_two_pixels": 4496,
+              "fraction": 0.671245147805315
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.8928762499708682
+    },
+    {
+      "group": "A9--A9-A9-p9",
+      "kind": "real_leave_one_out",
+      "field": "A9-A9-p9",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 144,
+        "Cells": 144,
+        "Cytoplasm": 94
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 7.901234567901235e-05,
+            "mean_before": 0.08048093318939209,
+            "mean_after": 0.08128178485783484,
+            "segmentation": {
+              "foreground_dice": 0.7769451874989616,
+              "manual_enclosed_objects": 146,
+              "predicted_objects": 144
+            },
+            "background_spatial_cv_before": 0.26290084960239174,
+            "background_spatial_cv_after": 0.34722835993916057
+          },
+          "Actin": {
+            "input_saturated_fraction": 4.938271604938272e-06,
+            "output_saturated_fraction": 7.407407407407407e-05,
+            "mean_before": 0.16630320250988007,
+            "mean_after": 0.17131117425768833,
+            "segmentation": {
+              "foreground_dice": 0.616739315889729,
+              "manual_enclosed_objects": 185,
+              "predicted_objects": 144
+            },
+            "background_spatial_cv_before": 0.30796850417878213,
+            "background_spatial_cv_after": 0.36333167738692745,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 4953,
+              "within_two_pixels": 3485,
+              "fraction": 0.7036139713305067
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.6587405830505304
+    },
+    {
+      "group": "f96-17---f96-17-17P1-POS0007",
+      "kind": "real_leave_one_out",
+      "field": "f96-17-17P1-POS0007",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 75,
+        "Cells": 75,
+        "Cytoplasm": 56
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 3.75e-05,
+            "output_saturated_fraction": 0.0045875,
+            "mean_before": 0.07151373475790024,
+            "mean_after": 0.08384607644126518,
+            "segmentation": {
+              "foreground_dice": 0.765056079992106,
+              "manual_enclosed_objects": 79,
+              "predicted_objects": 75
+            },
+            "background_spatial_cv_before": 0.37954536799325184,
+            "background_spatial_cv_after": 0.5574451675339432
+          },
+          "Actin": {
+            "input_saturated_fraction": 6.25e-06,
+            "output_saturated_fraction": 0.004225,
+            "mean_before": 0.1778273582458496,
+            "mean_after": 0.19585976330881238,
+            "segmentation": {
+              "foreground_dice": 0.6352356896610575,
+              "manual_enclosed_objects": 97,
+              "predicted_objects": 75
+            },
+            "background_spatial_cv_before": 0.586596850427341,
+            "background_spatial_cv_after": 0.6322172518789119,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 3067,
+              "within_two_pixels": 2036,
+              "fraction": 0.6638408868601239
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.8345957500278018
+    },
+    {
+      "group": "f96-17---f96-17-17P1-POS0011",
+      "kind": "real_leave_one_out",
+      "field": "f96-17-17P1-POS0011",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 101,
+        "Cells": 101,
+        "Cytoplasm": 76
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 5.625e-05,
+            "output_saturated_fraction": 0.00259375,
+            "mean_before": 0.09127873182296753,
+            "mean_after": 0.09825050382142944,
+            "segmentation": {
+              "foreground_dice": 0.7881142857142858,
+              "manual_enclosed_objects": 108,
+              "predicted_objects": 101
+            },
+            "background_spatial_cv_before": 0.37920604364805655,
+            "background_spatial_cv_after": 0.5837881719457356
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.00023125,
+            "mean_before": 0.2019311636686325,
+            "mean_after": 0.2197911704509286,
+            "segmentation": {
+              "foreground_dice": 0.6323488087733822,
+              "manual_enclosed_objects": 138,
+              "predicted_objects": 101
+            },
+            "background_spatial_cv_before": 0.46209506131976086,
+            "background_spatial_cv_after": 0.5286183059807008,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 3832,
+              "within_two_pixels": 2561,
+              "fraction": 0.6683194154488518
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.9917353329947218
+    },
+    {
+      "group": "f96-17---f96-17-17P1-POS0013",
+      "kind": "real_leave_one_out",
+      "field": "f96-17-17P1-POS0013",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 50,
+        "Cells": 50,
+        "Cytoplasm": 47
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 2.5e-05,
+            "output_saturated_fraction": 0.00210625,
+            "mean_before": 0.04286549240350723,
+            "mean_after": 0.04608975402146025,
+            "segmentation": {
+              "foreground_dice": 0.768364826833611,
+              "manual_enclosed_objects": 49,
+              "predicted_objects": 50
+            },
+            "background_spatial_cv_before": 0.6216969341501053,
+            "background_spatial_cv_after": 0.817480275097157
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.00463125,
+            "mean_before": 0.1106797382235527,
+            "mean_after": 0.12141943902458296,
+            "segmentation": {
+              "foreground_dice": 0.755651008347042,
+              "manual_enclosed_objects": 52,
+              "predicted_objects": 50
+            },
+            "background_spatial_cv_before": 0.46375476521284287,
+            "background_spatial_cv_after": 0.7036702899896636,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 2644,
+              "within_two_pixels": 1974,
+              "fraction": 0.7465960665658093
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.4896685419953428
+    },
+    {
+      "group": "f9620--f9620-20P1-POS0002",
+      "kind": "real_leave_one_out",
+      "field": "f9620-20P1-POS0002",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 101,
+        "Cells": 101,
+        "Cytoplasm": 94
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 2.5e-05,
+            "output_saturated_fraction": 5.625e-05,
+            "mean_before": 0.09606103599071503,
+            "mean_after": 0.0954634178416658,
+            "segmentation": {
+              "foreground_dice": 0.8346037115121748,
+              "manual_enclosed_objects": 101,
+              "predicted_objects": 101
+            },
+            "background_spatial_cv_before": 0.5349309802028548,
+            "background_spatial_cv_after": 0.46160072768077026
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.16789057850837708,
+            "mean_after": 0.1607842345482437,
+            "segmentation": {
+              "foreground_dice": 0.7790708500139651,
+              "manual_enclosed_objects": 105,
+              "predicted_objects": 101
+            },
+            "background_spatial_cv_before": 0.6274592001571806,
+            "background_spatial_cv_after": 0.5903698192091144,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 5692,
+              "within_two_pixels": 3929,
+              "fraction": 0.6902670414617006
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.0517871659831144
+    },
+    {
+      "group": "f9620--f9620-20P1-POS0007",
+      "kind": "real_leave_one_out",
+      "field": "f9620-20P1-POS0007",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 77,
+        "Cells": 77,
+        "Cytoplasm": 52
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.00045625,
+            "output_saturated_fraction": 0.00268125,
+            "mean_before": 0.08215311169624329,
+            "mean_after": 0.08430807454218447,
+            "segmentation": {
+              "foreground_dice": 0.828377442150478,
+              "manual_enclosed_objects": 78,
+              "predicted_objects": 77
+            },
+            "background_spatial_cv_before": 0.2112251346530043,
+            "background_spatial_cv_after": 0.26971939310602494
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.00026875,
+            "mean_before": 0.14289537072181702,
+            "mean_after": 0.14618538460126146,
+            "segmentation": {
+              "foreground_dice": 0.6383306356358546,
+              "manual_enclosed_objects": 98,
+              "predicted_objects": 77
+            },
+            "background_spatial_cv_before": 0.2546888645585084,
+            "background_spatial_cv_after": 0.28250628742659306,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 2007,
+              "within_two_pixels": 1148,
+              "fraction": 0.5719980069755854
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.556802292005159
+    },
+    {
+      "group": "f9620--f9620-20P1-POS0008",
+      "kind": "real_leave_one_out",
+      "field": "f9620-20P1-POS0008",
+      "shape": [
+        400,
+        400
+      ],
+      "objects": {
+        "Nuclei": 59,
+        "Cells": 59,
+        "Cytoplasm": 53
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 5.625e-05,
+            "output_saturated_fraction": 0.00015,
+            "mean_before": 0.10225559771060944,
+            "mean_after": 0.10125869576238329,
+            "segmentation": {
+              "foreground_dice": 0.8012513801987486,
+              "manual_enclosed_objects": 61,
+              "predicted_objects": 59
+            },
+            "background_spatial_cv_before": 0.19243234901824052,
+            "background_spatial_cv_after": 0.19867683539337805
+          },
+          "Actin": {
+            "input_saturated_fraction": 8.75e-05,
+            "output_saturated_fraction": 0.0001625,
+            "mean_before": 0.15082277357578278,
+            "mean_after": 0.146100740978634,
+            "segmentation": {
+              "foreground_dice": 0.7706794946430943,
+              "manual_enclosed_objects": 73,
+              "predicted_objects": 59
+            },
+            "background_spatial_cv_before": 0.2645201513042401,
+            "background_spatial_cv_after": 0.2514121458957081,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 1845,
+              "within_two_pixels": 1274,
+              "fraction": 0.6905149051490515
+            }
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.606305750028696
+    },
+    {
+      "group": "controlled-noisy-calibration",
+      "kind": "controlled_stress",
+      "field": "A9-A9-p10-vignette",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 97,
+        "Cells": 97,
+        "Cytoplasm": 89
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.040014009922742844,
+            "mean_after": 0.051408987408317626,
+            "segmentation": {
+              "foreground_dice": 0.6829715333066041,
+              "manual_enclosed_objects": 87,
+              "predicted_objects": 97
+            },
+            "background_spatial_cv_before": 0.3339346200358232,
+            "background_spatial_cv_after": 0.37494322823642395,
+            "reference_mae_before": 0.01139204390347004,
+            "reference_mae_after": 3.998551881055773e-06
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.09317506104707718,
+            "mean_after": 0.11888433805722513,
+            "segmentation": {
+              "foreground_dice": 0.699592617637842,
+              "manual_enclosed_objects": 98,
+              "predicted_objects": 97
+            },
+            "background_spatial_cv_before": 0.39843293526852985,
+            "background_spatial_cv_after": 0.42087499119081706,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 3594,
+              "within_two_pixels": 2750,
+              "fraction": 0.765164162493044
+            },
+            "reference_mae_before": 0.025706784799695015,
+            "reference_mae_after": 1.1510171437705005e-05
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.249090209021233
+    },
+    {
+      "group": "controlled-noisy-calibration",
+      "kind": "controlled_stress",
+      "field": "A9-A9-p5-vignette",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 108,
+        "Cells": 108,
+        "Cytoplasm": 97
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.03847223520278931,
+            "mean_after": 0.05041815974286953,
+            "segmentation": {
+              "foreground_dice": 0.7502187651920272,
+              "manual_enclosed_objects": 90,
+              "predicted_objects": 108
+            },
+            "background_spatial_cv_before": 0.6832326735508818,
+            "background_spatial_cv_after": 0.7386211053049794,
+            "reference_mae_before": 0.01194316241890192,
+            "reference_mae_after": 4.226610023114416e-06
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.06700073927640915,
+            "mean_after": 0.08851336140193414,
+            "segmentation": {
+              "foreground_dice": 0.720226960414912,
+              "manual_enclosed_objects": 96,
+              "predicted_objects": 108
+            },
+            "background_spatial_cv_before": 0.6567406249539133,
+            "background_spatial_cv_after": 0.7586198668827785,
+            "internal_boundary_agreement": {
+              "relevant_pixels": 4460,
+              "within_two_pixels": 2919,
+              "fraction": 0.6544843049327355
+            },
+            "reference_mae_before": 0.02151055634021759,
+            "reference_mae_after": 7.107798152683694e-06
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.0788346249610186
+    },
+    {
+      "group": "stress-empty-field",
+      "kind": "empty_stress",
+      "field": "A9-A9-p10-empty",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 0,
+        "Cells": 0,
+        "Cytoplasm": 0
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.0,
+            "mean_after": 0.0,
+            "reference_mae_before": 0.05140605568885803,
+            "reference_mae_after": 0.051406053326023673
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.0,
+            "output_saturated_fraction": 0.0,
+            "mean_before": 0.0,
+            "mean_after": 0.0,
+            "reference_mae_before": 0.11888185143470764,
+            "reference_mae_after": 0.11888184307546895
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 1.3592912920285016
+    },
+    {
+      "group": "stress-saturated-field",
+      "kind": "saturated_stress",
+      "field": "A9-A9-p10-saturated",
+      "shape": [
+        450,
+        450
+      ],
+      "objects": {
+        "Nuclei": 101,
+        "Cells": 101,
+        "Cytoplasm": 97
+      },
+      "features_per_scope": {
+        "Cells": 104,
+        "Cytoplasm": 42,
+        "Image": 28,
+        "Nuclei": 97
+      },
+      "quality": {
+        "channels": {
+          "DNA": {
+            "input_saturated_fraction": 0.06518024691358025,
+            "output_saturated_fraction": 0.03554074074074074,
+            "mean_before": 0.17650601267814636,
+            "mean_after": 0.1706078203079877,
+            "reference_mae_before": 0.12509995698928833,
+            "reference_mae_after": 0.11920379631201748
+          },
+          "Actin": {
+            "input_saturated_fraction": 0.12804444444444443,
+            "output_saturated_fraction": 0.06847901234567902,
+            "mean_before": 0.4311656653881073,
+            "mean_after": 0.42157819347786313,
+            "reference_mae_before": 0.31228378415107727,
+            "reference_mae_after": 0.3026963504023942
+          }
+        }
+      },
+      "exports": {
+        "CSV": "passed",
+        "Parquet": "passed",
+        "SQLite": "passed"
+      },
+      "elapsed_seconds": 2.941099874966312
+    }
+  ],
+  "failed_shared_input_features": [
+    {
+      "group": "f9620--f9620-20P1-POS0002",
+      "field": "f9620-20P1-POS0002",
+      "mismatches": [
+        {
+          "feature": "Cells.AreaShape_Zernike_0_0",
+          "kind": "numeric",
+          "max_abs_error": 0.01075667891241705
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_1_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0013264710825554443
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_2_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912416988
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_2_2",
+          "kind": "numeric",
+          "max_abs_error": 0.00900960652337629
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_3_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0006558244515339276
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_3_3",
+          "kind": "numeric",
+          "max_abs_error": 0.0007213271527876861
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_4_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417182
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_4_2",
+          "kind": "numeric",
+          "max_abs_error": 0.0071851966846763
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_4_4",
+          "kind": "numeric",
+          "max_abs_error": 0.005359803307562412
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_5_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0072451619417942086
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_5_3",
+          "kind": "numeric",
+          "max_abs_error": 0.009118979755877232
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_5_5",
+          "kind": "numeric",
+          "max_abs_error": 0.010733531326828602
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_6_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417158
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_6_2",
+          "kind": "numeric",
+          "max_abs_error": 0.003305286257873189
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_6_4",
+          "kind": "numeric",
+          "max_abs_error": 0.005478623219705773
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_6_6",
+          "kind": "numeric",
+          "max_abs_error": 0.006906000028540466
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_7_1",
+          "kind": "numeric",
+          "max_abs_error": 0.007273741043584872
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_7_3",
+          "kind": "numeric",
+          "max_abs_error": 0.010606725923953847
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_7_5",
+          "kind": "numeric",
+          "max_abs_error": 0.009501006554161586
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_7_7",
+          "kind": "numeric",
+          "max_abs_error": 0.001163509530748015
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_8_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417064
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_8_2",
+          "kind": "numeric",
+          "max_abs_error": 0.005538891737855052
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_8_4",
+          "kind": "numeric",
+          "max_abs_error": 0.0043979142231185
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_8_6",
+          "kind": "numeric",
+          "max_abs_error": 0.001995174959515341
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_8_8",
+          "kind": "numeric",
+          "max_abs_error": 0.007205921175492017
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_9_1",
+          "kind": "numeric",
+          "max_abs_error": 0.01054414279461456
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_9_3",
+          "kind": "numeric",
+          "max_abs_error": 0.006479938646980916
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_9_5",
+          "kind": "numeric",
+          "max_abs_error": 0.0038993607397503956
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_9_7",
+          "kind": "numeric",
+          "max_abs_error": 0.0005086054405178987
+        },
+        {
+          "feature": "Cells.AreaShape_Zernike_9_9",
+          "kind": "numeric",
+          "max_abs_error": 0.009289796571144097
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_0_0",
+          "kind": "numeric",
+          "max_abs_error": 0.01075667891241705
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_1_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0048359190367135395
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_2_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912416988
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_2_2",
+          "kind": "numeric",
+          "max_abs_error": 0.00900960652337629
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_3_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0017840384607211083
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_3_3",
+          "kind": "numeric",
+          "max_abs_error": 0.00936507077119618
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_4_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417182
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_4_2",
+          "kind": "numeric",
+          "max_abs_error": 0.0071851966846763
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_4_4",
+          "kind": "numeric",
+          "max_abs_error": 0.005359803307562412
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_5_1",
+          "kind": "numeric",
+          "max_abs_error": 0.0072451619417942086
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_5_3",
+          "kind": "numeric",
+          "max_abs_error": 0.009328005306031922
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_5_5",
+          "kind": "numeric",
+          "max_abs_error": 0.010733531326828602
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_6_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417158
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_6_2",
+          "kind": "numeric",
+          "max_abs_error": 0.003305286257873189
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_6_4",
+          "kind": "numeric",
+          "max_abs_error": 0.005478623219705773
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_6_6",
+          "kind": "numeric",
+          "max_abs_error": 0.006952391038214862
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_7_1",
+          "kind": "numeric",
+          "max_abs_error": 0.007273741043584872
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_7_3",
+          "kind": "numeric",
+          "max_abs_error": 0.010606725923953847
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_7_5",
+          "kind": "numeric",
+          "max_abs_error": 0.009501006554161586
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_7_7",
+          "kind": "numeric",
+          "max_abs_error": 0.001163509530748015
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_8_0",
+          "kind": "numeric",
+          "max_abs_error": 0.010756678912417064
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_8_2",
+          "kind": "numeric",
+          "max_abs_error": 0.005538891737855052
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_8_4",
+          "kind": "numeric",
+          "max_abs_error": 0.0043979142231185
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_8_6",
+          "kind": "numeric",
+          "max_abs_error": 0.007683239305404342
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_8_8",
+          "kind": "numeric",
+          "max_abs_error": 0.007205921175492017
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_9_1",
+          "kind": "numeric",
+          "max_abs_error": 0.01054414279461456
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_9_3",
+          "kind": "numeric",
+          "max_abs_error": 0.006479938646980916
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_9_5",
+          "kind": "numeric",
+          "max_abs_error": 0.0038993607397503956
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_9_7",
+          "kind": "numeric",
+          "max_abs_error": 0.0014044053825677388
+        },
+        {
+          "feature": "Nuclei.AreaShape_Zernike_9_9",
+          "kind": "numeric",
+          "max_abs_error": 0.009289796571144097
+        }
+      ]
+    }
+  ]
+}

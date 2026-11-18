@@ -1,0 +1,34 @@
+{
+  "image_id": "synthetic_declump_shape_propagate_empty_field",
+  "object_count": 0,
+  "rescale": true,
+  "settings": {
+    "exclude_border_objects": false,
+    "exclude_size": true,
+    "fill_holes": "never",
+    "log_transform": false,
+    "low_resolution_maxima": false,
+    "max_diameter": 40.0,
+    "min_diameter": 10.0,
+    "threshold_correction_factor": 1.0,
+    "threshold_method": "otsu",
+    "threshold_range": [
+      0.0,
+      1.0
+    ],
+    "threshold_scope": "global",
+    "threshold_smoothing_scale": 0.0,
+    "unclump_method": "shape",
+    "watershed_method": "propagate"
+  },
+  "sha256": {
+    "fixtures/segmentation/synthetic_declump_shape_propagate_empty_field/labels.npy": "1d9c827fcb7ce31d267a4a93b758413c448080a6d0bc3eae68cfbeaea16896e7",
+    "fixtures/segmentation/synthetic_declump_shape_propagate_empty_field/pixels.npy": "f0cbd3deed6354038caf94094c9298a8b3d99264e93c5551b7b3e6bf7c679c66",
+    "fixtures/segmentation/synthetic_declump_shape_propagate_empty_field/small_removed_labels.npy": "5d6478ef04af9ae0c329a55d59a9c09cd2064a525a24a21790ba191a06d05cac"
+  },
+  "shape": [
+    450,
+    450
+  ],
+  "threshold": 0.0
+}

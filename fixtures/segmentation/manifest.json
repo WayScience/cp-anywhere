@@ -599,6 +599,12 @@
       "object_count": 1,
       "result": "fixtures/segmentation/synthetic_declump_with_fill_holes_after_declump.json",
       "threshold": 0.001
+    },
+    {
+      "name": "synthetic_declump_shape_propagate_empty_field",
+      "object_count": 0,
+      "result": "fixtures/segmentation/synthetic_declump_shape_propagate_empty_field.json",
+      "threshold": 0.0
     }
   ],
   "cellprofiler_version": "4.2.8",

@@ -1,0 +1,3171 @@
+{
+  "reference": "real CellProfiler CorrectIlluminationApply.run via pinned reference interpreter",
+  "source": "scripts/reference/generate_illumination_apply.py",
+  "module_sha256": "8a3a9d247b7591e605becb1f7f8e8edfa056c863fab8e86d7a45c13e2efdbc7f",
+  "cases": [
+    {
+      "settings": {
+        "divide_or_subtract": "Divide",
+        "truncate_low": false,
+        "truncate_high": false
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        1.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -3.3333332538604736,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.10000000149011612,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.3333333432674408,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -1.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        3.3333332538604736,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Divide",
+        "truncate_low": false,
+        "truncate_high": true
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        1.0,
+        1.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -3.3333332538604736,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.10000000149011612,
+        {
+          "nonfinite": "-Infinity"
+        },
+        1.0,
+        1.0,
+        0.3333333432674408,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -1.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        1.0,
+        1.0,
+        1.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Divide",
+        "truncate_low": true,
+        "truncate_high": false
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        1.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.3333333432674408,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        3.3333332538604736,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Divide",
+        "truncate_low": true,
+        "truncate_high": true
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        -0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        0.3333333432674408,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        -0.0,
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        1.0,
+        1.0,
+        1.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Subtract",
+        "truncate_low": false,
+        "truncate_high": false
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.100000023841858,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        2.0,
+        1.0,
+        1.0,
+        1.0,
+        0.699999988079071,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Subtract",
+        "truncate_low": false,
+        "truncate_high": true
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.699999988079071,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Subtract",
+        "truncate_low": true,
+        "truncate_high": false
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        1.100000023841858,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        2.0,
+        1.0,
+        1.0,
+        1.0,
+        0.699999988079071,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    },
+    {
+      "settings": {
+        "divide_or_subtract": "Subtract",
+        "truncate_low": true,
+        "truncate_high": true
+      },
+      "rows": 9,
+      "cols": 8,
+      "image": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        0.1,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        1e+40,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "illum": [
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "-Infinity"
+        },
+        -1.0,
+        -0.0,
+        0.0,
+        1e-300,
+        0.3,
+        {
+          "nonfinite": "+Infinity"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ],
+      "expected": [
+        {
+          "nonfinite": "NaN"
+        },
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.0,
+        -0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.10000000149011612,
+        0.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.699999988079071,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        0.0,
+        {
+          "nonfinite": "NaN"
+        },
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        },
+        {
+          "nonfinite": "NaN"
+        }
+      ]
+    }
+  ]
+}

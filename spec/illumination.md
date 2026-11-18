@@ -23,7 +23,10 @@ or `SaveImages` compatibility.
 Calculation uses the shared Rust core through the native Python binding.
 Application uses NumPy.
 File output uses NumPy, tifffile, or Pillow.
-These operations do not have WASM bindings or browser verification yet.
+The WASM package also exposes single-image 2D calculation and application.
+Both were verified in a real Chromium worker against the real-CellProfiler fixtures.
+See `crates/cp_anywhere_wasm/ILLUMINATION.md` for the typed-array APIs and limits.
+Across-image calculation and these file-output APIs remain native-only.
 
 ## Calculate a correction function
 

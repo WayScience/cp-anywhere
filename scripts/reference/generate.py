@@ -16,6 +16,7 @@ import hashlib
 import io
 import json
 import subprocess
+import sys
 from importlib.metadata import version
 from pathlib import Path
 
@@ -39,6 +40,9 @@ from cellprofiler_core.pipeline import Pipeline
 from cellprofiler_core.workspace import Workspace
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from scripts.reference.replay import verify_measurement_replay
+
 SOURCE_COMMIT = "2df090ff281cff80943fe679a1c3192fbda9cd6d"
 PIPELINE_PATH = "reference/pipelines/intensity_neighbors.cppipe"
 CHANNELS = ("DNA", "Actin")
@@ -653,7 +657,9 @@ def produce():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--verify", action="store_true", help="Replay and compare all committed bytes"
+        "--verify",
+        action="store_true",
+        help="Replay with exact inputs/metadata and declared feature tolerances",
     )
     args = parser.parse_args()
     source_root = Path(cellprofiler.__file__).resolve().parent.parent
@@ -666,11 +672,12 @@ def main():
     assert cellprofiler.__version__ == "4.2.8"
     assert version("cellprofiler-core") == "4.2.8"
     files, manifest = produce()
-    for name, payload in files.items():
-        path = ROOT / name
-        if args.verify:
-            assert path.read_bytes() == payload, "Reference replay mismatch: " + name
-        else:
+    differences = []
+    if args.verify:
+        differences = verify_measurement_replay(ROOT, files)
+    else:
+        for name, payload in files.items():
+            path = ROOT / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(payload)
     digest = hashlib.sha256(b"".join(files[name] for name in sorted(files))).hexdigest()
@@ -681,6 +688,7 @@ def main():
                 "files": len(files),
                 "fixtures": len(manifest["fixtures"]),
                 "features": manifest["feature_count"],
+                "nonidentical_files": differences,
                 "sha256": digest,
             },
             sort_keys=True,

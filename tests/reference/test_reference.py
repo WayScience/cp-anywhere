@@ -70,4 +70,5 @@ def test_reference_replay_when_environment_is_configured():
         [python, str(ROOT / "scripts" / "reference" / "generate.py"), "--verify"],
         check=True,
         cwd=ROOT,
+        timeout=180,
     )

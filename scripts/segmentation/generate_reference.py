@@ -23,6 +23,7 @@ See spec/segmentation-modules.md.
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import cellprofiler_core.preferences
@@ -38,6 +39,9 @@ from cellprofiler_core.pipeline import Pipeline
 from cellprofiler_core.workspace import Workspace
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT))
+from scripts.reference.replay import verify_segmentation_replay
+
 SOURCE_COMMIT = "2df090ff281cff80943fe679a1c3192fbda9cd6d"
 OUT_DIR = ROOT / "fixtures/segmentation"
 
@@ -775,6 +779,28 @@ def fixture_cases():
         },
     )
 
+    # All-foreground EDT regression discovered by the real-data pilot.
+    yield (
+        "synthetic_declump_shape_propagate_empty_field",
+        np.zeros((450, 450), dtype=np.float32),
+        {
+            "threshold_method": "otsu",
+            "exclude_size": True,
+            "min_diameter": 10.0,
+            "max_diameter": 40.0,
+            "unclump_method": "shape",
+            "watershed_method": "propagate",
+            "fill_holes": "never",
+            "threshold_smoothing_scale": 0.0,
+            "threshold_correction_factor": 1.0,
+            "threshold_range": (0.0, 1.0),
+            "log_transform": False,
+            "threshold_scope": "global",
+            "exclude_border_objects": False,
+            "low_resolution_maxima": False,
+        },
+    )
+
 
 def npy_bytes(array):
     import io
@@ -788,7 +814,11 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--verify", action="store_true")
+    parser.add_argument(
+        "--verify",
+        action="store_true",
+        help="Replay with exact labels/inputs and tightly bounded threshold rounding",
+    )
     args = parser.parse_args()
 
     manifest = {
@@ -843,15 +873,12 @@ def main():
     manifest_payload = (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode()
     files["fixtures/segmentation/manifest.json"] = manifest_payload
 
-    for relative_path, payload in files.items():
-        path = ROOT / relative_path
-        if args.verify:
-            if not path.exists():
-                raise SystemExit(f"missing reference replay file: {relative_path}")
-            assert path.read_bytes() == payload, (
-                f"Reference replay mismatch: {relative_path}"
-            )
-        else:
+    differences = []
+    if args.verify:
+        differences = verify_segmentation_replay(ROOT, files)
+    else:
+        for relative_path, payload in files.items():
+            path = ROOT / relative_path
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(payload)
 
@@ -861,6 +888,7 @@ def main():
                 "mode": "verify" if args.verify else "write",
                 "files": len(files),
                 "cases": len(manifest["cases"]),
+                "nonidentical_files": differences,
             },
             sort_keys=True,
         )

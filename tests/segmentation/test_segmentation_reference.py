@@ -38,4 +38,5 @@ def test_segmentation_reference_replay_when_environment_is_configured() -> None:
         ],
         check=True,
         cwd=ROOT,
+        timeout=180,
     )

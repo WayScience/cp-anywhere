@@ -13,6 +13,8 @@
 //! surface via `cp_anywhere_segmentation::build_config` (not a separate,
 //! driftable reimplementation of the threshold/declump string mapping).
 
+mod illumination;
+
 use cp_anywhere_core::{measure as core_measure, Column, Families, Input};
 use cp_anywhere_segmentation::{
     build_config, identify_primary_objects as core_segment, ConfigParams,

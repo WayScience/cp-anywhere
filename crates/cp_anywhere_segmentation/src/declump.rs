@@ -475,6 +475,36 @@ fn edt_1d(f: &[f64]) -> Vec<f64> {
 /// background pixels are 0. Separable: a vertical pass then a
 /// horizontal pass of 1D squared-distance transforms, final sqrt.
 pub(crate) fn distance_transform_edt(foreground: &[bool], w: usize, h: usize) -> Vec<f64> {
+    // Degenerate no-background case: real scipy 1.9.3 (the pinned
+    // CellProfiler 4.2.8 environment's scipy.ndimage) does NOT return
+    // a constant for an image with no background pixel at all. Its
+    // feature transform (`NI_EuclideanFeatureTransform`) zero-
+    // initializes the feature array (scipy/ndimage/_morphology.py,
+    // `ft = numpy.zeros((input.ndim,) + input.shape, ...)`), its base
+    // pass writes only `features[0] = -1` for foreground pixels
+    // (scipy/ndimage/src/ni_morphology.c, `_ComputeFT`), and a
+    // `_VoronoiFT` line with no background site leaves every feature
+    // untouched, so every pixel ends up measuring against the stale
+    // (-1, 0) feature: d[row][col] = sqrt((row + 1)^2 + col^2), a
+    // strictly monotone bowl rising toward the bottom-right corner.
+    // CellProfiler's Shape unclump depends on this quirk: on an
+    // all-foreground thresholded image (the all-zero stress field), the
+    // seed-0 jitter is far too small to dent the bowl's ~1-pixel
+    // gradient, leaving exactly ONE local maximum, so real CP declumps
+    // the whole image into ONE object that the max-size filter then
+    // erases. The sentinel-based path below would instead return a
+    // constant distance, whose jitter fabricates thousands of spurious
+    // maxima (verified against the real scipy function; see the
+    // all-foreground regression tests).
+    if foreground.iter().all(|&f| f) {
+        return (0..h * w)
+            .map(|i| {
+                let row = (i / w + 1) as f64;
+                let col = (i % w) as f64;
+                (row * row + col * col).sqrt()
+            })
+            .collect();
+    }
     // A large *finite* sentinel, not f64::INFINITY: the parabola
     // intersection formula subtracts two f-values, and inf - inf is
     // NaN, which silently breaks the lower-envelope comparisons.
@@ -664,6 +694,84 @@ mod tests {
             1.4142135623730951, 1.0, 1.0, 1.0, 1.0, 1.4142135623730951, 1.0, 0.0,
             1.0, 0.0, 0.0, 0.0, 1.0, 2.0, 1.4142135623730951, 1.0,
             1.4142135623730951, 1.0, 0.0, 0.0, 1.0, 2.0, 2.23606797749979, 2.0,
+        ];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+    }
+
+    #[test]
+    #[allow(clippy::approx_constant)]
+    fn distance_transform_edt_all_foreground_matches_real_scipy_artifact() {
+        // An image with NO background pixel at all: real scipy 1.9.3
+        // (the pinned CellProfiler 4.2.8 environment's
+        // scipy.ndimage.distance_transform_edt) returns
+        // d[r][c] = sqrt((r + 1)^2 + c^2), NOT a constant. This is an
+        // algorithmic artifact of scipy's feature transform
+        // (scipy/ndimage/src/ni_morphology.c): the feature array is
+        // zero-initialized (scipy/ndimage/_morphology.py,
+        // `ft = numpy.zeros(...)`), the base pass writes only
+        // `features[0] = -1` for foreground pixels, and a `_VoronoiFT`
+        // line with no background site leaves every feature untouched,
+        // so every pixel measures against the stale (-1, 0) feature.
+        // All values below verified against the real function.
+        // 5x5 all-foreground:
+        let d = distance_transform_edt(&[true; 25], 5, 5);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            1.0, 1.4142135623730951, 2.23606797749979, 3.1622776601683795, 4.123105625617661,
+            2.0, 2.23606797749979, 2.8284271247461903, 3.605551275463989, 4.47213595499958,
+            3.0, 3.1622776601683795, 3.605551275463989, 4.242640687119285, 5.0,
+            4.0, 4.123105625617661, 4.47213595499958, 5.0, 5.656854249492381,
+            5.0, 5.0990195135927845, 5.385164807134504, 5.830951894845301, 6.4031242374328485,
+        ];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+        // A single row (1x5) and a single column (5x1) pin the
+        // asymmetric (r + 1) / c formula in both directions:
+        let d = distance_transform_edt(&[true; 5], 5, 1);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            1.0, 1.4142135623730951, 2.23606797749979, 3.1622776601683795, 4.123105625617661,
+        ];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+        let d = distance_transform_edt(&[true; 5], 1, 5);
+        let expected: Vec<f64> = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        for (got, want) in d.iter().zip(&expected) {
+            assert!((got - want).abs() < 1e-12, "{got} vs {want}");
+        }
+        // The 450x450 all-foreground stress field itself (corners),
+        // from the real scipy run of the empty-field pilot input:
+        let d = distance_transform_edt(&vec![true; 450 * 450], 450, 450);
+        assert_eq!(d[0], 1.0);
+        assert_eq!(d[449], 449.00111358436516);
+        assert_eq!(d[449 * 450], 450.0);
+        assert_eq!(d[449 * 450 + 449], 635.6893895606564);
+    }
+
+    #[test]
+    #[allow(clippy::approx_constant)]
+    fn distance_transform_edt_partial_columns_match_real_scipy() {
+        // Columns without background but an image WITH background keep
+        // their exact real-scipy values (the no-background artifact
+        // only appears when the whole image is foreground). 3x3 with
+        // the only background pixel at (2, 2), verified against the
+        // real scipy.ndimage.distance_transform_edt:
+        #[rustfmt::skip]
+        let foreground: Vec<bool> = vec![
+            true, true, true,
+            true, true, true,
+            true, true, false,
+        ];
+        let d = distance_transform_edt(&foreground, 3, 3);
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            2.8284271247461903, 2.23606797749979, 2.0,
+            2.23606797749979, 1.4142135623730951, 1.0,
+            2.0, 1.0, 0.0,
         ];
         for (got, want) in d.iter().zip(&expected) {
             assert!((got - want).abs() < 1e-12, "{got} vs {want}");

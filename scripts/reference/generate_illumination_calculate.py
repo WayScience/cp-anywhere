@@ -6,7 +6,8 @@ Hull and Splines, which are separate, much harder follow-on primitives
 a real Workspace/Image, not a hand-derived formula.
 """
 
-# ruff: noqa: E402
+# Reference-only imports are deferred so input reproducibility needs only NumPy.
+# ruff: noqa: PLC0415
 
 from __future__ import annotations
 
@@ -15,23 +16,17 @@ import json
 from pathlib import Path
 from typing import Any
 
-import cellprofiler_core.preferences
-
-cellprofiler_core.preferences.set_headless()
-
-import cellprofiler.modules.correctilluminationcalculate as _correctillumination_module
 import numpy as np
-from cellprofiler.modules.correctilluminationcalculate import (
-    CorrectIlluminationCalculate,
-)
-from cellprofiler_core.image import Image, ImageSetList
-from cellprofiler_core.measurement import Measurements
-from cellprofiler_core.object import ObjectSet
-from cellprofiler_core.pipeline import Pipeline
-from cellprofiler_core.workspace import Workspace
 
 OUT = Path(__file__).resolve().parents[2] / "fixtures/illumination_calculate"
 SOURCE_COMMIT = "2df090ff281cff80943fe679a1c3192fbda9cd6d"
+# Keep these explicit: Python's hash() changes across interpreter processes.
+INPUT_SEEDS = {
+    ("small", "none"): 101,
+    ("small", "partial"): 102,
+    ("tall", "none"): 201,
+    ("tall", "partial"): 202,
+}
 
 
 def _pixels(shape: tuple[int, int], *, seed: int) -> np.ndarray:
@@ -61,7 +56,8 @@ def cases() -> list[dict[str, Any]]:
     shapes = {"small": (24, 28), "tall": (31, 19)}
     for shape_name, shape in shapes.items():
         for mask_kind in ("none", "partial"):
-            pixels = _pixels(shape, seed=hash((shape_name, mask_kind)) % (2**31))
+            seed = INPUT_SEEDS[shape_name, mask_kind]
+            pixels = _pixels(shape, seed=seed)
             mask = _mask(shape, kind=mask_kind)
             for intensity_choice in ("Regular", "Background"):
                 for smoothing_method, width_choice, width_value in (
@@ -87,6 +83,7 @@ def cases() -> list[dict[str, Any]]:
                             result.append(
                                 {
                                     "name": name,
+                                    "input_seed": seed,
                                     "pixels": pixels,
                                     "mask": mask,
                                     "intensity_choice": intensity_choice,
@@ -104,6 +101,19 @@ def cases() -> list[dict[str, Any]]:
 
 
 def _run_case(case: dict[str, Any]) -> np.ndarray:
+    import cellprofiler_core.preferences
+
+    cellprofiler_core.preferences.set_headless()
+
+    from cellprofiler.modules.correctilluminationcalculate import (
+        CorrectIlluminationCalculate,
+    )
+    from cellprofiler_core.image import Image, ImageSetList
+    from cellprofiler_core.measurement import Measurements
+    from cellprofiler_core.object import ObjectSet
+    from cellprofiler_core.pipeline import Pipeline
+    from cellprofiler_core.workspace import Workspace
+
     module = CorrectIlluminationCalculate()
     module.image_name.value = "Input"
     module.illumination_image_name.value = "Illum"
@@ -139,11 +149,21 @@ def _run_case(case: dict[str, Any]) -> np.ndarray:
 
 
 def generate() -> None:
+    import cellprofiler_core.preferences
+
+    cellprofiler_core.preferences.set_headless()
+
+    import cellprofiler.modules.correctilluminationcalculate as reference_module
+
     OUT.mkdir(parents=True, exist_ok=True)
-    source = Path(_correctillumination_module.__file__)
+    source = Path(reference_module.__file__)
     provenance = {
         "reference": f"CellProfiler 4.2.8 @ {SOURCE_COMMIT}",
         "module_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "input_generation": {
+            "rng": "numpy.random.default_rng (PCG64)",
+            "numpy_version": np.__version__,
+        },
         "scope": (
             "2D, 'Each' mode only; 5 of 7 smoothing methods "
             "(everything except Convex Hull and Splines)"
@@ -155,8 +175,11 @@ def generate() -> None:
         output = _run_case(case)
         result = {
             **provenance,
+            "input_seed": case["input_seed"],
             "settings": {
-                k: v for k, v in case.items() if k not in ("name", "pixels", "mask")
+                k: v
+                for k, v in case.items()
+                if k not in ("name", "input_seed", "pixels", "mask")
             },
             "pixels": case["pixels"].tolist(),
             "mask": None if case["mask"] is None else case["mask"].tolist(),
@@ -165,7 +188,13 @@ def generate() -> None:
         (OUT / f"{name}.json").write_text(
             json.dumps(result, indent=2, allow_nan=True) + "\n"
         )
-        manifest.append({"name": name, "shape": list(case["pixels"].shape)})
+        manifest.append(
+            {
+                "name": name,
+                "shape": list(case["pixels"].shape),
+                "input_seed": case["input_seed"],
+            }
+        )
         print(name)
     (OUT / "manifest.json").write_text(
         json.dumps({**provenance, "cases": manifest}, indent=2) + "\n"

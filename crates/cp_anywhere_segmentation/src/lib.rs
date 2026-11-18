@@ -1930,6 +1930,61 @@ mod tests {
     use super::*;
 
     #[test]
+    fn empty_field_shape_declump_matches_real_cellprofiler_zero_objects() {
+        // The production pilot's all-zero 450x450 stress field (BBBC007
+        // validation field A9-A9-p10-empty, all-zero float DNA after
+        // illumination correction) with the pilot's primary settings:
+        // global two-class Otsu (constant image -> threshold 0.0 ->
+        // the whole image is foreground), min_diameter 10, max_diameter
+        // 40, exclude_size, unclump Shape, watershed Propagate, fill
+        // Never. The pinned real CellProfiler 4.2.8 oracle declumps the
+        // single all-foreground blob into ONE object (scipy's
+        // all-foreground distance transform is a strictly monotone
+        // bowl, so the seed-0-jittered maxima detection finds exactly
+        // one maximum at pixel (449, 449)) which then fails the
+        // max-size filter (202500 px > pi * 40^2 / 4), leaving 0
+        // objects -- see the run-full oracle result
+        // (stress-empty-field/A9-A9-p10-empty.json: 0 objects).
+        let pixels = vec![0.0f64; 450 * 450];
+        let config = IdentifyPrimaryObjectsConfig {
+            exclude_size: true,
+            min_diameter: 10.0,
+            max_diameter: 40.0,
+            declump: DeclumpSettings {
+                unclump: declump::UnclumpMethod::Shape,
+                watershed: declump::WatershedMethod::Propagate,
+                smoothing: declump::Smoothing::Automatic,
+                suppression: declump::MaximaSuppression::Automatic,
+                low_resolution_maxima: false,
+            },
+            ..Default::default()
+        };
+        let result = identify_primary_objects(&pixels, None, None, 450, 450, &config).unwrap();
+        assert_eq!(result.threshold, 0.0);
+        // One declumped object covering the whole field, matching the
+        // real run's unedited/small-removed stage (object count 1)...
+        assert_eq!(
+            result
+                .unedited_labels
+                .iter()
+                .copied()
+                .collect::<std::collections::BTreeSet<_>>(),
+            std::collections::BTreeSet::from([1])
+        );
+        assert_eq!(
+            result
+                .small_removed_labels
+                .iter()
+                .copied()
+                .collect::<std::collections::BTreeSet<_>>(),
+            std::collections::BTreeSet::from([1])
+        );
+        // ...which the max-size filter then erases entirely.
+        assert_eq!(result.object_count, 0);
+        assert!(result.labels.iter().all(|&l| l == 0));
+    }
+
+    #[test]
     fn otsu_integer_matches_skimage_threshold_otsu_bit_exact() {
         // Fixed dataset generated once via
         // `numpy.random.default_rng(0)` + two integer ranges and

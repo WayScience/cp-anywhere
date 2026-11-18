@@ -1,5 +1,7 @@
 # cp-anywhere
 
+<img src="https://raw.githubusercontent.com/d33bs/cp-anywhere/main/docs/src/_static/cp-anywhere.png" alt="cp-anywhere logo" width="300">
+
 CellProfiler-compatible cell profiling in Python and the browser, powered by Rust.
 Correct illumination, segment images, measure cell features, and export analysis-ready tables.
 
@@ -10,8 +12,9 @@ WebAssembly. Supported modules and settings are listed in `spec/compatibility.md
 
 ## Usage
 
-For a hands-on tour, open
-[Cell Profiling Anywhere](docs/src/cell-profiling-anywhere.ipynb).
+For a hands-on tour, read
+[Cell Profiling Anywhere](https://d33bs.github.io/cp-anywhere/cell-profiling-anywhere.html)
+or open the [source notebook](https://github.com/d33bs/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb).
 The notebook follows a complete Python workflow: illumination correction,
 segmentation, measurements, plots, and image/table exports.
 Run `uv sync --frozen --group docs` first, then select the repository's `.venv`

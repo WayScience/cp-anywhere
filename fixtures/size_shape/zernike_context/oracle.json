@@ -1,0 +1,422 @@
+{
+  "versions": {
+    "CellProfiler": "4.2.8",
+    "centrosome": "1.2.3",
+    "numpy": "1.23.5",
+    "scipy": "1.9.3",
+    "scikit-image": "0.21.0"
+  },
+  "scopes": {
+    "Nuclei": {
+      "shape": [
+        400,
+        400
+      ],
+      "label_count": 101,
+      "labels_sha256": "6a7ea6797731998b890ac81bdddbfb1e432fb77c2f35e6185d1dabda10f75cd0",
+      "objects": {
+        "6": {
+          "full_field": {
+            "AreaShape_Zernike_0_0": 0.9035610286430922,
+            "AreaShape_Zernike_1_1": 0.06864134226553935,
+            "AreaShape_Zernike_2_0": 0.053694373771088565,
+            "AreaShape_Zernike_2_2": 0.0792508439053154,
+            "AreaShape_Zernike_3_1": 0.023065461385797213,
+            "AreaShape_Zernike_3_3": 0.030093056261313592,
+            "AreaShape_Zernike_4_0": 0.0010445208466657628,
+            "AreaShape_Zernike_4_2": 0.03964121874378015,
+            "AreaShape_Zernike_4_4": 0.011506086327755821,
+            "AreaShape_Zernike_5_1": 0.011341219493527475,
+            "AreaShape_Zernike_5_3": 0.018287470831291702,
+            "AreaShape_Zernike_5_5": 0.00783996922224687,
+            "AreaShape_Zernike_6_0": 0.02910433264613308,
+            "AreaShape_Zernike_6_2": 0.023613400554734668,
+            "AreaShape_Zernike_6_4": 0.022050575501766406,
+            "AreaShape_Zernike_6_6": 0.0102259223417032,
+            "AreaShape_Zernike_7_1": 0.01687219765812989,
+            "AreaShape_Zernike_7_3": 0.017441305608350936,
+            "AreaShape_Zernike_7_5": 0.008512244674815901,
+            "AreaShape_Zernike_7_7": 0.02696107388070161,
+            "AreaShape_Zernike_8_0": 0.032904008849259425,
+            "AreaShape_Zernike_8_2": 0.027342485634476662,
+            "AreaShape_Zernike_8_4": 0.017212086247463,
+            "AreaShape_Zernike_8_6": 0.01987414868157672,
+            "AreaShape_Zernike_8_8": 0.01812117589881513,
+            "AreaShape_Zernike_9_1": 0.007689225440698668,
+            "AreaShape_Zernike_9_3": 0.012434422187112965,
+            "AreaShape_Zernike_9_5": 0.009011989461087876,
+            "AreaShape_Zernike_9_7": 0.0218642510971662,
+            "AreaShape_Zernike_9_9": 0.03160586583456709
+          },
+          "isolated": {
+            "AreaShape_Zernike_0_0": 0.8928043497306751,
+            "AreaShape_Zernike_1_1": 0.0673148711829839,
+            "AreaShape_Zernike_2_0": 0.06445105268350555,
+            "AreaShape_Zernike_2_2": 0.0702412373819391,
+            "AreaShape_Zernike_3_1": 0.02372128583733114,
+            "AreaShape_Zernike_3_3": 0.03081438341410128,
+            "AreaShape_Zernike_4_0": 0.011801199759082946,
+            "AreaShape_Zernike_4_2": 0.03245602205910385,
+            "AreaShape_Zernike_4_4": 0.0061462830201934075,
+            "AreaShape_Zernike_5_1": 0.018586381435321684,
+            "AreaShape_Zernike_5_3": 0.00916849107541447,
+            "AreaShape_Zernike_5_5": 0.01857350054907548,
+            "AreaShape_Zernike_6_0": 0.018347653733715923,
+            "AreaShape_Zernike_6_2": 0.02030811429686148,
+            "AreaShape_Zernike_6_4": 0.016571952282060626,
+            "AreaShape_Zernike_6_6": 0.017131922370243666,
+            "AreaShape_Zernike_7_1": 0.02414593870171476,
+            "AreaShape_Zernike_7_3": 0.00683457968439709,
+            "AreaShape_Zernike_7_5": 0.018013251228977494,
+            "AreaShape_Zernike_7_7": 0.025797564349953596,
+            "AreaShape_Zernike_8_0": 0.02214732993684236,
+            "AreaShape_Zernike_8_2": 0.02180359389662161,
+            "AreaShape_Zernike_8_4": 0.01281417202434451,
+            "AreaShape_Zernike_8_6": 0.017878973722061382,
+            "AreaShape_Zernike_8_8": 0.025327097074307147,
+            "AreaShape_Zernike_9_1": 0.018233368235313227,
+            "AreaShape_Zernike_9_3": 0.0059544835401320485,
+            "AreaShape_Zernike_9_5": 0.012911350200838268,
+            "AreaShape_Zernike_9_7": 0.0213556456566483,
+            "AreaShape_Zernike_9_9": 0.022316069263423007
+          },
+          "full_circle": {
+            "center": [
+              37.285714285714285,
+              114.71428571428571
+            ],
+            "radius": 5.439837932759932,
+            "radius_hex": "0x1.5c264e002fa04p+2",
+            "area": 86,
+            "included_pixels": 84,
+            "excluded_pixels": [
+              [
+                32,
+                116
+              ],
+              [
+                36,
+                120
+              ]
+            ],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 687,
+                "tied_positions": [
+                  44,
+                  49
+                ],
+                "selected_position": 49,
+                "selected_tie_rank": 1
+              }
+            ]
+          },
+          "isolated_circle": {
+            "center": [
+              37.285714285714285,
+              114.71428571428571
+            ],
+            "radius": 5.4398379327599296,
+            "radius_hex": "0x1.5c264e002fa01p+2",
+            "area": 86,
+            "included_pixels": 83,
+            "excluded_pixels": [
+              [
+                32,
+                116
+              ],
+              [
+                36,
+                120
+              ],
+              [
+                42,
+                112
+              ]
+            ],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 11,
+                "tied_positions": [
+                  5,
+                  10
+                ],
+                "selected_position": 5,
+                "selected_tie_rank": 0
+              }
+            ]
+          }
+        },
+        "34": {
+          "full_field": {
+            "AreaShape_Zernike_0_0": 0.8439855762050861,
+            "AreaShape_Zernike_1_1": 0.021675224320123237,
+            "AreaShape_Zernike_2_0": 0.11381492491847833,
+            "AreaShape_Zernike_2_2": 0.016094065383648222,
+            "AreaShape_Zernike_3_1": 0.0037716563079014643,
+            "AreaShape_Zernike_3_3": 0.06093323824217835,
+            "AreaShape_Zernike_4_0": 0.056303769850619516,
+            "AreaShape_Zernike_4_2": 0.004193508796596578,
+            "AreaShape_Zernike_4_4": 0.020148620929008123,
+            "AreaShape_Zernike_5_1": 0.015451882241147161,
+            "AreaShape_Zernike_5_3": 0.0168134982052797,
+            "AreaShape_Zernike_5_5": 0.010306592467345473,
+            "AreaShape_Zernike_6_0": 0.013042183654979207,
+            "AreaShape_Zernike_6_2": 0.0031978232065231036,
+            "AreaShape_Zernike_6_4": 0.008898033708715886,
+            "AreaShape_Zernike_6_6": 0.012683907912699003,
+            "AreaShape_Zernike_7_1": 0.016357048980809245,
+            "AreaShape_Zernike_7_3": 0.004917495102520823,
+            "AreaShape_Zernike_7_5": 0.008435707347268326,
+            "AreaShape_Zernike_7_7": 0.009585887933580763,
+            "AreaShape_Zernike_8_0": 0.005495297887687934,
+            "AreaShape_Zernike_8_2": 0.006041573165566144,
+            "AreaShape_Zernike_8_4": 0.007184782975623938,
+            "AreaShape_Zernike_8_6": 0.012101295174568465,
+            "AreaShape_Zernike_8_8": 0.004648874244560776,
+            "AreaShape_Zernike_9_1": 0.01078720509349219,
+            "AreaShape_Zernike_9_3": 0.006477344816161886,
+            "AreaShape_Zernike_9_5": 0.006196741813755528,
+            "AreaShape_Zernike_9_7": 0.011492768278218492,
+            "AreaShape_Zernike_9_9": 0.002157137220228557
+          },
+          "isolated": {
+            "AreaShape_Zernike_0_0": 0.8539148182780858,
+            "AreaShape_Zernike_1_1": 0.026511143356836776,
+            "AreaShape_Zernike_2_0": 0.10388568284547814,
+            "AreaShape_Zernike_2_2": 0.009841272349962845,
+            "AreaShape_Zernike_3_1": 0.005555694768622573,
+            "AreaShape_Zernike_3_3": 0.07029830901337453,
+            "AreaShape_Zernike_4_0": 0.04637452777761905,
+            "AreaShape_Zernike_4_2": 0.00375328012228454,
+            "AreaShape_Zernike_4_4": 0.016603603938900216,
+            "AreaShape_Zernike_5_1": 0.010177294044179467,
+            "AreaShape_Zernike_5_3": 0.02614150351131162,
+            "AreaShape_Zernike_5_5": 0.006452112129009493,
+            "AreaShape_Zernike_6_0": 0.003112941581978458,
+            "AreaShape_Zernike_6_2": 0.006330546076742865,
+            "AreaShape_Zernike_6_4": 0.010001826077353832,
+            "AreaShape_Zernike_6_6": 0.019636298950913865,
+            "AreaShape_Zernike_7_1": 0.011198027131206502,
+            "AreaShape_Zernike_7_3": 0.00512771688359682,
+            "AreaShape_Zernike_7_5": 0.00236867553743994,
+            "AreaShape_Zernike_7_7": 0.009127532163173184,
+            "AreaShape_Zernike_8_0": 0.015424539960688599,
+            "AreaShape_Zernike_8_2": 0.0017901772188416835,
+            "AreaShape_Zernike_8_4": 0.008590128096019304,
+            "AreaShape_Zernike_8_6": 0.019784534479972807,
+            "AreaShape_Zernike_8_8": 0.0018038661644270825,
+            "AreaShape_Zernike_9_1": 0.006935430325505616,
+            "AreaShape_Zernike_9_3": 0.0035612082810001656,
+            "AreaShape_Zernike_9_5": 0.0070273628371475,
+            "AreaShape_Zernike_9_7": 0.010088362895650752,
+            "AreaShape_Zernike_9_9": 0.00357188186692687
+          },
+          "full_circle": {
+            "center": [
+              159.35714285714286,
+              43.214285714285715
+            ],
+            "radius": 9.806807298389982,
+            "radius_hex": "0x1.39d15d8a184a7p+3",
+            "area": 258,
+            "included_pixels": 255,
+            "excluded_pixels": [
+              [
+                154,
+                35
+              ],
+              [
+                155,
+                52
+              ],
+              [
+                156,
+                34
+              ]
+            ],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 1190,
+                "tied_positions": [
+                  388,
+                  392
+                ],
+                "selected_position": 392,
+                "selected_tie_rank": 1
+              }
+            ]
+          },
+          "isolated_circle": {
+            "center": [
+              159.35714285714286,
+              43.214285714285715
+            ],
+            "radius": 9.80680729838999,
+            "radius_hex": "0x1.39d15d8a184abp+3",
+            "area": 258,
+            "included_pixels": 258,
+            "excluded_pixels": [],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 14,
+                "tied_positions": [
+                  4,
+                  8
+                ],
+                "selected_position": 4,
+                "selected_tie_rank": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    "Cells": {
+      "shape": [
+        400,
+        400
+      ],
+      "label_count": 101,
+      "labels_sha256": "e1ba1fad033713adf0250160ea7303c7d954f15b77affaf6116cf9f53245ce7e",
+      "objects": {
+        "6": {
+          "full_field": {
+            "AreaShape_Zernike_0_0": 0.9035610286430922,
+            "AreaShape_Zernike_1_1": 0.06864134226553935,
+            "AreaShape_Zernike_2_0": 0.053694373771088565,
+            "AreaShape_Zernike_2_2": 0.0792508439053154,
+            "AreaShape_Zernike_3_1": 0.023065461385797213,
+            "AreaShape_Zernike_3_3": 0.030093056261313592,
+            "AreaShape_Zernike_4_0": 0.0010445208466657628,
+            "AreaShape_Zernike_4_2": 0.03964121874378015,
+            "AreaShape_Zernike_4_4": 0.011506086327755821,
+            "AreaShape_Zernike_5_1": 0.011341219493527475,
+            "AreaShape_Zernike_5_3": 0.018287470831291702,
+            "AreaShape_Zernike_5_5": 0.00783996922224687,
+            "AreaShape_Zernike_6_0": 0.02910433264613308,
+            "AreaShape_Zernike_6_2": 0.023613400554734668,
+            "AreaShape_Zernike_6_4": 0.022050575501766406,
+            "AreaShape_Zernike_6_6": 0.0102259223417032,
+            "AreaShape_Zernike_7_1": 0.01687219765812989,
+            "AreaShape_Zernike_7_3": 0.017441305608350936,
+            "AreaShape_Zernike_7_5": 0.008512244674815901,
+            "AreaShape_Zernike_7_7": 0.02696107388070161,
+            "AreaShape_Zernike_8_0": 0.032904008849259425,
+            "AreaShape_Zernike_8_2": 0.027342485634476662,
+            "AreaShape_Zernike_8_4": 0.017212086247463,
+            "AreaShape_Zernike_8_6": 0.01987414868157672,
+            "AreaShape_Zernike_8_8": 0.01812117589881513,
+            "AreaShape_Zernike_9_1": 0.007689225440698668,
+            "AreaShape_Zernike_9_3": 0.012434422187112965,
+            "AreaShape_Zernike_9_5": 0.009011989461087876,
+            "AreaShape_Zernike_9_7": 0.0218642510971662,
+            "AreaShape_Zernike_9_9": 0.03160586583456709
+          },
+          "isolated": {
+            "AreaShape_Zernike_0_0": 0.8928043497306751,
+            "AreaShape_Zernike_1_1": 0.0673148711829839,
+            "AreaShape_Zernike_2_0": 0.06445105268350555,
+            "AreaShape_Zernike_2_2": 0.0702412373819391,
+            "AreaShape_Zernike_3_1": 0.02372128583733114,
+            "AreaShape_Zernike_3_3": 0.03081438341410128,
+            "AreaShape_Zernike_4_0": 0.011801199759082946,
+            "AreaShape_Zernike_4_2": 0.03245602205910385,
+            "AreaShape_Zernike_4_4": 0.0061462830201934075,
+            "AreaShape_Zernike_5_1": 0.018586381435321684,
+            "AreaShape_Zernike_5_3": 0.00916849107541447,
+            "AreaShape_Zernike_5_5": 0.01857350054907548,
+            "AreaShape_Zernike_6_0": 0.018347653733715923,
+            "AreaShape_Zernike_6_2": 0.02030811429686148,
+            "AreaShape_Zernike_6_4": 0.016571952282060626,
+            "AreaShape_Zernike_6_6": 0.017131922370243666,
+            "AreaShape_Zernike_7_1": 0.02414593870171476,
+            "AreaShape_Zernike_7_3": 0.00683457968439709,
+            "AreaShape_Zernike_7_5": 0.018013251228977494,
+            "AreaShape_Zernike_7_7": 0.025797564349953596,
+            "AreaShape_Zernike_8_0": 0.02214732993684236,
+            "AreaShape_Zernike_8_2": 0.02180359389662161,
+            "AreaShape_Zernike_8_4": 0.01281417202434451,
+            "AreaShape_Zernike_8_6": 0.017878973722061382,
+            "AreaShape_Zernike_8_8": 0.025327097074307147,
+            "AreaShape_Zernike_9_1": 0.018233368235313227,
+            "AreaShape_Zernike_9_3": 0.0059544835401320485,
+            "AreaShape_Zernike_9_5": 0.012911350200838268,
+            "AreaShape_Zernike_9_7": 0.0213556456566483,
+            "AreaShape_Zernike_9_9": 0.022316069263423007
+          },
+          "full_circle": {
+            "center": [
+              37.285714285714285,
+              114.71428571428571
+            ],
+            "radius": 5.439837932759932,
+            "radius_hex": "0x1.5c264e002fa04p+2",
+            "area": 86,
+            "included_pixels": 84,
+            "excluded_pixels": [
+              [
+                32,
+                116
+              ],
+              [
+                36,
+                120
+              ]
+            ],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 528,
+                "tied_positions": [
+                  41,
+                  46
+                ],
+                "selected_position": 46,
+                "selected_tie_rank": 1
+              }
+            ]
+          },
+          "isolated_circle": {
+            "center": [
+              37.285714285714285,
+              114.71428571428571
+            ],
+            "radius": 5.4398379327599296,
+            "radius_hex": "0x1.5c264e002fa01p+2",
+            "area": 86,
+            "included_pixels": 83,
+            "excluded_pixels": [
+              [
+                32,
+                116
+              ],
+              [
+                36,
+                120
+              ],
+              [
+                42,
+                112
+              ]
+            ],
+            "minimum_position_ties": [
+              {
+                "candidate_count": 11,
+                "tied_positions": [
+                  5,
+                  10
+                ],
+                "selected_position": 5,
+                "selected_tie_rank": 0
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "source": {
+    "field": "f9620-20P1-POS0002",
+    "pilot_oracle_verified": true
+  }
+}

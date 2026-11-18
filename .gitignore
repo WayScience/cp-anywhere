@@ -236,5 +236,12 @@ examples/zarr-onnx-duckdb/public/dna.zarr/
 examples/zarr-onnx-duckdb/public/threshold.onnx
 examples/zarr-onnx-duckdb/expected-mask.json
 examples/zarr-onnx-duckdb/cp_anywhere_features.parquet
+
+# Local musivarium preview kit, evidence, and app-specific tooling
+/examples/musivarium-integration/
+/scripts/integration/musivarium_fixture.py
+/tests/test_musivarium_fixture.py
+/tests/test_musivarium_export_validation.py
+
 /CP-Anywhere-Implementation-Plan.md
 /CP-Anywhere-Segmentation-Spec.md
