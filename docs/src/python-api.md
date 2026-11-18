@@ -41,6 +41,17 @@ for the declared scope and verification status.
 ```
 
 ```{eval-rst}
+Segmentation preview
+--------------------
+Use :func:`cp_anywhere.preview_segmentation` to inspect object boundaries over
+a grayscale image or view labels as filled colors. This is a 2D display helper,
+not an implementation of the CellProfiler desktop window or a pipeline module.
+
+.. automodule:: src.cp_anywhere.preview
+   :members:
+```
+
+```{eval-rst}
 cp_anywhere.cppipe
 -------------------
 Importing real CellProfiler ``.cppipe`` pipeline files

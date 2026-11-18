@@ -13,11 +13,140 @@ authors:
     orcid: "https://orcid.org/0000-0001-6041-3665"
 repository-code: "https://github.com/d33bs/cp-anywhere"
 abstract: >-
-  CellProfiler-compatible measurements for native Python and web browsers
+  CellProfiler-compatible illumination correction, segmentation, and feature
+  extraction for Python and web browsers.
 keywords:
   - python
+  - bioimage analysis
+  - image-based profiling
+  - cell segmentation
+  - WebAssembly
 license: BSD-3-Clause
 references:
+  - type: article
+    title: "CellProfiler: image analysis software for identifying and quantifying cell phenotypes"
+    authors:
+      - given-names: Anne E.
+        family-names: Carpenter
+      - given-names: Thouis R.
+        family-names: Jones
+      - given-names: Michael R.
+        family-names: Lamprecht
+      - given-names: Colin
+        family-names: Clarke
+      - given-names: In Han
+        family-names: Kang
+      - given-names: Ola
+        family-names: Friman
+      - given-names: David A.
+        family-names: Guertin
+      - given-names: Joo Han
+        family-names: Chang
+      - given-names: Robert A.
+        family-names: Lindquist
+      - given-names: Jason
+        family-names: Moffat
+      - given-names: Polina
+        family-names: Golland
+      - given-names: David M.
+        family-names: Sabatini
+    journal: Genome Biology
+    year: 2006
+    volume: 7
+    issue: 10
+    start: R100
+    doi: 10.1186/gb-2006-7-10-r100
+    scope: Original CellProfiler publication.
+  - type: article
+    title: "CellProfiler 4: improvements in speed, utility and usability"
+    authors:
+      - given-names: David R.
+        family-names: Stirling
+      - given-names: Madison J.
+        family-names: Swain-Bowden
+      - given-names: Alice M.
+        family-names: Lucas
+      - given-names: Anne E.
+        family-names: Carpenter
+      - given-names: Beth A.
+        family-names: Cimini
+      - given-names: Allen
+        family-names: Goodman
+    journal: BMC Bioinformatics
+    year: 2021
+    volume: 22
+    issue: 1
+    start: 433
+    doi: 10.1186/s12859-021-04344-9
+    scope: Describes the major release used as the scientific reference (CellProfiler 4.2.8).
+  - type: article
+    title: "cp_measure: API-first feature extraction for image-based profiling workflows"
+    authors:
+      - given-names: Alán F.
+        family-names: Muñoz
+      - given-names: Tim
+        family-names: Treis
+      - given-names: Alexandr A.
+        family-names: Kalinin
+      - given-names: Shatavisha
+        family-names: Dasgupta
+      - given-names: Fabian
+        family-names: Theis
+      - given-names: Anne E.
+        family-names: Carpenter
+      - given-names: Shantanu
+        family-names: Singh
+    journal: arXiv
+    year: 2025
+    status: preprint
+    doi: 10.48550/arXiv.2507.01163
+    identifiers:
+      - type: url
+        value: "https://openreview.net/pdf?id=qWbhPu03ui"
+        description: Non-archival CODEML workshop version at ICML 2025.
+    scope: Describes the feature extraction library used as a comparison baseline.
+  - type: software
+    title: cp_measure
+    authors:
+      - given-names: Alán F.
+        family-names: Muñoz
+    version: "0.3.0"
+    commit: cdf693187e3dcaf3d067da7b58bdd4ab8896f91e
+    repository-code: "https://github.com/afermg/cp_measure"
+    license: MIT
+    scope: Benchmark and comparison baseline, not the scientific reference.
+  - type: conference-paper
+    title: Voronoi-Based Segmentation of Cells on Image Manifolds
+    authors:
+      - given-names: Thouis R.
+        family-names: Jones
+      - given-names: Anne
+        family-names: Carpenter
+      - given-names: Polina
+        family-names: Golland
+    collection-title: Computer Vision for Biomedical Image Applications
+    year: 2005
+    volume: 3765
+    start: 535
+    end: 543
+    doi: 10.1007/11569541_54
+    scope: Describes the propagation method and the microscopy images distributed as BBBC007v1.
+  - type: article
+    title: Annotated high-throughput microscopy image sets for validation
+    authors:
+      - given-names: Vebjorn
+        family-names: Ljosa
+      - given-names: Katherine L.
+        family-names: Sokolnicki
+      - given-names: Anne E.
+        family-names: Carpenter
+    journal: Nature Methods
+    year: 2012
+    volume: 9
+    issue: 7
+    start: 637
+    doi: 10.1038/nmeth.2083
+    scope: Describes the Broad Bioimage Benchmark Collection, which distributes fixture images.
   - type: software
     title: "agent-skills"
     authors:

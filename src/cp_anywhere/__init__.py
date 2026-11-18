@@ -31,6 +31,7 @@ from .intensity_distribution import (
     measure_intensity_distribution,
 )
 from .io import load_array, measure_files
+from .preview import preview_segmentation
 from .save_images import save_array
 from .segment import (
     SecondaryObjectsResult,
@@ -80,6 +81,7 @@ __all__ = [
     "measure_granularity",
     "measure_intensity_distribution",
     "measure_texture",
+    "preview_segmentation",
     "read_parquet_feature_names",
     "save_array",
 ]

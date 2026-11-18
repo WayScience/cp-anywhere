@@ -74,6 +74,20 @@ Verified against real CellProfiler 4.2.8, exact label-for-label, on both
 synthetic and real microscopy fixtures: `tests/segmentation/`,
 `fixtures/segmentation/`. Performance: `docs/segmentation-performance.md`.
 
+#### Preview segmented objects
+
+Use `preview_segmentation` to draw object outlines on the input image or show
+the objects as filled colors. The preview does not change the image or labels.
+
+```python
+overlay = cp_anywhere.preview_segmentation(seg.labels, dna_image)
+colored = cp_anywhere.preview_segmentation(seg.labels, mode="labels")
+
+cp_anywhere.save_array(overlay, "segmentation-preview.png", bit_depth="No conversion")
+```
+
+To inspect the overlay in a notebook, use `plt.imshow(overlay)` with Matplotlib.
+
 ## High-level overview
 
 This template gives you a ready-to-run Python research software project with:
