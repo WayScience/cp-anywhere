@@ -7,7 +7,7 @@ body:
       value: >
         Search existing issues before opening a new one. For security
         vulnerabilities, use GitHub's private reporting form instead:
-        https://github.com/d33bs/cp-anywhere/security/advisories/new
+        https://github.com/wayscience/cp-anywhere/security/advisories/new
 
   - type: textarea
     id: description

@@ -1,6 +1,6 @@
 # cp-anywhere
 
-<img src="https://raw.githubusercontent.com/d33bs/cp-anywhere/main/docs/src/_static/cp-anywhere.png" alt="cp-anywhere logo" width="300">
+<img src="https://raw.githubusercontent.com/wayscience/cp-anywhere/main/docs/src/_static/cp-anywhere.png" alt="cp-anywhere logo" width="300">
 
 CellProfiler-compatible cell profiling in Python and the browser, powered by Rust.
 Correct illumination, segment images, measure cell features, and export analysis-ready tables.
@@ -8,7 +8,7 @@ Correct illumination, segment images, measure cell features, and export analysis
 cp-anywhere turns microscopy images into per-cell feature tables without requiring
 the CellProfiler desktop application. Use image files or NumPy arrays in Python,
 work with pandas tables, or run the shared measurement engine in a browser through
-WebAssembly. See the [compatibility guide](https://github.com/d33bs/cp-anywhere/blob/main/spec/compatibility.md) for supported modules and settings.
+WebAssembly. See the [compatibility guide](https://github.com/wayscience/cp-anywhere/blob/main/spec/compatibility.md) for supported modules and settings.
 
 ## Usage
 
@@ -16,8 +16,8 @@ To run from this repository, install Rust and uv, then run `uv sync --frozen`.
 Run the Python examples with `uv run python` or in the repository's virtual environment.
 
 For a hands-on tour, read
-[Cell Profiling Anywhere](https://d33bs.github.io/cp-anywhere/cell-profiling-anywhere.html)
-or open the [source notebook](https://github.com/d33bs/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb).
+[Cell Profiling Anywhere](https://wayscience.github.io/cp-anywhere/cell-profiling-anywhere.html)
+or open the [source notebook](https://github.com/wayscience/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb).
 The notebook follows a complete Python workflow: illumination correction,
 segmentation, measurements, plots, and image/table exports.
 Run `uv sync --frozen --group docs` first, then select the repository's `.venv`
@@ -59,20 +59,20 @@ DataFrame can be written the same way with `frame.to_feather("result.arrow")`.
 For arrays already in memory, `cp_anywhere.measure(...)` is the lower-level
 entry point that returns a `MeasurementResult` instead of a `DataFrame`;
 it has matching `to_json`/`to_csv`/`to_arrow` methods
-(see the [Python API reference](https://d33bs.github.io/cp-anywhere/python-api.html)).
+(see the [Python API reference](https://wayscience.github.io/cp-anywhere/python-api.html)).
 
 ### Segmentation
 
 `cp_anywhere.identify_primary_objects(...)` segments a 2D grayscale image
 into labeled objects. You can pass those labels directly to `measure`.
-See [segmentation coverage](https://github.com/d33bs/cp-anywhere/blob/main/spec/segmentation-modules.md) for supported settings.
+See [segmentation coverage](https://github.com/wayscience/cp-anywhere/blob/main/spec/segmentation-modules.md) for supported settings.
 
 ```python
 seg = cp_anywhere.identify_primary_objects(dna_image, threshold="otsu")
 result = cp_anywhere.measure({"DNA": dna_image}, {"Nuclei": seg.labels})
 ```
 
-The [segmentation tests](https://github.com/d33bs/cp-anywhere/tree/main/tests/segmentation) compare labels with CellProfiler 4.2.8 on synthetic and real microscopy fixtures.
+The [segmentation tests](https://github.com/wayscience/cp-anywhere/tree/main/tests/segmentation) compare labels with CellProfiler 4.2.8 on synthetic and real microscopy fixtures.
 
 #### Preview segmented objects
 
@@ -108,17 +108,17 @@ is the default. Use `backend="process"` in a Python script under an
 `if __name__ == "__main__":` guard. Results arrive in input order and retain
 their image IDs. For custom workflows, use `load_pipeline(...).run(...)` on a
 single field or call the individual functions. See the
-[batch experiment](https://github.com/d33bs/cp-anywhere/blob/main/docs/batch.md)
-and the [pipeline import limits](https://github.com/d33bs/cp-anywhere/blob/main/spec/cppipe-compatibility.md).
+[batch experiment](https://github.com/wayscience/cp-anywhere/blob/main/docs/batch.md)
+and the [pipeline import limits](https://github.com/wayscience/cp-anywhere/blob/main/spec/cppipe-compatibility.md).
 
 The package is named `cp-anywhere` on PyPI, crates.io, and npm. The Rust
-library uses `cp_anywhere` in imports. See the [cross-runtime pipeline guide](https://github.com/d33bs/cp-anywhere/blob/main/docs/cppipe.md).
+library uses `cp_anywhere` in imports. See the [cross-runtime pipeline guide](https://github.com/wayscience/cp-anywhere/blob/main/docs/cppipe.md).
 
 ## Project links
 
-- [Documentation](https://d33bs.github.io/cp-anywhere/)
-- [Browser and WebAssembly integration](https://github.com/d33bs/cp-anywhere/blob/main/docs/wasm.md)
-- [Development and contributing](https://github.com/d33bs/cp-anywhere/blob/main/CONTRIBUTING.md)
-- [Report a security vulnerability](https://github.com/d33bs/cp-anywhere/security/advisories/new)
-- [Citation](https://github.com/d33bs/cp-anywhere/blob/main/CITATION.cff)
-- [BSD 3-Clause license](https://github.com/d33bs/cp-anywhere/blob/main/LICENSE)
+- [Documentation](https://wayscience.github.io/cp-anywhere/)
+- [Browser and WebAssembly integration](https://github.com/wayscience/cp-anywhere/blob/main/docs/wasm.md)
+- [Development and contributing](https://github.com/wayscience/cp-anywhere/blob/main/CONTRIBUTING.md)
+- [Report a security vulnerability](https://github.com/wayscience/cp-anywhere/security/advisories/new)
+- [Citation](https://github.com/wayscience/cp-anywhere/blob/main/CITATION.cff)
+- [BSD 3-Clause license](https://github.com/wayscience/cp-anywhere/blob/main/LICENSE)

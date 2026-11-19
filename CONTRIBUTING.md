@@ -1,6 +1,6 @@
 # Contributing
 
-Read the [code of conduct](https://github.com/d33bs/cp-anywhere/blob/main/CODE_OF_CONDUCT.md) before participating. Use [GitHub issues](https://github.com/d33bs/cp-anywhere/issues) for bugs and feature requests, and [private reporting](https://github.com/d33bs/cp-anywhere/blob/main/SECURITY.md) for security vulnerabilities.
+Read the [code of conduct](https://github.com/wayscience/cp-anywhere/blob/main/CODE_OF_CONDUCT.md) before participating. Use [GitHub issues](https://github.com/wayscience/cp-anywhere/issues) for bugs and feature requests, and [private reporting](https://github.com/wayscience/cp-anywhere/blob/main/SECURITY.md) for security vulnerabilities.
 
 ## Set up the project
 
@@ -35,4 +35,4 @@ Keep the change focused. In the pull request, describe what changed and how you 
 
 ## Versioning
 
-Release builds take their version from the GitHub release tag. `tools/sync_release_version.py` copies that version into the Cargo workspace before the publish workflows build packages. See the [release guide](https://github.com/d33bs/cp-anywhere/blob/main/docs/release.md) for setup and release steps.
+Release builds take their version from the GitHub release tag. `tools/sync_release_version.py` copies that version into the Cargo workspace before the publish workflows build packages. See the [release guide](https://github.com/wayscience/cp-anywhere/blob/main/docs/release.md) for setup and release steps.

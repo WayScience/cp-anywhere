@@ -56,7 +56,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/d33bs/cp-anywhere",
+            "url": "https://github.com/wayscience/cp-anywhere",
             "icon": "fa-brands fa-github",
         },
     ],

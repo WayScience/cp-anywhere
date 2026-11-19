@@ -31,9 +31,9 @@ dependencies = [
 # dependency -- pyarrow is already a core dependency, and SQLite is
 # Python's own stdlib sqlite3 module.
 optional-dependencies.duckdb = [ "duckdb>=1.1" ]
-urls.Documentation = "https://d33bs.github.io/cp-anywhere/"
-urls.Issues = "https://github.com/d33bs/cp-anywhere/issues"
-urls.Source = "https://github.com/d33bs/cp-anywhere"
+urls.Documentation = "https://wayscience.github.io/cp-anywhere/"
+urls.Issues = "https://github.com/wayscience/cp-anywhere/issues"
+urls.Source = "https://github.com/wayscience/cp-anywhere"
 scripts.cp-anywhere = "cp_anywhere.cli:trigger"
 
 [dependency-groups]

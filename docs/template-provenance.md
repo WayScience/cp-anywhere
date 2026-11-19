@@ -11,7 +11,7 @@ Copier answers:
 - project_description: `CellProfiler-compatible measurements for native Python and web browsers`
 - author_name: `Dave Bunten`
 - author_orcid: `https://orcid.org/0000-0001-6041-3665`
-- github_url: `https://github.com/d33bs/cp-anywhere`
+- github_url: `https://github.com/wayscience/cp-anywhere`
 - github_primary_reviewer: `@d33bs`
 - use_rust: `true`
 - formal_verification: `none`

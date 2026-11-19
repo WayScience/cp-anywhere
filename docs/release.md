@@ -32,7 +32,7 @@ The Python and browser packages ship through PyPI and npm.
 Each registry has different setup steps for a first release of its package:
 
 1. **GitHub "release" environment.** Already created
-   (`repos/d33bs/cp-anywhere/environments/release`), referenced by all
+   (`repos/wayscience/cp-anywhere/environments/release`), referenced by all
    three publish workflows' `environment: release`. Optional hardening:
    add required reviewers under Settings -> Environments -> release.
 
@@ -41,7 +41,7 @@ Each registry has different setup steps for a first release of its package:
 
    1. Sign in at <https://pypi.org/manage/account/publishing/>.
    1. Add a pending GitHub publisher: PyPI project name `cp-anywhere`,
-      owner `d33bs`, repository `cp-anywhere`, workflow filename
+      owner `wayscience`, repository `cp-anywhere`, workflow filename
       `publish-pypi.yml`, environment name `release`.
    1. Nothing else to do -- the first tagged release creates the project
       and publishes to it automatically.
@@ -61,7 +61,7 @@ Each registry has different setup steps for a first release of its package:
       ```
    1. Once `cp-anywhere` exists on npm, go to its package settings
       -> Publishing access -> add a trusted publisher: GitHub Actions,
-      owner `d33bs`, repository `cp-anywhere`, workflow filename
+      owner `wayscience`, repository `cp-anywhere`, workflow filename
       `publish-npm.yml`, environment `release`.
    1. Enable direct `npm publish` for the trusted publisher. Publish the
       first stable version through GitHub Releases, not by hand.
