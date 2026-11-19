@@ -125,6 +125,11 @@ jobs:
         run: |
           npm run build
           npm run browser-check
+      - name: Build and check the interactive docs page
+        run: |
+          uv run --frozen --group docs sphinx-build -W docs/src docs/_build/ci
+          uv run --frozen python scripts/wasm/stage_docs_demo.py docs/_build/ci
+          node examples/browser-vite/run-docs-check.mjs docs/_build/ci
       - name: WASM golden parity check (Playwright-captured browser results)
         run: uv run --frozen python scripts/parity/compare_wasm.py
       - name: WASM segmentation golden parity check (browser results)

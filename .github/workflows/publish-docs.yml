@@ -36,15 +36,20 @@ jobs:
       # uv syncs (and builds the native extension) during the docs build
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - name: Install wasm-pack
+        run: |
+          curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Build the browser demo runtime
+        run: python scripts/wasm/build_package.py
       - name: Build documentation
         run: |
           mkdir pages
           touch pages/.nojekyll
-          cd docs
-          uv run --frozen --group docs sphinx-build src build
-          # remove any doctrees dirs which aren't needed for publishing
-          find ./build -type d -name '.doctrees' -exec rm -rf {} +
-          cp -r build/* ../pages/
+          uv run --frozen --group docs sphinx-build -d docs/_build/doctrees \
+            docs/src pages
+          uv run --frozen python scripts/wasm/stage_docs_demo.py pages
       - name: Deploy documentation
         uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:

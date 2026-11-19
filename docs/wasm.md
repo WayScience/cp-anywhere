@@ -63,6 +63,21 @@ uv run --frozen python scripts/parity/compare_wasm_segmentation.py
 
 ## Browser demo and npm package
 
+The documentation also includes **Cell profiling in your browser**. It runs
+illumination correction, segmentation, and measurements on the same crop as
+the Python notebook. To build and serve that page locally from the repository
+root:
+
+```sh
+python scripts/wasm/build_package.py
+uv run --frozen --group docs sphinx-build -W docs/src docs/_build/html
+uv run --frozen python scripts/wasm/stage_docs_demo.py docs/_build/html
+python -m http.server 8000 --bind 127.0.0.1 --directory docs/_build/html
+```
+
+Open `http://127.0.0.1:8000/browser-demo.html`. The published docs build
+includes these assets. It does not fetch the runtime from npm or a CDN.
+
 `examples/browser-vite` is a real Vite project (not a static mockup): its
 `src/worker.ts` imports the generated `cp-anywhere` package, fetches
 each fixture's raw binary arrays (see below), calls `measure()` and

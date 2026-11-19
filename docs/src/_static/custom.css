@@ -6,3 +6,28 @@
 .cell_output .dataframe {
   white-space: nowrap;
 }
+
+#wasm-demo .wasm-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.5rem, 2vw, 1rem);
+  margin-block: 1rem;
+}
+
+#wasm-demo figure {
+  margin: 0;
+}
+
+#wasm-demo canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  background: #000;
+  border-radius: 0.25rem;
+}
+
+#wasm-demo figcaption {
+  margin-top: 0.25rem;
+  font-size: 0.9rem;
+}
