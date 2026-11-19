@@ -398,6 +398,7 @@
 <span class="n">FAMILIES</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">DEFAULT_FAMILIES</span><span class="p">,</span> <span class="s2">&quot;object_size_shape&quot;</span><span class="p">)</span>
 <span class="n">MAX_LABEL</span> <span class="o">=</span> <span class="mi">1_000_000</span>
 <span class="n">MAX_IMAGE_DTYPE_ITEMSIZE</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># bytes; i.e. up to a 64-bit int/uint/float</span>
+<span class="n">_MAX_NEIGHBOR_DISTANCE</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
 
 <span class="c1"># Parquet schema-metadata key under which to_parquet(mode=&quot;array&quot;) embeds</span>
 <span class="c1"># a scope&#39;s ordered feature name list, so a fixed-size `features` array</span>
@@ -1021,6 +1022,26 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">setting_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> are not requested neighbors scopes&quot;</span><span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_neighbor_distances</span><span class="p">(</span>
+    <span class="n">distances</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">scopes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">expanded</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="n">_require_active_neighbors_scopes</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">scopes</span><span class="p">,</span> <span class="s2">&quot;neighbors_distances&quot;</span><span class="p">)</span>
+    <span class="n">resolved</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">distance</span> <span class="ow">in</span> <span class="n">distances</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distance</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">distance</span> <span class="o">&lt;=</span> <span class="n">_MAX_NEIGHBOR_DISTANCE</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Neighbor distance must be a positive integer that fits in uint32&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">expanded</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;conflicting neighbor distance methods for </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">resolved</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">resolved</span>
+
+
 <div class="viewcode-block" id="measure">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.api.measure">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">measure</span><span class="p">(</span>
@@ -1032,6 +1053,7 @@
     <span class="n">families</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neighbors_scopes</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neighbors_expand</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">neighbors_distances</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">neighbors_full_objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">size_shape_calculate_zernikes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">size_shape_calculate_advanced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1050,9 +1072,7 @@
 <span class="sd">    3D shape requests raise errors, not misaligned or substitute columns.</span>
 
 <span class="sd">    ``neighbors_scopes`` selects which object set(s) ``MeasureObjectNeighbors``</span>
-<span class="sd">    runs against itself (CellProfiler&#39;s own ``Adjacent`` distance method;</span>
-<span class="sd">    cross-object-set and non-&quot;Adjacent&quot; neighbors remain out of scope -- see</span>
-<span class="sd">    ``spec/compatibility.md``). Defaults to ``(&quot;Cells&quot;,)`` when the</span>
+<span class="sd">    runs against itself. Defaults to ``(&quot;Cells&quot;,)`` when the</span>
 <span class="sd">    ``&quot;neighbors&quot;`` family is selected and ``neighbors_scopes`` is omitted,</span>
 <span class="sd">    matching this project&#39;s original declared scope exactly, byte-for-byte</span>
 <span class="sd">    (every pre-existing fixture, golden comparison, and caller is</span>
@@ -1074,6 +1094,11 @@
 <span class="sd">    CellProfiler&#39;s own ``run()``. Each name must be one of the active</span>
 <span class="sd">    neighbors scopes. Columns get an ``_Expanded`` suffix instead of</span>
 <span class="sd">    ``_Adjacent`` for every scope named here.</span>
+
+<span class="sd">    ``neighbors_distances`` maps active scopes to positive integer pixel</span>
+<span class="sd">    distances for &quot;Within a specified distance&quot; (2D only). Columns end in</span>
+<span class="sd">    the distance, for example ``Neighbors_NumberOfNeighbors_5``. A scope</span>
+<span class="sd">    cannot be configured in both ``neighbors_distances`` and ``neighbors_expand``.</span>
 
 <span class="sd">    ``neighbors_full_objects`` supplies each scope&#39;s diagnostic geometry</span>
 <span class="sd">    (CellProfiler&#39;s ``objects.small_removed_segmented``). Both primary and</span>
@@ -1115,6 +1140,9 @@
         <span class="n">_require_active_neighbors_scopes</span><span class="p">(</span>
             <span class="n">resolved_neighbors_expand</span><span class="p">,</span> <span class="n">active_neighbors_scopes</span><span class="p">,</span> <span class="s2">&quot;neighbors_expand&quot;</span>
         <span class="p">)</span>
+    <span class="n">resolved_distances</span> <span class="o">=</span> <span class="n">_resolve_neighbor_distances</span><span class="p">(</span>
+        <span class="n">neighbors_distances</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">active_neighbors_scopes</span><span class="p">,</span> <span class="n">resolved_neighbors_expand</span>
+    <span class="p">)</span>
     <span class="n">converted_full_objects</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">neighbors_full_objects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">converted_full_objects</span> <span class="o">=</span> <span class="n">_convert_objects</span><span class="p">(</span><span class="n">neighbors_full_objects</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
@@ -1134,6 +1162,12 @@
         <span class="n">converted_full_objects</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">size_shape_calculate_zernikes</span><span class="p">,</span>
         <span class="n">size_shape_calculate_advanced</span><span class="p">,</span>
+        <span class="n">resolved_distances</span> <span class="ow">or</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="n">name</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">image</span><span class="p">)</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+        <span class="p">],</span>
     <span class="p">)</span>
     <span class="n">features</span> <span class="o">=</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;features&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="s2">&quot;Image&quot;</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>

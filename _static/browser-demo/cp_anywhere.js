@@ -513,6 +513,7 @@ export function measureJson(input) {
  * string `{"image": {"<Texture_... column name>": <float>, ...},
  * "objects": {"<column name>": [...one per object], ...}}`, matching
  * `cp_anywhere.measure_texture`'s own result shape.
+ * Set `float32: true` when `pixels` contains samples from a float32 plane.
  * @param {string} input
  * @returns {string}
  */
@@ -557,13 +558,15 @@ export function measureTextureJson(input) {
  * @param {Uint32Array | number[]} full_objects
  * @param {boolean | null} [size_shape_calculate_zernikes]
  * @param {boolean | null} [size_shape_calculate_advanced]
+ * @param {string | null} [neighbors_distances_json]
+ * @param {string[] | null} [float32_images]
  * @returns {string}
  */
-export function measureWithOptions(shape, image_names, images, object_names, objects, mask, image_id, families, neighbors_scopes, neighbors_expand, full_object_names, full_objects, size_shape_calculate_zernikes, size_shape_calculate_advanced) {
-    let deferred14_0;
-    let deferred14_1;
+export function measureWithOptions(shape, image_names, images, object_names, objects, mask, image_id, families, neighbors_scopes, neighbors_expand, full_object_names, full_objects, size_shape_calculate_zernikes, size_shape_calculate_advanced, neighbors_distances_json, float32_images) {
+    let deferred16_0;
+    let deferred16_1;
     try {
-        let ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4, ptr5, len5, ptr6, len6, ptr7, len7, ptr8, len8, ptr9, len9, ptr10, len10, ptr11, len11;
+        let ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4, ptr5, len5, ptr6, len6, ptr7, len7, ptr8, len8, ptr9, len9, ptr10, len10, ptr11, len11, ptr12, len12, ptr13, len13;
         try {
             ptr0 = passArray32ToWasm0(shape, wasm.__wbindgen_malloc);
             len0 = WASM_VECTOR_LEN;
@@ -589,7 +592,13 @@ export function measureWithOptions(shape, image_names, images, object_names, obj
             len10 = WASM_VECTOR_LEN;
             ptr11 = passArray32ToWasm0(full_objects, wasm.__wbindgen_malloc);
             len11 = WASM_VECTOR_LEN;
+            ptr12 = isLikeNone(neighbors_distances_json) ? 0 : passStringToWasm0(neighbors_distances_json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            len12 = WASM_VECTOR_LEN;
+            ptr13 = isLikeNone(float32_images) ? 0 : passArrayJsValueToWasm0(float32_images, wasm.__wbindgen_malloc);
+            len13 = WASM_VECTOR_LEN;
         } catch (e) {
+            if (ptr13) { wasm.__externref_drop_slice(ptr13, len13); wasm.__wbindgen_free(ptr13, len13 * 4, 4); }
+            if (ptr12) { wasm.__wbindgen_free(ptr12, len12 * 1, 1); }
             if (ptr11) { wasm.__wbindgen_free(ptr11, len11 * 4, 4); }
             if (ptr10) { wasm.__externref_drop_slice(ptr10, len10); wasm.__wbindgen_free(ptr10, len10 * 4, 4); }
             if (ptr9) { wasm.__externref_drop_slice(ptr9, len9); wasm.__wbindgen_free(ptr9, len9 * 4, 4); }
@@ -604,18 +613,18 @@ export function measureWithOptions(shape, image_names, images, object_names, obj
             if (ptr0) { wasm.__wbindgen_free(ptr0, len0 * 4, 4); }
             throw e;
         }
-        const ret = wasm.measureWithOptions(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4, ptr5, len5, ptr6, len6, ptr7, len7, ptr8, len8, ptr9, len9, ptr10, len10, ptr11, len11, isLikeNone(size_shape_calculate_zernikes) ? 0xFFFFFF : size_shape_calculate_zernikes ? 1 : 0, isLikeNone(size_shape_calculate_advanced) ? 0xFFFFFF : size_shape_calculate_advanced ? 1 : 0);
-        var ptr13 = ret[0];
-        var len13 = ret[1];
+        const ret = wasm.measureWithOptions(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3, ptr4, len4, ptr5, len5, ptr6, len6, ptr7, len7, ptr8, len8, ptr9, len9, ptr10, len10, ptr11, len11, isLikeNone(size_shape_calculate_zernikes) ? 0xFFFFFF : size_shape_calculate_zernikes ? 1 : 0, isLikeNone(size_shape_calculate_advanced) ? 0xFFFFFF : size_shape_calculate_advanced ? 1 : 0, ptr12, len12, ptr13, len13);
+        var ptr15 = ret[0];
+        var len15 = ret[1];
         if (ret[3]) {
-            ptr13 = 0; len13 = 0;
+            ptr15 = 0; len15 = 0;
             throw takeFromExternrefTable0(ret[2]);
         }
-        deferred14_0 = ptr13;
-        deferred14_1 = len13;
-        return getStringFromWasm0(ptr13, len13);
+        deferred16_0 = ptr15;
+        deferred16_1 = len15;
+        return getStringFromWasm0(ptr15, len15);
     } finally {
-        wasm.__wbindgen_free(deferred14_0, deferred14_1, 1);
+        wasm.__wbindgen_free(deferred16_0, deferred16_1, 1);
     }
 }
 
