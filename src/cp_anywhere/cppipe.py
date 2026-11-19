@@ -38,17 +38,22 @@ supplies already-loaded image arrays by the same names the pipeline's
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
+from math import isfinite
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from cp_anywhere.api import MeasurementResult, measure
+from cp_anywhere.api import _MAX_NEIGHBOR_DISTANCE, MeasurementResult, measure
 from cp_anywhere.colocalization import measure_colocalization
 from cp_anywhere.granularity import measure_granularity
 from cp_anywhere.illumination import apply_illumination, calculate_illumination
-from cp_anywhere.intensity_distribution import measure_intensity_distribution
+from cp_anywhere.intensity_distribution import (
+    _measure_intensity_distribution,
+    _ZernikeOption,
+)
 from cp_anywhere.save_images import BIT_DEPTH_8, save_array
 from cp_anywhere.segment import (
     SecondaryObjectsResult,
@@ -60,6 +65,7 @@ from cp_anywhere.texture import measure_texture
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from typing import Literal
 
     from cp_anywhere.segment import (
         SegmentationResult,
@@ -93,21 +99,9 @@ _MG_FIELDS = (
     "granular_spectrum_length",
 )
 _MOID_REVISION = 6
-_MOID_FIELDS = (
-    "images",
-    "hidden_image_groups",
-    "hidden_object_groups",
-    "hidden_bin_groups",
-    "wants_zernikes",
-    "zernike_degree",
-    "objects",
-    "center_choice",
-    "center_objects",
-    "wants_scaled",
-    "bin_count",
-    "maximum_radius",
-)
-_INTENSITY_DISTRIBUTION_ZERNIKES = {
+_MOID_FIXED_FIELDS = 6
+_MOID_GROUP_WIDTH = 3
+_INTENSITY_DISTRIBUTION_ZERNIKES: dict[str, _ZernikeOption] = {
     "None": "none",
     "Magnitudes only": "magnitudes",
     "Magnitudes and phase": "magnitudes_and_phase",
@@ -361,6 +355,7 @@ _ISO_FIELDS = (
 _SECONDARY_METHOD = {
     "Propagation": "propagation",
     "Distance - N": "distance_n",
+    "Watershed - Image": "watershed_image",
 }
 
 
@@ -377,6 +372,7 @@ class _RawModule:
     name: str
     variable_revision_number: int
     settings: tuple[str, ...]
+    enabled: bool = True
 
 
 def _parse_text(text: str) -> list[_RawModule]:
@@ -405,9 +401,7 @@ def _parse_text(text: str) -> list[_RawModule]:
         i += 1
         name, _, attribute_string = header.partition(":")
         name = name.strip()
-        match = __import__("re").search(
-            r"variable_revision_number:(\d+)", attribute_string
-        )
+        match = re.search(r"variable_revision_number:(\d+)", attribute_string)
         if match is None:
             msg = f"module {name!r} is missing variable_revision_number"
             raise CppipeError(msg)
@@ -417,7 +411,10 @@ def _parse_text(text: str) -> list[_RawModule]:
             _, _, value = lines[i].partition(":")
             settings.append(value)
             i += 1
-        modules.append(_RawModule(name, revision, tuple(settings)))
+        enabled = (
+            re.search(r"(?:\[|\|)enabled:False(?:\||\])", attribute_string) is None
+        )
+        modules.append(_RawModule(name, revision, tuple(settings), enabled))
     return modules
 
 
@@ -484,22 +481,30 @@ class GranularityStep:
 
 
 @dataclass(frozen=True)
+class RadialBinGroup:
+    """One saved radial bin group, in pipeline order."""
+
+    bin_count: int
+    wants_scaled: bool
+    maximum_radius: float
+
+
+@dataclass(frozen=True)
 class IntensityDistributionStep:
-    """One translated ``MeasureObjectIntensityDistribution`` module: every
-    requested image and object name (each image/object pair measured
-    independently, matching real CellProfiler's own per-image-per-object
-    feature columns), and ``cp_anywhere.measure_intensity_distribution``'s
-    own keyword settings. Only the module's default radial center
-    ("These objects") is supported; any other ``center_choice`` is an
-    explicit, documented gap, rejected at translation time."""
+    """One revision 6 radial module with ordered object and bin groups.
+
+    The original scalar bin settings describe the first group. Each object
+    group uses its own objects as centers.
+    """
 
     images: tuple[str, ...]
     objects: tuple[str, ...]
     bin_count: int
     wants_scaled: bool
     maximum_radius: float
-    zernikes: str
+    zernikes: _ZernikeOption
     zernike_degree: int
+    additional_bin_groups: tuple[RadialBinGroup, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -571,6 +576,20 @@ class IlluminationCalculateStep:
     automatic_object_width: str
     object_width: float
     size_of_smoothing_filter: float
+
+
+@dataclass(frozen=True)
+class ImageMathStep:
+    """A single-input, unmasked ImageMath None operation."""
+
+    input_image: str
+    output_image: str
+    input_factor: float
+    output_factor: float
+    addend: float
+    truncate_low: bool
+    truncate_high: bool
+    replace_nan: bool
 
 
 @dataclass(frozen=True)
@@ -762,9 +781,10 @@ class MeasurementStep:
     """Whether this ``neighbors`` step uses CellProfiler's "Expand until
     adjacent" distance method (``measure(..., neighbors_expand=...)``)
     instead of the default "Adjacent". Only meaningful when
-    ``family == "neighbors"``; ``"Within X pixels"`` remains a separate,
-    out-of-scope gap -- see ``spec/compatibility.md``.
+    ``family == "neighbors"``.
     """
+    neighbors_distance: int | None = None
+    """Pixel distance for a "Within a specified distance" neighbors step."""
 
 
 def _translate_threshold_tail(values: dict[str, str]) -> dict[str, object]:
@@ -932,9 +952,8 @@ def _translate_identify_secondary_objects(raw: _RawModule) -> SecondaryObjectsSt
     _require(
         values["method"] in _SECONDARY_METHOD,
         f"IdentifySecondaryObjects method {values['method']!r} is an "
-        "explicit, not-yet-implemented gap (only 'Propagation' and "
-        "'Distance - N' are supported so far; 'Watershed - Gradient', "
-        "'Watershed - Image', and 'Distance - B' are not yet)",
+        "explicit, not-yet-implemented gap ('Watershed - Gradient' and "
+        "'Distance - B' are not yet supported)",
     )
     _require(
         not _YES_NO[values["wants_discard_edge"]],
@@ -948,10 +967,11 @@ def _translate_identify_secondary_objects(raw: _RawModule) -> SecondaryObjectsSt
         "method": method,
         "fill_holes": _YES_NO[values["fill_holes"]],
     }
-    if method == "propagation":
+    if method != "distance_n":
         config.update(_translate_threshold_tail(values))
-        config["regularization_factor"] = float(values["regularization_factor"])
-    elif method == "distance_n":
+        if method == "propagation":
+            config["regularization_factor"] = float(values["regularization_factor"])
+    else:
         config["distance_to_dilate"] = float(values["distance_to_dilate"])
 
     return SecondaryObjectsStep(
@@ -1049,38 +1069,87 @@ def _translate_measure_object_intensity_distribution(
         f"{raw.variable_revision_number} is not supported (only "
         f"{_MOID_REVISION} is)",
     )
+    module = "MeasureObjectIntensityDistribution"
+    _require(len(raw.settings) >= _MOID_FIXED_FIELDS, f"{module}: too few settings")
+    images, object_count, bin_count, heatmap_count, zernikes, degree = raw.settings[
+        :_MOID_FIXED_FIELDS
+    ]
+    nobjects = _radial_group_count("object", object_count)
+    nbins = _radial_group_count("bin", bin_count)
     _require(
-        len(raw.settings) == len(_MOID_FIELDS),
-        "MeasureObjectIntensityDistribution has "
-        f"{len(raw.settings)} settings, expected {len(_MOID_FIELDS)} for "
-        f"revision {_MOID_REVISION}",
+        _radial_group_count("heatmap", heatmap_count, minimum=0) == 0,
+        f"{module}: heatmap groups are not supported",
     )
-    values = dict(zip(_MOID_FIELDS, raw.settings, strict=True))
+    bins_start = _MOID_FIXED_FIELDS + _MOID_GROUP_WIDTH * nobjects
+    expected = bins_start + _MOID_GROUP_WIDTH * nbins
     _require(
-        values["center_choice"] == "These objects",
-        "MeasureObjectIntensityDistribution with 'Object to use as "
-        f"center?' = {values['center_choice']!r} is not supported (only "
-        "'These objects' is); 'Centers of other objects' and 'Edges of "
-        "other objects' need a second object set and are an explicit, "
-        "documented gap",
+        len(raw.settings) == expected,
+        f"{module} has {len(raw.settings)} settings, expected {expected} for "
+        f"{nobjects} object group(s) and {nbins} bin group(s)",
     )
+    objects = []
+    for offset in range(_MOID_FIXED_FIELDS, bins_start, _MOID_GROUP_WIDTH):
+        name, center, _ = raw.settings[offset : offset + _MOID_GROUP_WIDTH]
+        _require(
+            center == "These objects",
+            f"{module}: 'Object to use as center?' = {center!r} for {name!r} "
+            "is not supported (only 'These objects' is)",
+        )
+        _require(name not in objects, f"{module}: duplicate object group {name!r}")
+        objects.append(name)
+    groups = _parse_radial_bins(raw.settings[bins_start:])
     _require(
-        values["wants_scaled"] in _YES_NO,
-        "MeasureObjectIntensityDistribution requires a Yes/No 'Scale the bins?' flag",
+        zernikes in _INTENSITY_DISTRIBUTION_ZERNIKES,
+        f"{module}: unsupported 'Calculate intensity Zernikes?': {zernikes!r}",
     )
-    _require(
-        values["wants_zernikes"] in _INTENSITY_DISTRIBUTION_ZERNIKES,
-        f"unsupported 'Calculate intensity Zernikes?': {values['wants_zernikes']!r}",
-    )
+    first, *additional = groups
     return IntensityDistributionStep(
-        images=_split_list(values["images"]),
-        objects=_split_list(values["objects"]),
-        bin_count=int(values["bin_count"]),
-        wants_scaled=_YES_NO[values["wants_scaled"]],
-        maximum_radius=float(values["maximum_radius"]),
-        zernikes=_INTENSITY_DISTRIBUTION_ZERNIKES[values["wants_zernikes"]],
-        zernike_degree=int(values["zernike_degree"]),
+        images=_split_list(images),
+        objects=tuple(objects),
+        bin_count=first.bin_count,
+        wants_scaled=first.wants_scaled,
+        maximum_radius=first.maximum_radius,
+        zernikes=_INTENSITY_DISTRIBUTION_ZERNIKES[zernikes],
+        zernike_degree=int(degree),
+        additional_bin_groups=tuple(additional),
     )
+
+
+def _radial_group_count(name: str, text: str, *, minimum: int = 1) -> int:
+    message = (
+        f"MeasureObjectIntensityDistribution: {name} group count must be an "
+        f"integer >= {minimum}, got {text!r}"
+    )
+    try:
+        count = int(text)
+    except ValueError as error:
+        raise CppipeError(message) from error
+    _require(count >= minimum, message)
+    return count
+
+
+def _parse_radial_bins(settings: tuple[str, ...]) -> list[RadialBinGroup]:
+    module = "MeasureObjectIntensityDistribution"
+    groups: list[RadialBinGroup] = []
+    counts: set[int] = set()
+    for offset in range(0, len(settings), _MOID_GROUP_WIDTH):
+        scaled, count, radius = settings[offset : offset + _MOID_GROUP_WIDTH]
+        _require(scaled in _YES_NO, f"{module}: 'Scale the bins?' requires Yes/No")
+        try:
+            bins = int(count)
+            maximum_radius = float(radius)
+        except ValueError as error:
+            message = f"{module}: invalid bin count or maximum radius"
+            raise CppipeError(message) from error
+        _require(bins >= 1, f"{module}: bin count must be positive")
+        _require(
+            np.isfinite(maximum_radius) and (scaled == "Yes" or maximum_radius > 0),
+            f"{module}: maximum radius must be finite and positive for unscaled bins",
+        )
+        _require(bins not in counts, f"{module}: duplicate bin count {bins}")
+        counts.add(bins)
+        groups.append(RadialBinGroup(bins, _YES_NO[scaled], maximum_radius))
+    return groups
 
 
 def _translate_measure_texture(raw: _RawModule) -> TextureStep:
@@ -1446,7 +1515,7 @@ def _translate_measure_object_neighbors(raw: _RawModule) -> MeasurementStep:
         object_name,
         neighbors_name,
         distance_method,
-        _distance,
+        distance,
         wants_excluded_objects,
         *_rest,
     ) = raw.settings
@@ -1458,12 +1527,24 @@ def _translate_measure_object_neighbors(raw: _RawModule) -> MeasurementStep:
         "(see spec/compatibility.md)",
     )
     _require(
-        distance_method in ("Adjacent", "Expand until adjacent"),
-        f"MeasureObjectNeighbors distance method {distance_method!r} is "
-        "an explicit, out-of-scope gap (only 'Adjacent' and 'Expand "
-        "until adjacent' are supported; 'Within X pixels' is not yet "
-        "implemented)",
+        distance_method
+        in ("Adjacent", "Expand until adjacent", "Within a specified distance"),
+        f"MeasureObjectNeighbors distance method {distance_method!r} is not supported",
     )
+    radius = None
+    if distance_method == "Within a specified distance":
+        _require(
+            re.fullmatch(r"\+?[0-9]+", distance) is not None,
+            "Neighbor distance must be a positive integer",
+        )
+        try:
+            radius = int(distance)
+        except ValueError as exc:
+            raise CppipeError("Neighbor distance does not fit in uint32") from exc
+        _require(
+            1 <= radius <= _MAX_NEIGHBOR_DISTANCE,
+            "Neighbor distance must be a positive integer that fits in uint32",
+        )
     return MeasurementStep(
         module_name="MeasureObjectNeighbors",
         family="neighbors",
@@ -1471,10 +1552,60 @@ def _translate_measure_object_neighbors(raw: _RawModule) -> MeasurementStep:
         objects=(object_name,),
         wants_excluded_objects=_YES_NO[wants_excluded_objects],
         wants_expand=distance_method == "Expand until adjacent",
+        neighbors_distance=radius,
+    )
+
+
+_IMAGE_MATH_REVISION = 5
+_IMAGE_MATH_HEADER = 9
+_IMAGE_MATH_OPERAND = 4
+_IMAGE_NDIM = 2
+
+
+def _translate_image_math(raw: _RawModule) -> ImageMathStep:
+    _require(
+        raw.variable_revision_number == _IMAGE_MATH_REVISION,
+        f"ImageMath requires revision {_IMAGE_MATH_REVISION}",
+    )
+    values = list(raw.settings)
+    operand_count, remainder = divmod(
+        len(values) - _IMAGE_MATH_HEADER, _IMAGE_MATH_OPERAND
+    )
+    _require(
+        operand_count >= 2 and not remainder,  # noqa: PLR2004 -- CellProfiler pads to two operands.
+        "ImageMath revision 5 requires at least two operand blocks",
+    )
+    _require(
+        values[0] == "None" and values[9] == "Image" and float(values[1]) == 1,
+        "ImageMath supports only a single image with operation 'None' and exponent 1",
+    )
+    flags = values[4:8]
+    _require(
+        all(value in _YES_NO for value in flags), "ImageMath requires Yes/No flags"
+    )
+    input_factor, output_factor, addend = map(float, (values[11], values[2], values[3]))
+    _require(
+        all(isfinite(x) for x in (input_factor, output_factor, addend)),
+        "ImageMath factors and addend must be finite",
+    )
+    _require(
+        all(name.strip() and name != "None" for name in (values[10], values[8])),
+        "ImageMath requires named input and output images",
+    )
+    return ImageMathStep(
+        values[10],
+        values[8],
+        input_factor,
+        output_factor,
+        addend,
+        _YES_NO[flags[0]],
+        _YES_NO[flags[1]],
+        _YES_NO[flags[2]],
     )
 
 
 _TRANSLATORS = {
+    "ImageMath": _translate_image_math,
     "IdentifyPrimaryObjects": _translate_identify_primary_objects,
     "MeasureObjectSizeShape": _translate_measure_object_size_shape,
     "MeasureGranularity": _translate_measure_granularity,
@@ -1547,6 +1678,25 @@ class Pipeline:
     illumination_apply_steps: list[IlluminationApplyStep] = field(default_factory=list)
     save_images_steps: list[SaveImagesStep] = field(default_factory=list)
     skipped_modules: list[str] = field(default_factory=list)
+    image_math_steps: list[ImageMathStep] = field(default_factory=list)
+    image_step_order: list[str] = field(default_factory=list)
+
+    def prepare_images(self, images: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
+        """Return inputs and prepared planes without modifying the caller's arrays."""
+        all_images = dict(images)
+        groups = {
+            "CorrectIlluminationCalculate": iter(self.illumination_calculate_steps),
+            "CorrectIlluminationApply": iter(self.illumination_apply_steps),
+            "ImageMath": iter(self.image_math_steps),
+        }
+        order = self.image_step_order or (
+            ["CorrectIlluminationCalculate"] * len(self.illumination_calculate_steps)
+            + ["CorrectIlluminationApply"] * len(self.illumination_apply_steps)
+            + ["ImageMath"] * len(self.image_math_steps)
+        )
+        for module in order:
+            _prepare_image(all_images, module, next(groups[module]))
+        return all_images
 
     # Keep the execution stages together so label provenance remains visible.
     def run(  # noqa: C901, PLR0912, PLR0915
@@ -1556,62 +1706,9 @@ class Pipeline:
         dict[str, SecondaryObjectsResult | TertiaryObjectsResult],
         MeasurementResult | None,
     ]:
-        """Run every translated segmentation step, then every
-        translated ``IdentifySecondaryObjects`` step (each grows
-        around its primary object's kept labels, using its unedited
-        layer to retain excluded edge seeds), then
-        tertiary-object subtraction, then one combined measurement call
-        over the union of every ``Measure*``
-        module's requested images/objects (``cp_anywhere.measure`` has
-        no per-module feature-subset switch, so a pipeline that
-        measures only some image/object combinations gets
-        cp_anywhere's full combination as a superset -- every
-        requested value is present and correct, but extra columns may
-        appear beyond what the source pipeline explicitly selected;
-        see spec/cppipe-compatibility.md).
-        """
+        """Prepare images, identify primary/secondary/tertiary objects, and measure."""
         segmentations: dict[str, SegmentationResult] = {}
-        all_images: dict[str, np.ndarray] = dict(images)
-        for step in self.illumination_calculate_steps:
-            if step.input_image not in all_images:
-                msg = (
-                    "CorrectIlluminationCalculate needs image "
-                    f"{step.input_image!r}, not provided to run()"
-                )
-                raise CppipeError(msg)
-            all_images[step.output_image] = calculate_illumination(
-                _cp_converted_pixels(all_images[step.input_image]),
-                intensity_choice=step.intensity_choice,
-                block_size=step.block_size,
-                dilate_objects=step.dilate_objects,
-                object_dilation_radius=step.object_dilation_radius,
-                smoothing_method=step.smoothing_method,
-                automatic_object_width=step.automatic_object_width,
-                object_width=step.object_width,
-                size_of_smoothing_filter=step.size_of_smoothing_filter,
-                rescale_option=step.rescale_option,
-            )
-        for step in self.illumination_apply_steps:
-            for image_config in step.images:
-                for name in (
-                    image_config.input_image,
-                    image_config.illumination_function_image,
-                ):
-                    if name not in all_images:
-                        msg = (
-                            f"CorrectIlluminationApply needs image {name!r}, "
-                            "not provided to run()"
-                        )
-                        raise CppipeError(msg)
-                all_images[image_config.output_image] = apply_illumination(
-                    _cp_converted_pixels(all_images[image_config.input_image]),
-                    _cp_converted_pixels(
-                        all_images[image_config.illumination_function_image]
-                    ),
-                    divide_or_subtract=image_config.divide_or_subtract,
-                    truncate_low=step.truncate_low,
-                    truncate_high=step.truncate_high,
-                )
+        all_images = self.prepare_images(images)
         # Real CellProfiler's ImageSet holds every image converted by
         # Image(convert=True): integer pixels rescaled to [0, 1] float32,
         # float pixels downcast to float32 (see cellprofiler_core's
@@ -1701,7 +1798,7 @@ class Pipeline:
             {
                 step.family
                 for step in self.measurement_steps
-                if step.family != "object_size_shape"
+                if step.family not in ("neighbors", "object_size_shape")
             }
         )
         measure_images: dict[str, np.ndarray] = {}
@@ -1733,55 +1830,71 @@ class Pipeline:
             measure_images = {
                 name: next(iter(measurement_images.values())) for name in ("_unused",)
             }
-        neighbors_scopes = sorted(
-            {
-                name
-                for step in self.measurement_steps
-                if step.family == "neighbors"
-                for name in step.objects
-            }
+        measured = (
+            measure(measure_images, measure_objects, families=families)
+            if families
+            else None
         )
-        neighbors_expand = sorted(
-            {
-                name
-                for step in self.measurement_steps
-                if step.family == "neighbors" and step.wants_expand
-                for name in step.objects
-            }
-        )
-        neighbors_full_objects: dict[str, np.ndarray] = {}
+        masked_diagnostics: dict[str, np.ndarray] = {}
+        fixed_scopes = {
+            name
+            for step in self.measurement_steps
+            if step.family == "neighbors" and step.neighbors_distance is not None
+            for name in step.objects
+        }
         for step in self.measurement_steps:
-            if step.family != "neighbors" or not step.wants_excluded_objects:
+            if step.family != "neighbors":
                 continue
             for name in step.objects:
+                diagnostic = None
                 if name in segmentations:
-                    neighbors_full_objects[name] = segmentations[
-                        name
-                    ].small_removed_labels
+                    diagnostic = segmentations[name].small_removed_labels
                 elif name in secondary_results:
                     derived = secondary_results[name]
-                    neighbors_full_objects[name] = (
+                    diagnostic = (
                         derived.small_removed_labels
                         if isinstance(derived, SecondaryObjectsResult)
                         else derived.labels
                     )
+                kept = measure_objects[name]
+                if (
+                    not step.wants_excluded_objects
+                    and name in fixed_scopes
+                    and diagnostic is not None
+                    and name not in masked_diagnostics
+                ):
+                    # CP mutates its diagnostic layer; carry that state only
+                    # between neighbor steps and leave segmentation outputs intact.
+                    masked_diagnostics[name] = np.where(kept, diagnostic, 0)
+                if step.wants_excluded_objects or step.neighbors_distance is not None:
+                    diagnostic = masked_diagnostics.get(name, diagnostic)
                 else:
+                    diagnostic = None
+                if step.wants_excluded_objects and diagnostic is None:
                     raise CppipeError(
                         f"MeasureObjectNeighbors on {name!r} with excluded "
                         "objects requires a translated segmentation result"
                     )
-        measured = (
-            measure(
-                measure_images,
-                measure_objects,
-                families=families,
-                neighbors_scopes=neighbors_scopes or None,
-                neighbors_expand=neighbors_expand or None,
-                neighbors_full_objects=neighbors_full_objects or None,
-            )
-            if families
-            else None
-        )
+                result = measure(
+                    measure_images,
+                    {name: kept},
+                    families=["neighbors"],
+                    neighbors_scopes=[name],
+                    neighbors_expand=[name] if step.wants_expand else None,
+                    neighbors_distances={name: step.neighbors_distance}
+                    if step.neighbors_distance is not None
+                    else None,
+                    neighbors_full_objects={name: diagnostic}
+                    if diagnostic is not None
+                    else None,
+                )
+                if measured is None:
+                    measured = result
+                else:
+                    for scope, columns in result.features.items():
+                        measured.features.setdefault(scope, {}).update(columns)
+                    measured.object_ids.update(result.object_ids)
+                    measured.relationships.extend(result.relationships)
         # Keep each module's calculation flags and object selection independent.
         # Repeated modules overwrite the same named feature as in CellProfiler.
         for shape_step in self.measurement_steps:
@@ -1826,6 +1939,7 @@ class Pipeline:
                     image_sample_size=granularity_step.image_sample_size,
                     element_size=granularity_step.element_size,
                     granular_spectrum_length=granularity_step.granular_spectrum_length,
+                    _float32=True,
                 )
                 if measured is None:
                     measured = MeasurementResult(
@@ -1865,16 +1979,12 @@ class Pipeline:
                             "IdentifyTertiaryObjects step"
                         )
                         raise CppipeError(msg)
-                    zernikes = intensity_step.zernikes
-                    intensity_result = measure_intensity_distribution(
+                    columns = _run_radial_groups(
+                        intensity_step,
+                        image_name,
                         measurement_images[image_name],
                         all_object_labels[obj_name],
-                        image_name=image_name,
-                        bin_count=intensity_step.bin_count,
-                        wants_scaled=intensity_step.wants_scaled,
-                        maximum_radius=intensity_step.maximum_radius,
-                        zernikes=zernikes,  # ty: ignore[invalid-argument-type]
-                        zernike_degree=intensity_step.zernike_degree,
+                        float32=True,
                     )
                     if measured is None:
                         measured = MeasurementResult(
@@ -1885,7 +1995,7 @@ class Pipeline:
                         )
                     obj_features = measured.features.setdefault(obj_name, {})
                     nobjects = 0
-                    for column, values in intensity_result.columns.items():
+                    for column, values in columns.items():
                         obj_features[column] = values
                         nobjects = max(nobjects, len(values))
                     if obj_name not in measured.object_ids:
@@ -1901,7 +2011,7 @@ class Pipeline:
                         "provided to run()"
                     )
                     raise CppipeError(msg)
-                image = measurement_images[image_name]
+                image = measurement_images[image_name].astype(np.float32)
                 wrote_image = False
                 for obj_name in texture_step.objects:
                     if obj_name not in all_object_labels:
@@ -2010,6 +2120,7 @@ class Pipeline:
                     do_costes=colocalization_step.do_costes,
                     wants_image_measurements=wants_image_now,
                     wants_object_measurements=True,
+                    _float32=True,
                 )
                 if measured is None:
                     measured = MeasurementResult(
@@ -2061,6 +2172,64 @@ class Pipeline:
         return segmentations, secondary_results, measured
 
 
+def _prepare_image(
+    images: dict[str, np.ndarray],
+    module: str,
+    step: IlluminationCalculateStep | IlluminationApplyStep | ImageMathStep,
+) -> None:
+    def pixels(name: str) -> np.ndarray:
+        if name not in images:
+            msg = f"{module} needs image {name!r}, not provided to run()"
+            raise CppipeError(msg)
+        return _cp_converted_pixels(images[name])
+
+    if isinstance(step, IlluminationCalculateStep):
+        images[step.output_image] = calculate_illumination(
+            pixels(step.input_image),
+            intensity_choice=step.intensity_choice,
+            block_size=step.block_size,
+            dilate_objects=step.dilate_objects,
+            object_dilation_radius=step.object_dilation_radius,
+            smoothing_method=step.smoothing_method,
+            automatic_object_width=step.automatic_object_width,
+            object_width=step.object_width,
+            size_of_smoothing_filter=step.size_of_smoothing_filter,
+            rescale_option=step.rescale_option,
+        )
+    elif isinstance(step, IlluminationApplyStep):
+        for entry in step.images:
+            images[entry.output_image] = apply_illumination(
+                pixels(entry.input_image),
+                pixels(entry.illumination_function_image),
+                divide_or_subtract=entry.divide_or_subtract,
+                truncate_low=step.truncate_low,
+                truncate_high=step.truncate_high,
+            )
+    else:
+        images[step.output_image] = _image_math(pixels(step.input_image), step)
+
+
+def _image_math(pixels: np.ndarray, step: ImageMathStep) -> np.ndarray:
+    if pixels.ndim != _IMAGE_NDIM or not pixels.size:
+        msg = "ImageMath expects a nonempty 2D image"
+        raise CppipeError(msg)
+    result = pixels.astype(np.float32, copy=True)
+    with np.errstate(over="ignore", invalid="ignore"):
+        if step.input_factor != 1:
+            result *= np.float32(step.input_factor)
+        if step.output_factor != 1:
+            result *= np.float32(step.output_factor)
+        if step.addend != 0:
+            result += np.float32(step.addend)
+    if step.truncate_low:
+        result[result < 0] = 0
+    if step.truncate_high:
+        result[result > 1] = 1
+    if step.replace_nan:
+        result[np.isnan(result)] = 0
+    return result
+
+
 def _append_step(
     pipeline: Pipeline,
     step: (
@@ -2074,6 +2243,7 @@ def _append_step(
         | ExportToDatabaseStep
         | IlluminationCalculateStep
         | IlluminationApplyStep
+        | ImageMathStep
         | SaveImagesStep
         | MeasurementStep
     ),
@@ -2082,7 +2252,13 @@ def _append_step(
     list, by type -- a plain ``Measure*`` translation (anything not one
     of the dedicated step types) falls through to ``measurement_steps``."""
     if isinstance(
-        step, (IlluminationCalculateStep, IlluminationApplyStep, SaveImagesStep)
+        step,
+        (
+            IlluminationCalculateStep,
+            IlluminationApplyStep,
+            ImageMathStep,
+            SaveImagesStep,
+        ),
     ):
         _append_output_step(pipeline, step)
     elif isinstance(step, SegmentationStep):
@@ -2107,7 +2283,10 @@ def _append_step(
 
 def _append_output_step(
     pipeline: Pipeline,
-    step: IlluminationCalculateStep | IlluminationApplyStep | SaveImagesStep,
+    step: IlluminationCalculateStep
+    | IlluminationApplyStep
+    | ImageMathStep
+    | SaveImagesStep,
 ) -> None:
     """The ``CorrectIlluminationCalculate``/``CorrectIlluminationApply``/
     ``SaveImages`` half of :func:`_append_step`'s dispatch, split out to
@@ -2115,10 +2294,107 @@ def _append_output_step(
     threshold."""
     if isinstance(step, IlluminationCalculateStep):
         pipeline.illumination_calculate_steps.append(step)
+        pipeline.image_step_order.append("CorrectIlluminationCalculate")
     elif isinstance(step, IlluminationApplyStep):
         pipeline.illumination_apply_steps.append(step)
+        pipeline.image_step_order.append("CorrectIlluminationApply")
+    elif isinstance(step, ImageMathStep):
+        pipeline.image_math_steps.append(step)
+        pipeline.image_step_order.append("ImageMath")
     else:
         pipeline.save_images_steps.append(step)
+
+
+_CALLER_MANAGED_MODULES = frozenset(
+    {
+        "Images",
+        "Metadata",
+        "NamesAndTypes",
+        "Groups",
+        "LoadData",
+        "CreateBatchFiles",
+        "SaveImages",
+        "ExportToDatabase",
+        "ExportToSpreadsheet",
+    }
+)
+
+if TYPE_CHECKING:
+    _ModuleStatus = Literal[
+        "disabled",
+        "caller_managed",
+        "unsupported_module",
+        "unsupported_settings",
+        "supported",
+    ]
+
+
+@dataclass(frozen=True)
+class PipelineModuleCheck:
+    """Preflight result for one module block, in one-based file order."""
+
+    position: int
+    name: str
+    status: _ModuleStatus
+    detail: str
+
+
+def _inspect_module(position: int, raw: _RawModule) -> PipelineModuleCheck:
+    def result(status: _ModuleStatus, detail: str) -> PipelineModuleCheck:
+        return PipelineModuleCheck(position, raw.name, status, detail)
+
+    if not raw.enabled:
+        return result("disabled", "Disabled in the source file.")
+    translator = _TRANSLATORS.get(raw.name)
+    if translator is not None:
+        try:
+            translator(raw)
+        except ValueError as error:
+            return result("unsupported_settings", str(error))
+    if raw.name in _CALLER_MANAGED_MODULES:
+        return result(
+            "caller_managed", "The caller handles input, grouping, or output."
+        )
+    if translator is None:
+        return result(
+            "unsupported_module", "No translator or executor for this module."
+        )
+    return result("supported", "Settings translated; execution was not checked.")
+
+
+def inspect_pipeline(path: str | Path) -> tuple[PipelineModuleCheck, ...]:
+    """Report each module's compatibility without reading image files or running it."""
+    raw_modules = _parse_text(Path(path).read_text(encoding="utf-8-sig"))
+    return tuple(_inspect_module(i, raw) for i, raw in enumerate(raw_modules, 1))
+
+
+def _run_radial_groups(
+    step: IntensityDistributionStep,
+    image_name: str,
+    image: np.ndarray,
+    labels: np.ndarray,
+    *,
+    float32: bool = False,
+) -> dict[str, np.ndarray]:
+    first = RadialBinGroup(step.bin_count, step.wants_scaled, step.maximum_radius)
+    columns: dict[str, np.ndarray] = {}
+    for index, group in enumerate((first, *step.additional_bin_groups)):
+        # CellProfiler caches normalized distances from the first bin group.
+        # Each group still controls whether it writes the shared Overflow columns.
+        result = _measure_intensity_distribution(
+            image,
+            labels,
+            image_name=image_name,
+            bin_count=group.bin_count,
+            wants_scaled=first.wants_scaled,
+            maximum_radius=first.maximum_radius,
+            zernikes=step.zernikes if index == 0 else "none",
+            zernike_degree=step.zernike_degree,
+            emit_overflow=not group.wants_scaled,
+            _float32=float32,
+        )
+        columns.update(result.columns)
+    return columns
 
 
 def load_pipeline(path: str | Path) -> Pipeline:
@@ -2127,11 +2403,11 @@ def load_pipeline(path: str | Path) -> Pipeline:
     setting outside ``spec/cppipe-compatibility.md``'s declared scope
     -- never a silent fallback or approximation.
     """
-    text = Path(path).read_text(encoding="utf-8")
+    text = Path(path).read_text(encoding="utf-8-sig")
     pipeline = Pipeline()
     for raw in _parse_text(text):
         translator = _TRANSLATORS.get(raw.name)
-        if translator is None:
+        if translator is None or not raw.enabled:
             pipeline.skipped_modules.append(raw.name)
             continue
         _append_step(pipeline, translator(raw))

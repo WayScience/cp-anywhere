@@ -19,6 +19,7 @@ DEFAULT_FAMILIES = ("image_intensity", "object_intensity", "neighbors")
 FAMILIES = (*DEFAULT_FAMILIES, "object_size_shape")
 MAX_LABEL = 1_000_000
 MAX_IMAGE_DTYPE_ITEMSIZE = 8  # bytes; i.e. up to a 64-bit int/uint/float
+_MAX_NEIGHBOR_DISTANCE = int(np.iinfo(np.uint32).max)
 
 # Parquet schema-metadata key under which to_parquet(mode="array") embeds
 # a scope's ordered feature name list, so a fixed-size `features` array
@@ -615,6 +616,26 @@ def _require_active_neighbors_scopes(
         raise ValueError(f"{setting_name} {extra} are not requested neighbors scopes")
 
 
+def _resolve_neighbor_distances(
+    distances: Mapping[str, int], scopes: Sequence[str], expanded: Sequence[str]
+) -> dict[str, int]:
+    _require_active_neighbors_scopes(distances, scopes, "neighbors_distances")
+    resolved = {}
+    for name, distance in distances.items():
+        if (
+            isinstance(distance, (bool, np.bool_))
+            or not isinstance(distance, (int, np.integer))
+            or not 1 <= distance <= _MAX_NEIGHBOR_DISTANCE
+        ):
+            raise ValueError(
+                "Neighbor distance must be a positive integer that fits in uint32"
+            )
+        if name in expanded:
+            raise ValueError(f"conflicting neighbor distance methods for {name!r}")
+        resolved[name] = int(distance)
+    return resolved
+
+
 def measure(
     images: Mapping[str, object],
     objects: Mapping[str, object],
@@ -624,6 +645,7 @@ def measure(
     families: Sequence[str] | None = None,
     neighbors_scopes: Sequence[str] | None = None,
     neighbors_expand: Sequence[str] | None = None,
+    neighbors_distances: Mapping[str, int] | None = None,
     neighbors_full_objects: Mapping[str, object] | None = None,
     size_shape_calculate_zernikes: bool = True,
     size_shape_calculate_advanced: bool = False,
@@ -642,9 +664,7 @@ def measure(
     3D shape requests raise errors, not misaligned or substitute columns.
 
     ``neighbors_scopes`` selects which object set(s) ``MeasureObjectNeighbors``
-    runs against itself (CellProfiler's own ``Adjacent`` distance method;
-    cross-object-set and non-"Adjacent" neighbors remain out of scope -- see
-    ``spec/compatibility.md``). Defaults to ``("Cells",)`` when the
+    runs against itself. Defaults to ``("Cells",)`` when the
     ``"neighbors"`` family is selected and ``neighbors_scopes`` is omitted,
     matching this project's original declared scope exactly, byte-for-byte
     (every pre-existing fixture, golden comparison, and caller is
@@ -666,6 +686,11 @@ def measure(
     CellProfiler's own ``run()``. Each name must be one of the active
     neighbors scopes. Columns get an ``_Expanded`` suffix instead of
     ``_Adjacent`` for every scope named here.
+
+    ``neighbors_distances`` maps active scopes to positive integer pixel
+    distances for "Within a specified distance" (2D only). Columns end in
+    the distance, for example ``Neighbors_NumberOfNeighbors_5``. A scope
+    cannot be configured in both ``neighbors_distances`` and ``neighbors_expand``.
 
     ``neighbors_full_objects`` supplies each scope's diagnostic geometry
     (CellProfiler's ``objects.small_removed_segmented``). Both primary and
@@ -707,6 +732,9 @@ def measure(
         _require_active_neighbors_scopes(
             resolved_neighbors_expand, active_neighbors_scopes, "neighbors_expand"
         )
+    resolved_distances = _resolve_neighbor_distances(
+        neighbors_distances or {}, active_neighbors_scopes, resolved_neighbors_expand
+    )
     converted_full_objects: dict[str, np.ndarray] = {}
     if neighbors_full_objects is not None:
         converted_full_objects = _convert_objects(neighbors_full_objects, shape)
@@ -726,6 +754,12 @@ def measure(
         converted_full_objects or None,
         size_shape_calculate_zernikes,
         size_shape_calculate_advanced,
+        resolved_distances or None,
+        [
+            name
+            for name, image in images.items()
+            if np.asarray(image).dtype == np.float32
+        ],
     )
     features = raw["features"]
     if "Image" in features:

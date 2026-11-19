@@ -1,6 +1,43 @@
 use super::{list, RawModule};
 use serde_json::{json, Value};
 
+pub(super) fn image_math(raw: &RawModule<'_>) -> Result<Value, String> {
+    let [operation, exponent, output_factor, addend, low, high, nan, mask, output, kind, input, input_factor, _, rest @ ..] =
+        raw.settings.as_slice()
+    else {
+        return Err(raw.error("revision 5 requires at least two operand blocks"));
+    };
+    if rest.len() < 4 || rest.len() % 4 != 0 {
+        return Err(raw.error("revision 5 requires at least two operand blocks"));
+    }
+    if *operation != "None" || *kind != "Image" || raw.float("exponent", exponent)? != 1.0 {
+        return Err(raw.error("supports only a single image with operation 'None' and exponent 1"));
+    }
+    if [*input, *output]
+        .iter()
+        .any(|name| name.trim().is_empty() || *name == "None")
+    {
+        return Err(raw.error("requires named input and output images"));
+    }
+    raw.yes_no("ignore_mask", mask)?;
+    let input_factor = raw.float("input_factor", input_factor)?;
+    let output_factor = raw.float("output_factor", output_factor)?;
+    let addend = raw.float("addend", addend)?;
+    if [input_factor, output_factor, addend]
+        .iter()
+        .any(|value| !value.is_finite())
+    {
+        return Err(raw.error("factors and addend must be finite"));
+    }
+    Ok(json!({
+        "input_image": input, "output_image": output,
+        "input_factor": input_factor, "output_factor": output_factor, "addend": addend,
+        "truncate_low": raw.yes_no("truncate_low", low)?,
+        "truncate_high": raw.yes_no("truncate_high", high)?,
+        "replace_nan": raw.yes_no("replace_nan", nan)?,
+    }))
+}
+
 pub(super) fn illumination_calculate(raw: &RawModule<'_>) -> Result<Value, String> {
     // The remaining settings describe retained intermediate images and spline parameters.
     let [input_image, output_image, intensity_choice, dilate_objects, object_dilation_radius, block_size, rescale_option, each_or_all, smoothing_method, automatic_object_width, object_width, size_of_smoothing_filter, ..] =

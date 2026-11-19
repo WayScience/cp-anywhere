@@ -63,6 +63,20 @@ def test_intensity_distribution_rejects_mismatched_shapes() -> None:
         )
 
 
+def test_float32_radial_matches_pinned_oracle() -> None:
+    r, c = np.indices((11, 11))
+    radius_squared = 16
+    labels = (((r - 5) ** 2 + (c - 5) ** 2) <= radius_squared).astype(np.uint32)
+    image = (((17 * r + 11 * c + 3 * r * c) % 37 + 1) / 41).astype(np.float32)
+    result = measure_intensity_distribution(image, labels, image_name="Input")
+    assert result.columns["RadialDistribution_FracAtD_Input_1of4"][0] == pytest.approx(
+        0.13833528757095337, rel=1e-9, abs=1e-10
+    )
+    assert result.columns["RadialDistribution_MeanFrac_Input_4of4"][0] == pytest.approx(
+        0.9305979639291758, rel=1e-9, abs=1e-10
+    )
+
+
 def test_intensity_distribution_default_settings_match_cellprofiler_defaults() -> None:
     rng = np.random.RandomState(3)
     image = rng.uniform(size=(21, 23))

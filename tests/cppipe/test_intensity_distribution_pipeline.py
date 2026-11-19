@@ -11,6 +11,73 @@ from cp_anywhere import CppipeError, load_pipeline
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures/cppipe"
 _BIN_COUNT = 3
 _ZERNIKE_DEGREE = 4
+RADIAL = FIXTURES / "intensity_distribution"
+
+
+@pytest.mark.parametrize(
+    "case", ["jump_groups", "scaled_then_unscaled", "unscaled_then_scaled"]
+)
+def test_radial_groups_match_cellprofiler(case: str) -> None:
+    fixture = json.loads((RADIAL / f"{case}.oracle.json").read_text())
+    pipeline = load_pipeline(RADIAL / f"{case}.cppipe")
+    assert len(pipeline.intensity_distribution_steps) == 1
+    assert pipeline.intensity_distribution_steps[0].objects == (
+        "Nuclei",
+        "Cytoplasm",
+        "Cells",
+    )
+    images = {
+        name: np.asarray(plane["values"], dtype=plane["dtype"])
+        for name, plane in fixture["inputs"].items()
+    }
+    _, objects, result = pipeline.run(images)
+    assert result is not None
+    np.testing.assert_array_equal(objects["Cytoplasm"].labels, fixture["cytoplasm"])
+    assert result.features.keys() == fixture["features"].keys()
+    for scope, features in fixture["features"].items():
+        np.testing.assert_array_equal(
+            result.object_ids[scope], fixture["object_ids"][scope]
+        )
+        assert result.features[scope].keys() == features.keys()
+        for name, values in features.items():
+            expected = [np.nan if v == {"nonfinite": "NaN"} else v for v in values]
+            np.testing.assert_allclose(
+                result.features[scope][name],
+                expected,
+                rtol=1e-5,
+                atol=1e-7,
+                equal_nan=True,
+                err_msg=f"{scope}.{name}",
+            )
+    result.rows()
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "error"),
+    [
+        ("Hidden:3\n    Hidden:3", "Hidden:2\n    Hidden:3", "settings"),
+        ("Hidden:3\n    Hidden:3", "Hidden:3\n    Hidden:-1", "bin group count"),
+        ("Hidden:0", "Hidden:1", "heatmap"),
+        ("Number of bins:3", "Number of bins:2", "duplicate bin count"),
+        ("Scale the bins?:No", "Scale the bins?:Maybe", "Yes/No"),
+        (
+            "Select objects to measure:Cells\n"
+            "    Object to use as center?:These objects",
+            "Select objects to measure:Cells\n"
+            "    Object to use as center?:Edges of other objects",
+            "Edges of other objects",
+        ),
+    ],
+)
+def test_radial_groups_validate_settings(
+    tmp_path: Path, old: str, new: str, error: str
+) -> None:
+    original = (RADIAL / "scaled_then_unscaled.cppipe").read_text()
+    assert old in original
+    path = tmp_path / "invalid.cppipe"
+    path.write_text(original.replace(old, new, 1))
+    with pytest.raises(CppipeError, match=error):
+        load_pipeline(path)
 
 
 @pytest.mark.parametrize("case", ["shrink", "no_shrink"])

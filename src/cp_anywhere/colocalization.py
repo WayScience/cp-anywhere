@@ -70,6 +70,7 @@ def measure_colocalization(
     do_costes: bool = True,
     wants_image_measurements: bool = True,
     wants_object_measurements: bool = False,
+    _float32: bool | None = None,
 ) -> ColocalizationResult:
     """Run CellProfiler's pairwise colocalization/correlation on two or
     more 2D images.
@@ -90,6 +91,11 @@ def measure_colocalization(
     image_names = list(images)
     if len(image_names) < _MIN_IMAGES:
         raise ValueError("at least two images are required")
+    float32 = (
+        all(np.asarray(image).dtype == np.float32 for image in images.values())
+        if _float32 is None
+        else _float32
+    )
     arrays, (rows, cols) = _validated_images(images)
 
     mask_arrays: dict[str, np.ndarray] = {}
@@ -125,6 +131,7 @@ def measure_colocalization(
         do_costes=do_costes,
         wants_image_measurements=wants_image_measurements,
         wants_object_measurements=wants_object_measurements,
+        float32=float32,
     )
     return ColocalizationResult(
         image=dict(image_dict),

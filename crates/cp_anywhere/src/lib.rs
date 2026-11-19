@@ -12,6 +12,7 @@ pub mod colocalization;
 pub mod granularity;
 pub mod illumination;
 pub mod intensity_distribution;
+mod neighbors_distance;
 #[cfg(feature = "pipeline")]
 pub mod pipeline;
 pub mod segmentation;
@@ -157,84 +158,83 @@ fn numpy_cmp(a: &f64, b: &f64) -> std::cmp::Ordering {
 fn numpy_argsort(values: &[f64]) -> Vec<usize> {
     let mut order: Vec<usize> = (0..values.len()).collect();
     if order.len() > 1 {
-        let depth = (usize::BITS - order.len().leading_zeros()) as i32 * 2;
-        argsort_range(values, &mut order, 0, values.len() - 1, depth);
+        // NumPy's npy_get_msb(n) is floor(log2(n)), not the bit length.
+        let depth = (usize::BITS - 1 - order.len().leading_zeros()) as i32 * 2;
+        argsort_range(values, &mut order, depth);
     }
     order
 }
 
-fn argsort_range(
-    values: &[f64],
-    order: &mut [usize],
-    mut lo: usize,
-    mut hi: usize,
-    mut depth: i32,
-) {
-    while hi - lo > 15 {
+fn argsort_range(values: &[f64], order: &mut [usize], mut depth: i32) {
+    let (mut lo, mut hi) = (0, order.len() - 1);
+    let mut stack = Vec::new();
+    loop {
+        // NumPy tests the depth once on entering each stacked partition.
         if depth < 0 {
-            numpy_heapsort(values, &mut order[lo..=hi]);
-            return;
-        }
-        let mid = lo + ((hi - lo) >> 1);
-        if numpy_cmp(&values[order[mid]], &values[order[lo]]).is_lt() {
-            order.swap(mid, lo);
-        }
-        if numpy_cmp(&values[order[hi]], &values[order[mid]]).is_lt() {
-            order.swap(hi, mid);
-        }
-        if numpy_cmp(&values[order[mid]], &values[order[lo]]).is_lt() {
-            order.swap(mid, lo);
-        }
-        let pivot = values[order[mid]];
-        order.swap(mid, hi - 1);
-        let mut i = lo;
-        let mut j = hi - 1;
-        loop {
-            loop {
-                i += 1;
-                if !numpy_cmp(&values[order[i]], &pivot).is_lt() {
-                    break;
-                }
+            if lo <= hi {
+                numpy_heapsort(values, &mut order[lo..=hi]);
             }
-            loop {
-                j -= 1;
-                if !numpy_cmp(&pivot, &values[order[j]]).is_lt() {
-                    break;
-                }
-            }
-            if i >= j {
-                break;
-            }
-            order.swap(i, j);
-        }
-        order.swap(i, hi - 1);
-        depth -= 1;
-        if i - lo < hi - i {
-            if i > lo {
-                argsort_range(values, order, lo, i - 1, depth);
-            }
-            lo = i + 1;
         } else {
-            if i < hi {
-                argsort_range(values, order, i + 1, hi, depth);
+            while lo <= hi && hi - lo > 15 {
+                let mid = lo + ((hi - lo) >> 1);
+                if numpy_cmp(&values[order[mid]], &values[order[lo]]).is_lt() {
+                    order.swap(mid, lo);
+                }
+                if numpy_cmp(&values[order[hi]], &values[order[mid]]).is_lt() {
+                    order.swap(hi, mid);
+                }
+                if numpy_cmp(&values[order[mid]], &values[order[lo]]).is_lt() {
+                    order.swap(mid, lo);
+                }
+                let pivot = values[order[mid]];
+                order.swap(mid, hi - 1);
+                let mut i = lo;
+                let mut j = hi - 1;
+                loop {
+                    loop {
+                        i += 1;
+                        if !numpy_cmp(&values[order[i]], &pivot).is_lt() {
+                            break;
+                        }
+                    }
+                    loop {
+                        j -= 1;
+                        if !numpy_cmp(&pivot, &values[order[j]]).is_lt() {
+                            break;
+                        }
+                    }
+                    if i >= j {
+                        break;
+                    }
+                    order.swap(i, j);
+                }
+                order.swap(i, hi - 1);
+                depth -= 1;
+                if i - lo < hi - i {
+                    stack.push((i + 1, hi, depth));
+                    hi = i - 1;
+                } else {
+                    stack.push((lo, i - 1, depth));
+                    lo = i + 1;
+                }
             }
-            if i == 0 {
-                return;
+            if lo <= hi {
+                for i in lo + 1..=hi {
+                    let value = order[i];
+                    let mut j = i;
+                    while j > lo && numpy_cmp(&values[value], &values[order[j - 1]]).is_lt() {
+                        order[j] = order[j - 1];
+                        j -= 1;
+                    }
+                    order[j] = value;
+                }
             }
-            hi = i - 1;
         }
-        if lo >= hi {
-            return;
+        if let Some((next_lo, next_hi, next_depth)) = stack.pop() {
+            (lo, hi, depth) = (next_lo, next_hi, next_depth);
+        } else {
+            break;
         }
-    }
-    for i in lo + 1..=hi {
-        let value = order[i];
-        let mut j = i;
-        while j > lo && numpy_cmp(&values[value], &values[order[j - 1]]).is_lt() {
-            order[j] = order[j - 1];
-            j -= 1;
-        }
-        order[j] = value;
     }
 }
 
@@ -308,6 +308,25 @@ fn shifted(i: usize, shape: &[usize], delta: [isize; 3]) -> Option<usize> {
 }
 
 pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
+    measure_with_neighbor_distances(input, &[])
+}
+
+/// Measure with an optional positive fixed distance for each active 2D neighbor scope.
+/// A scope cannot select both fixed distance and `Input::neighbors_expand`.
+pub fn measure_with_neighbor_distances(
+    input: &Input<'_>,
+    fixed_distances: &[(&str, u32)],
+) -> Result<ResultTable, String> {
+    measure_with_image_precision(input, fixed_distances, &[])
+}
+
+/// Preserve the original image dtype for CP's image-only reductions.
+/// Other measurement families continue to use the existing f64 input buffers.
+pub fn measure_with_image_precision(
+    input: &Input<'_>,
+    fixed_distances: &[(&str, u32)],
+    float32_images: &[&str],
+) -> Result<ResultTable, String> {
     if !(2..=3).contains(&input.shape.len()) || input.shape.contains(&0) {
         return Err("shape must have two or three nonzero dimensions".into());
     }
@@ -350,7 +369,13 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
     }
     if input.families.image_intensity {
         for (name, pixels) in input.images {
-            image_intensity(&mut result, name, pixels, input.mask);
+            image_intensity(
+                &mut result,
+                name,
+                pixels,
+                input.mask,
+                float32_images.contains(name),
+            );
         }
     }
     if input.families.object_intensity {
@@ -368,9 +393,32 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
             }
         }
     }
-    if !input.neighbors_scopes.is_empty() {
+    let scopes = if !input.neighbors_scopes.is_empty() {
+        input.neighbors_scopes
+    } else if input.families.neighbors {
+        &["Cells"][..]
+    } else {
+        &[][..]
+    };
+    let mut distances = BTreeMap::new();
+    for &(scope, distance) in fixed_distances {
+        if !scopes.contains(&scope) {
+            return Err(format!(
+                "neighbors_distances names an inactive neighbors scope: {scope:?}"
+            ));
+        }
+        if distance == 0 {
+            return Err("Neighbor distance must be a positive integer".into());
+        }
+        if input.neighbors_expand.contains(&scope) || distances.insert(scope, distance).is_some() {
+            return Err(format!(
+                "conflicting neighbor distance methods for {scope:?}"
+            ));
+        }
+    }
+    if !scopes.is_empty() {
         let mut seen = BTreeSet::new();
-        for &scope in input.neighbors_scopes {
+        for &scope in scopes {
             if !seen.insert(scope) {
                 continue;
             }
@@ -379,7 +427,13 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
                 .iter()
                 .find(|(name, _)| *name == scope)
                 .ok_or_else(|| {
-                    format!("neighbors requested for {scope:?}, which is not a provided object set")
+                    if input.neighbors_scopes.is_empty() {
+                        "neighbors require Cells object set".into()
+                    } else {
+                        format!(
+                            "neighbors requested for {scope:?}, which is not a provided object set"
+                        )
+                    }
                 })?
                 .1;
             let full_labels = input
@@ -387,6 +441,17 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
                 .iter()
                 .find(|(name, _)| *name == scope)
                 .map(|(_, arr)| *arr);
+            if let Some(&distance) = distances.get(scope) {
+                neighbors_distance::within(
+                    &mut result,
+                    scope,
+                    labels,
+                    full_labels.unwrap_or(labels),
+                    input.shape,
+                    distance,
+                )?;
+                continue;
+            }
             let expand = input.neighbors_expand.contains(&scope);
             if expand && input.shape.len() != 2 {
                 return Err("MeasureObjectNeighbors 'Expand until adjacent' currently \
@@ -395,32 +460,6 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
             }
             neighbors(&mut result, scope, labels, full_labels, input.shape, expand);
         }
-    } else if input.families.neighbors {
-        let labels = input
-            .objects
-            .iter()
-            .find(|(name, _)| *name == "Cells")
-            .ok_or("neighbors require Cells object set")?
-            .1;
-        let full_labels = input
-            .neighbors_full_objects
-            .iter()
-            .find(|(name, _)| *name == "Cells")
-            .map(|(_, arr)| *arr);
-        let expand = input.neighbors_expand.contains(&"Cells");
-        if expand && input.shape.len() != 2 {
-            return Err("MeasureObjectNeighbors 'Expand until adjacent' currently \
-                 supports 2D labels only"
-                .into());
-        }
-        neighbors(
-            &mut result,
-            "Cells",
-            labels,
-            full_labels,
-            input.shape,
-            expand,
-        );
     }
     if let Some(options) = input.size_shape {
         if input.shape.len() != 2 {
@@ -450,7 +489,51 @@ pub fn measure(input: &Input<'_>) -> Result<ResultTable, String> {
     Ok(result)
 }
 
-fn image_intensity(result: &mut ResultTable, channel: &str, pixels: &[f64], mask: Option<&[bool]>) {
+// NumPy 1.23's contiguous float32 reduce: 8 independent lanes in blocks of
+// 128, pairwise recursion above that. Match the pinned CP NumPy version's
+// summation order instead of summing sorted, promoted f64 pixels.
+fn numpy_sum_f32(values: &[f32]) -> f32 {
+    // The NumPy ufunc iterator feeds contiguous reductions in 8192-element
+    // buffers; each buffer is pairwise-summed into the float32 accumulator.
+    if values.len() > 8192 {
+        return values
+            .chunks(8192)
+            .fold(0.0_f32, |sum, chunk| sum + numpy_pairwise_sum_f32(chunk));
+    }
+    numpy_pairwise_sum_f32(values)
+}
+
+fn numpy_pairwise_sum_f32(values: &[f32]) -> f32 {
+    match values.len() {
+        0..=7 => values.iter().fold(-0.0_f32, |sum, &v| sum + v),
+        8..=128 => {
+            let mut lanes = [0.0_f32; 8];
+            lanes.copy_from_slice(&values[..8]);
+            let full = values.len() / 8 * 8;
+            for chunk in values[8..full].chunks_exact(8) {
+                for (lane, &value) in lanes.iter_mut().zip(chunk) {
+                    *lane += value;
+                }
+            }
+            let sum = ((lanes[0] + lanes[1]) + (lanes[2] + lanes[3]))
+                + ((lanes[4] + lanes[5]) + (lanes[6] + lanes[7]));
+            values[full..].iter().fold(sum, |sum, &v| sum + v)
+        }
+        n => {
+            let midpoint = n / 2 / 8 * 8;
+            numpy_pairwise_sum_f32(&values[..midpoint])
+                + numpy_pairwise_sum_f32(&values[midpoint..])
+        }
+    }
+}
+
+fn image_intensity(
+    result: &mut ResultTable,
+    channel: &str,
+    pixels: &[f64],
+    mask: Option<&[bool]>,
+    float32: bool,
+) {
     let mut values: Vec<f64> = pixels
         .iter()
         .enumerate()
@@ -458,18 +541,55 @@ fn image_intensity(result: &mut ResultTable, channel: &str, pixels: &[f64], mask
         .map(|(_, v)| *v)
         .collect();
     let n = values.len();
+    // CP filters finite pixels in raster order, then reduces *before* sorting.
+    let original_f32: Vec<f32> = if float32 {
+        values.iter().map(|&v| v as f32).collect()
+    } else {
+        Vec::new()
+    };
     values.sort_by(numpy_cmp);
-    let sum: f64 = values.iter().sum();
+    let sum: f64 = if float32 {
+        numpy_sum_f32(&original_f32) as f64
+    } else {
+        values.iter().sum()
+    };
     let mean = if n == 0 { 0.0 } else { sum / n as f64 };
     let std = if n == 0 {
         0.0
+    } else if float32 {
+        let average = numpy_sum_f32(&original_f32) / n as f32;
+        let squares: Vec<f32> = original_f32
+            .iter()
+            .map(|&v| {
+                let d = v - average;
+                d * d
+            })
+            .collect();
+        (numpy_sum_f32(&squares) / n as f32).sqrt() as f64
     } else {
         (values.iter().map(|v| (v - mean).powi(2)).sum::<f64>() / n as f64).sqrt()
     };
-    let median = percentile(&values, 0.5);
-    let mut dev: Vec<f64> = values.iter().map(|v| (v - median).abs()).collect();
+    let median = if float32 {
+        percentile(&values, 0.5) as f32 as f64
+    } else {
+        percentile(&values, 0.5)
+    };
+    let mut dev: Vec<f64> = values
+        .iter()
+        .map(|v| {
+            if float32 {
+                ((*v as f32 - median as f32).abs()) as f64
+            } else {
+                (v - median).abs()
+            }
+        })
+        .collect();
     dev.sort_by(numpy_cmp);
-    let mad = percentile(&dev, 0.5);
+    let mad = if float32 {
+        percentile(&dev, 0.5) as f32 as f64
+    } else {
+        percentile(&dev, 0.5)
+    };
     let min = values.first().copied().unwrap_or(0.0);
     let max = values.last().copied().unwrap_or(0.0);
     let pct_max = if n == 0 {
@@ -1081,6 +1201,55 @@ fn edt_1d_indexed(f: &[f64], payload: &[usize]) -> (Vec<f64>, Vec<usize>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn argsort_matches_pinned_numpy_organ_pipe_with_equal_keys() {
+        // NumPy 1.23.5 default argsort on these arrays. The prior recursive
+        // port differed at position 76 for 255 and 186 for 1024 elements.
+        for (n, expected) in [
+            (255, &[(75, 217), (76, 38), (77, 216), (200, 100)][..]),
+            (1024, &[(185, 931), (186, 930), (187, 93), (230, 908)][..]),
+        ] {
+            let values: Vec<_> = (0..n).map(|i| i.min(n - 1 - i) as f64).collect();
+            let order = numpy_argsort(&values);
+            for &(position, index) in expected {
+                assert_eq!(order[position], index, "n={n}, position={position}");
+            }
+        }
+    }
+
+    #[test]
+    fn float32_image_reductions_match_pinned_cp_module() {
+        // CP 4.2.8 MeasureImageIntensity, NumPy 1.23.5, 17x23 pixels.
+        let pixels: Vec<f64> = (0..17 * 23)
+            .map(|i| (((i * 29) % 251) as f32 / 255.0_f32) as f64)
+            .collect();
+        let mut result = ResultTable {
+            features: BTreeMap::new(),
+            object_ids: BTreeMap::new(),
+            relationships: Vec::new(),
+        };
+        image_intensity(&mut result, "DNA", &pixels, None, true);
+        let image = &result.features["Image"];
+        for (name, expected) in [
+            ("TotalIntensity", 190.15293884277344),
+            ("MeanIntensity", 0.48632465177179907),
+            ("StdIntensity", 0.2849389612674713),
+            ("MedianIntensity", 0.48627451062202454),
+            ("MADIntensity", 0.24705882370471954),
+        ] {
+            let Column::Float(values) = &image[&format!("Intensity_{name}_DNA")] else {
+                panic!("expected float feature");
+            };
+            assert!((values[0] - expected).abs() <= 1e-10 + 1e-9 * expected);
+        }
+        image_intensity(&mut result, "Promoted", &pixels, None, false);
+        let Column::Float(values) = &result.features["Image"]["Intensity_TotalIntensity_Promoted"]
+        else {
+            panic!("expected float feature");
+        };
+        assert!((values[0] - 190.15294509474188).abs() < 1e-9);
+    }
     #[test]
     fn rejects_bad_shape_and_large_id() {
         let images = [("DNA", &[1.0][..])];

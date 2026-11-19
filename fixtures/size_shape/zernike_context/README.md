@@ -1,10 +1,14 @@
-# Zernike full-field parity limitation
+# Zernike full-field parity evidence
 
-## Status
+## Current status
 
-The native implementation does **not** match real CellProfiler for all Zernike measurements on this field.
-No production code, scientific tolerances, or input labels changed during this investigation.
-The fixture records the limitation. It does not grant a parity exemption.
+Native now coordinates circle iterations across all labels and uses NumPy 1.23.5's global angle sort. The strict check passes all 90 target scores at the original `rtol=1e-10`, `atol=1e-10`. A fresh 14-case BBBC007 run against independently executed CP 4.2.8 passes with zero mismatches, including identical-input measurements. Report: `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-global-fixed-20261119/report.json`. Neither oracle nor tolerances changed.
+
+Browser WASM passes 32 existing size/shape fixture cases but fails an additional full-field check for Nuclei object 6: 30 Zernike values on each of its two entry points. Report: `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-full-field-wasm-20261119.json`. Native parity does not establish WASM full-field parity.
+
+## Historical diagnosis (before the native fix)
+
+The following measurements preserve the former per-object discrepancy.
 
 The source field is `f9620-20P1-POS0002`, group `f9620--f9620-20P1-POS0002`.
 Both 400-by-400 arrays contain all 101 original object labels.
@@ -45,6 +49,59 @@ A fixed radius adjustment, mask epsilon, or tolerance increase cannot reproduce 
 This investigation did not port NumPy's unstable sort or add field-specific rules.
 The full-field mismatch remains unresolved.
 
+## Full-label sweep and bounded contract
+
+A fresh run of the actual CP module measured all 101 IDs in each unchanged
+400-by-400 label image. At `rtol=1e-10`, `atol=1e-10`, native output differed
+for 90 of the 6,060 Zernike values. Each of Nuclei 6, Nuclei 34, and Cells 6
+had 30 mismatches. The other 199 object records matched. The fresh CP values
+for the three recorded objects exactly matched `oracle.json`. Both input array
+hashes matched the checked-in hashes. This result applies to this field only.
+
+The global SciPy calls found 8 tied minimum-angle decisions for Nuclei and
+3 for Cells. NumPy's default global `argsort` selected the second tied vertex
+for each failing object:
+
+- Nuclei 6: position 49 before 44, among 687 candidates.
+- Nuclei 34: position 392 before 388, among 1,190 candidates.
+- Cells 6: position 46 before 41, among 528 candidates.
+
+Other tied decisions chose ranks 0, 1, and 2 for Nuclei and ranks 0 and 1
+for Cells. Thus, a fixed first/last-tie rule cannot reproduce these decisions.
+
+The bounded claim is isolated-object parity for the three recorded objects
+in their original image frame. The 199 other object records passed on this
+field, but that does not establish parity for other fields. Exact general
+full-field parity requires the multi-object iteration and NumPy 1.23.5's
+unstable global `minimum_position` sort, including its equal-value ordering.
+Native computes circles per object. Changing its local tie rule cannot
+reproduce that context-dependent contract. The strict full-field check below
+remains a failing diagnostic.
+
+## Original 14-case pilot replay
+
+The current native pipeline freshly reran all 14 original BBBC007 cases in
+`zernike-recheck-20261119`. The strict `compare_pilot` comparison used the
+pinned original CP outputs (`run-strict/oracle`); the newly prepared input
+manifest was byte-identical to the original. This was a new native segmentation
+and measurement run, not a new reference run. The native-only runner reports
+`native_only` with zero comparisons by design; **only the subsequent strict
+comparison** establishes the counts below. All 5,160,000 illumination pixels
+and 20,640,000 array pixels passed.
+Of 308,591 end-to-end feature scalars, 60 feature columns mismatched;
+the same 60 columns mismatched when measuring the pinned CP inputs.
+All 60 belong to `f9620-20P1-POS0002`: 30 Nuclei and 30 Cells
+`AreaShape_Zernike_*` columns. No non-Zernike columns mismatched.
+
+A separate fresh run of the real CP module on both unchanged full-label
+arrays reproduced all 6,060 original pilot Zernike scores (30 columns × 101
+IDs × two scopes). Native missed 90 individual scores: all 30 columns for
+Nuclei IDs 6 and 34 and Cells ID 6. Thus the pilot's 60 mismatched *columns*
+and the full-label sweep's 90 mismatched *scalars* count different things.
+Do not report the pilot as passing. No general fix was justified: reproducing
+this version-pinned contract needs simultaneous multi-object circle iteration
+and NumPy's unstable global argsort ordering, not a local geometry patch.
+
 ## Reference environment
 
 - CellProfiler 4.2.8, source checkout `2df090ff281cff80943fe679a1c3192fbda9cd6d`
@@ -76,9 +133,8 @@ Run the strict native comparison:
 uv run --frozen python scripts/zernike/context_evidence.py --native-check
 ```
 
-Current result: 30 mismatches per target object, 90 total, exit status **1**.
-No result is excluded from this comparison, and the tolerances remain `1e-10`.
-This command must pass before anyone claims full-field parity for these targets.
+Current native result: zero mismatches, exit status **0**.
+No result is excluded, and the tolerances remain `1e-10`.
 
 Run the passing integrity and isolated-parity checks:
 
@@ -86,7 +142,7 @@ Run the passing integrity and isolated-parity checks:
 uv run --frozen pytest tests/test_zernike_context.py tests/test_size_shape.py -q --no-cov
 ```
 
-Verified result: 47 passed. These tests do **not** establish full-field parity.
+Verified result: 49 passed, including two full-field checks.
 No test is skipped or marked as an expected failure.
 
 To regenerate evidence from the original pilot outputs:

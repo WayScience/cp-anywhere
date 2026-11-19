@@ -10,13 +10,13 @@ implements (`IdentifyPrimaryObjects`, `IdentifySecondaryObjects`,
 `MeasureGranularity`, `MeasureObjectIntensityDistribution`,
 `MeasureTexture`, `MeasureColocalization`,
 `MeasureObjectNeighbors`, `ExportToDatabase`,
-`CorrectIlluminationCalculate`, `CorrectIlluminationApply`, and `SaveImages`)
+`CorrectIlluminationCalculate`, `CorrectIlluminationApply`, `ImageMath`, and `SaveImages`)
 into this project's own configuration.
 Supported configuration can be reused without manual re-entry.
 The limits below apply to each module.
 Import success does not imply full CellProfiler execution or automatic output.
 
-**This is a settings importer, not a full pipeline execution engine.**
+**This is an executor for a subset of CellProfiler.**
 File-matching/organization modules (`Images`, `Metadata`,
 `NamesAndTypes`, `Groups`, and anything else not explicitly listed
 above) are recognized and skipped -- reported in
@@ -25,6 +25,16 @@ The caller supplies already-loaded image arrays by the same names the
 pipeline's own modules reference (`cp_anywhere.io`/`cp_anywhere.cli`
 already handle loading files by name; replicating CellProfiler's own
 file-matching/grouping rules is out of scope).
+
+`inspect_pipeline(path)` reports each module separately. It distinguishes
+disabled modules, caller-managed I/O, unsupported modules, and unsupported
+configuration. Successful translation does not check image and object dependencies.
+Within image preparation, `ImageMath` (revision 5, single-image `None` operation,
+exponent 1) and both illumination modules run in file order. `ImageMath` uses
+float32 input and supports the input factor, output factor, addend, clipping,
+and NaN replacement. Other operations, measurement operands, and masks are
+outside this subset. The executor does not interleave image preparation with
+segmentation or measurement.
 
 ## The `.cppipe` text format (verified, not guessed)
 
@@ -117,15 +127,12 @@ step's output in the same pipeline -- `CppipeError` naming the object
 set if it isn't one); `y_name` becomes `output_object`; `image_name`
 becomes `input_image`.
 
-Only **`Propagation`** (the module's own real default) and
-**`Distance - N`** are implemented, each with their own disjoint
-settings: `Propagation` uses `regularization_factor` plus the full
-threshold tail (identical mapping to `IdentifyPrimaryObjects`'s own,
-reusing the same display-string dictionaries); `Distance - N` uses
-only `distance_to_dilate` and ignores every threshold setting entirely
-(CellProfiler's own `Distance - N` never thresholds the secondary
-image). `fill_holes` (a plain Yes/No here, unlike
-`IdentifyPrimaryObjects`'s three-way setting) applies to both methods.
+`Propagation` and `Watershed - Image` both use the same threshold
+configuration as `IdentifyPrimaryObjects`. Only `Propagation` uses
+`regularization_factor`. `Watershed - Image` floods inverted intensity
+from the seeds within the threshold foreground and seed mask.
+`Distance - N` uses `distance_to_dilate` and does not threshold the image.
+`fill_holes` applies to all three methods.
 
 Secondary seeds come from the primary result's `unedited_labels`, not
 `small_removed_labels`. Edge-touching seeds remain even if primary
@@ -142,7 +149,7 @@ and all neighbor measurement columns against real reference runs.
 
 ### `IdentifySecondaryObjects` explicit gaps
 
-- **`method = "Watershed - Gradient"` / `"Watershed - Image"` /
+- **`method = "Watershed - Gradient"` /
   `"Distance - B"`.** Not implemented by `cp_anywhere`'s segmentation
   core at all; `CppipeError` names the unsupported method.
 - **`wants_discard_edge = Yes`** ("Discard secondary objects touching
@@ -236,8 +243,8 @@ Per `spec/compatibility.md`'s own declared scope:
   geometry. Closest-object numbers and relationship rows use retained
   IDs. An object set supplied only as a raw array has no diagnostic layer;
   requesting excluded-object geometry for it raises `CppipeError`.
-  Cross-object-set neighbors and `"Within X pixels"` remain explicit gaps.
-  The 2D `"Expand until adjacent"` method is implemented as described below.
+  Cross-object-set neighbors are not supported. The other two methods,
+  `"Expand until adjacent"` and `"Within a specified distance"`, are 2D only.
 
 ### Real-world coverage note
 
@@ -283,8 +290,19 @@ original, unexpanded geometry, matching real CellProfiler's own
 (`Neighbors_PercentTouching_Expanded`, etc. -- CellProfiler's own
 `S_EXPANDED` scale string). 2D only: a 2D+3D mixed pipeline's 3D scope
 would need volumetric nearest-label fill, an explicit, out-of-scope
-gap (raises a clear error naming the scope). `"Within X pixels"`
-(`D_WITHIN`) remains a separate, out-of-scope gap.
+gap (raises a clear error naming the scope).
+
+## `MeasureObjectNeighbors`: "Within a specified distance"
+
+The parser saves the positive integer `Neighbor distance` in
+`MeasurementStep.neighbors_distance`. Each module runs with its own distance
+and excluded-object setting, in file order. The seven columns use the distance
+as their suffix (for example, `Neighbors_NumberOfNeighbors_5`). Neighbor counts
+use the specified disk radius; percent touching uses a radius half a pixel
+larger. Closest-object measurements are not restricted by that radius.
+Python's direct API accepts `neighbors_distances={"Cells": 5}`. In WASM,
+`measureJson` accepts the same map; `measureWithOptions` accepts it as a JSON
+string in its final optional argument.
 
 ## `MeasureObjectIntensityDistribution`, `MeasureTexture`, `MeasureColocalization`: settings mapping and limits
 
@@ -295,14 +313,18 @@ module in this project), each implemented as a standalone
 own real-reference fixtures and its settings translated by
 `load_pipeline`:
 
-- **`MeasureObjectIntensityDistribution`** (revision 6): the default
-  center choice `"These objects"` only. `"Centers of other objects"`
-  and `"Edges of other objects"` (which need a second, separately
-  selected object set) are explicit gaps, rejected at translation
-  time. Real CellProfiler adds extra object/bin-count groups via
-  `add_object()`/`add_bin_count()`; only the single-group case
-  (one object set, one bin-count group) is translated, and the
-  field-count check rejects more with a clear error.
+- **`MeasureObjectIntensityDistribution`** (revision 6): multiple object
+  and bin groups are supported in saved order. In the parsed step, `objects`
+  lists the object sets; `bin_count`, `wants_scaled`, and `maximum_radius`
+  still describe the first bin group. `additional_bin_groups` lists any
+  remaining groups. As in CellProfiler 4.2.8, all groups use the first
+  group's distance normalization, while the last unscaled group writes
+  the shared `Overflow` columns. Duplicate bin counts, heatmap groups,
+  and center choices other than `"These objects"` are rejected.
+  The radial oracle fixtures replay the saved JUMP measurement settings and
+  mixed scaled/unscaled groups on synthetic 2D planes with sparse labels.
+  Run `python -m scripts.parity.compare_cppipe --radial-groups` after building
+  the Python extension and WASM package to check all three runtimes.
 - **`MeasureTexture`** (revision 7): the "Hidden" scale count
   validates the number of trailing "Texture scale to measure"
   settings; any number of scales is supported. Image-wide texture

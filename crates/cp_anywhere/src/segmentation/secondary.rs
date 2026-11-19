@@ -26,6 +26,8 @@ pub enum SecondaryMethod {
     /// `M_DISTANCE_N`: expand primary objects by a fixed pixel radius,
     /// with no secondary image or threshold involved at all.
     DistanceN,
+    /// Flood inverted intensity within the threshold foreground and seed mask.
+    WatershedImage,
 }
 
 /// Mirrors the subset of `IdentifySecondaryObjects` settings this
@@ -124,7 +126,7 @@ pub fn identify_secondary_objects(
         .collect();
     let primary_labels_in = seeds.as_slice();
     let (mut labels_out, threshold) = match config.method {
-        SecondaryMethod::Propagation => {
+        SecondaryMethod::Propagation | SecondaryMethod::WatershedImage => {
             let threshold_config = IdentifyPrimaryObjectsConfig {
                 threshold_method: config.threshold_method,
                 threshold_correction_factor: config.threshold_correction_factor,
@@ -155,14 +157,31 @@ pub fn identify_secondary_objects(
                 &threshold_config,
             )?;
             let mask: Vec<bool> = thresholded.labels.iter().map(|&l| l > 0).collect();
-            let (labels_out, _distances) = propagate_weighted(
-                Some(image),
-                primary_labels_in,
-                &mask,
-                cols,
-                rows,
-                config.regularization_factor,
-            );
+            let labels_out = if config.method == SecondaryMethod::WatershedImage {
+                let flood_mask: Vec<u32> = mask
+                    .iter()
+                    .zip(primary_labels_in)
+                    .enumerate()
+                    .map(|(i, (&foreground, &seed))| {
+                        u32::from((foreground || seed != 0) && image_mask.is_none_or(|m| m[i]))
+                    })
+                    .collect();
+                let elevation: Vec<f64> = image
+                    .iter()
+                    .map(|&p| f64::from(1.0_f32 - p as f32))
+                    .collect();
+                super::declump::watershed(&elevation, &flood_mask, primary_labels_in, cols, rows)
+            } else {
+                propagate_weighted(
+                    Some(image),
+                    primary_labels_in,
+                    &mask,
+                    cols,
+                    rows,
+                    config.regularization_factor,
+                )
+                .0
+            };
             (labels_out, Some(thresholded.threshold))
         }
         SecondaryMethod::DistanceN => {

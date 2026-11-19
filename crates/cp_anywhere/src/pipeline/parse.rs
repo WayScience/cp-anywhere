@@ -8,7 +8,7 @@ mod measurement;
 mod output;
 mod segmentation;
 
-const PIPELINE_FIELDS: [&str; 13] = [
+const PIPELINE_FIELDS: [&str; 15] = [
     "segmentation_steps",
     "secondary_steps",
     "tertiary_steps",
@@ -22,6 +22,8 @@ const PIPELINE_FIELDS: [&str; 13] = [
     "illumination_apply_steps",
     "save_images_steps",
     "skipped_modules",
+    "image_math_steps",
+    "image_step_order",
 ];
 
 type Translator = fn(&RawModule<'_>) -> Result<Value, String>;
@@ -36,6 +38,13 @@ pub fn parse(text: &str) -> Result<Value, String> {
         .map(|field| (field, Vec::new()))
         .collect();
     for raw in raw_modules(text)? {
+        if !raw.enabled {
+            pipeline
+                .entry("skipped_modules")
+                .or_default()
+                .push(json!(raw.name));
+            continue;
+        }
         let (revision, field, translate): (&str, &str, Translator) = match raw.name {
             "IdentifyPrimaryObjects" => ("15", "segmentation_steps", segmentation::primary),
             "IdentifySecondaryObjects" => ("10", "secondary_steps", segmentation::secondary),
@@ -62,6 +71,7 @@ pub fn parse(text: &str) -> Result<Value, String> {
                 ("5", "illumination_apply_steps", output::illumination_apply)
             }
             "SaveImages" => ("16", "save_images_steps", output::save_images),
+            "ImageMath" => ("5", "image_math_steps", output::image_math),
             _ => {
                 pipeline
                     .entry("skipped_modules")
@@ -77,6 +87,15 @@ pub fn parse(text: &str) -> Result<Value, String> {
             )));
         }
         pipeline.entry(field).or_default().push(translate(&raw)?);
+        if matches!(
+            field,
+            "image_math_steps" | "illumination_calculate_steps" | "illumination_apply_steps"
+        ) {
+            pipeline
+                .entry("image_step_order")
+                .or_default()
+                .push(json!(raw.name));
+        }
     }
     Ok(json!(pipeline))
 }
@@ -85,10 +104,11 @@ struct RawModule<'a> {
     name: &'a str,
     revision: &'a str,
     settings: Vec<&'a str>,
+    enabled: bool,
 }
 
 fn raw_modules(text: &str) -> Result<Vec<RawModule<'_>>, String> {
-    let mut lines = pipeline_lines(text).peekable();
+    let mut lines = pipeline_lines(text.strip_prefix('\u{feff}').unwrap_or(text)).peekable();
     if !lines
         .next()
         .is_some_and(|line| line.starts_with("CellProfiler Pipeline:"))
@@ -128,6 +148,11 @@ fn raw_modules(text: &str) -> Result<Vec<RawModule<'_>>, String> {
             name,
             revision,
             settings,
+            enabled: !attributes
+                .trim_start_matches('[')
+                .trim_end_matches(']')
+                .split('|')
+                .any(|attribute| attribute == "enabled:False"),
         });
     }
     Ok(modules)

@@ -6,6 +6,17 @@ Use the same `.cppipe` text and the same named image planes in Python, native Ru
 
 Use `cp_anywhere.load_pipeline(path).run(images)` for one field. Use [`run_batch`](batch.md) to process multiple fields. The existing Python APIs and result types are unchanged.
 
+Use `cp_anywhere.inspect_pipeline(path)` before running an unfamiliar file.
+It reports each module in file order, including disabled modules, caller-managed
+I/O, unsupported modules, and rejected settings. A `supported` entry confirms
+translation, not that the module can run with your inputs or in that position.
+
+For shared illumination maps, use `cp_anywhere.load_plate_illumination_pipeline(path)`.
+Call `plan.run(image_sets)` with one ordered group of named image dictionaries.
+This Python-only runner supports the CPJUMP1 bilinear resize and
+`All: Across cycles` sequence. It returns named final maps; you supply the
+groups and choose where to save the maps. See the [CPJUMP1 replay](../scripts/validation/jump_reference.md).
+
 ## Native Rust
 
 Add `cp-anywhere` to your Cargo dependencies. Import `Pipeline`, `Plane`, and `Dtype` from `cp_anywhere::pipeline`, which is enabled by default. Call `Pipeline::parse(&text)` once. Call `pipeline.run(images)` with a vector of `(String, Plane)` pairs for each image set. A `Plane` has `shape`, `values` in row-major order, and an original `Dtype`. Use `pipeline.plan()` to inspect translated settings, skipped modules, and output descriptors.
@@ -20,7 +31,7 @@ Parse the returned JSON to read `primary`, `secondary`, `tertiary`, `object_shap
 
 ## Execution limits
 
-The executor takes decoded arrays. It does not read image files, match plate metadata, group fields, or execute arbitrary CellProfiler modules. It follows the same fixed stage order as the Python executor. Shared illumination maps can be prepared separately and supplied by name. `SaveImages` and `ExportToDatabase` translate to settings; `run` does not write image or database files. Native and browser applications handle output destinations. Python's explicit write helpers remain available.
+The single-field executor takes decoded arrays. It does not read image files, match metadata, group fields, or execute arbitrary modules. It preserves file order within the image preparation stage, followed by segmentation and measurement. It skips disabled and unsupported modules. Shared illumination maps can be prepared separately and supplied by name. `SaveImages` and `ExportToDatabase` translate to settings, but `run` does not write files.
 
 ## Verify parity
 

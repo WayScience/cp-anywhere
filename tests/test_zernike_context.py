@@ -1,9 +1,4 @@
-"""Check Zernike evidence integrity and isolated-object oracle parity.
-
-Full-field parity remains a separate, deliberately failing diagnostic command:
-``uv run --frozen python scripts/zernike/context_evidence.py --native-check``.
-These tests do not assert or waive full-field parity.
-"""
+"""Check Zernike parity against isolated and full-label CellProfiler results."""
 
 import hashlib
 import json
@@ -35,6 +30,32 @@ def test_isolated_real_object_matches_actual_cp(scope: str, oid: int) -> None:
     assert {name for name in actual if "Zernike" in name} == set(expected)
     for name, value in expected.items():
         np.testing.assert_allclose(actual[name], [value], rtol=1e-10, atol=1e-10)
+
+
+@pytest.mark.parametrize("scope,oids", [("Nuclei", (6, 34)), ("Cells", (6,))])
+def test_full_field_zernikes_match_actual_cp(scope: str, oids: tuple[int, ...]) -> None:
+    """Retain other objects: their angles affect the global tie ordering."""
+    oracle = json.loads((FIXTURE / "oracle.json").read_text())
+    with np.load(FIXTURE / "labels.npz", allow_pickle=False) as archive:
+        labels = archive[f"{scope}_labels"]
+    actual = measure(
+        {"DNA": np.zeros(labels.shape)},
+        {scope: labels},
+        families=["object_size_shape"],
+        size_shape_calculate_zernikes=True,
+        size_shape_calculate_advanced=False,
+    ).features[scope]
+    for oid in oids:
+        expected = oracle["scopes"][scope]["objects"][str(oid)]["full_field"]
+        assert {name for name in actual if "Zernike" in name} == set(expected)
+        for name, value in expected.items():
+            np.testing.assert_allclose(
+                np.asarray(actual[name])[oid - 1],
+                value,
+                rtol=1e-10,
+                atol=1e-10,
+                err_msg=f"{scope} object {oid}: {name}",
+            )
 
 
 def test_full_context_labels_and_oracle_evidence_are_intact() -> None:

@@ -69,10 +69,16 @@ def measure_texture(
     ``gray_levels`` is CellProfiler's own "Enter how many gray levels to
     measure the texture at" setting (``2..=256``). ``scales`` are
     "Texture scale to measure" settings, one measurement set per scale.
+    Float32 planes preserve their precision during conversion to bytes.
     """
     from cp_anywhere import _native
 
-    array = np.ascontiguousarray(np.asarray(image), dtype=np.float64)
+    source = np.asarray(image)
+    float32 = (
+        source.dtype.kind == "f"
+        and source.dtype.itemsize == np.dtype(np.float32).itemsize
+    )
+    array = np.ascontiguousarray(source, dtype=np.float64)
     if array.ndim != _EXPECTED_NDIM or 0 in array.shape:
         raise ValueError("image must be a nonempty 2D array")
     labels_array = np.ascontiguousarray(np.asarray(labels), dtype=np.uint32)
@@ -96,6 +102,7 @@ def measure_texture(
         scales_list,
         wants_image_measurements,
         wants_object_measurements,
+        float32,
     )
     return TextureResult(
         image=dict(image_dict),

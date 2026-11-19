@@ -7,7 +7,7 @@ use pyo3::types::{PyDict, PyList};
 
 #[allow(clippy::too_many_arguments)]
 #[pyfunction]
-#[pyo3(signature = (shape, images, objects, mask, image_id, families, neighbors_scopes=None, neighbors_expand=None, neighbors_full_objects=None, size_shape_calculate_zernikes=true, size_shape_calculate_advanced=false))]
+#[pyo3(signature = (shape, images, objects, mask, image_id, families, neighbors_scopes=None, neighbors_expand=None, neighbors_full_objects=None, size_shape_calculate_zernikes=true, size_shape_calculate_advanced=false, neighbors_distances=None, float32_images=None))]
 fn measure<'py>(
     py: Python<'py>,
     shape: Vec<usize>,
@@ -21,6 +21,8 @@ fn measure<'py>(
     neighbors_full_objects: Option<&Bound<'py, PyDict>>,
     size_shape_calculate_zernikes: bool,
     size_shape_calculate_advanced: bool,
+    neighbors_distances: Option<std::collections::BTreeMap<String, u32>>,
+    float32_images: Option<Vec<String>>,
 ) -> PyResult<Bound<'py, PyDict>> {
     let mut image_arrays = Vec::new();
     for (name, array) in images.iter() {
@@ -112,8 +114,15 @@ fn measure<'py>(
             }),
         neighbors_full_objects: &full_object_views,
     };
+    let neighbors_distances = neighbors_distances.unwrap_or_default();
+    let distances: Vec<_> = neighbors_distances
+        .iter()
+        .map(|(name, &r)| (name.as_str(), r))
+        .collect();
+    let float32_images = float32_images.unwrap_or_default();
+    let float32_names: Vec<_> = float32_images.iter().map(String::as_str).collect();
     let result = py
-        .detach(|| cp_anywhere::measure(&input))
+        .detach(|| cp_anywhere::measure_with_image_precision(&input, &distances, &float32_names))
         .map_err(PyValueError::new_err)?;
     let root = PyDict::new(py);
     let features = PyDict::new(py);
@@ -377,10 +386,11 @@ fn identify_secondary_objects<'py>(
     let secondary_method = match method.as_str() {
         "propagation" => SecondaryMethod::Propagation,
         "distance_n" => SecondaryMethod::DistanceN,
+        "watershed_image" => SecondaryMethod::WatershedImage,
         other => {
             return Err(PyValueError::new_err(format!(
                 "unsupported IdentifySecondaryObjects method: {other:?}; \
-                 use 'propagation' or 'distance_n'"
+                 use 'propagation', 'distance_n', or 'watershed_image'"
             )))
         }
     };
@@ -479,7 +489,7 @@ fn identify_tertiary_objects<'py>(
 #[pyo3(signature = (
     pixels, rows, cols, objects, mask=None,
     subsample_size=0.25, image_sample_size=0.25,
-    element_size=10, granular_spectrum_length=16,
+    element_size=10, granular_spectrum_length=16, *, float32=false,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn measure_granularity<'py>(
@@ -493,6 +503,7 @@ fn measure_granularity<'py>(
     image_sample_size: f64,
     element_size: usize,
     granular_spectrum_length: usize,
+    float32: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
     let pixels_slice = pixels
         .as_slice()
@@ -532,14 +543,12 @@ fn measure_granularity<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere::granularity::measure(
-                pixels_slice,
-                &object_pairs,
-                mask_slice,
-                rows,
-                cols,
-                &config,
-            )
+            let measure = if float32 {
+                cp_anywhere::granularity::measure_float32
+            } else {
+                cp_anywhere::granularity::measure
+            };
+            measure(pixels_slice, &object_pairs, mask_slice, rows, cols, &config)
         })
         .map_err(PyValueError::new_err)?;
 
@@ -794,7 +803,7 @@ fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
 #[pyo3(signature = (
     pixels, labels, rows, cols, image_name,
     bin_count=4, wants_scaled=true, maximum_radius=100.0,
-    zernikes="none", zernike_degree=9,
+    zernikes="none", zernike_degree=9, *, emit_overflow=None, float32=false,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn measure_intensity_distribution<'py>(
@@ -809,8 +818,10 @@ fn measure_intensity_distribution<'py>(
     maximum_radius: f64,
     zernikes: &str,
     zernike_degree: u32,
+    emit_overflow: Option<bool>,
+    float32: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
-    use cp_anywhere::intensity_distribution::{Config, ZernikeOption};
+    use cp_anywhere::intensity_distribution::{Config, PixelPrecision, ZernikeOption};
 
     let pixels_slice = pixels
         .as_slice()
@@ -842,12 +853,18 @@ fn measure_intensity_distribution<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere::intensity_distribution::measure(
+            cp_anywhere::intensity_distribution::measure_with_precision(
                 pixels_slice,
                 labels_slice,
                 rows,
                 cols,
                 &config,
+                emit_overflow.unwrap_or(!wants_scaled),
+                if float32 {
+                    PixelPrecision::Float32
+                } else {
+                    PixelPrecision::Float64
+                },
             )
         })
         .map_err(PyValueError::new_err)?;
@@ -862,7 +879,7 @@ fn measure_intensity_distribution<'py>(
 #[pyfunction]
 #[pyo3(signature = (
     pixels, labels, rows, cols, image_name,
-    gray_levels, scales, wants_image_measurements, wants_object_measurements,
+    gray_levels, scales, wants_image_measurements, wants_object_measurements, float32=false,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn measure_texture<'py>(
@@ -876,8 +893,9 @@ fn measure_texture<'py>(
     scales: Vec<u32>,
     wants_image_measurements: bool,
     wants_object_measurements: bool,
+    float32: bool,
 ) -> PyResult<(Bound<'py, PyDict>, Bound<'py, PyDict>)> {
-    use cp_anywhere::texture::Config;
+    use cp_anywhere::texture::{self, Config};
 
     let pixels_slice = pixels
         .as_slice()
@@ -893,14 +911,12 @@ fn measure_texture<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere::texture::measure(
-                pixels_slice,
-                rows,
-                cols,
-                labels_slice,
-                &image_name,
-                &config,
-            )
+            let measure = if float32 {
+                texture::measure_float32
+            } else {
+                texture::measure
+            };
+            measure(pixels_slice, rows, cols, labels_slice, &image_name, &config)
         })
         .map_err(PyValueError::new_err)?;
 
@@ -921,6 +937,7 @@ fn measure_texture<'py>(
     threshold_percent=15.0, fast_costes="faster", costes_scale_max=255.0,
     do_corr_and_slope=true, do_manders=true, do_rwc=true, do_overlap=true,
     do_costes=true, wants_image_measurements=true, wants_object_measurements=true,
+    *, float32=false,
 ))]
 #[allow(clippy::too_many_arguments)]
 fn measure_colocalization<'py>(
@@ -940,6 +957,7 @@ fn measure_colocalization<'py>(
     do_costes: bool,
     wants_image_measurements: bool,
     wants_object_measurements: bool,
+    float32: bool,
 ) -> PyResult<(Bound<'py, PyDict>, Bound<'py, PyDict>)> {
     use cp_anywhere::colocalization::{Config, FastCostesMode};
 
@@ -1023,14 +1041,12 @@ fn measure_colocalization<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere::colocalization::measure(
-                &image_pairs,
-                rows,
-                cols,
-                mask_option,
-                labels_array,
-                &config,
-            )
+            let measure = if float32 {
+                cp_anywhere::colocalization::measure_prepared_float32
+            } else {
+                cp_anywhere::colocalization::measure
+            };
+            measure(&image_pairs, rows, cols, mask_option, labels_array, &config)
         })
         .map_err(PyValueError::new_err)?;
 

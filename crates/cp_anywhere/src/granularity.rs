@@ -18,7 +18,7 @@
 //! 1-row or 1-column image. [`measure`] returns a clear [`Err`] for that case
 //! instead of panicking or silently producing 0/NaN.
 
-use std::collections::BTreeMap;
+use std::{borrow::Cow, collections::BTreeMap};
 
 /// Settings mirroring `MeasureGranularity`'s module settings.
 #[derive(Clone, Copy, Debug)]
@@ -52,6 +52,93 @@ pub struct GranularityResult {
 /// `f64::EPSILON`, spelled out to mirror `numpy.finfo(float).eps` call sites
 /// in the original Python 1:1.
 const NP_EPS: f64 = f64::EPSILON;
+
+#[derive(Clone, Copy)]
+enum Precision {
+    Float64,
+    Float32,
+}
+
+impl Precision {
+    fn store(self, value: f64) -> f64 {
+        match self {
+            Self::Float64 => value,
+            Self::Float32 => f64::from(value as f32),
+        }
+    }
+
+    fn subtract(self, left: f64, right: f64) -> f64 {
+        match self {
+            Self::Float64 => left - right,
+            Self::Float32 => f64::from(left as f32 - right as f32),
+        }
+    }
+
+    fn mean(self, data: &[f64], mask: &[bool]) -> f64 {
+        match self {
+            Self::Float64 => masked_mean(data, mask),
+            Self::Float32 => masked_mean_float32(data, mask),
+        }
+    }
+
+    fn projected_coordinate(self, index: usize, source_last: f64, dest_last: f64) -> f64 {
+        match self {
+            Self::Float64 => index as f64 * source_last / dest_last,
+            // CellProfiler computes the scalar ratio before scaling its grid.
+            Self::Float32 => index as f64 * (source_last / dest_last),
+        }
+    }
+}
+
+// NumPy 1.23.5's float pairwise reduction (core/src/umath/loops_utils.h.src;
+// see licenses/numpy.txt). Changing the addition order moves a float32 mean
+// by ulps, which don't cancel when the next scale's mean is subtracted.
+fn numpy_pairwise_sum_f32(values: &[f32]) -> f32 {
+    let len = values.len();
+    if len < 8 {
+        return values.iter().fold(-0.0, |sum, &value| sum + value);
+    }
+    if len > 128 {
+        let mid = (len / 2) / 8 * 8;
+        return numpy_pairwise_sum_f32(&values[..mid]) + numpy_pairwise_sum_f32(&values[mid..]);
+    }
+    let mut blocks = values.chunks_exact(8);
+    let mut sums: [f32; 8] = blocks.next().unwrap().try_into().unwrap();
+    for block in blocks.by_ref() {
+        for (sum, &value) in sums.iter_mut().zip(block) {
+            *sum += value;
+        }
+    }
+    let [a, b, c, d, e, f, g, h] = sums;
+    let sum = ((a + b) + (c + d)) + ((e + f) + (g + h));
+    blocks
+        .remainder()
+        .iter()
+        .fold(sum, |sum, &value| sum + value)
+}
+
+fn masked_mean_float32(data: &[f64], mask: &[bool]) -> f64 {
+    // NumPy uses its 8192-element ufunc buffer on the packed pixels[mask],
+    // adding each buffer's pairwise sum to a float32 accumulator.
+    const BUFFER_SIZE: usize = 8192;
+    let mut buffer = Vec::with_capacity(BUFFER_SIZE);
+    let mut sum = 0.0_f32;
+    let mut count = 0;
+    for (&value, &valid) in data.iter().zip(mask) {
+        if valid {
+            count += 1;
+            buffer.push(value as f32);
+            if buffer.len() == BUFFER_SIZE {
+                sum += numpy_pairwise_sum_f32(&buffer);
+                buffer.clear();
+            }
+        }
+    }
+    sum += numpy_pairwise_sum_f32(&buffer);
+    // _methods._mean divides the float32 scalar sum by an integer in float64
+    // and casts back to float32; 0/0 preserves the empty-mask NaN.
+    f64::from((f64::from(sum) / count as f64) as f32)
+}
 
 fn ceil_usize(x: f64) -> usize {
     x.ceil() as usize
@@ -96,7 +183,14 @@ fn cubic_weights(t: f64) -> [f64; 4] {
 /// not a per-sample blend -- if `r` or `c` is `< 0` or `> len - 1` for its
 /// axis, the ENTIRE output is `cval`, even if every actually-touched stencil
 /// sample would otherwise be in-bounds.
-fn sample_bilinear(data: &[f64], rows: usize, cols: usize, r: f64, c: f64) -> f64 {
+fn sample_bilinear(
+    data: &[f64],
+    rows: usize,
+    cols: usize,
+    r: f64,
+    c: f64,
+    precision: Precision,
+) -> f64 {
     if r < 0.0 || r > (rows - 1) as f64 || c < 0.0 || c > (cols - 1) as f64 {
         return 0.0;
     }
@@ -113,10 +207,15 @@ fn sample_bilinear(data: &[f64], rows: usize, cols: usize, r: f64, c: f64) -> f6
         let ri = mirror_index(r0 + i as isize, rows);
         for (j, &w_c) in wc.iter().enumerate() {
             let cj = mirror_index(c0 + j as isize, cols);
-            total += w_r * w_c * data[ri * cols + cj];
+            let pixel = data[ri * cols + cj];
+            total += match precision {
+                Precision::Float64 => w_r * w_c * pixel,
+                // SciPy applies the row then the column weight to the pixel.
+                Precision::Float32 => pixel * w_r * w_c,
+            };
         }
     }
-    total
+    precision.store(total)
 }
 
 /// `scipy.ndimage.map_coordinates(coeffs, (r, c), order=3, mode='constant',
@@ -226,13 +325,14 @@ fn resample_bilinear(
     out_rows: usize,
     out_cols: usize,
     scale: f64,
+    precision: Precision,
 ) -> Vec<f64> {
     let mut out = vec![0.0; out_rows * out_cols];
     for r in 0..out_rows {
         let ii = r as f64 / scale;
         for c in 0..out_cols {
             let jj = c as f64 / scale;
-            out[r * out_cols + c] = sample_bilinear(data, rows, cols, ii, jj);
+            out[r * out_cols + c] = sample_bilinear(data, rows, cols, ii, jj, precision);
         }
     }
     out
@@ -442,7 +542,8 @@ struct ObjectState {
     start_mean: Vec<f64>,
 }
 
-/// Measure 2D `MeasureGranularity` image- and object-level spectra.
+/// Measure 2D `MeasureGranularity` image- and object-level spectra for
+/// float64 pixels (e.g. atomic measurements or CP `Image(convert=False)`).
 ///
 /// `pixels`/`mask` are row-major, length `rows * cols`. Each `objects` entry's
 /// labels array is also row-major, length `rows * cols`, `0` meaning
@@ -461,6 +562,49 @@ pub fn measure(
     rows: usize,
     cols: usize,
     config: &Config,
+) -> Result<GranularityResult, String> {
+    measure_with_precision(
+        pixels,
+        objects,
+        mask,
+        rows,
+        cols,
+        config,
+        Precision::Float64,
+    )
+}
+
+/// Measure a prepared CellProfiler float32 plane, using the same arguments
+/// as [`measure`]. Input values are rounded to float32, not intensity-rescaled.
+/// Image intermediates and image means preserve that precision while object
+/// means (SciPy's labeled reductions) use float64 accumulation.
+pub fn measure_float32(
+    pixels: &[f64],
+    objects: &[(&str, &[u32])],
+    mask: Option<&[bool]>,
+    rows: usize,
+    cols: usize,
+    config: &Config,
+) -> Result<GranularityResult, String> {
+    measure_with_precision(
+        pixels,
+        objects,
+        mask,
+        rows,
+        cols,
+        config,
+        Precision::Float32,
+    )
+}
+
+fn measure_with_precision(
+    pixels: &[f64],
+    objects: &[(&str, &[u32])],
+    mask: Option<&[bool]>,
+    rows: usize,
+    cols: usize,
+    config: &Config,
+    precision: Precision,
 ) -> Result<GranularityResult, String> {
     if rows == 1 || cols == 1 {
         return Err(
@@ -499,6 +643,10 @@ pub fn measure(
         return Err("subsample_size and image_sample_size must be positive".into());
     }
 
+    let pixels = match precision {
+        Precision::Float64 => Cow::Borrowed(pixels),
+        Precision::Float32 => Cow::Owned(pixels.iter().map(|&p| precision.store(p)).collect()),
+    };
     let orig_mask: Vec<bool> = match mask {
         Some(m) => m.to_vec(),
         None => vec![true; size],
@@ -512,7 +660,15 @@ pub fn measure(
         let new_shape_float = [orig_rows_f * subsample_size, orig_cols_f * subsample_size];
         let grid_rows = ceil_usize(new_shape_float[0]);
         let grid_cols = ceil_usize(new_shape_float[1]);
-        let ds_pixels = resample_bilinear(pixels, rows, cols, grid_rows, grid_cols, subsample_size);
+        let ds_pixels = resample_bilinear(
+            &pixels,
+            rows,
+            cols,
+            grid_rows,
+            grid_cols,
+            subsample_size,
+            precision,
+        );
         let ds_mask = resample_mask(&orig_mask, rows, cols, grid_rows, grid_cols, subsample_size);
         (new_shape_float, grid_rows, grid_cols, ds_pixels, ds_mask)
     } else {
@@ -546,6 +702,7 @@ pub fn measure(
                 back_rows,
                 back_cols,
                 image_sample_size,
+                precision,
             );
             let back_mask0 = resample_mask(
                 &ds_mask,
@@ -588,10 +745,19 @@ pub fn measure(
     let back_pixels_final: Vec<f64> = if image_sample_size < 1.0 {
         let mut out = vec![0.0; grid_rows * grid_cols];
         for r in 0..grid_rows {
-            let ii = r as f64 * (back_shape_float[0] - 1.0) / (new_shape_float[0] - 1.0);
+            let ii = precision.projected_coordinate(
+                r,
+                back_shape_float[0] - 1.0,
+                new_shape_float[0] - 1.0,
+            );
             for c in 0..grid_cols {
-                let jj = c as f64 * (back_shape_float[1] - 1.0) / (new_shape_float[1] - 1.0);
-                out[r * grid_cols + c] = sample_bilinear(&dilated, back_rows, back_cols, ii, jj);
+                let jj = precision.projected_coordinate(
+                    c,
+                    back_shape_float[1] - 1.0,
+                    new_shape_float[1] - 1.0,
+                );
+                out[r * grid_cols + c] =
+                    sample_bilinear(&dilated, back_rows, back_cols, ii, jj, precision);
             }
         }
         out
@@ -603,7 +769,7 @@ pub fn measure(
         .iter()
         .zip(&back_pixels_final)
         .map(|(&p, &b)| {
-            let v = p - b;
+            let v = precision.subtract(p, b);
             if v < 0.0 {
                 0.0
             } else {
@@ -620,7 +786,7 @@ pub fn measure(
         let masked_labels: Vec<u32> = (0..size)
             .map(|i| if orig_mask[i] { labels[i] } else { 0 })
             .collect();
-        let current_mean = per_object_means(pixels, &masked_labels, nobjects);
+        let current_mean = per_object_means(&pixels, &masked_labels, nobjects);
         let start_mean: Vec<f64> = current_mean
             .iter()
             .map(|&m| np_maximum(m, NP_EPS))
@@ -637,7 +803,7 @@ pub fn measure(
     }
 
     let ng = config.granular_spectrum_length;
-    let startmean = masked_mean(&ds_pixels_bgsub, &ds_mask);
+    let startmean = precision.mean(&ds_pixels_bgsub, &ds_mask);
     let mut ero: Vec<f64> = (0..grid_rows * grid_cols)
         .map(|i| if ds_mask[i] { ds_pixels_bgsub[i] } else { 0.0 })
         .collect();
@@ -660,18 +826,20 @@ pub fn measure(
         ero = grey_erosion(&ero_masked, grid_rows, grid_cols, &footprint1);
         let rec =
             reconstruct_by_dilation(&ero, &ds_pixels_bgsub, grid_rows, grid_cols, &footprint1);
-        currentmean = masked_mean(&rec, &ds_mask);
-        let gs = (prevmean - currentmean) * 100.0 / startmean_clamped;
+        currentmean = precision.mean(&rec, &ds_mask);
+        let gs = precision.subtract(prevmean, currentmean) * 100.0 / startmean_clamped;
         image_out.push(gs);
 
         // Rescale `rec` (at the downsampled grid resolution) back up to the
         // ORIGINAL full resolution for the object-level means.
         let mut rec_full = vec![0.0; size];
         for r in 0..rows {
-            let ii = r as f64 * (new_shape_float[0] - 1.0) / (orig_rows_f - 1.0);
+            let ii = precision.projected_coordinate(r, new_shape_float[0] - 1.0, orig_rows_f - 1.0);
             for c in 0..cols {
-                let jj = c as f64 * (new_shape_float[1] - 1.0) / (orig_cols_f - 1.0);
-                rec_full[r * cols + c] = sample_bilinear(&rec, grid_rows, grid_cols, ii, jj);
+                let jj =
+                    precision.projected_coordinate(c, new_shape_float[1] - 1.0, orig_cols_f - 1.0);
+                rec_full[r * cols + c] =
+                    sample_bilinear(&rec, grid_rows, grid_cols, ii, jj, precision);
             }
         }
 

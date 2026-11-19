@@ -117,71 +117,132 @@ fn illumination_config(step: &Value) -> Result<Config, String> {
     })
 }
 
-fn run_illumination(plan: &Value, state: &mut State) -> Result<(), String> {
-    for step in steps(plan, "illumination_calculate_steps") {
+fn run_calculate(step: &Value, state: &mut State) -> Result<(), String> {
+    let input = require_image(
+        state,
+        "CorrectIlluminationCalculate",
+        text(step, "input_image")?,
+    )?;
+    let (rows, cols) = grid(&input.shape)?;
+    let values = illumination::calculate_each(
+        &input.converted(),
+        None,
+        rows,
+        cols,
+        &illumination_config(step)?,
+    )?;
+    insert_image(
+        state,
+        text(step, "output_image")?,
+        input.shape.clone(),
+        values,
+    );
+    Ok(())
+}
+
+fn run_apply(step: &Value, state: &mut State) -> Result<(), String> {
+    let low = boolean(step, "truncate_low")?;
+    let high = boolean(step, "truncate_high")?;
+    for entry in steps(step, "images") {
         let input = require_image(
             state,
-            "CorrectIlluminationCalculate",
-            text(step, "input_image")?,
+            "CorrectIlluminationApply",
+            text(entry, "input_image")?,
         )?;
-        let (rows, cols) = grid(&input.shape)?;
-        let values = illumination::calculate_each(
-            &input.converted(),
-            None,
-            rows,
-            cols,
-            &illumination_config(step)?,
+        let function = require_image(
+            state,
+            "CorrectIlluminationApply",
+            text(entry, "illumination_function_image")?,
         )?;
+        if input.shape != function.shape {
+            return Err("image and illumination_function must have equal dimensions".into());
+        }
+        let subtract = match text(entry, "divide_or_subtract")? {
+            "Subtract" => true,
+            "Divide" => false,
+            other => return Err(format!("unsupported illumination application {other:?}")),
+        };
+        let values = input
+            .converted()
+            .into_iter()
+            .zip(function.converted())
+            .map(|(p, f)| {
+                let mut value = if subtract { p - f } else { p / f };
+                if (subtract || low) && value < 0.0 {
+                    value = 0.0;
+                }
+                if high && value > 1.0 {
+                    value = 1.0;
+                }
+                value as f32 as f64
+            })
+            .collect();
         insert_image(
             state,
-            text(step, "output_image")?,
+            text(entry, "output_image")?,
             input.shape.clone(),
             values,
         );
     }
-    for step in steps(plan, "illumination_apply_steps") {
-        let low = boolean(step, "truncate_low")?;
-        let high = boolean(step, "truncate_high")?;
-        for entry in steps(step, "images") {
-            let input = require_image(
-                state,
-                "CorrectIlluminationApply",
-                text(entry, "input_image")?,
-            )?;
-            let function = require_image(
-                state,
-                "CorrectIlluminationApply",
-                text(entry, "illumination_function_image")?,
-            )?;
-            if input.shape != function.shape {
-                return Err("image and illumination_function must have equal dimensions".into());
+    Ok(())
+}
+
+fn run_image_math(step: &Value, state: &mut State) -> Result<(), String> {
+    let input = require_image(state, "ImageMath", text(step, "input_image")?)?;
+    grid(&input.shape)?;
+    let input_factor = number(step, "input_factor")?;
+    let output_factor = number(step, "output_factor")?;
+    let addend = number(step, "addend")?;
+    let low = boolean(step, "truncate_low")?;
+    let high = boolean(step, "truncate_high")?;
+    let replace_nan = boolean(step, "replace_nan")?;
+    let values = input
+        .converted()
+        .into_iter()
+        .map(|pixel| {
+            let mut pixel = pixel as f32;
+            if input_factor != 1.0 {
+                pixel *= input_factor as f32;
             }
-            let subtract = match text(entry, "divide_or_subtract")? {
-                "Subtract" => true,
-                "Divide" => false,
-                other => return Err(format!("unsupported illumination application {other:?}")),
-            };
-            let values = input
-                .converted()
-                .into_iter()
-                .zip(function.converted())
-                .map(|(p, f)| {
-                    let mut value = if subtract { p - f } else { p / f };
-                    if (subtract || low) && value < 0.0 {
-                        value = 0.0;
-                    }
-                    if high && value > 1.0 {
-                        value = 1.0;
-                    }
-                    value as f32 as f64
-                })
-                .collect();
-            insert_image(
-                state,
-                text(entry, "output_image")?,
-                input.shape.clone(),
-                values,
-            );
+            if output_factor != 1.0 {
+                pixel *= output_factor as f32;
+            }
+            if addend != 0.0 {
+                pixel += addend as f32;
+            }
+            if (low && pixel < 0.0) || (replace_nan && pixel.is_nan()) {
+                pixel = 0.0;
+            }
+            if high && pixel > 1.0 {
+                pixel = 1.0;
+            }
+            f64::from(pixel)
+        })
+        .collect();
+    insert_image(
+        state,
+        text(step, "output_image")?,
+        input.shape.clone(),
+        values,
+    );
+    Ok(())
+}
+
+fn run_preprocessing(plan: &Value, state: &mut State) -> Result<(), String> {
+    let mut calculate = steps(plan, "illumination_calculate_steps");
+    let mut apply = steps(plan, "illumination_apply_steps");
+    let mut math = steps(plan, "image_math_steps");
+    for module in steps(plan, "image_step_order") {
+        let missing = || format!("missing preprocessing step {module}");
+        match module.as_str() {
+            Some("CorrectIlluminationCalculate") => {
+                run_calculate(calculate.next().ok_or_else(missing)?, state)?
+            }
+            Some("CorrectIlluminationApply") => {
+                run_apply(apply.next().ok_or_else(missing)?, state)?
+            }
+            Some("ImageMath") => run_image_math(math.next().ok_or_else(missing)?, state)?,
+            _ => return Err(format!("unknown preprocessing module {module}")),
         }
     }
     Ok(())
@@ -283,6 +344,7 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
                 0.05,
                 number(raw, "distance_to_dilate")?,
             ),
+            "watershed_image" => (SecondaryMethod::WatershedImage, 0.05, 10.0),
             other => return Err(format!("unsupported secondary method {other:?}")),
         };
         let result = identify_secondary_objects(
@@ -372,7 +434,7 @@ pub(crate) fn run(plan: &Value, images: Vec<(String, Plane)>) -> Result<RunResul
         primary_shapes: Default::default(),
         derived: Default::default(),
     };
-    run_illumination(plan, &mut state)?;
+    run_preprocessing(plan, &mut state)?;
     run_segmentation(plan, &mut state)?;
     let measurements = measure::measure(plan, &state)?;
     Ok(RunResult {

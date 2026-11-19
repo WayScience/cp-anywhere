@@ -45,7 +45,7 @@
 //!   `+1.0`/`-1.0` for `n == 2` without computing a ratio, and returns
 //!   `NaN` *without raising* for constant input (just a warning). All
 //!   three branches are distinct code paths here (see
-//!   [`scipy_pearsonr`]).
+//!   `scipy_pearsonr`).
 //! - **`scipy.linalg.lstsq`'s slope for the `A*img1 + B = img2` model
 //!   equals the closed-form OLS slope** (`cov(img1, img2) /
 //!   var(img1)`), confirmed by a parallel `numpy.linalg.lstsq` run in the
@@ -104,7 +104,7 @@
 //!   `scipy.ndimage.mean(first_pixels, labels, lrange)` raises
 //!   `ValueError: zero-size array to reduction operation minimum which
 //!   has no identity` -- there is no real-CP oracle value to match. This
-//!   port's [`group_mean`]/[`group_sum`]/[`group_max`] accept empty input
+//!   port's `group_mean`/`group_sum`/`group_max` accept empty input
 //!   slices without panicking (every label is simply "missing", per the
 //!   bullet above), so `measure` returns `NaN`-for-`Correlation`/`0.0`-
 //!   for-everything-else in that scenario rather than erroring -- a
@@ -119,7 +119,7 @@
 //!   *value-equality* boundaries in the sorted order
 //!   (`first_pixels[Rank1[:-1]] != first_pixels[Rank1[1:]]`), so tied
 //!   values always collapse to the same rank regardless of which label
-//!   breaks the tie or in what order. [`dense_rank`] computes this
+//!   breaks the tie or in what order. `dense_rank` computes this
 //!   directly (count of distinct values strictly less than each pixel's
 //!   own value), with no sorting-order dependency to replicate.
 
@@ -652,6 +652,7 @@ fn object_pair(
     mask_b: &[bool],
     labels_full: &[u32],
     config: &Config,
+    prepared_float32: bool,
 ) -> BTreeMap<&'static str, Vec<f64>> {
     let n_objects = labels_full.iter().copied().max().unwrap_or(0) as usize;
     let mut out: BTreeMap<&'static str, Vec<f64>> = BTreeMap::new();
@@ -768,13 +769,23 @@ fn object_pair(
     let mut tot_fi_thr = vec![0.0; n_objects];
     let mut tot_si_thr = vec![0.0; n_objects];
     if need_thresh {
+        // ndimage.maximum keeps the input dtype. With CP's valid percentage
+        // settings, NumPy 1.23 multiplies a float32 maxima array in float32.
+        let fraction = config.threshold_percent / 100.0;
+        let threshold = |max: f64| {
+            if prepared_float32 {
+                f64::from(fraction as f32 * max as f32)
+            } else {
+                fraction * max
+            }
+        };
         let tff = group_max(&first_pixels, &labels, n_objects)
             .iter()
-            .map(|&m| config.threshold_percent / 100.0 * m)
+            .map(|&m| threshold(m))
             .collect::<Vec<_>>();
         let tss = group_max(&second_pixels, &labels, n_objects)
             .iter()
-            .map(|&m| config.threshold_percent / 100.0 * m)
+            .map(|&m| threshold(m))
             .collect::<Vec<_>>();
         let sel1: Vec<f64> = first_pixels
             .iter()
@@ -876,13 +887,22 @@ fn object_pair(
 
     if config.do_overlap {
         let (overlap, k1, k2): (Vec<f64>, Vec<f64>, Vec<f64>) = if any_combined {
+            // CP squares and multiplies pixel arrays before ndimage.sum.
+            // Round each product at the image dtype, not the grouped sum.
+            let product = |x: f64, y: f64| {
+                if prepared_float32 {
+                    f64::from(x as f32 * y as f32)
+                } else {
+                    x * y
+                }
+            };
             let fpsq = group_sum(
-                &fi_thresh.iter().map(|&f| f * f).collect::<Vec<_>>(),
+                &fi_thresh.iter().map(|&f| product(f, f)).collect::<Vec<_>>(),
                 &labels_thresh,
                 n_objects,
             );
             let spsq = group_sum(
-                &si_thresh.iter().map(|&s| s * s).collect::<Vec<_>>(),
+                &si_thresh.iter().map(|&s| product(s, s)).collect::<Vec<_>>(),
                 &labels_thresh,
                 n_objects,
             );
@@ -890,7 +910,7 @@ fn object_pair(
                 &fi_thresh
                     .iter()
                     .zip(&si_thresh)
-                    .map(|(&f, &s)| f * s)
+                    .map(|(&f, &s)| product(f, s))
                     .collect::<Vec<_>>(),
                 &labels_thresh,
                 n_objects,
@@ -1033,6 +1053,9 @@ fn resolve_mask<'a>(
 /// `masks[name]` overrides the default all-`True` mask for that image;
 /// images absent from `masks` are treated as fully unmasked. `labels` is
 /// required (and length-checked) when `wants_object_measurements` is set.
+///
+/// Preserves full-precision per-object arithmetic. For original float32
+/// images widened to f64 for transport, use [`measure_prepared_float32`].
 pub fn measure(
     images: &[(&str, &[f64])],
     rows: usize,
@@ -1040,6 +1063,35 @@ pub fn measure(
     masks: Option<&[(&str, &[bool])]>,
     labels: Option<&[u32]>,
     config: &Config,
+) -> Result<ColocalizationResult, String> {
+    measure_impl(images, rows, cols, masks, labels, config, false)
+}
+
+/// Pipeline entry point for images stored as float32 in CellProfiler, with
+/// each pixel widened to f64 for transport. Does not normalize or rescale pixels.
+///
+/// Preserves float32 intermediates for the per-object percentage threshold
+/// and Overlap/K pixel products. Whole-image and Costes math are unchanged
+/// from [`measure`]; this is not a general float32 execution mode.
+pub fn measure_prepared_float32(
+    images: &[(&str, &[f64])],
+    rows: usize,
+    cols: usize,
+    masks: Option<&[(&str, &[bool])]>,
+    labels: Option<&[u32]>,
+    config: &Config,
+) -> Result<ColocalizationResult, String> {
+    measure_impl(images, rows, cols, masks, labels, config, true)
+}
+
+fn measure_impl(
+    images: &[(&str, &[f64])],
+    rows: usize,
+    cols: usize,
+    masks: Option<&[(&str, &[bool])]>,
+    labels: Option<&[u32]>,
+    config: &Config,
+    prepared_float32: bool,
 ) -> Result<ColocalizationResult, String> {
     if rows == 0 || cols == 0 {
         return Err("rows and cols must both be nonzero".into());
@@ -1151,7 +1203,8 @@ pub fn measure(
 
             if config.wants_object_measurements {
                 let label_slice = labels.expect("checked above");
-                let families = object_pair(a, b, mask_a, mask_b, label_slice, config);
+                let families =
+                    object_pair(a, b, mask_a, mask_b, label_slice, config, prepared_float32);
                 if config.do_corr_and_slope {
                     result.objects.insert(
                         format!("Correlation_Correlation_{name_a}_{name_b}"),
@@ -1238,6 +1291,145 @@ mod tests {
     // oracle fixtures from fixtures/colocalization/. One #[test] per
     // fixture file.
     include!("../../../fixtures/colocalization/oracle_tests.rs");
+    include!("../../../fixtures/colocalization/jump_original_object.rs");
+
+    #[test]
+    fn original_jump_nucleus_overlap_matches_archived_cellprofiler() {
+        // BR00118045_A01_1, Nuclei #94, original AGP/Brightfield pixels
+        // and saved CP 4.2.8 block-19 measurements (not generated data).
+        let labels = vec![1; JUMP_A.len()];
+        let config = Config {
+            threshold_percent: 15.0,
+            fast_costes: FastCostesMode::Faster,
+            costes_scale_max: 255.0,
+            do_corr_and_slope: false,
+            do_manders: false,
+            do_rwc: false,
+            do_overlap: true,
+            do_costes: false,
+            wants_image_measurements: false,
+            wants_object_measurements: true,
+        };
+        let images = [("AGP", JUMP_A), ("Brightfield", JUMP_B)];
+        let original = measure(&images, 1, JUMP_A.len(), None, Some(&labels), &config).unwrap();
+        assert!(
+            (original.objects["Correlation_K_AGP_Brightfield"][0] - JUMP_K).abs()
+                > 1e-10 + 1e-9 * JUMP_K.abs(),
+            "the archived CP value must distinguish float32 products from f64 products"
+        );
+        let result =
+            measure_prepared_float32(&images, 1, JUMP_A.len(), None, Some(&labels), &config)
+                .unwrap();
+        for (name, expected) in [
+            ("Correlation_K_AGP_Brightfield", JUMP_K),
+            ("Correlation_K_Brightfield_AGP", JUMP_K_REVERSE),
+            ("Correlation_Overlap_AGP_Brightfield", JUMP_OVERLAP),
+        ] {
+            let actual = result.objects[name][0];
+            let tolerance = 1e-10 + 1e-9 * expected.abs();
+            assert!(
+                (actual - expected).abs() <= tolerance,
+                "{name}: original field {actual:?} vs archived CP {expected:?} (tolerance {tolerance:?})"
+            );
+        }
+    }
+
+    #[test]
+    fn prepared_float32_object_overlap_matches_cellprofiler() {
+        // CP 4.2.8, NumPy 1.23.5, SciPy 1.9.3, with Image(convert=False)
+        // on these 2x5 float32 arrays and the standard 15% object threshold.
+        let a = [0.2_f32, 0.03, 0.14, 0.61, 0.82, 0.33, 0.0, 2e20, 1.0, 2.0].map(f64::from);
+        let b = [0.6_f32, 0.8, 0.4, 0.29, 0.73, 0.49, 0.0, 8e18, 2e20, -2e20].map(f64::from);
+        let labels = [1, 1, 1, 2, 2, 2, 4, 3, 5, 6];
+        let images: [(&str, &[f64]); 2] = [("A", &a), ("B", &b)];
+        let config = Config {
+            threshold_percent: 15.0,
+            fast_costes: FastCostesMode::Fast,
+            costes_scale_max: 255.0,
+            do_corr_and_slope: false,
+            do_manders: false,
+            do_rwc: false,
+            do_overlap: true,
+            do_costes: false,
+            wants_image_measurements: false,
+            wants_object_measurements: true,
+        };
+        let actual = measure_prepared_float32(&images, 2, 5, None, Some(&labels), &config).unwrap();
+        let nan = f64::NAN;
+        let expected = [
+            (
+                "Correlation_Overlap_A_B",
+                [0.9997418221164203, 0.942598101678681, nan, nan, 0.0, nan],
+            ),
+            (
+                "Correlation_K_A_B",
+                [
+                    2.9530200914396207,
+                    0.8125541982244028,
+                    nan,
+                    nan,
+                    2.0000000400817547e20,
+                    nan,
+                ],
+            ),
+            (
+                "Correlation_K_B_A",
+                [
+                    0.33846153427334247,
+                    1.0934546682914048,
+                    f64::INFINITY,
+                    nan,
+                    0.0,
+                    nan,
+                ],
+            ),
+        ];
+        assert_eq!(actual.objects.len(), expected.len());
+        for (name, want) in expected {
+            let got = &actual.objects[name];
+            assert_eq!(got.len(), want.len());
+            for (i, (&a, e)) in got.iter().zip(want).enumerate() {
+                assert!(
+                    a == e
+                        || (a.is_nan() && e.is_nan())
+                        || (a.is_finite()
+                            && e.is_finite()
+                            && (a - e).abs() <= 1e-10 + 1e-9 * e.abs()),
+                    "{name}[{i}]: actual {a:?} vs expected {e:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn prepared_float32_object_threshold_includes_rounded_tie() {
+        // CP 4.2.8: 31% of 0.3_f32 rounds down to the second pixel.
+        // The >= comparison keeps it; a float64 threshold excludes it.
+        let a = [0.3_f32, 0.093, 0.0, 0.0].map(f64::from);
+        let b = [0.9_f32, 0.4, 0.0, 0.0].map(f64::from);
+        let images: [(&str, &[f64]); 2] = [("A", &a), ("B", &b)];
+        let config = Config {
+            threshold_percent: 31.0,
+            fast_costes: FastCostesMode::Fast,
+            costes_scale_max: 255.0,
+            do_corr_and_slope: false,
+            do_manders: true,
+            do_rwc: true,
+            do_overlap: false,
+            do_costes: false,
+            wants_image_measurements: false,
+            wants_object_measurements: true,
+        };
+        let labels = [1, 1, 0, 0];
+        let actual = measure_prepared_float32(&images, 2, 2, None, Some(&labels), &config).unwrap();
+        assert_eq!(actual.objects["Correlation_Manders_B_A"], [1.0]);
+        assert_eq!(actual.objects["Correlation_RWC_B_A"], [1.0]);
+        let legacy = measure(&images, 2, 2, None, Some(&labels), &config).unwrap();
+        assert_eq!(
+            legacy.objects["Correlation_Manders_B_A"],
+            [0.692307683490437]
+        );
+    }
 
     #[test]
     fn rejects_fewer_than_two_images() {

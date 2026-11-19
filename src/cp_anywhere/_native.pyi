@@ -16,6 +16,8 @@ def measure(
     neighbors_full_objects: dict[str, np.ndarray] | None = None,
     size_shape_calculate_zernikes: bool = ...,
     size_shape_calculate_advanced: bool = ...,
+    neighbors_distances: dict[str, int] | None = None,
+    float32_images: list[str] | None = None,
 ) -> dict[str, Any]: ...
 def identify_primary_objects(
     pixels: np.ndarray,
@@ -95,6 +97,8 @@ def measure_granularity(
     image_sample_size: float = ...,
     element_size: int = ...,
     granular_spectrum_length: int = ...,
+    *,
+    float32: bool = ...,
 ) -> dict[str, Any]: ...
 def measure_intensity_distribution(
     pixels: np.ndarray,
@@ -107,6 +111,9 @@ def measure_intensity_distribution(
     maximum_radius: float = ...,
     zernikes: str = ...,
     zernike_degree: int = ...,
+    *,
+    emit_overflow: bool | None = ...,
+    float32: bool = ...,
 ) -> dict[str, np.ndarray]: ...
 def measure_texture(
     pixels: np.ndarray,
@@ -118,6 +125,7 @@ def measure_texture(
     scales: list[int],
     wants_image_measurements: bool,
     wants_object_measurements: bool,
+    float32: bool = ...,
 ) -> tuple[dict[str, float], dict[str, np.ndarray]]: ...
 def measure_colocalization(
     images: dict[str, np.ndarray],
@@ -135,6 +143,8 @@ def measure_colocalization(
     do_costes: bool = ...,
     wants_image_measurements: bool = ...,
     wants_object_measurements: bool = ...,
+    *,
+    float32: bool = ...,
 ) -> tuple[dict[str, float], dict[str, np.ndarray]]: ...
 def calculate_illumination_each(
     pixels: np.ndarray,

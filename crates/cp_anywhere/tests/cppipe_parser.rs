@@ -56,7 +56,7 @@ fn header_and_block_parsing_preserves_positional_values_and_skipped_order() {
         parse(&original).unwrap()
     );
     let empty = parse(&original.replace("ModuleCount:1", "ModuleCount:0")).unwrap();
-    assert_eq!(empty.as_object().unwrap().len(), 13);
+    assert_eq!(empty.as_object().unwrap().len(), 15);
     assert!(empty.as_object().unwrap().values().all(|v| *v == json!([])));
 }
 

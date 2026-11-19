@@ -139,9 +139,79 @@ def rust_vector(
     return "vec![" + ",".join(formatter(x) for x in values) + "]"
 
 
+def generate_float32() -> None:
+    """Export compact float32 cases for the strict Rust oracle test."""
+    cases32 = []
+    for shape, subsample, background, masked in (
+        ((188, 192), 0.5, 0.5, False),
+        ((33, 37), 0.63, 0.52, True),
+    ):
+        r, c = np.indices(shape)
+        pixels = ((r * 17 + c * 13 + r * c * 7) % 1021 + 23).astype(np.float32)
+        pixels /= 2048
+        mask = (r * 3 + c * 7) % 17 > 1 if masked else None
+        labels = (1 + 2 * (r >= shape[0] // 2) + (c >= shape[1] // 2)).astype(np.int32)
+        labels[(r + c) % 13 == 0] = 0
+        module = measuregranularity.MeasureGranularity()
+        module.set_module_num(1)
+        module.images_list.value = "Input"
+        module.wants_objects.value = True
+        module.objects_list.value = "Cells"
+        module.subsample_size.value = subsample
+        module.image_sample_size.value = background
+        module.element_size.value = 10
+        module.granular_spectrum_length.value = 16
+        pipeline = Pipeline()
+        pipeline.add_module(module)
+        image_sets = ImageSetList()
+        image_set = image_sets.get_image_set(0)
+        image_set.add("Input", Image(pixels, mask=mask, convert=False))
+        objects = Objects()
+        objects.segmented = labels
+        object_set = ObjectSet()
+        object_set.add_objects(objects, "Cells")
+        measurements = Measurements()
+        try:
+            module.run(
+                Workspace(
+                    pipeline, module, image_set, object_set, measurements, image_sets
+                )
+            )
+            features = [module.granularity_feature(i, "Input") for i in range(1, 17)]
+            cases32.append(
+                {
+                    "shape": shape,
+                    "subsample_size": subsample,
+                    "image_sample_size": background,
+                    "masked": masked,
+                    "image": [
+                        float(measurements.get_current_image_measurement(f))
+                        for f in features
+                    ],
+                    "cells": [
+                        measurements.get_current_measurement("Cells", f).tolist()
+                        for f in features
+                    ],
+                }
+            )
+        finally:
+            measurements.close()
+    fixture = {
+        "reference": f"CellProfiler 4.2.8 @ {SOURCE_COMMIT}",
+        "numpy": np.__version__,
+        "scipy": scipy.__version__,
+        "skimage": skimage.__version__,
+        "compatibility_adapter": ADAPTER,
+        "cases": cases32,
+    }
+    (OUT / "float32" / "oracle.json").parent.mkdir(parents=True, exist_ok=True)
+    (OUT / "float32" / "oracle.json").write_text(json.dumps(fixture, indent=2) + "\n")
+
+
 def generate() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     install_compatibility_adapter()
+    generate_float32()
     source = Path(measuregranularity.__file__)
     provenance = {
         "reference": f"CellProfiler 4.2.8 @ {SOURCE_COMMIT}",

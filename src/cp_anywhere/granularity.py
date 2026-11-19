@@ -56,6 +56,7 @@ def measure_granularity(
     image_sample_size: float = 0.25,
     element_size: int = 10,
     granular_spectrum_length: int = 16,
+    _float32: bool | None = None,
 ) -> GranularityResult:
     """Run CellProfiler's 2D granularity spectrum on one image.
 
@@ -68,7 +69,9 @@ def measure_granularity(
     """
     from cp_anywhere import _native
 
-    array = np.ascontiguousarray(np.asarray(image), dtype=np.float64)
+    source = np.asarray(image)
+    float32 = source.dtype == np.float32 if _float32 is None else _float32
+    array = np.ascontiguousarray(source, dtype=np.float64)
     if array.ndim != _EXPECTED_NDIM or 0 in array.shape:
         raise ValueError("image must be a nonempty 2D array")
     rows, cols = array.shape
@@ -98,6 +101,7 @@ def measure_granularity(
         image_sample_size=image_sample_size,
         element_size=element_size,
         granular_spectrum_length=granular_spectrum_length,
+        float32=float32,
     )
     return GranularityResult(
         image=np.asarray(raw["image"]),

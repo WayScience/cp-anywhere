@@ -70,6 +70,16 @@ _Case = tuple[str, np.ndarray, np.ndarray, _Settings]
 
 def cases() -> Iterator[_Case]:
     """Yield (name, pixels, labels, settings) fixture cases for the live oracle."""
+    # The scale multiplication reaches half-integers in float32 but not f64.
+    ties = np.array(
+        [[6.5, 17.5, 28.5], [39.5, 50.5, 61.5], [72.5, 83.5, 94.5]], np.float32
+    ) / np.float32(255)
+    yield (
+        "float32_quantization_ties",
+        ties,
+        np.ones(ties.shape, dtype=np.uint32),
+        {"gray_levels": 256, "scales": [1], "images_or_objects": mt.IO_BOTH},
+    )
     shape = (40, 40)
     pixels = _pixels(shape, seed=1)
     labels = _disk_labels(shape, [(1, 10, 10, 8), (2, 28, 28, 6)])
@@ -204,6 +214,7 @@ def _run_case(
     print(name, scalar_count)
     return {
         **provenance,
+        **({"pixel_dtype": "float32"} if pixels.dtype == np.float32 else {}),
         "settings": settings,
         "pixels": pixels.tolist(),
         "labels": labels.tolist(),

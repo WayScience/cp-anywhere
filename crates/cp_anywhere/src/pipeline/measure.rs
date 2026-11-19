@@ -33,6 +33,8 @@ struct MeasurementStep {
     wants_excluded_objects: bool,
     #[serde(default)]
     wants_expand: bool,
+    #[serde(default)]
+    neighbors_distance: Option<u32>,
 }
 
 fn default_true() -> bool {
@@ -67,6 +69,14 @@ struct IntensityDistributionStep {
     maximum_radius: f64,
     zernikes: RadialZernikes,
     zernike_degree: u32,
+    #[serde(default)]
+    additional_bin_groups: Vec<RadialBinGroup>,
+}
+
+#[derive(Deserialize)]
+struct RadialBinGroup {
+    bin_count: usize,
+    wants_scaled: bool,
 }
 
 #[derive(Deserialize)]
@@ -201,13 +211,8 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
     let mut families = Families::default();
     let mut images = Vec::new();
     let mut objects = BTreeMap::new();
-    let mut neighbors = BTreeSet::new();
-    let mut expanded = BTreeSet::new();
-    let mut use_diagnostics = BTreeSet::new();
-
-    // The Python runner groups the basic families over the union of selected
-    // inputs. For neighbors, expansion and excluded-object geometry are
-    // selected per scope; shape flags are applied separately for each module.
+    // Intensity families share the union of inputs. Neighbor and shape
+    // settings are applied independently for each module.
     for step in steps {
         for name in &step.images {
             if !images.iter().any(|(key, _)| *key == name) {
@@ -235,17 +240,7 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
         match step.family {
             Family::ImageIntensity => families.image_intensity = true,
             Family::ObjectIntensity => families.object_intensity = true,
-            Family::Neighbors => {
-                families.neighbors = true;
-                neighbors.extend(step.objects.iter().map(String::as_str));
-                if step.wants_expand {
-                    expanded.extend(step.objects.iter().map(String::as_str));
-                }
-                if step.wants_excluded_objects {
-                    use_diagnostics.extend(step.objects.iter().map(String::as_str));
-                }
-            }
-            Family::ObjectSizeShape => (),
+            Family::Neighbors | Family::ObjectSizeShape => (),
         }
     }
 
@@ -271,22 +266,7 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
         .iter()
         .map(|(name, values)| (*name, values.as_slice()))
         .collect();
-    let diagnostics = use_diagnostics.into_iter().map(|name| {
-        // Python checks primary outputs first, then secondary/tertiary.
-        // A same-named later output may have a different shape from the
-        // primary label layer chosen for diagnostic geometry.
-        if let Some(primary_shape) = state.primary_shapes.get(name) {
-            same_shape("MeasureObjectNeighbors", name, primary_shape, shape)?;
-        }
-        let labels = state.primary.get(name).map(|r| r.small_removed_labels.as_slice())
-            .or_else(|| state.tertiary.get(name).map(|r| r.labels.as_slice()))
-            .or_else(|| state.secondary.get(name).map(|r| r.small_removed_labels.as_slice()))
-            .ok_or_else(|| format!("MeasureObjectNeighbors on {name:?} with excluded objects requires a translated segmentation result"))?;
-        validate_labels("MeasureObjectNeighbors", name, labels, size)?;
-        Ok((name, labels))
-    }).collect::<Result<Vec<_>, String>>()?;
-    let neighbors: Vec<_> = neighbors.into_iter().collect();
-    let expanded: Vec<_> = expanded.into_iter().collect();
+
     let all_objects: Vec<_> = objects
         .iter()
         .map(|(&name, (object_shape, labels))| {
@@ -295,7 +275,7 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
         })
         .collect::<Result<_, String>>()?;
     let mut table = None;
-    if families.image_intensity || families.object_intensity || families.neighbors {
+    if families.image_intensity || families.object_intensity {
         table = Some(core::measure(&Input {
             shape,
             images: &images,
@@ -303,10 +283,86 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
             mask: None,
             families,
             size_shape: None,
-            neighbors_scopes: &neighbors,
-            neighbors_expand: &expanded,
-            neighbors_full_objects: &diagnostics,
+            neighbors_scopes: &[],
+            neighbors_expand: &[],
+            neighbors_full_objects: &[],
         })?);
+    }
+    let mut masked_diagnostics = BTreeMap::<&str, Vec<u32>>::new();
+    let fixed_scopes: BTreeSet<_> = steps
+        .iter()
+        .filter(|step| step.family == Family::Neighbors && step.neighbors_distance.is_some())
+        .flat_map(|step| step.objects.iter().map(String::as_str))
+        .collect();
+    for step in steps.iter().filter(|step| step.family == Family::Neighbors) {
+        for name in step.objects.iter().map(String::as_str) {
+            let kept = objects[name].1.as_ref();
+            let original = state
+                .primary
+                .get(name)
+                .map(|r| r.small_removed_labels.as_slice())
+                .or_else(|| state.tertiary.get(name).map(|r| r.labels.as_slice()))
+                .or_else(|| {
+                    state
+                        .secondary
+                        .get(name)
+                        .map(|r| r.small_removed_labels.as_slice())
+                });
+            if step.wants_excluded_objects || fixed_scopes.contains(name) {
+                if let Some(primary_shape) = state.primary_shapes.get(name) {
+                    same_shape("MeasureObjectNeighbors", name, primary_shape, shape)?;
+                }
+                if let Some(labels) = original {
+                    validate_labels("MeasureObjectNeighbors", name, labels, size)?;
+                }
+            }
+            if !step.wants_excluded_objects && fixed_scopes.contains(name) {
+                if let Some(labels) = original {
+                    // The oracle masks its shared small-removed layer in place.
+                    // Preserve that ordering between modules, not in our outputs.
+                    masked_diagnostics.entry(name).or_insert_with(|| {
+                        labels
+                            .iter()
+                            .zip(kept)
+                            .map(|(&id, &retained)| if retained == 0 { 0 } else { id })
+                            .collect()
+                    });
+                }
+            }
+            let diagnostic = if step.wants_excluded_objects || step.neighbors_distance.is_some() {
+                masked_diagnostics.get(name).map(Vec::as_slice).or(original)
+            } else {
+                None
+            };
+            if step.wants_excluded_objects && diagnostic.is_none() {
+                return Err(format!("MeasureObjectNeighbors on {name:?} with excluded objects requires a translated segmentation result"));
+            }
+            let diagnostics: Vec<_> = diagnostic
+                .into_iter()
+                .map(|labels| (name, labels))
+                .collect();
+            let distances: Vec<_> = step
+                .neighbors_distance
+                .into_iter()
+                .map(|radius| (name, radius))
+                .collect();
+            let scopes = [name];
+            let result = core::measure_with_neighbor_distances(
+                &Input {
+                    shape,
+                    images: &images,
+                    objects: &[(name, kept)],
+                    mask: None,
+                    families: Families::default(),
+                    size_shape: None,
+                    neighbors_scopes: &scopes,
+                    neighbors_expand: if step.wants_expand { &scopes } else { &[] },
+                    neighbors_full_objects: &diagnostics,
+                },
+                &distances,
+            )?;
+            merge_core(&mut table, result);
+        }
     }
     for step in steps
         .iter()
@@ -411,9 +467,15 @@ fn measure_granularity(
             .iter()
             .map(|scope| Ok((scope.as_str(), aligned_labels(state, MODULE, scope, plane)?)))
             .collect::<Result<_, String>>()?;
-        let result =
-            core::granularity::measure(&plane.converted(), &labels, None, rows, cols, &config)
-                .map_err(|e| format!("{MODULE}: {e}"))?;
+        let result = core::granularity::measure_float32(
+            &plane.converted(),
+            &labels,
+            None,
+            rows,
+            cols,
+            &config,
+        )
+        .map_err(|e| format!("{MODULE}: {e}"))?;
         let feature = |(i, value)| (format!("Granularity_{}_{name}", i + 1), value);
         merge_image(table, result.image.into_iter().enumerate().map(feature));
         for (scope, scales) in result.objects {
@@ -435,7 +497,7 @@ fn measure_radial(
     state: &State,
     table: &mut Option<ResultTable>,
 ) -> Result<(), String> {
-    use core::intensity_distribution::{self as radial, ZernikeOption};
+    use core::intensity_distribution::{self as radial, PixelPrecision, ZernikeOption};
     const MODULE: &str = "MeasureObjectIntensityDistribution";
     let degree = step.zernike_degree;
     let zernikes = match step.zernikes {
@@ -450,7 +512,7 @@ fn measure_radial(
         }
         let (rows, cols) = dimensions_2d(plane, MODULE, name)?;
         let pixels = plane.converted();
-        let config = radial::Config {
+        let mut config = radial::Config {
             image_name: name.clone(),
             bin_count: step.bin_count,
             wants_scaled: step.wants_scaled,
@@ -459,8 +521,35 @@ fn measure_radial(
         };
         for scope in &step.objects {
             let labels = aligned_labels(state, MODULE, scope, plane)?;
-            let result = radial::measure(&pixels, labels, rows, cols, &config)
+            config.bin_count = step.bin_count;
+            config.zernikes = zernikes;
+            let mut result = radial::measure_with_precision(
+                &pixels,
+                labels,
+                rows,
+                cols,
+                &config,
+                !config.wants_scaled,
+                PixelPrecision::Float32,
+            )
+            .map_err(|e| format!("{MODULE}: {e}"))?;
+            // CellProfiler uses the first group's cached distances for all
+            // groups, but the last unscaled group writes the Overflow values.
+            config.zernikes = ZernikeOption::None;
+            for group in &step.additional_bin_groups {
+                config.bin_count = group.bin_count;
+                let group_result = radial::measure_with_precision(
+                    &pixels,
+                    labels,
+                    rows,
+                    cols,
+                    &config,
+                    !group.wants_scaled,
+                    PixelPrecision::Float32,
+                )
                 .map_err(|e| format!("{MODULE}: {e}"))?;
+                result.columns.extend(group_result.columns);
+            }
             merge_objects(table, scope, result.columns);
         }
     }
@@ -494,13 +583,13 @@ fn measure_texture(
         if step.objects.is_empty() {
             config.wants_object_measurements = false;
             let dummy = vec![0; pixels.len()];
-            let result = texture::measure(&pixels, rows, cols, &dummy, name, &config)
+            let result = texture::measure_float32(&pixels, rows, cols, &dummy, name, &config)
                 .map_err(|e| format!("{MODULE}: {e}"))?;
             merge_image(table, result.image);
         }
         for scope in &step.objects {
             let labels = aligned_labels(state, MODULE, scope, plane)?;
-            let result = texture::measure(&pixels, rows, cols, labels, name, &config)
+            let result = texture::measure_float32(&pixels, rows, cols, labels, name, &config)
                 .map_err(|e| format!("{MODULE}: {e}"))?;
             get_table(table);
             if config.wants_image_measurements {
@@ -566,7 +655,7 @@ fn measure_colocalization(
         wants_object_measurements: !step.objects.is_empty(),
     };
     let run = |labels, config: &colocalization::Config| {
-        colocalization::measure(&images, rows, cols, None, labels, config)
+        colocalization::measure_prepared_float32(&images, rows, cols, None, labels, config)
             .map_err(|e| format!("{MODULE}: {e}"))
     };
     if step.objects.is_empty() {
@@ -652,7 +741,7 @@ mod tests {
         let objects = &out.features["Input"];
         assert!(matches!(&objects["Granularity_2_Z"], Column::Float(v) if v == &[0.0, 0.0]));
         assert!(
-            matches!(&objects["RadialDistribution_FracAtD_Z_1of2"], Column::Float(v) if v == &[0.7999999957780044, 0.7959183637861137])
+            matches!(&objects["RadialDistribution_FracAtD_Z_1of2"], Column::Float(v) if v == &[0.800000011920929, 0.7959184050559998])
         );
         assert!(
             matches!(&image["Texture_Contrast_Z_1_00_8"], Column::Float(v) if v == &[0.017857142857142856])

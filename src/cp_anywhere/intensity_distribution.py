@@ -64,9 +64,37 @@ def measure_intensity_distribution(
     selects which ``ZernikeMagnitude``/``ZernikePhase`` columns (if any)
     to add, up to and including radial degree ``zernike_degree``.
     """
+    return _measure_intensity_distribution(
+        image,
+        labels,
+        image_name=image_name,
+        bin_count=bin_count,
+        wants_scaled=wants_scaled,
+        maximum_radius=maximum_radius,
+        zernikes=zernikes,
+        zernike_degree=zernike_degree,
+        emit_overflow=not wants_scaled,
+    )
+
+
+def _measure_intensity_distribution(
+    image: object,
+    labels: object,
+    *,
+    image_name: str,
+    bin_count: int,
+    wants_scaled: bool,
+    maximum_radius: float,
+    zernikes: _ZernikeOption,
+    zernike_degree: int,
+    emit_overflow: bool,
+    _float32: bool | None = None,
+) -> IntensityDistributionResult:
     from cp_anywhere import _native
 
-    array = np.ascontiguousarray(np.asarray(image), dtype=np.float64)
+    source = np.asarray(image)
+    float32 = source.dtype == np.float32 if _float32 is None else _float32
+    array = np.ascontiguousarray(source, dtype=np.float64)
     if array.ndim != _EXPECTED_NDIM or 0 in array.shape:
         raise ValueError("image must be a nonempty 2D array")
     label_array = np.ascontiguousarray(np.asarray(labels), dtype=np.uint32)
@@ -84,6 +112,8 @@ def measure_intensity_distribution(
         maximum_radius=maximum_radius,
         zernikes=zernikes,
         zernike_degree=zernike_degree,
+        emit_overflow=emit_overflow,
+        float32=float32,
     )
     return IntensityDistributionResult(
         columns={name: np.asarray(values) for name, values in raw.items()}

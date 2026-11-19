@@ -5,6 +5,10 @@
   "scope": "2D only; real mahotas.features.haralick, real Module.run",
   "cases": [
     {
+      "name": "float32_quantization_ties",
+      "scalars": 104
+    },
+    {
       "name": "defaults",
       "scalars": 156
     },
@@ -37,5 +41,5 @@
       "scalars": 104
     }
   ],
-  "total_scalars": 988
+  "total_scalars": 1092
 }

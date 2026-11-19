@@ -1,0 +1,262 @@
+{
+  "reference": "CellProfiler 4.2.8 @ 2df090ff281cff80943fe679a1c3192fbda9cd6d",
+  "mahotas": "1.4.18",
+  "module_sha256": "3af3c00ac9b7f6f38146e370f5cf670665e43006325ef006b547ae721127763a",
+  "scope": "2D only; real mahotas.features.haralick, real Module.run",
+  "pixel_dtype": "float32",
+  "settings": {
+    "gray_levels": 256,
+    "scales": [
+      1
+    ],
+    "images_or_objects": "Both"
+  },
+  "pixels": [
+    [
+      0.02549019642174244,
+      0.06862745434045792,
+      0.11176470667123795
+    ],
+    [
+      0.15490196645259857,
+      0.1980392187833786,
+      0.24117647111415863
+    ],
+    [
+      0.28431373834609985,
+      0.3274509906768799,
+      0.3705882430076599
+    ]
+  ],
+  "labels": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      1,
+      1
+    ]
+  ],
+  "expected": {
+    "Image": {
+      "Texture_AngularSecondMoment_Input_1_00_256": 0.08333333333333336,
+      "Texture_AngularSecondMoment_Input_1_01_256": 0.125,
+      "Texture_AngularSecondMoment_Input_1_02_256": 0.08333333333333336,
+      "Texture_AngularSecondMoment_Input_1_03_256": 0.125,
+      "Texture_Contrast_Input_1_00_256": 121.99999999999997,
+      "Texture_Contrast_Input_1_01_256": 1936.0,
+      "Texture_Contrast_Input_1_02_256": 1089.9999999999998,
+      "Texture_Contrast_Input_1_03_256": 484.0,
+      "Texture_Correlation_Input_1_00_256": 0.9224658404829997,
+      "Texture_Correlation_Input_1_01_256": -0.23037813790911982,
+      "Texture_Correlation_Input_1_02_256": 0.1285809460359758,
+      "Texture_Correlation_Input_1_03_256": 0.42890855457227145,
+      "Texture_DifferenceEntropy_Input_1_00_256": 1.0,
+      "Texture_DifferenceEntropy_Input_1_01_256": -0.0,
+      "Texture_DifferenceEntropy_Input_1_02_256": 1.0,
+      "Texture_DifferenceEntropy_Input_1_03_256": -0.0,
+      "Texture_DifferenceVariance_Input_1_00_256": 0.005152354570637117,
+      "Texture_DifferenceVariance_Input_1_01_256": 0.010415512465373962,
+      "Texture_DifferenceVariance_Input_1_02_256": 0.005152354570637118,
+      "Texture_DifferenceVariance_Input_1_03_256": 0.010415512465373963,
+      "Texture_Entropy_Input_1_00_256": 3.584962500721156,
+      "Texture_Entropy_Input_1_01_256": 3.0,
+      "Texture_Entropy_Input_1_02_256": 3.584962500721156,
+      "Texture_Entropy_Input_1_03_256": 3.0,
+      "Texture_InfoMeas1_Input_1_00_256": -0.837923475606878,
+      "Texture_InfoMeas1_Input_1_01_256": -0.9090909090909091,
+      "Texture_InfoMeas1_Input_1_02_256": -0.837923475606878,
+      "Texture_InfoMeas1_Input_1_03_256": -0.9090909090909091,
+      "Texture_InfoMeas2_Input_1_00_256": 0.9971534509945449,
+      "Texture_InfoMeas2_Input_1_01_256": 0.9966253323094464,
+      "Texture_InfoMeas2_Input_1_02_256": 0.9971534509945449,
+      "Texture_InfoMeas2_Input_1_03_256": 0.9966253323094464,
+      "Texture_InverseDifferenceMoment_Input_1_00_256": 0.008398770911573915,
+      "Texture_InverseDifferenceMoment_Input_1_01_256": 0.0005162622612287043,
+      "Texture_InverseDifferenceMoment_Input_1_02_256": 0.0009199569955941564,
+      "Texture_InverseDifferenceMoment_Input_1_03_256": 0.002061855670103093,
+      "Texture_SumAverage_Input_1_00_256": 101.0,
+      "Texture_SumAverage_Input_1_01_256": 101.0,
+      "Texture_SumAverage_Input_1_02_256": 101.0,
+      "Texture_SumAverage_Input_1_03_256": 101.0,
+      "Texture_SumEntropy_Input_1_00_256": 2.584962500721156,
+      "Texture_SumEntropy_Input_1_01_256": 2.0,
+      "Texture_SumEntropy_Input_1_02_256": 2.584962500721156,
+      "Texture_SumEntropy_Input_1_03_256": 2.0,
+      "Texture_SumVariance_Input_1_00_256": 3025.0,
+      "Texture_SumVariance_Input_1_01_256": 1211.0,
+      "Texture_SumVariance_Input_1_02_256": 1411.666666666666,
+      "Texture_SumVariance_Input_1_03_256": 1211.0,
+      "Texture_Variance_Input_1_00_256": 786.75,
+      "Texture_Variance_Input_1_01_256": 786.75,
+      "Texture_Variance_Input_1_02_256": 625.4166666666665,
+      "Texture_Variance_Input_1_03_256": 423.75
+    },
+    "Cells": {
+      "Texture_AngularSecondMoment_Input_1_00_256": [
+        0.08333333333333336
+      ],
+      "Texture_AngularSecondMoment_Input_1_01_256": [
+        0.125
+      ],
+      "Texture_AngularSecondMoment_Input_1_02_256": [
+        0.08333333333333336
+      ],
+      "Texture_AngularSecondMoment_Input_1_03_256": [
+        0.125
+      ],
+      "Texture_Contrast_Input_1_00_256": [
+        121.99999999999997
+      ],
+      "Texture_Contrast_Input_1_01_256": [
+        1936.0
+      ],
+      "Texture_Contrast_Input_1_02_256": [
+        1089.9999999999998
+      ],
+      "Texture_Contrast_Input_1_03_256": [
+        484.0
+      ],
+      "Texture_Correlation_Input_1_00_256": [
+        0.9224658404829997
+      ],
+      "Texture_Correlation_Input_1_01_256": [
+        -0.23037813790911982
+      ],
+      "Texture_Correlation_Input_1_02_256": [
+        0.1285809460359758
+      ],
+      "Texture_Correlation_Input_1_03_256": [
+        0.42890855457227145
+      ],
+      "Texture_DifferenceEntropy_Input_1_00_256": [
+        1.0
+      ],
+      "Texture_DifferenceEntropy_Input_1_01_256": [
+        -0.0
+      ],
+      "Texture_DifferenceEntropy_Input_1_02_256": [
+        1.0
+      ],
+      "Texture_DifferenceEntropy_Input_1_03_256": [
+        -0.0
+      ],
+      "Texture_DifferenceVariance_Input_1_00_256": [
+        0.005152354570637117
+      ],
+      "Texture_DifferenceVariance_Input_1_01_256": [
+        0.010415512465373962
+      ],
+      "Texture_DifferenceVariance_Input_1_02_256": [
+        0.005152354570637118
+      ],
+      "Texture_DifferenceVariance_Input_1_03_256": [
+        0.010415512465373963
+      ],
+      "Texture_Entropy_Input_1_00_256": [
+        3.584962500721156
+      ],
+      "Texture_Entropy_Input_1_01_256": [
+        3.0
+      ],
+      "Texture_Entropy_Input_1_02_256": [
+        3.584962500721156
+      ],
+      "Texture_Entropy_Input_1_03_256": [
+        3.0
+      ],
+      "Texture_InfoMeas1_Input_1_00_256": [
+        -0.837923475606878
+      ],
+      "Texture_InfoMeas1_Input_1_01_256": [
+        -0.9090909090909091
+      ],
+      "Texture_InfoMeas1_Input_1_02_256": [
+        -0.837923475606878
+      ],
+      "Texture_InfoMeas1_Input_1_03_256": [
+        -0.9090909090909091
+      ],
+      "Texture_InfoMeas2_Input_1_00_256": [
+        0.9971534509945449
+      ],
+      "Texture_InfoMeas2_Input_1_01_256": [
+        0.9966253323094464
+      ],
+      "Texture_InfoMeas2_Input_1_02_256": [
+        0.9971534509945449
+      ],
+      "Texture_InfoMeas2_Input_1_03_256": [
+        0.9966253323094464
+      ],
+      "Texture_InverseDifferenceMoment_Input_1_00_256": [
+        0.008398770911573915
+      ],
+      "Texture_InverseDifferenceMoment_Input_1_01_256": [
+        0.0005162622612287043
+      ],
+      "Texture_InverseDifferenceMoment_Input_1_02_256": [
+        0.0009199569955941564
+      ],
+      "Texture_InverseDifferenceMoment_Input_1_03_256": [
+        0.002061855670103093
+      ],
+      "Texture_SumAverage_Input_1_00_256": [
+        101.0
+      ],
+      "Texture_SumAverage_Input_1_01_256": [
+        101.0
+      ],
+      "Texture_SumAverage_Input_1_02_256": [
+        101.0
+      ],
+      "Texture_SumAverage_Input_1_03_256": [
+        101.0
+      ],
+      "Texture_SumEntropy_Input_1_00_256": [
+        2.584962500721156
+      ],
+      "Texture_SumEntropy_Input_1_01_256": [
+        2.0
+      ],
+      "Texture_SumEntropy_Input_1_02_256": [
+        2.584962500721156
+      ],
+      "Texture_SumEntropy_Input_1_03_256": [
+        2.0
+      ],
+      "Texture_SumVariance_Input_1_00_256": [
+        3025.0
+      ],
+      "Texture_SumVariance_Input_1_01_256": [
+        1211.0
+      ],
+      "Texture_SumVariance_Input_1_02_256": [
+        1411.666666666666
+      ],
+      "Texture_SumVariance_Input_1_03_256": [
+        1211.0
+      ],
+      "Texture_Variance_Input_1_00_256": [
+        786.75
+      ],
+      "Texture_Variance_Input_1_01_256": [
+        786.75
+      ],
+      "Texture_Variance_Input_1_02_256": [
+        625.4166666666665
+      ],
+      "Texture_Variance_Input_1_03_256": [
+        423.75
+      ]
+    }
+  }
+}

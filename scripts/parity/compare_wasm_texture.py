@@ -70,6 +70,7 @@ def compare() -> dict[str, int | str]:
         cases.append(
             {
                 "pixels": pixels,
+                "float32": fixture.get("pixel_dtype") == "float32",
                 "labels": labels,
                 "rows": rows,
                 "cols": cols,

@@ -19,7 +19,7 @@ mod illumination;
 use cp_anywhere::segmentation::{
     build_config, identify_primary_objects as core_segment, ConfigParams,
 };
-use cp_anywhere::{measure as core_measure, Column, Families, Input};
+use cp_anywhere::{measure_with_image_precision as core_measure, Column, Families, Input};
 use serde::Deserialize;
 use serde_json::{Map, Value};
 use wasm_bindgen::prelude::*;
@@ -37,7 +37,11 @@ struct WasmInput {
     #[serde(default)]
     neighbors_expand: Vec<String>,
     #[serde(default)]
+    neighbors_distances: std::collections::BTreeMap<String, u32>,
+    #[serde(default)]
     neighbors_full_objects: std::collections::BTreeMap<String, Vec<u32>>,
+    #[serde(default)]
+    float32_images: Vec<String>,
     size_shape_calculate_zernikes: Option<bool>,
     size_shape_calculate_advanced: Option<bool>,
 }
@@ -85,6 +89,53 @@ pub fn measure_with_options(
     full_objects: Vec<u32>,
     size_shape_calculate_zernikes: Option<bool>,
     size_shape_calculate_advanced: Option<bool>,
+    neighbors_distances_json: Option<String>,
+    float32_images: Option<Vec<String>>,
+) -> Result<String, JsValue> {
+    let distances: std::collections::BTreeMap<String, u32> = neighbors_distances_json
+        .as_deref()
+        .map(serde_json::from_str)
+        .transpose()
+        .map_err(|e| JsValue::from_str(&e.to_string()))?
+        .unwrap_or_default();
+    measure_arrays(
+        shape,
+        image_names,
+        images,
+        object_names,
+        objects,
+        mask,
+        image_id,
+        families,
+        neighbors_scopes,
+        neighbors_expand,
+        full_object_names,
+        full_objects,
+        size_shape_calculate_zernikes,
+        size_shape_calculate_advanced,
+        &distances,
+        &float32_images.unwrap_or_default(),
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn measure_arrays(
+    shape: Vec<u32>,
+    image_names: Vec<String>,
+    images: Vec<f64>,
+    object_names: Vec<String>,
+    objects: Vec<u32>,
+    mask: Option<Vec<u8>>,
+    image_id: String,
+    families: Vec<String>,
+    neighbors_scopes: Vec<String>,
+    neighbors_expand: Vec<String>,
+    full_object_names: Vec<String>,
+    full_objects: Vec<u32>,
+    size_shape_calculate_zernikes: Option<bool>,
+    size_shape_calculate_advanced: Option<bool>,
+    neighbors_distances: &std::collections::BTreeMap<String, u32>,
+    float32_images: &[String],
 ) -> Result<String, JsValue> {
     let shape: Vec<usize> = shape.iter().map(|&v| v as usize).collect();
     let size: usize = shape.iter().product();
@@ -144,7 +195,13 @@ pub fn measure_with_options(
             }),
         neighbors_full_objects: &full_object_views,
     };
-    let result = core_measure(&input).map_err(|e| JsValue::from_str(&e))?;
+    let distances: Vec<_> = neighbors_distances
+        .iter()
+        .map(|(name, &r)| (name.as_str(), r))
+        .collect();
+    let float32_names: Vec<_> = float32_images.iter().map(String::as_str).collect();
+    let result =
+        core_measure(&input, &distances, &float32_names).map_err(|e| JsValue::from_str(&e))?;
 
     let mut features = Map::new();
     for (scope, columns) in result.features {
@@ -219,6 +276,8 @@ pub fn measure(
         Vec::new(),
         None,
         None,
+        None,
+        None,
     )
 }
 
@@ -247,7 +306,7 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
     let mask = parsed
         .mask
         .map(|bits| bits.into_iter().map(u8::from).collect());
-    measure_with_options(
+    measure_arrays(
         shape_u32,
         image_names,
         images,
@@ -262,6 +321,8 @@ pub fn measure_json(input: &str) -> Result<String, JsValue> {
         full_objects,
         parsed.size_shape_calculate_zernikes,
         parsed.size_shape_calculate_advanced,
+        &parsed.neighbors_distances,
+        &parsed.float32_images,
     )
 }
 
@@ -420,6 +481,8 @@ pub fn identify_primary_objects_json(input: &str) -> Result<SegmentationResult, 
 #[derive(Deserialize)]
 struct WasmGranularityInput {
     pixels: Vec<f64>,
+    #[serde(default)]
+    float32: bool,
     rows: usize,
     cols: usize,
     mask: Option<Vec<bool>>,
@@ -474,7 +537,12 @@ pub fn measure_granularity_json(input: &str) -> Result<String, JsValue> {
         element_size: parsed.element_size,
         granular_spectrum_length: parsed.granular_spectrum_length,
     };
-    let result = cp_anywhere::granularity::measure(
+    let measure = if parsed.float32 {
+        cp_anywhere::granularity::measure_float32
+    } else {
+        cp_anywhere::granularity::measure
+    };
+    let result = measure(
         &parsed.pixels,
         &object_pairs,
         parsed.mask.as_deref(),
@@ -508,6 +576,8 @@ pub fn measure_granularity_json(input: &str) -> Result<String, JsValue> {
 #[derive(Deserialize)]
 struct WasmIntensityDistributionInput {
     pixels: Vec<f64>,
+    #[serde(default)]
+    float32: bool,
     labels: Vec<u32>,
     rows: usize,
     cols: usize,
@@ -553,7 +623,7 @@ fn default_zernike_degree() -> u32 {
 /// `cp_anywhere.measure_intensity_distribution`'s own result shape.
 #[wasm_bindgen(js_name = measureIntensityDistributionJson)]
 pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValue> {
-    use cp_anywhere::intensity_distribution::{Config, ZernikeOption};
+    use cp_anywhere::intensity_distribution::{Config, PixelPrecision, ZernikeOption};
 
     let parsed: WasmIntensityDistributionInput =
         serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -584,12 +654,18 @@ pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValu
         maximum_radius: parsed.maximum_radius,
         zernikes,
     };
-    let result = cp_anywhere::intensity_distribution::measure(
+    let result = cp_anywhere::intensity_distribution::measure_with_precision(
         &parsed.pixels,
         &parsed.labels,
         parsed.rows,
         parsed.cols,
         &config,
+        !config.wants_scaled,
+        if parsed.float32 {
+            PixelPrecision::Float32
+        } else {
+            PixelPrecision::Float64
+        },
     )
     .map_err(|e| JsValue::from_str(&e))?;
     let mut root = Map::new();
@@ -609,6 +685,8 @@ pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValu
 #[derive(Deserialize)]
 struct WasmTextureInput {
     pixels: Vec<f64>,
+    #[serde(default)]
+    float32: bool,
     labels: Vec<u32>,
     rows: usize,
     cols: usize,
@@ -640,9 +718,10 @@ fn default_wants_object_measurements() -> bool {
 /// string `{"image": {"<Texture_... column name>": <float>, ...},
 /// "objects": {"<column name>": [...one per object], ...}}`, matching
 /// `cp_anywhere.measure_texture`'s own result shape.
+/// Set `float32: true` when `pixels` contains samples from a float32 plane.
 #[wasm_bindgen(js_name = measureTextureJson)]
 pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
-    use cp_anywhere::texture::Config;
+    use cp_anywhere::texture::{self, Config};
 
     let parsed: WasmTextureInput =
         serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -658,7 +737,12 @@ pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
         wants_image_measurements: parsed.wants_image_measurements,
         wants_object_measurements: parsed.wants_object_measurements,
     };
-    let result = cp_anywhere::texture::measure(
+    let measure = if parsed.float32 {
+        texture::measure_float32
+    } else {
+        texture::measure
+    };
+    let result = measure(
         &parsed.pixels,
         parsed.rows,
         parsed.cols,
@@ -701,6 +785,8 @@ struct WasmNamedPixels {
 #[derive(Deserialize)]
 struct WasmColocalizationInput {
     images: Vec<WasmNamedPixels>,
+    #[serde(default)]
+    float32: bool,
     rows: usize,
     cols: usize,
     #[serde(default)]
@@ -835,7 +921,12 @@ pub fn measure_colocalization_json(input: &str) -> Result<String, JsValue> {
     } else {
         Some(mask_pairs.as_slice())
     };
-    let result = cp_anywhere::colocalization::measure(
+    let measure = if parsed.float32 {
+        cp_anywhere::colocalization::measure_prepared_float32
+    } else {
+        cp_anywhere::colocalization::measure
+    };
+    let result = measure(
         &image_pairs,
         parsed.rows,
         parsed.cols,

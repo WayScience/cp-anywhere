@@ -26,7 +26,7 @@
 //!   every case except one object being fully encircled by another,
 //!   same-colored object at 1-pixel separation. That pathological nesting is
 //!   not reproduced here and is a known, explicit gap (see
-//!   [`DistanceToEdgeMethod`] note below); ordinary touching, border, and
+//!   `DistanceToEdgeMethod` note below); ordinary touching, border, and
 //!   concave/non-convex single-object shapes are unaffected and are exactly
 //!   correct.
 //! * The per-object radial center is `centrosome.cpmorphology.
@@ -117,6 +117,14 @@ pub enum ZernikeOption {
     MagnitudesAndPhase { degree: u32 },
 }
 
+/// Storage precision of the prepared CellProfiler image, before widening for
+/// transport into the core. This controls radial intensity arithmetic only.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PixelPrecision {
+    Float32,
+    Float64,
+}
+
 /// Settings mirroring one `images_list` x one object group x one
 /// `bin_counts` group of `MeasureObjectIntensityDistribution`, for the
 /// default ("These objects") center choice.
@@ -167,6 +175,42 @@ pub fn measure(
     cols: usize,
     config: &Config,
 ) -> Result<IntensityDistributionResult, String> {
+    measure_with_overflow(pixels, labels, rows, cols, config, !config.wants_scaled)
+}
+
+/// Measure one group with overflow columns controlled separately from distance
+/// normalization, as in CellProfiler's multi-group pipeline module.
+pub fn measure_with_overflow(
+    pixels: &[f64],
+    labels: &[u32],
+    rows: usize,
+    cols: usize,
+    config: &Config,
+    emit_overflow: bool,
+) -> Result<IntensityDistributionResult, String> {
+    measure_with_precision(
+        pixels,
+        labels,
+        rows,
+        cols,
+        config,
+        emit_overflow,
+        PixelPrecision::Float64,
+    )
+}
+
+/// Measure using the source image's storage precision for CellProfiler's
+/// dtype-sensitive radial operations. The pixel buffer may be widened to f64
+/// for transport; callers must supply the precision before widening.
+pub fn measure_with_precision(
+    pixels: &[f64],
+    labels: &[u32],
+    rows: usize,
+    cols: usize,
+    config: &Config,
+    emit_overflow: bool,
+    precision: PixelPrecision,
+) -> Result<IntensityDistributionResult, String> {
     if rows == 0 || cols == 0 {
         return Err("intensity distribution requires two nonzero dimensions".into());
     }
@@ -199,7 +243,7 @@ pub fn measure(
     let mut out = BTreeMap::new();
 
     if max_label == 0 {
-        for name in radial_column_names(config) {
+        for name in radial_column_names(config, emit_overflow) {
             out.insert(name, Vec::new());
         }
         if let Some(degree) = degree {
@@ -293,18 +337,31 @@ pub fn measure(
             let octant = imask as usize + (jmask as usize) * 2 + (absmask as usize) * 4;
 
             let value = pixels[idx];
-            hist_sum[obj * nbins + bin] += value;
-            hist_count[obj * nbins + bin] += 1.0;
-            wedge_sum[(obj * nbins + bin) * 8 + octant] += value;
-            wedge_count[(obj * nbins + bin) * 8 + octant] += 1.0;
+            let ring = obj * nbins + bin;
+            let wedge = ring * 8 + octant;
+            // SciPy densifies each coordinate-format sparse histogram in pixel order,
+            // in the input dtype. Counts and downstream CV are f64.
+            if precision == PixelPrecision::Float32 {
+                hist_sum[ring] = (hist_sum[ring] as f32 + value as f32) as f64;
+                wedge_sum[wedge] = (wedge_sum[wedge] as f32 + value as f32) as f64;
+            } else {
+                hist_sum[ring] += value;
+                wedge_sum[wedge] += value;
+            }
+            hist_count[ring] += 1.0;
+            wedge_count[wedge] += 1.0;
         }
     }
 
     let mut sum_by_object = vec![0.0_f64; n];
     let mut count_by_object = vec![0.0_f64; n];
     for obj in 0..n {
+        let row = &hist_sum[obj * nbins..(obj + 1) * nbins];
+        sum_by_object[obj] = match precision {
+            PixelPrecision::Float32 => numpy_sum_f32(row) as f64,
+            PixelPrecision::Float64 => row.iter().sum(),
+        };
         for bin in 0..nbins {
-            sum_by_object[obj] += hist_sum[obj * nbins + bin];
             count_by_object[obj] += hist_count[obj * nbins + bin];
         }
     }
@@ -314,7 +371,13 @@ pub fn measure(
     let mut radial_cv = vec![0.0_f64; n * nbins];
     for obj in 0..n {
         for bin in 0..nbins {
-            let fd = hist_sum[obj * nbins + bin] / sum_by_object[obj];
+            // Unlike MeanFrac and CV, this division has two float32 operands
+            // for a float32 image, so CellProfiler rounds the quotient too.
+            let sum = hist_sum[obj * nbins + bin];
+            let fd = match precision {
+                PixelPrecision::Float32 => (sum as f32 / sum_by_object[obj] as f32) as f64,
+                PixelPrecision::Float64 => sum / sum_by_object[obj],
+            };
             let fb = hist_count[obj * nbins + bin] / count_by_object[obj];
             frac_at_d[obj * nbins + bin] = fd;
             mean_frac[obj * nbins + bin] = fd / (fb + EPS);
@@ -356,7 +419,7 @@ pub fn measure(
             column(&radial_cv, n, nbins, bin - 1),
         );
     }
-    if !config.wants_scaled {
+    if emit_overflow {
         out.insert(
             overflow_name(config, "FracAtD"),
             column(&frac_at_d, n, nbins, config.bin_count),
@@ -378,6 +441,35 @@ pub fn measure(
     Ok(IntensityDistributionResult { columns: out })
 }
 
+// Derived from NumPy 1.23.5 FLOAT_pairwise_sum for a contiguous histogram
+// row (numpy/core/src/umath/loops_utils.h.src); see licenses/numpy.txt.
+fn numpy_sum_f32(row: &[f64]) -> f32 {
+    const BLOCK_SIZE: usize = 128;
+    match row.len() {
+        0..=7 => row.iter().fold(-0.0, |sum, &v| sum + v as f32),
+        8..=BLOCK_SIZE => {
+            let mut lanes = std::array::from_fn::<_, 8, _>(|i| row[i] as f32);
+            let mut chunks = row[8..].chunks_exact(8);
+            for chunk in &mut chunks {
+                for (lane, &v) in lanes.iter_mut().zip(chunk) {
+                    *lane += v as f32;
+                }
+            }
+            let [a, b, c, d, e, f, g, h] = lanes;
+            chunks
+                .remainder()
+                .iter()
+                .fold(((a + b) + (c + d)) + ((e + f) + (g + h)), |sum, &v| {
+                    sum + v as f32
+                })
+        }
+        len => {
+            let (left, right) = row.split_at((len / 2) & !7);
+            numpy_sum_f32(left) + numpy_sum_f32(right)
+        }
+    }
+}
+
 fn column(values: &[f64], n: usize, nbins: usize, bin: usize) -> Vec<f64> {
     (0..n).map(|obj| values[obj * nbins + bin]).collect()
 }
@@ -396,13 +488,13 @@ fn overflow_name(config: &Config, feature: &str) -> String {
     )
 }
 
-fn radial_column_names(config: &Config) -> Vec<String> {
+fn radial_column_names(config: &Config, emit_overflow: bool) -> Vec<String> {
     let mut names = Vec::new();
     for feature in ["FracAtD", "MeanFrac", "RadialCV"] {
         for bin in 1..=config.bin_count {
             names.push(scaled_name(config, feature, bin));
         }
-        if !config.wants_scaled {
+        if emit_overflow {
             names.push(overflow_name(config, feature));
         }
     }
@@ -969,6 +1061,16 @@ mod tests {
             assert!(col[0].is_finite() || col[0] == 0.0);
         }
     }
+
+    fn assert_pilot_strict(actual: f64, expected: f64, label: &str) {
+        let tol = 1e-10 + 1e-9 * expected.abs();
+        assert!(
+            (actual - expected).abs() <= tol,
+            "{label}: actual {actual:?} vs expected {expected:?} (tolerance {tol:?})"
+        );
+    }
+
+    include!("../../../fixtures/intensity_distribution/float_precision.rs");
 
     // Generated by scripts/reference/generate_intensity_distribution.py;
     // real-oracle fixtures from fixtures/intensity_distribution/. One

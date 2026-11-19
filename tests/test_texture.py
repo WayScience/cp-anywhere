@@ -32,7 +32,7 @@ def _assert_matches(got: float, want: float) -> None:
 @pytest.mark.parametrize("name", _CASES)
 def test_texture_matches_a_fresh_cellprofiler_oracle_run(name: str) -> None:
     fixture = json.loads((FIXTURES / f"{name}.json").read_text())
-    pixels = np.array(fixture["pixels"], dtype=np.float64)
+    pixels = np.array(fixture["pixels"], dtype=fixture.get("pixel_dtype", "float64"))
     labels = np.array(fixture["labels"], dtype=np.uint32)
     settings = fixture["settings"]
     wants_image, wants_object = _IMAGES_OR_OBJECTS[settings["images_or_objects"]]

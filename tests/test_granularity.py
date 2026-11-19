@@ -56,6 +56,30 @@ def test_granularity_rejects_a_one_row_image() -> None:
         measure_granularity(np.zeros((1, 9)))
 
 
+def test_float32_granularity_matches_pinned_oracle() -> None:
+    fixture = json.loads((FIXTURES / "float32/oracle.json").read_text())
+    case = fixture["cases"][1]
+    rows, cols = case["shape"]
+    r, c = np.indices((rows, cols))
+    image = (((r * 17 + c * 13 + r * c * 7) % 1021 + 23) / 2048).astype(np.float32)
+    labels = (1 + 2 * (r >= rows // 2) + (c >= cols // 2)).astype(np.uint32)
+    labels[(r + c) % 13 == 0] = 0
+    mask = (r * 3 + c * 7) % 17 > 1
+    result = measure_granularity(
+        image,
+        objects={"Cells": labels},
+        mask=mask,
+        subsample_size=case["subsample_size"],
+        image_sample_size=case["image_sample_size"],
+        element_size=10,
+        granular_spectrum_length=16,
+    )
+    np.testing.assert_allclose(result.image, case["image"], rtol=1e-9, atol=1e-10)
+    np.testing.assert_allclose(
+        result.objects["Cells"], case["cells"], rtol=1e-9, atol=1e-10
+    )
+
+
 def test_granularity_default_settings_match_cellprofiler_defaults() -> None:
     # CellProfiler's own MeasureGranularity module defaults.
     rng = np.random.RandomState(7)

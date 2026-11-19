@@ -33,11 +33,8 @@ from cp_anywhere import (
     SecondaryObjectsResult,
     SegmentationResult,
     TertiaryObjectsResult,
-    apply_illumination,
-    calculate_illumination,
     load_pipeline,
 )
-from cp_anywhere.cppipe import _cp_converted_pixels
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "fixtures/cppipe"
@@ -79,6 +76,7 @@ COMPARTMENTS = (
     "texture",
     "colocalization",
 )
+RADIAL_GROUPS = ("jump_groups", "scaled_then_unscaled", "unscaled_then_scaled")
 SINGLE_MODULE_SHAPES = (
     "border",
     "diagonal",
@@ -163,12 +161,28 @@ def _compartments() -> list[Case]:
     stain = np.load(FIXTURES / f"{SECONDARY}.stain.npy")
     images = {"DNA": dna, "Stain": stain}
     narrowed = {"DNA": dna, "Stain": stain.astype(np.float32).astype(np.float64)}
-    cases = [_fixture(SECONDARY, images)]
+    cases = [
+        _fixture(SECONDARY, images),
+        _fixture("secondary/identify_secondary_objects_watershed_image", images),
+    ]
     for family in COMPARTMENTS:
         inputs = images if family in {"tertiary", "size_shape"} else narrowed
         cases.extend(
             _fixture(f"{family}/{mode}", inputs) for mode in ("shrink", "no_shrink")
         )
+    return cases + _radial_groups()
+
+
+def _radial_groups() -> list[Case]:
+    cases = []
+    for case in RADIAL_GROUPS:
+        name = f"intensity_distribution/{case}"
+        oracle = json.loads(_read(FIXTURES / f"{name}.oracle.json"))
+        inputs = {
+            key: np.asarray(plane["values"], dtype=plane["dtype"])
+            for key, plane in oracle["inputs"].items()
+        }
+        cases.append(_fixture(name, inputs))
     return cases
 
 
@@ -188,6 +202,13 @@ def _fixture_cases() -> list[Case]:
                 {"DNA": np.load(FIXTURES / f"{ILLUMINATION}.test_image.npy")},
             ),
             _fixture(SAVE, {}),
+            _fixture(
+                "illumination/image_math_order",
+                {
+                    "Raw": np.array([[0, 0.25, 0.5], [0.75, 1, 0]], dtype=np.float32),
+                    "Flat": np.full((2, 3), 0.5, dtype=np.float32),
+                },
+            ),
         )
     )
     # The exporter generator appends descriptors to the complete shrink pipeline.
@@ -231,7 +252,11 @@ def _standalone_inputs(family: str, fixture: dict) -> dict[str, np.ndarray]:
                 for name, rows in fixture["labels"].items()
             },
         }
-    images: dict[str, np.ndarray] = {"Input": np.asarray(fixture["pixels"], np.float64)}
+    images: dict[str, np.ndarray] = {
+        "Input": np.asarray(
+            fixture["pixels"], dtype=fixture.get("pixel_dtype", "float64")
+        )
+    }
     if family == "granularity":
         images.update(
             {
@@ -495,6 +520,9 @@ def _integration_cases(cases: dict[str, Case]) -> list[Case]:
     label_shape = illumination.images["DNA"].shape
     illumination_text = _substitute(illumination.text, "ModuleCount:2", "ModuleCount:4")
     return [
+        _image_texture_tie_case(
+            cases["standalone_texture/float32_quantization_ties"],
+        ),
         replace(
             primary,
             name="variant/skipped_images_module",
@@ -519,6 +547,22 @@ def _integration_cases(cases: dict[str, Case]) -> list[Case]:
             "Overwrite existing files without warning?:No",
         ),
     ]
+
+
+def _image_texture_tie_case(case: Case) -> Case:
+    text = _substitute(
+        case.text, "Select objects to measure:Cells", "Select objects to measure:"
+    )
+    return replace(
+        case,
+        name="variant/image_texture_float32_ties",
+        text=_substitute(
+            text,
+            "Measure whole images or objects?:Both",
+            "Measure whole images or objects?:Images",
+        ),
+        run_error=None,
+    )
 
 
 def _dtype_cases(primary: Case) -> list[Case]:
@@ -571,6 +615,15 @@ def _raw_tertiary_cases(cases: dict[str, Case]) -> list[Case]:
 
 def _cases() -> list[Case]:
     cases = _fixture_cases() + _standalone_cases()
+    neighbor = ROOT / "fixtures/neighbors_distance/primary_mixed"
+    oracle = json.loads(_read(neighbor.with_suffix(".json")))
+    cases.append(
+        Case(
+            "neighbors_distance/primary_mixed",
+            _read(neighbor.with_suffix(".cppipe")),
+            {"DNA": np.asarray(oracle["pixels"], dtype=np.float32)},
+        )
+    )
     # The individual inventories check mappings; this also catches a new
     # fixture in a directory that is not yet listed by the harness.
     count = sum(1 for _ in (ROOT / "fixtures").rglob("*.cppipe"))
@@ -624,29 +677,11 @@ def _expected_error(outcome: object, pattern: str, path: str) -> None:
 
 
 def _derived_images(pipeline: Pipeline, inputs: dict[str, np.ndarray]) -> dict:
-    """Run the direct Python APIs because Pipeline.run does not return planes."""
-    images = inputs.copy()
-    derived = {}
-    for step in pipeline.illumination_calculate_steps:
-        settings = asdict(step)
-        input_name = settings.pop("input_image")
-        output_name = settings.pop("output_image")
-        plane = calculate_illumination(
-            _cp_converted_pixels(images[input_name]), **settings
-        )
-        derived[output_name] = images[output_name] = plane
-    for step in pipeline.illumination_apply_steps:
-        for entry in step.images:
-            plane = apply_illumination(
-                _cp_converted_pixels(images[entry.input_image]),
-                _cp_converted_pixels(images[entry.illumination_function_image]),
-                divide_or_subtract=entry.divide_or_subtract,
-                truncate_low=step.truncate_low,
-                truncate_high=step.truncate_high,
-            )
-            derived[entry.output_image] = images[entry.output_image] = plane
+    """Read prepared planes separately from the stable Python run tuple."""
     return {
-        name: {"shape": plane.shape, "values": plane} for name, plane in derived.items()
+        name: {"shape": plane.shape, "values": plane}
+        for name, plane in pipeline.prepare_images(inputs).items()
+        if plane is not inputs.get(name)
     }
 
 
@@ -899,9 +934,10 @@ def _check_coverage(cases: list[Case], expected: list[dict]) -> None:
         raise ValueError(msg)
 
 
-def _run(cases: list[Case], directory: Path) -> None:
+def _run(cases: list[Case], directory: Path, *, full: bool = True) -> None:
     expected = [_python_result(case, directory) for case in cases]
-    _check_coverage(cases, expected)
+    if full:
+        _check_coverage(cases, expected)
     data = json.dumps(
         [case.payload() for case in cases], allow_nan=False, separators=(",", ":")
     )
@@ -921,10 +957,16 @@ def _run(cases: list[Case], directory: Path) -> None:
 
 def main() -> None:
     """Run all cases; exit nonzero on any mismatch or missing runtime."""
-    argparse.ArgumentParser(description=__doc__).parse_args()
-    cases = _cases()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--radial-groups",
+        action="store_true",
+        help="run only the radial group fixtures",
+    )
+    args = parser.parse_args()
+    cases = _radial_groups() if args.radial_groups else _cases()
     with tempfile.TemporaryDirectory(prefix="cp-anywhere-cppipe-parity-") as temp:
-        _run(cases, Path(temp))
+        _run(cases, Path(temp), full=not args.radial_groups)
     errors = sum(bool(case.compile_error or case.run_error) for case in cases)
     print(
         f".cppipe parity passed: {len(cases) - errors} successes, {errors} rejections "

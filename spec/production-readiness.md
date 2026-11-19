@@ -2,7 +2,9 @@
 
 This pilot does not establish production readiness.
 It separates agreement with CellProfiler from useful correction on real images.
-The machine-readable evidence is in `spec/real-data-pilot-summary.json`.
+The archived baseline is in `spec/real-data-pilot-summary.json`.
+The latest recheck reports remain outside the repository under
+`~/.hermes/cache/scratch/cp-anywhere-production-pilot/`.
 
 ## Reference replay and fixture reproducibility
 
@@ -34,7 +36,8 @@ No held-out field contributes to its own illumination function.
 Four additional cases cover two known-shading simulations with noisy independent calibration, an empty field, and a saturated field.
 These cases are simulations, not instrument calibration measurements.
 
-The run includes illumination calculation, correction, primary/secondary/tertiary segmentation, measurements, and exports.
+The archived run includes illumination calculation, correction, primary/secondary/tertiary segmentation, measurements, and exports.
+The table records that earlier run, not the latest recheck. The fresh post-fix report is `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-global-fixed-20261119/report.json`: 14 held-out cases, 308,591 end-to-end feature scalars, zero mismatches across all comparisons. The reference CP 4.2.8 process was executed again. This bounded agreement does not establish production readiness.
 
 | Comparison                                          | Result                                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -49,6 +52,14 @@ Both feature comparisons use the original tolerances: core `rtol=1e-9, atol=1e-1
 Schema, shape, and nonfinite-kind comparisons remain strict.
 The 1,490 failed checks in the report include both comparisons, not 1,490 distinct faulty features.
 
+The latest native recheck used a byte-identical input manifest and the same pinned CellProfiler outputs.
+It passed all 5,160,000 illumination pixels and 20,640,000 array pixels.
+Of 308,591 feature values, only 60 Zernike columns failed in one field.
+The same 60 columns failed on the identical-input measurement pass.
+All other measured columns passed at the unchanged tolerances.
+The new comparison is `run-after-image-intensity-20261119/comparison.json` in the scratch directory above.
+This recheck did not repeat the archived CSV, Parquet, and SQLite export checks.
+
 ### Fixed defects
 
 An all-foreground distance transform used a constant native sentinel instead of SciPy's actual no-background behavior.
@@ -60,27 +71,11 @@ The reference runner also saved a diagnostic array after a later module changed 
 It now copies the secondary array immediately after identification.
 This fixes the reference capture rather than changing correct native labels.
 
-### Remaining blockers
+### Zernike and browser limitations
 
-End-to-end intensity differences include float32 arithmetic in CellProfiler and float64 arithmetic in the native measurement API.
-The report retains these disagreements.
-A separate real-CellProfiler measurement pass uses identical float64 inputs to isolate measurement behavior.
-This pass does not replace the original pipeline results.
+The older per-object native circle algorithm failed strict full-field Zernike parity in `f9620-20P1-POS0002`. Coordinated multi-object circle iterations and the pinned NumPy global angle sort now pass the unchanged strict full-field oracle and the fresh 14-case pilot with zero mismatches. The historical failures below are retained in the archived report; see `fixtures/size_shape/zernike_context/README.md`.
 
-Zernike measurements remain a release blocker for strict full-field parity.
-The failing field is `f9620-20P1-POS0002`.
-The common-input comparison isolates the disagreement from illumination and segmentation.
-No wider tolerance or expected-failure marker hides this result.
-
-The investigation confirmed context-dependent tie selection in CellProfiler's minimum-enclosing-circle calculation.
-Equal-angle vertices can be selected differently when unrelated objects share the label image.
-A tiny radius change then includes or excludes different boundary pixels.
-The 60 failing feature-vector checks contain 90 disagreeing values across three objects.
-Native values match isolated CellProfiler measurements, but not the original full-field measurements.
-
-Full labels, real reference measurements, and reproduction commands are preserved in `fixtures/size_shape/zernike_context/README.md`.
-The real-reference reproduction passes exactly; the strict native comparison correctly exits with status 1.
-Production Zernike code remains unchanged rather than introducing a field-specific tie rule or boundary epsilon.
+The real-browser WASM size/shape suite passes its 32 existing cases, but a separate full-label browser check still differs on 30 Nuclei object 6 Zernike values on both WASM entry points. That report is `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-full-field-wasm-20261119.json`. WASM full-field parity is not established.
 
 Cytoplasm can contain missing object IDs after subtraction.
 The pilot retains those IDs and measures intensity, but explicitly excludes unsupported cytoplasm shape measurements.
@@ -124,7 +119,9 @@ Heavy arrays stay outside the repository.
 
 ## Local quality gates
 
-The reviewed tree passed 633 Python tests with both real-reference replay tests enabled.
-All 160 Rust unit tests, Clippy with warnings denied, and the full pre-commit suite passed.
-The real-data pilot deliberately reports failure despite these software checks.
-A hosted CI run of these uncommitted edits remains unverified.
+The current tree passed 743 Python tests (two skipped), Rust workspace tests,
+Clippy with warnings denied, and the full pre-commit suite.
+A fresh full comparison of two original CPJUMP1 fields passed all 7,154 requested
+measurement columns per field with no discrepancies.
+The fresh BBBC007 strict native pilot passes; browser WASM full-field Zernike parity remains unverified and the targeted check fails.
+Hosted CI for these uncommitted edits remains unverified.

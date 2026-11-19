@@ -250,7 +250,13 @@ fn correlate_constant_zero(
 /// deviations (`radius = floor(4*sigma + 0.5)`), zero-padded border.
 /// Confirmed by direct comparison against real scipy output, not
 /// inferred from its docstring alone.
-fn gaussian_filter_constant_zero(image: &[f64], rows: usize, cols: usize, sigma: f64) -> Vec<f64> {
+fn gaussian_filter_constant_zero(
+    image: &[f64],
+    rows: usize,
+    cols: usize,
+    sigma: f64,
+    output_f32: bool,
+) -> Vec<f64> {
     let radius = (4.0 * sigma + 0.5) as isize;
     let mut weights = Vec::with_capacity((2 * radius + 1) as usize);
     for k in -radius..=radius {
@@ -260,18 +266,20 @@ fn gaussian_filter_constant_zero(image: &[f64], rows: usize, cols: usize, sigma:
     for w in weights.iter_mut() {
         *w /= sum;
     }
-    // Horizontal pass (along columns), then vertical pass (along rows).
+    // scipy.ndimage.gaussian_filter traverses axes in increasing order:
+    // rows (axis 0) first, columns (axis 1) second. Rounding the
+    // intermediate float32 buffer makes the order observable.
     let mut tmp = vec![0.0; rows * cols];
     for r in 0..rows {
         for c in 0..cols {
             let mut acc = 0.0;
             for (offset, &w) in (-radius..=radius).zip(&weights) {
-                let jj = c as isize + offset;
-                if jj >= 0 && jj < cols as isize {
-                    acc += image[r * cols + jj as usize] * w;
+                let ii = r as isize + offset;
+                if ii >= 0 && ii < rows as isize {
+                    acc += image[ii as usize * cols + c] * w;
                 }
             }
-            tmp[r * cols + c] = acc;
+            tmp[r * cols + c] = if output_f32 { acc as f32 as f64 } else { acc };
         }
     }
     let mut out = vec![0.0; rows * cols];
@@ -279,12 +287,12 @@ fn gaussian_filter_constant_zero(image: &[f64], rows: usize, cols: usize, sigma:
         for c in 0..cols {
             let mut acc = 0.0;
             for (offset, &w) in (-radius..=radius).zip(&weights) {
-                let ii = r as isize + offset;
-                if ii >= 0 && ii < rows as isize {
-                    acc += tmp[ii as usize * cols + c] * w;
+                let jj = c as isize + offset;
+                if jj >= 0 && jj < cols as isize {
+                    acc += tmp[r * cols + jj as usize] * w;
                 }
             }
-            out[r * cols + c] = acc;
+            out[r * cols + c] = if output_f32 { acc as f32 as f64 } else { acc };
         }
     }
     out
@@ -461,9 +469,23 @@ fn smooth_plane(
         SmoothingMethod::None => Ok(pixels.to_vec()),
         SmoothingMethod::FitPolynomial => Ok(fit_polynomial(pixels, mask, rows, cols)),
         SmoothingMethod::GaussianFilter => {
-            Ok(smooth_with_function_and_mask(pixels, mask, |plane| {
-                gaussian_filter_constant_zero(plane, rows, cols, sigma)
-            }))
+            // CellProfiler's mask is cast to float64 by centrosome, but
+            // scipy.ndimage filters the averaged float32 image into float32
+            // intermediate and output buffers. Only the final division by
+            // the float64 mask response is performed in float64.
+            let mask_f64: Vec<f64> = mask.iter().map(|&m| f64::from(m)).collect();
+            let bleed_over = gaussian_filter_constant_zero(&mask_f64, rows, cols, sigma, false);
+            let masked_image: Vec<f64> = pixels
+                .iter()
+                .zip(mask)
+                .map(|(&v, &m)| if m { v } else { 0.0 })
+                .collect();
+            let smoothed = gaussian_filter_constant_zero(&masked_image, rows, cols, sigma, is_f32);
+            Ok(smoothed
+                .iter()
+                .zip(&bleed_over)
+                .map(|(&s, &b)| s / (b + f64::EPSILON))
+                .collect())
         }
         SmoothingMethod::MedianFilter => {
             let filter_sigma = (sigma + 0.5).max(1.0) as usize;
@@ -708,7 +730,7 @@ pub fn calculate_each(
 
 /// Calculate the illumination function across many image sets ("All:
 /// First cycle" / "All: Across cycles" mode): accumulate every
-/// image's own [`preprocess_for_averaging`] contribution into a
+/// image's own `preprocess_for_averaging` contribution into a
 /// per-pixel sum and mask-count (CellProfiler's own
 /// `CorrectIlluminationImageProvider.add()`), divide to get the
 /// average (CellProfiler's own `calculate_image()`, which
@@ -731,7 +753,9 @@ pub fn calculate_across(
         return Err("calculate_across needs at least one image".to_string());
     }
     let size = rows * cols;
-    let mut sum = vec![0.0_f64; size];
+    // CP's Image.pixel_data and the provider's image_sum buffer are both
+    // float32. Each addition rounds before the next calibration field.
+    let mut sum = vec![0.0_f32; size];
     let mut count = vec![0u32; size];
     let all_true = vec![true; size];
     for &(pixels, mask) in images {
@@ -747,7 +771,7 @@ pub fn calculate_across(
             preprocess_for_averaging(pixels, mask, has_mask, rows, cols, config);
         for idx in 0..size {
             if mask[idx] {
-                sum[idx] += contribution[idx];
+                sum[idx] += contribution[idx] as f32;
                 count[idx] += 1;
             }
         }
@@ -756,7 +780,7 @@ pub fn calculate_across(
     let mut combined_mask = vec![false; size];
     for idx in 0..size {
         if count[idx] > 0 {
-            avg[idx] = sum[idx] / count[idx] as f64;
+            avg[idx] = sum[idx] as f64 / count[idx] as f64;
             combined_mask[idx] = true;
         }
     }

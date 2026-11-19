@@ -1,5 +1,6 @@
 use super::{list, RawModule};
 use serde_json::{json, Value};
+use std::collections::HashSet;
 
 // Every Measure* module that shares Python's MeasurementStep gets all of
 // its dataclass fields, including defaults unrelated to its own family.
@@ -27,6 +28,7 @@ fn measurement_step(
         "calculate_advanced": calculate_advanced,
         "wants_excluded_objects": flags.wants_excluded_objects,
         "wants_expand": flags.wants_expand,
+        "neighbors_distance": null,
     })
 }
 
@@ -57,7 +59,7 @@ pub(super) fn image_intensity(raw: &RawModule<'_>) -> Result<Value, String> {
 
 pub(super) fn neighbors(raw: &RawModule<'_>) -> Result<Value, String> {
     // Python reads the first five settings and ignores any visual output settings.
-    let [object_name, neighbors_name, distance_method, _distance, wants_excluded_objects] =
+    let [object_name, neighbors_name, distance_method, distance, wants_excluded_objects] =
         raw.leading()?;
     if object_name != neighbors_name {
         return Err(raw.error(format_args!("only an object set against itself is supported (got {object_name:?} against {neighbors_name:?})")));
@@ -65,9 +67,13 @@ pub(super) fn neighbors(raw: &RawModule<'_>) -> Result<Value, String> {
     let wants_expand = raw.choice(
         "distance method",
         distance_method,
-        &[("Adjacent", false), ("Expand until adjacent", true)],
+        &[
+            ("Adjacent", false),
+            ("Expand until adjacent", true),
+            ("Within a specified distance", false),
+        ],
     )?;
-    Ok(measurement_step(
+    let mut step = measurement_step(
         raw,
         "neighbors",
         &[],
@@ -77,7 +83,17 @@ pub(super) fn neighbors(raw: &RawModule<'_>) -> Result<Value, String> {
             wants_expand,
             ..MeasurementFlags::default()
         },
-    ))
+    );
+    if distance_method == "Within a specified distance" {
+        let radius = raw.int("Neighbor distance", distance)?;
+        if !matches!(radius.as_u64(), Some(n) if (1..=u64::from(u32::MAX)).contains(&n)) {
+            return Err(
+                raw.error("Neighbor distance must be a positive integer that fits in uint32")
+            );
+        }
+        step["neighbors_distance"] = json!(radius);
+    }
+    Ok(step)
 }
 
 pub(super) fn size_shape(raw: &RawModule<'_>) -> Result<Value, String> {
@@ -111,12 +127,59 @@ pub(super) fn granularity(raw: &RawModule<'_>) -> Result<Value, String> {
 }
 
 pub(super) fn intensity_distribution(raw: &RawModule<'_>) -> Result<Value, String> {
-    let [images, _hidden_image_groups, _hidden_object_groups, _hidden_bin_groups, zernikes, zernike_degree, objects, center_choice, _center_objects, wants_scaled, bin_count, maximum_radius] =
-        raw.exact()?;
-    if center_choice != "These objects" {
-        return Err(raw.error(format_args!("'Object to use as center?' = {center_choice:?} is not supported (only 'These objects' is)")));
+    const FIXED: usize = 6;
+    const WIDTH: usize = 3;
+    let [images, object_count, bin_count, heatmap_count, zernikes, zernike_degree] =
+        raw.leading::<FIXED>()?;
+    let nobjects = raw.count("object group count", object_count)?;
+    let nbins = raw.count("bin group count", bin_count)?;
+    if nobjects < 1 || nbins < 1 {
+        return Err(raw.error("object and bin group counts must be positive"));
     }
-    let wants_scaled = raw.yes_no("'Scale the bins?'", wants_scaled)?;
+    if raw.count("heatmap group count", heatmap_count)? != 0 {
+        return Err(raw.error("heatmap groups are not supported"));
+    }
+    let groups = &raw.settings[FIXED..];
+    // Compare counts before slicing; malformed counts cannot overflow on wasm32.
+    if groups.len() % WIDTH != 0
+        || nobjects.checked_add(nbins) != i64::try_from(groups.len() / WIDTH).ok()
+    {
+        return Err(raw.count_error(format_args!(
+            "{FIXED} + {WIDTH} * ({nobjects} object group(s) + {nbins} bin group(s))"
+        )));
+    }
+    let (object_groups, bin_groups) = groups.split_at(nobjects as usize * WIDTH);
+    let mut objects = Vec::new();
+    let mut object_names = HashSet::new();
+    for group in object_groups.chunks_exact(WIDTH) {
+        let name = group[0];
+        let center = group[1];
+        if center != "These objects" {
+            return Err(raw.error(format_args!("'Object to use as center?' = {center:?} for {name:?} is not supported (only 'These objects' is)")));
+        }
+        if !object_names.insert(name) {
+            return Err(raw.error(format_args!("duplicate object group {name:?}")));
+        }
+        objects.push(name);
+    }
+    let mut bins = Vec::new();
+    let mut counts = HashSet::new();
+    for group in bin_groups.chunks_exact(WIDTH) {
+        let scaled = raw.yes_no("'Scale the bins?'", group[0])?;
+        let count = raw.int("bin count", group[1])?;
+        let radius = raw.float("maximum radius", group[2])?;
+        let count = count
+            .as_u64()
+            .filter(|&count| count > 0)
+            .ok_or_else(|| raw.error("bin count must be positive"))?;
+        if !scaled && radius <= 0.0 {
+            return Err(raw.error("maximum radius must be finite and positive for unscaled bins"));
+        }
+        if !counts.insert(count) {
+            return Err(raw.error(format_args!("duplicate bin count {count}")));
+        }
+        bins.push(json!({"bin_count": count, "wants_scaled": scaled, "maximum_radius": radius}));
+    }
     let zernikes = raw.choice(
         "'Calculate intensity Zernikes?'",
         zernikes,
@@ -127,9 +190,9 @@ pub(super) fn intensity_distribution(raw: &RawModule<'_>) -> Result<Value, Strin
         ],
     )?;
     Ok(json!({
-        "images": list(images), "objects": list(objects),
-        "bin_count": raw.int("bin_count", bin_count)?, "wants_scaled": wants_scaled,
-        "maximum_radius": raw.float("maximum_radius", maximum_radius)?,
+        "images": list(images), "objects": objects,
+        "bin_count": bins[0]["bin_count"], "wants_scaled": bins[0]["wants_scaled"],
+        "maximum_radius": bins[0]["maximum_radius"], "additional_bin_groups": bins[1..],
         "zernikes": zernikes, "zernike_degree": raw.int("zernike_degree", zernike_degree)?,
     }))
 }

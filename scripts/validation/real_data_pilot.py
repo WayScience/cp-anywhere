@@ -224,7 +224,18 @@ def native_case(
     image_id = f"{destination.parent.name}/{field['id']}"
     # Empty cytoplasm regions leave sparse IDs. Keep those IDs and measure
     # their intensities, but do not request unsupported sparse shape columns.
-    result = measure_case(corrected, labels, image_id, settings)
+    # CP keeps these corrected images as float32. Our illumination core emits
+    # float64 values that are *exactly* the same pixels, but a float64 image
+    # uses different NumPy reduction precision in MeasureImageIntensity.
+    # Preserve corrected arrays/segmentation as-is; restore CP's dtype only
+    # at the measurement boundary (checked for lossless conversion).
+    measurement_images = {name: corrected[name].astype(np.float32) for name in CHANNELS}
+    if any(
+        not np.array_equal(measurement_images[name].astype(np.float64), corrected[name])
+        for name in CHANNELS
+    ):
+        raise ValueError("corrected pixels cannot be represented exactly as float32")
+    result = measure_case(measurement_images, labels, image_id, settings)
     np.savez(
         destination.with_suffix(".npz"),
         DNA_corrected=corrected["DNA"],
@@ -364,7 +375,12 @@ def compare_pilot(manifest: dict, native: Path, oracle: Path) -> list[dict]:
             # illumination rounding cannot disguise a measurement mismatch.
             with np.load(oracle_stem.with_suffix(".npz"), allow_pickle=False) as data:
                 shared = measure_case(
-                    {channel: data[f"{channel}_corrected"] for channel in CHANNELS},
+                    # The separate CP shared-input pass explicitly promotes
+                    # these same pixels to float64 before measuring.
+                    {
+                        channel: data[f"{channel}_corrected"].astype(np.float64)
+                        for channel in CHANNELS
+                    },
                     {
                         scope: data[f"{scope}_labels"]
                         for scope in ("Nuclei", "Cells", "Cytoplasm")

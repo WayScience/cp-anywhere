@@ -11,14 +11,17 @@ from .cppipe import (
     IlluminationApplyImage,
     IlluminationApplyStep,
     IlluminationCalculateStep,
+    ImageMathStep,
     IntensityDistributionStep,
     MeasurementStep,
     Pipeline,
+    PipelineModuleCheck,
     SaveImagesStep,
     SecondaryObjectsStep,
     SegmentationStep,
     TertiaryObjectsStep,
     TextureStep,
+    inspect_pipeline,
     load_pipeline,
 )
 from .granularity import GranularityResult, measure_granularity
@@ -32,6 +35,10 @@ from .intensity_distribution import (
     measure_intensity_distribution,
 )
 from .io import load_array, measure_files
+from .plate_illumination import (
+    PlateIlluminationPipeline,
+    load_plate_illumination_pipeline,
+)
 from .preview import preview_segmentation
 from .save_images import save_array
 from .segment import (
@@ -54,12 +61,15 @@ __all__ = [
     "IlluminationApplyImage",
     "IlluminationApplyStep",
     "IlluminationCalculateStep",
+    "ImageMathStep",
     "ImageSetResult",
     "IntensityDistributionResult",
     "IntensityDistributionStep",
     "MeasurementResult",
     "MeasurementStep",
     "Pipeline",
+    "PipelineModuleCheck",
+    "PlateIlluminationPipeline",
     "SaveImagesStep",
     "SecondaryObjectsResult",
     "SecondaryObjectsStep",
@@ -75,8 +85,10 @@ __all__ = [
     "identify_primary_objects",
     "identify_secondary_objects",
     "identify_tertiary_objects",
+    "inspect_pipeline",
     "load_array",
     "load_pipeline",
+    "load_plate_illumination_pipeline",
     "measure",
     "measure_colocalization",
     "measure_files",

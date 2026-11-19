@@ -116,6 +116,40 @@ def test_colocalization_rejects_mismatched_shapes() -> None:
         measure_colocalization({"DNA": np.zeros((5, 5)), "GFP": np.zeros((5, 6))})
 
 
+def test_float32_object_threshold_preserves_source_dtype() -> None:
+    # CP 4.2.8: 31% of 0.3_f32 rounds down to include the 0.093_f32 pixel.
+    images32 = {
+        "A": np.array([[0.3, 0.093], [0.0, 0.0]], dtype=np.float32),
+        "B": np.array([[0.9, 0.4], [0.0, 0.0]], dtype=np.float32),
+    }
+    labels = np.array([[1, 1], [0, 0]], dtype=np.uint32)
+
+    def measure(images: dict[str, np.ndarray]) -> np.ndarray:
+        return measure_colocalization(
+            images,
+            objects=labels,
+            threshold_percent=31.0,
+            do_corr_and_slope=False,
+            do_manders=True,
+            do_rwc=True,
+            do_overlap=False,
+            do_costes=False,
+            wants_image_measurements=False,
+            wants_object_measurements=True,
+        ).objects["Correlation_Manders_B_A"]
+
+    prepared = measure(images32)
+    assert prepared == [1.0]
+    widened = {name: image.astype(np.float64) for name, image in images32.items()}
+    full_precision = measure(widened)
+    np.testing.assert_allclose(
+        full_precision,
+        [0.692307683490437],
+        rtol=1e-9,
+        atol=1e-10,
+    )
+
+
 def test_colocalization_rejects_a_single_image() -> None:
     with pytest.raises(ValueError, match="at least two images"):
         measure_colocalization({"DNA": np.zeros((5, 5))})

@@ -426,8 +426,9 @@ def identify_secondary_objects(
     intensity, larger values favor Euclidean geometry) or
     ``"distance_n"`` (a fixed-radius Euclidean expansion bounded by
     ``distance_to_dilate``, with no image or threshold involved at
-    all). ``"distance_b"``, ``"watershed_gradient"``, and
-    ``"watershed_image"`` are explicit, not-yet-implemented gaps.
+    all), or ``"watershed_image"`` (watershed on inverted intensity within
+    the threshold foreground and seed mask). ``"distance_b"`` and
+    ``"watershed_gradient"`` are not supported.
 
     ``threshold``/``rescale``/``threshold_correction_factor``/
     ``threshold_range``/``threshold_smoothing_scale``/``log_transform``/
@@ -458,12 +459,12 @@ def identify_secondary_objects(
         else _label_array(primary_labels_in, array.shape)
     )
 
-    if method not in ("propagation", "distance_n"):
-        raise ValueError(
-            "method must be 'propagation' or 'distance_n' "
-            "('distance_b', 'watershed_gradient', and 'watershed_image' "
-            "are explicit, not-yet-implemented gaps)"
+    if method not in ("propagation", "distance_n", "watershed_image"):
+        msg = (
+            f"Unsupported secondary method {method!r}; "
+            "use propagation, distance_n, or watershed_image"
         )
+        raise ValueError(msg)
 
     is_integer_dtype = array.dtype.kind in "iu"
     if rescale and is_integer_dtype:

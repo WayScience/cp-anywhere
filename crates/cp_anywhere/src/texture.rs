@@ -161,10 +161,19 @@ fn rescale_gray_level(ub: u8, gray_levels: u32) -> u8 {
 
 /// The full `img_as_ubyte` + (conditional) `rescale_intensity` pipeline real
 /// CellProfiler applies to a whole image before ever touching mahotas.
-fn convert_image(pixels: &[f64], gray_levels: u32) -> Vec<u8> {
+fn convert_image(pixels: &[f64], gray_levels: u32, float32: bool) -> Vec<u8> {
     pixels
         .iter()
-        .map(|&x| rescale_gray_level(img_as_ubyte(x), gray_levels))
+        .map(|&x| {
+            let byte = if float32 {
+                // skimage multiplies the float32 input in its own precision.
+                // Widening before multiplication changes which ties round to even.
+                (x as f32 * 255.0).round_ties_even().clamp(0.0, 255.0) as u8
+            } else {
+                img_as_ubyte(x)
+            };
+            rescale_gray_level(byte, gray_levels)
+        })
         .collect()
 }
 
@@ -428,6 +437,31 @@ pub fn measure(
     image_name: &str,
     config: &Config,
 ) -> Result<TextureResult, String> {
+    measure_in_precision(pixels, rows, cols, labels, image_name, config, false)
+}
+
+/// Measure a CellProfiler float32 plane whose samples are carried as f64.
+/// The byte conversion rounds the scale multiplication in float32.
+pub fn measure_float32(
+    pixels: &[f64],
+    rows: usize,
+    cols: usize,
+    labels: &[u32],
+    image_name: &str,
+    config: &Config,
+) -> Result<TextureResult, String> {
+    measure_in_precision(pixels, rows, cols, labels, image_name, config, true)
+}
+
+fn measure_in_precision(
+    pixels: &[f64],
+    rows: usize,
+    cols: usize,
+    labels: &[u32],
+    image_name: &str,
+    config: &Config,
+    float32: bool,
+) -> Result<TextureResult, String> {
     if rows == 0 || cols == 0 {
         return Err("rows and cols must both be nonzero".into());
     }
@@ -453,7 +487,7 @@ pub fn measure(
         return Err("gray_levels must be between 2 and 256".into());
     }
 
-    let converted = convert_image(pixels, config.gray_levels);
+    let converted = convert_image(pixels, config.gray_levels, float32);
 
     let mut result = TextureResult::default();
 

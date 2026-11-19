@@ -277,3 +277,20 @@ def test_identify_secondary_objects_rejects_an_unknown_primary_object(
     stain = np.load(secondary_dir / "identify_secondary_objects_propagation.stain.npy")
     with pytest.raises(CppipeError, match="OtherNuclei"):
         pipeline.run({"DNA": dna, "Stain": stain})
+
+
+def test_image_watershed_matches_cellprofiler() -> None:
+    directory = FIXTURE_DIR / "secondary"
+    base = directory / "identify_secondary_objects_watershed_image"
+    inputs = directory / "identify_secondary_objects_propagation"
+    expected = json.loads(base.with_suffix(".expected.json").read_text())
+    pipeline = load_pipeline(base.with_suffix(".cppipe"))
+    assert pipeline.secondary_steps[0].config["method"] == "watershed_image"
+    primary, secondary, _ = pipeline.run(
+        {
+            "DNA": np.load(inputs.with_suffix(".dna.npy")),
+            "Stain": np.load(inputs.with_suffix(".stain.npy")),
+        }
+    )
+    assert primary["Nuclei"].object_count == expected["nuclei_object_count"]
+    np.testing.assert_array_equal(secondary["Cells"].labels, expected["cells_labels"])

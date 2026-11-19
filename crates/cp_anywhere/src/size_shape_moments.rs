@@ -138,6 +138,17 @@ pub fn measure(
             }
         }
     }
+    // Centrosome selects candidate vertices from all objects in one global
+    // minimum_position sort on every iteration, not one object at a time.
+    let circles = if calculate_zernikes {
+        let hulls = points
+            .iter()
+            .map(|(&id, pixels)| (id, convex_hull(pixels)))
+            .collect();
+        enclosing_circles(hulls)
+    } else {
+        BTreeMap::new()
+    };
     for (&label, pixels) in &points {
         let mut put = |name: String, value: f64| {
             result.get_mut(&format!("AreaShape_{name}")).unwrap()[label as usize - 1] = value;
@@ -201,7 +212,7 @@ pub fn measure(
             );
         }
         if calculate_zernikes {
-            let (center, radius) = enclosing_circle(&convex_hull(pixels));
+            let (center, radius) = circles[&label];
             for n in 0..10 {
                 for m in (n % 2..=n).step_by(2) {
                     put(
@@ -398,59 +409,138 @@ fn diameter(a: Point, b: Point) -> (Point, f64) {
 // Chrystal's hull algorithm, with centrosome's angle tests and circumcenter
 // arithmetic. A numerically equivalent circle is insufficient: its rounding
 // determines whether boundary pixels pass the strict Zernike r^2 <= 1 mask.
-fn enclosing_circle(hull: &[Point]) -> (Point, f64) {
-    if hull.len() == 1 {
-        return (hull[0], 0.0);
-    }
-    if hull.len() == 2 {
-        return diameter(hull[0], hull[1]);
-    }
-    let (mut s0, mut s1) = (0, 1);
+struct CircleState {
+    label: u32,
+    hull: Vec<Point>,
+    // Centrosome swaps within_label_indexes when replacing an endpoint.
+    // Only vertices numbered >= 2 participate in the next global sort.
+    ranks: Vec<usize>,
+    s0: usize,
+    s1: usize,
+    circle: Option<(Point, f64)>,
+}
+
+#[derive(Clone, Copy)]
+struct CircleCandidate {
+    object: usize,
+    vertex: usize,
+    angle: f64,
+    at_a: f64,
+    at_b: f64,
+}
+
+fn enclosing_circles(hulls: BTreeMap<u32, Vec<Point>>) -> BTreeMap<u32, (Point, f64)> {
+    let mut states: Vec<_> = hulls
+        .into_iter()
+        .map(|(label, hull)| {
+            let circle = match hull.len() {
+                0 => None,
+                1 => Some((hull[0], 0.0)),
+                2 => Some(diameter(hull[0], hull[1])),
+                _ => None,
+            };
+            CircleState {
+                label,
+                ranks: (0..hull.len()).collect(),
+                hull,
+                s0: 0,
+                s1: 1,
+                circle,
+            }
+        })
+        .collect();
     let half_pi = std::f64::consts::FRAC_PI_2;
-    loop {
-        let (a, b) = (hull[s0], hull[s1]);
-        let ab2 = distance_squared(a, b);
-        let mut smallest = (f64::INFINITY, 0, 0.0, 0.0);
-        for (i, &v) in hull.iter().enumerate() {
-            if i == s0 || i == s1 {
+    while states.iter().any(|state| state.circle.is_none()) {
+        // Flatten in label/hull order, exactly as centrosome's
+        // keep_me_vertices mask; scipy.ndimage.minimum_position sorts this
+        // entire vector (NumPy's unstable argsort) before grouping by label.
+        let mut candidates = Vec::new();
+        for (object, state) in states.iter().enumerate() {
+            if state.circle.is_some() {
                 continue;
             }
-            let at_b = (((a.row - b.row) * (v.row - b.row) + (a.col - b.col) * (v.col - b.col))
-                / (ab2 * distance_squared(v, b)).sqrt())
-            .acos()
-            .abs();
-            let at_a = (((b.row - a.row) * (v.row - a.row) + (b.col - a.col) * (v.col - a.col))
-                / (ab2 * distance_squared(v, a)).sqrt())
-            .acos()
-            .abs();
-            let at_v = std::f64::consts::PI - at_b - at_a;
-            if at_v < smallest.0 {
-                smallest = (at_v, i, at_a, at_b);
+            let (a, b) = (state.hull[state.s0], state.hull[state.s1]);
+            let ab2 = distance_squared(a, b);
+            for (vertex, &v) in state.hull.iter().enumerate() {
+                if state.ranks[vertex] < 2 {
+                    continue;
+                }
+                let at_b = (((a.row - b.row) * (v.row - b.row)
+                    + (a.col - b.col) * (v.col - b.col))
+                    / (ab2 * distance_squared(v, b)).sqrt())
+                .acos()
+                .abs();
+                let at_a = (((b.row - a.row) * (v.row - a.row)
+                    + (b.col - a.col) * (v.col - a.col))
+                    / (ab2 * distance_squared(v, a)).sqrt())
+                .acos()
+                .abs();
+                candidates.push(CircleCandidate {
+                    object,
+                    vertex,
+                    angle: std::f64::consts::PI - at_b - at_a,
+                    at_a,
+                    at_b,
+                });
             }
         }
-        let (angle, vertex, at_a, at_b) = smallest;
-        if angle >= half_pi {
-            return diameter(a, b);
+        let angles: Vec<_> = candidates.iter().map(|candidate| candidate.angle).collect();
+        let mut selected = vec![None; states.len()];
+        for index in crate::numpy_argsort(&angles) {
+            let candidate = candidates[index];
+            if selected[candidate.object].is_none() {
+                selected[candidate.object] = Some(candidate);
+            }
         }
-        let v = hull[vertex];
-        if at_a <= half_pi && at_b <= half_pi && angle <= half_pi {
-            let d =
-                2.0 * (a.col * (b.row - v.row) + b.col * (v.row - a.row) + v.col * (a.row - b.row));
-            let aa = a.row * a.row + a.col * a.col;
-            let bb = b.row * b.row + b.col * b.col;
-            let vv = v.row * v.row + v.col * v.col;
-            let center = Point {
-                col: (aa * (b.row - v.row) + bb * (v.row - a.row) + vv * (a.row - b.row)) / d,
-                row: (aa * (v.col - b.col) + bb * (a.col - v.col) + vv * (b.col - a.col)) / d,
+        for (object, state) in states.iter_mut().enumerate() {
+            if state.circle.is_some() {
+                continue;
+            }
+            let (a, b) = (state.hull[state.s0], state.hull[state.s1]);
+            let Some(candidate) = selected[object] else {
+                state.circle = Some(diameter(a, b));
+                continue;
             };
-            return (center, distance_squared(a, center).sqrt());
-        }
-        if at_a > half_pi {
-            s0 = vertex;
-        } else {
-            s1 = vertex;
+            let CircleCandidate {
+                vertex,
+                angle,
+                at_a,
+                at_b,
+                ..
+            } = candidate;
+            if angle >= half_pi {
+                state.circle = Some(diameter(a, b));
+                continue;
+            }
+            let v = state.hull[vertex];
+            if at_a <= half_pi && at_b <= half_pi && angle <= half_pi {
+                let d = 2.0
+                    * (a.col * (b.row - v.row) + b.col * (v.row - a.row) + v.col * (a.row - b.row));
+                let aa = a.row * a.row + a.col * a.col;
+                let bb = b.row * b.row + b.col * b.col;
+                let vv = v.row * v.row + v.col * v.col;
+                let center = Point {
+                    col: (aa * (b.row - v.row) + bb * (v.row - a.row) + vv * (a.row - b.row)) / d,
+                    row: (aa * (v.col - b.col) + bb * (a.col - v.col) + vv * (b.col - a.col)) / d,
+                };
+                state.circle = Some((center, distance_squared(a, center).sqrt()));
+                continue;
+            }
+            if at_a > half_pi {
+                state.ranks[state.s0] = state.ranks[vertex];
+                state.ranks[vertex] = 0;
+                state.s0 = vertex;
+            } else {
+                state.ranks[state.s1] = state.ranks[vertex];
+                state.ranks[vertex] = 1;
+                state.s1 = vertex;
+            }
         }
     }
+    states
+        .into_iter()
+        .filter_map(|state| state.circle.map(|circle| (state.label, circle)))
+        .collect()
 }
 
 fn factorial(n: usize) -> f64 {

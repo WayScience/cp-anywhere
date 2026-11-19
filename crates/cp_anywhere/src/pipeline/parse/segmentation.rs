@@ -104,6 +104,7 @@ pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
         &[
             ("Propagation", "propagation"),
             ("Distance - N", "distance_n"),
+            ("Watershed - Image", "watershed_image"),
         ],
     )?;
     if raw.yes_no("wants_discard_edge", wants_discard_edge)? {
@@ -111,12 +112,14 @@ pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
     }
     let fill_holes = raw.yes_no("fill_holes", fill_holes)?;
     // Distance - N uses the seed geometry only; its saved Threshold tail is ignored.
-    let mut config = if method == "propagation" {
+    let mut config = if method != "distance_n" {
         let mut config = threshold(raw, tail)?;
-        config.insert(
-            "regularization_factor",
-            json!(raw.float("regularization_factor", regularization_factor)?),
-        );
+        if method == "propagation" {
+            config.insert(
+                "regularization_factor",
+                json!(raw.float("regularization_factor", regularization_factor)?),
+            );
+        }
         config
     } else {
         BTreeMap::from([(
