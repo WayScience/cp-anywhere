@@ -2108,13 +2108,15 @@ real scheduled GitHub Actions run.</p></li>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code> rewrites the Cargo workspace <code class="docutils literal notranslate"><span class="pre">version</span></code> from
-the release tag before any build; because all three crates
-(<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code>, <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code>) use
-<code class="docutils literal notranslate"><span class="pre">version.workspace</span> <span class="pre">=</span> <span class="pre">true</span></code>, this single rewrite keeps the PyPI wheel,
-npm package, and crates.io crate at the same version with no separate
-sync step. The git tag is the single source of truth for every published
-version across all three registries.</p>
+<p>The GitHub release tag is the only version you set. All three workflows
+build the commit attached to that tag. <code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code>
+updates the Cargo workspace and lockfile in each build checkout and
+checks all three workspace packages before building. Do not bump versions
+in source files or commit the generated changes.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">v1.2.3</span></code>, all three registries get <code class="docutils literal notranslate"><span class="pre">1.2.3</span></code>. For prerelease tags such
+as <code class="docutils literal notranslate"><span class="pre">v1.2.3-rc.1</span></code>, crates.io and npm get <code class="docutils literal notranslate"><span class="pre">1.2.3-rc.1</span></code> and PyPI gets
+<code class="docutils literal notranslate"><span class="pre">1.2.3rc1</span></code>. Use <code class="docutils literal notranslate"><span class="pre">-alpha.N</span></code>, <code class="docutils literal notranslate"><span class="pre">-beta.N</span></code>, or <code class="docutils literal notranslate"><span class="pre">-rc.N</span></code> for prereleases.
+npm publishes prereleases under <code class="docutils literal notranslate"><span class="pre">next</span></code> and stable releases under <code class="docutils literal notranslate"><span class="pre">latest</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> is the only crate configured for crates.io publishing. It includes
 segmentation, illumination, measurements, and <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> execution. To use
 the individual operations without pipeline parsing or its serialization
@@ -2146,12 +2148,12 @@ has no “pending publisher” equivalent: a trusted publisher can only be
 attached to a package that already exists, so the very first publish
 cannot go through OIDC.</p>
 <ol class="arabic">
-<li><p>Build the package once locally with the version you intend to tag,
-e.g. for <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/sync_release_version.py<span class="w"> </span>v0.1.0
+<li><p>Use a disposable checkout. Publish a bootstrap prerelease so the
+GitHub workflow can publish the first stable version. For a first
+stable release of <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>, use:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/sync_release_version.py<span class="w"> </span>v0.1.0-rc.1
 python<span class="w"> </span>scripts/wasm/build_package.py
-<span class="nb">cd</span><span class="w"> </span>crates/cp_anywhere_wasm/pkg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>publish<span class="w"> </span>--access<span class="w"> </span>public
-git<span class="w"> </span>checkout<span class="w"> </span>Cargo.toml<span class="w"> </span>Cargo.lock<span class="w">  </span><span class="c1"># undo the local version bump</span>
+npm<span class="w"> </span>publish<span class="w"> </span>./crates/cp_anywhere_wasm/pkg<span class="w"> </span>--access<span class="w"> </span>public<span class="w"> </span>--tag<span class="w"> </span>next
 </pre></div>
 </div>
 </li>
@@ -2159,9 +2161,8 @@ git<span class="w"> </span>checkout<span class="w"> </span>Cargo.toml<span class
 -&gt; Publishing access -&gt; add a trusted publisher: GitHub Actions,
 owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
 <code class="docutils literal notranslate"><span class="pre">publish-npm.yml</span></code>, environment <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
-<li><p>Every release from that point on (including re-tagging <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>’s
-GitHub Release, or any later tag) publishes automatically via OIDC,
-no token stored anywhere.</p></li>
+<li><p>Enable direct <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">publish</span></code> for the trusted publisher. Publish the
+first stable version through GitHub Releases, not by hand.</p></li>
 </ol>
 </li>
 <li><p><strong>crates.io – needs a token for the first release.</strong> Trusted
@@ -2195,10 +2196,8 @@ to <code class="docutils literal notranslate"><span class="pre">main</span></cod
 <code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code> event fans out to all three publish workflows
 above, plus the <code class="docutils literal notranslate"><span class="pre">.wasm</span></code>/checksum release-asset upload. The tag is the
 only place a version is chosen; nothing else needs editing first.</p></li>
-<li><p>Watch the four jobs in the Actions tab. After the one-time setup above,
-PyPI, npm, and crates.io all publish with no further manual steps,
-using the Cargo workspace version that <code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code>
-derived from the tag.</p></li>
+<li><p>Check the three publishing workflows in the Actions tab. After registry
+setup, no per-release version edits or manual registry uploads are needed.</p></li>
 </ol>
 </section>
 <section id="local-packaging-checks">
