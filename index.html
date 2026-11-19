@@ -411,6 +411,29 @@ the objects as filled colors. The preview does not change the image or labels.</
 <p>To inspect the overlay in a notebook, use <code class="docutils literal notranslate"><span class="pre">plt.imshow(overlay)</span></code> with Matplotlib.</p>
 </section>
 </section>
+<section id="run-a-pipeline-on-multiple-fields">
+<h3>Run a pipeline on multiple fields<a class="headerlink" href="#run-a-pipeline-on-multiple-fields" title="Link to this heading">#</a></h3>
+<p>Pass a supported CellProfiler pipeline and a mapping from image IDs to named
+channels. The channel names must match the pipeline. Paths and NumPy arrays both work.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">image_sets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;A01-site1&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="s2">&quot;a01_s1_dna.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;Stain&quot;</span><span class="p">:</span> <span class="s2">&quot;a01_s1_actin.tif&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;A01-site2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="s2">&quot;a01_s2_dna.tif&quot;</span><span class="p">,</span> <span class="s2">&quot;Stain&quot;</span><span class="p">:</span> <span class="s2">&quot;a01_s2_actin.tif&quot;</span><span class="p">},</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">run_batch</span><span class="p">(</span><span class="s2">&quot;pipeline.cppipe&quot;</span><span class="p">,</span> <span class="n">image_sets</span><span class="p">,</span> <span class="n">workers</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">measurements</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">field</span><span class="o">.</span><span class="n">measurements</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">field</span><span class="o">.</span><span class="n">image_id</span><span class="si">}</span><span class="s2">.parquet&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Omit <code class="docutils literal notranslate"><span class="pre">workers</span></code> for serial execution. With more than one worker, <code class="docutils literal notranslate"><span class="pre">backend=&quot;thread&quot;</span></code>
+is the default. Use <code class="docutils literal notranslate"><span class="pre">backend=&quot;process&quot;</span></code> in a Python script under an
+<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> guard. Results arrive in input order and retain
+their image IDs. For custom workflows, use <code class="docutils literal notranslate"><span class="pre">load_pipeline(...).run(...)</span></code> on a
+single field or call the individual functions. See the
+<a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/batch.md">batch experiment</a>
+and the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/cppipe-compatibility.md">pipeline import limits</a>.</p>
+<p>The package is named <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> on PyPI, crates.io, and npm. The Rust
+library uses <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code> in imports. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/cppipe.md">cross-runtime pipeline guide</a>.</p>
+</section>
 </section>
 <section id="project-links">
 <h2>Project links<a class="headerlink" href="#project-links" title="Link to this heading">#</a></h2>
@@ -491,6 +514,11 @@ the objects as filled colors. The preview does not change the image or labels.</
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.cppipe.load_pipeline"><code class="docutils literal notranslate"><span class="pre">load_pipeline()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#batch-processing">Batch processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.batch.ImageSetResult"><code class="docutils literal notranslate"><span class="pre">ImageSetResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.batch.run_batch"><code class="docutils literal notranslate"><span class="pre">run_batch()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="project-docs.html">Project documentation</a></li>
@@ -538,7 +566,7 @@ the objects as filled colors. The preview does not change the image or labels.</
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#what-publishes-where-and-how">What publishes where, and how</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#one-time-setup-must-be-done-once-outside-this-repo-before-the-first-release">One-time setup (must be done once, outside this repo, before the first release)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#cutting-a-release">Cutting a release</a></li>
-<li class="toctree-l2"><a class="reference internal" href="project-docs.html#verified-locally-every-m7-session-not-a-real-publish">Verified locally, every M7 session (not a real publish)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="project-docs.html#local-packaging-checks">Local packaging checks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="project-docs.html#known-gaps">Known gaps</a></li>
 </ul>
 </li>

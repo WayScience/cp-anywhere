@@ -1723,6 +1723,51 @@ setting outside <code class="docutils literal notranslate"><span class="pre">spe
 </dd></dl>
 
 </section>
+<section id="batch-processing">
+<h2>Batch processing<a class="headerlink" href="#batch-processing" title="Link to this heading">#</a></h2>
+<p>Apply one translated pipeline to complete, independent image sets. Batch
+processing does not replace single-field or individual module calls.</p>
+<p id="module-src.cp_anywhere.batch">Run a translated pipeline on independent image sets.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.batch.ImageSetResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.batch.</span></span><span class="sig-name descname"><span class="pre">ImageSetResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">primary</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.SegmentationResult" title="src.cp_anywhere.segment.SegmentationResult"><span class="pre">SegmentationResult</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">derived</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.SecondaryObjectsResult" title="src.cp_anywhere.segment.SecondaryObjectsResult"><span class="pre">SecondaryObjectsResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#src.cp_anywhere.segment.TertiaryObjectsResult" title="src.cp_anywhere.segment.TertiaryObjectsResult"><span class="pre">TertiaryObjectsResult</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cp_anywhere.api.MeasurementResult" title="src.cp_anywhere.api.MeasurementResult"><span class="pre">MeasurementResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/batch.html#ImageSetResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.batch.ImageSetResult" title="Link to this definition">#</a></dt>
+<dd><p>One image set’s labels and measurements, keyed by its caller-supplied ID.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.cp_anywhere.batch.run_batch">
+<span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.batch.</span></span><span class="sig-name descname"><span class="pre">run_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pipeline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#src.cp_anywhere.cppipe.Pipeline" title="src.cp_anywhere.cppipe.Pipeline"><span class="pre">Pipeline</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_sets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'thread'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'process'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'thread'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#src.cp_anywhere.batch.ImageSetResult" title="src.cp_anywhere.batch.ImageSetResult"><span class="pre">ImageSetResult</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/batch.html#run_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.batch.run_batch" title="Link to this definition">#</a></dt>
+<dd><p>Run one translated pipeline per image set, in input order.</p>
+<p>At most <code class="docutils literal notranslate"><span class="pre">workers</span></code> image sets are in flight at once. A single image set
+always runs in the caller. Do not mutate the pipeline, mapping, or arrays
+while iterating. If you stop early, close the iterator to cancel queued work
+where possible and wait for running work to finish. Errors propagate with
+the image ID attached to the traceback.</p>
+<p>This function does not match files, group fields, estimate shared maps, or
+write outputs. Pass any shared calibration images by name with each set.
+For custom workflows, call <code class="xref py py-meth docutils literal notranslate"><span class="pre">Pipeline.run()</span></code> or individual modules.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pipeline</strong> – A loaded pipeline or path to a supported <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> file.</p></li>
+<li><p><strong>image_sets</strong> – Image IDs mapped to named channel paths or arrays. An empty
+mapping yields no results.</p></li>
+<li><p><strong>workers</strong> – Maximum workers. One runs serially, regardless of backend.</p></li>
+<li><p><strong>backend</strong> – Use threads (default) or spawned processes. For processes,
+run from an importable Python script under a main guard. Paths avoid
+copying input arrays to workers. Results are copied back to the caller.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Segmentation and measurement results with the caller’s image ID.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the backend, worker count, or image IDs are invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 

@@ -64,3 +64,13 @@ for the declared scope and every explicit gap.
    :undoc-members:
    :show-inheritance:
 ```
+
+```{eval-rst}
+Batch processing
+----------------
+Apply one translated pipeline to complete, independent image sets. Batch
+processing does not replace single-field or individual module calls.
+
+.. automodule:: src.cp_anywhere.batch
+   :members:
+```

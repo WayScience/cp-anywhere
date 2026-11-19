@@ -1361,7 +1361,7 @@ parity re-run; do not hand-edit.</p>
 <h1>M3 native Rust core<a class="headerlink" href="#m3-native-rust-core" title="Link to this heading">#</a></h1>
 <section id="result">
 <h2>Result<a class="headerlink" href="#result" title="Link to this heading">#</a></h2>
-<p>The Rust core (<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core</span></code>) implements the complete declared
+<p>The Rust library (<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere</span></code>) implements the complete declared
 scope from <code class="docutils literal notranslate"><span class="pre">spec/compatibility.md</span></code>: <code class="docutils literal notranslate"><span class="pre">MeasureImageIntensity</span></code>,
 <code class="docutils literal notranslate"><span class="pre">MeasureObjectIntensity</span></code> over <code class="docutils literal notranslate"><span class="pre">Cells</span></code>/<code class="docutils literal notranslate"><span class="pre">Nuclei</span></code> × <code class="docutils literal notranslate"><span class="pre">DNA</span></code>/<code class="docutils literal notranslate"><span class="pre">Actin</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code> same-set <code class="docutils literal notranslate"><span class="pre">Adjacent</span></code> with directed relationship
@@ -1376,7 +1376,7 @@ the <code class="docutils literal notranslate"><span class="pre">spec/features.y
 1e-14 — float64 summation-order variance, not a scope or semantics bug.
 Full counts and reasons are recorded in <code class="docutils literal notranslate"><span class="pre">spec/native-coverage.yaml</span></code> and
 <code class="docutils literal notranslate"><span class="pre">benchmarks/reports/native-parity.json</span></code>.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere/Cargo.toml
 env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_native.py
 <span class="nv">CP_ANYWHERE_REFERENCE_PYTHON</span><span class="o">=</span>/path/to/reference/venv/bin/python<span class="w"> </span><span class="se">\</span>
@@ -1432,7 +1432,7 @@ the call’s duration.</p></li>
 <li><p>Rejected inputs: 1D or higher-than-3D shapes, boolean/float label
 arrays, non-real-numeric image dtypes, mismatched shapes, labels above
 <code class="docutils literal notranslate"><span class="pre">MAX_LABEL</span></code>, and (when neighbors are selected) no <code class="docutils literal notranslate"><span class="pre">Cells</span></code> object set.</p></li>
-<li><p>The core (<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>) has no Python, filesystem, or platform
+<li><p>The library (<code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code>) has no Python, filesystem, or platform
 dependency: <code class="docutils literal notranslate"><span class="pre">Input</span></code>/<code class="docutils literal notranslate"><span class="pre">ResultTable</span></code> are plain Rust types over borrowed
 slices, which keeps a future WASM target possible without a rewrite.</p></li>
 </ul>
@@ -1482,12 +1482,13 @@ of scope for M3; see <code class="docutils literal notranslate"><span class="pre
 <h1>M4 WASM feasibility and browser integration spike<a class="headerlink" href="#m4-wasm-feasibility-and-browser-integration-spike" title="Link to this heading">#</a></h1>
 <section id="id1">
 <h2>Result<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
-<p>The Rust core compiles unmodified to <code class="docutils literal notranslate"><span class="pre">wasm32-unknown-unknown</span></code> (no feature
-gates needed; <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> has no dependencies beyond <code class="docutils literal notranslate"><span class="pre">std</span></code>).
+<p>The Rust core compiles to <code class="docutils literal notranslate"><span class="pre">wasm32-unknown-unknown</span></code> with its default
+features, including the <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> executor. The core does not depend on
+Python or browser bindings.
 <code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_wasm</span></code> is a thin <code class="docutils literal notranslate"><span class="pre">wasm-bindgen</span></code> binding (JSON in/out for
-small metadata, typed arrays for the numeric payload) built with
-<code class="docutils literal notranslate"><span class="pre">wasm-pack</span> <span class="pre">build</span> <span class="pre">crates/cp_anywhere_wasm</span> <span class="pre">--target</span> <span class="pre">web</span> <span class="pre">--release</span></code>, producing
-a <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> npm package consumed by a real Vite example
+small metadata, typed arrays for the numeric payload). The build script
+<code class="docutils literal notranslate"><span class="pre">scripts/wasm/build_package.py</span></code> uses wasm-pack and names the npm package
+<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>. The Vite example
 (<code class="docutils literal notranslate"><span class="pre">examples/browser-vite</span></code>) that runs the module inside a dedicated web
 worker.</p>
 <p><strong>Both measurement and segmentation run entirely client-side with
@@ -1523,7 +1524,7 @@ difference between wasm32’s and native arm64’s libm, not a computation
 bug.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>fmt<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_wasm/Cargo.toml<span class="w"> </span>--check
 cargo<span class="w"> </span>clippy<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_wasm/Cargo.toml<span class="w"> </span>--target<span class="w"> </span>wasm32-unknown-unknown<span class="w"> </span>--all-targets
-wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+python<span class="w"> </span>scripts/wasm/build_package.py
 
 <span class="nb">cd</span><span class="w"> </span>examples/browser-vite
 npm<span class="w"> </span>install
@@ -1541,7 +1542,7 @@ uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </
 <section id="browser-demo-and-npm-package">
 <h2>Browser demo and npm package<a class="headerlink" href="#browser-demo-and-npm-package" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">examples/browser-vite</span></code> is a real Vite project (not a static mockup): its
-<code class="docutils literal notranslate"><span class="pre">src/worker.ts</span></code> imports the generated <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> package, fetches
+<code class="docutils literal notranslate"><span class="pre">src/worker.ts</span></code> imports the generated <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> package, fetches
 each fixture’s raw binary arrays (see below), calls <code class="docutils literal notranslate"><span class="pre">measure()</span></code> and
 <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects()</span></code>, and posts the results back; <code class="docutils literal notranslate"><span class="pre">src/main.ts</span></code>
 drives the worker from the page and renders status in <code class="docutils literal notranslate"><span class="pre">#status</span></code>.
@@ -1560,7 +1561,7 @@ recompiled per request.</p>
 <h2>Segmentation: <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects</span></code><a class="headerlink" href="#segmentation-identifyprimaryobjects" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects(pixels,</span> <span class="pre">rows,</span> <span class="pre">cols,</span> <span class="pre">mask,</span> <span class="pre">config_json)</span></code> shares
 its exact settings surface with the Python binding
-(<code class="docutils literal notranslate"><span class="pre">cp_anywhere_segmentation::build_config</span></code>/<code class="docutils literal notranslate"><span class="pre">ConfigParams</span></code> – see
+(<code class="docutils literal notranslate"><span class="pre">cp_anywhere::segmentation::build_config</span></code>/<code class="docutils literal notranslate"><span class="pre">ConfigParams</span></code> – see
 <code class="docutils literal notranslate"><span class="pre">spec/segmentation-modules.md</span></code>), so the same <code class="docutils literal notranslate"><span class="pre">config_json</span></code> field names
 (<code class="docutils literal notranslate"><span class="pre">threshold_method</span></code>, <code class="docutils literal notranslate"><span class="pre">unclump_method</span></code>, <code class="docutils literal notranslate"><span class="pre">watershed_method</span></code>, …) work
 identically in both bindings, eliminating a second, driftable mapping.
@@ -1689,11 +1690,11 @@ written by <code class="docutils literal notranslate"><span class="pre">scripts/
 (<code class="docutils literal notranslate"><span class="pre">public/threshold.onnx</span></code>) against that array, producing a reference
 threshold mask (logged for comparison; not used downstream – see
 “Why the mask is only a reference” below).</p></li>
-<li><p><strong>cp-anywhere-wasm</strong>’s own <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects</span></code> (the same
+<li><p><strong>cp-anywhere</strong>’s own <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects</span></code> (the same
 CellProfiler-compatible, oracle-verified segmentation the Python
 binding exposes – Otsu threshold + Intensity declumping/watershed in
 this demo) segments the same Zarr pixels into real object labels.</p></li>
-<li><p><strong>cp-anywhere-wasm</strong>’s <code class="docutils literal notranslate"><span class="pre">measure()</span></code> (this project’s own Rust/WASM
+<li><p><strong>cp-anywhere</strong>’s <code class="docutils literal notranslate"><span class="pre">measure()</span></code> (this project’s own Rust/WASM
 kernel, the same build verified in <code class="docutils literal notranslate"><span class="pre">docs/wasm.md</span></code>) measures the Zarr
 image using cp-anywhere’s own segmentation output as the <code class="docutils literal notranslate"><span class="pre">Cells</span></code>
 object labels – both segmentation and feature extraction now come
@@ -1750,10 +1751,10 @@ on the <code class="docutils literal notranslate"><span class="pre">touching_gra
 <ul class="simple">
 <li><p>Zarr read: shape <code class="docutils literal notranslate"><span class="pre">[12,</span> <span class="pre">12]</span></code>, 144 pixels.</p></li>
 <li><p>ONNX inference (reference only): 72 foreground pixels (<code class="docutils literal notranslate"><span class="pre">mask</span> <span class="pre">&gt;</span> <span class="pre">0.5</span></code>).</p></li>
-<li><p>cp-anywhere-wasm <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects()</span></code> (Otsu + Intensity
+<li><p>cp-anywhere <code class="docutils literal notranslate"><span class="pre">identifyPrimaryObjects()</span></code> (Otsu + Intensity
 declump/watershed, <code class="docutils literal notranslate"><span class="pre">min_diameter=4.0</span></code>): 1 object, threshold
 <code class="docutils literal notranslate"><span class="pre">0.486328125</span></code>.</p></li>
-<li><p>cp-anywhere-wasm <code class="docutils literal notranslate"><span class="pre">measure()</span></code>: 21 <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> columns for that
+<li><p>cp-anywhere <code class="docutils literal notranslate"><span class="pre">measure()</span></code>: 21 <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> columns for that
 object.</p></li>
 <li><p>DuckDB-WASM Parquet export: real <code class="docutils literal notranslate"><span class="pre">PAR1</span></code> magic bytes at both ends of the
 file, independently readable by native DuckDB.</p></li>
@@ -1812,7 +1813,7 @@ individually, and WASM round-trip times fell by 11x-33x at the same time.</p>
 </section>
 <section id="how-the-bug-was-found">
 <h2>How the bug was found<a class="headerlink" href="#how-the-bug-was-found" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core/src/lib.rs</span></code>’s “touching” check (used for
+<p><code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere/src/lib.rs</span></code>’s “touching” check (used for
 <code class="docutils literal notranslate"><span class="pre">PercentTouching</span></code> in <code class="docutils literal notranslate"><span class="pre">MeasureObjectNeighbors</span></code>) needs to know, for every
 outline pixel of object <code class="docutils literal notranslate"><span class="pre">k</span></code>, whether any pixel within a small fixed radius
 (1.5 px) belongs to a <em>different</em> object. The original implementation
@@ -1824,7 +1825,7 @@ depends on a handful of neighboring offsets.</p>
 (it is a constant-factor cost there) but dominates at <code class="docutils literal notranslate"><span class="pre">grid_large</span></code> scale
 (36,864 px, 256 objects): a <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">bench</span></code> run that split the combined
 <code class="docutils literal notranslate"><span class="pre">object_intensity_and_neighbors</span></code> timing by family
-(<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere_core/benches/throughput.rs</span></code>’s <code class="docutils literal notranslate"><span class="pre">by_family</span></code> group)
+(<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere/benches/throughput.rs</span></code>’s <code class="docutils literal notranslate"><span class="pre">by_family</span></code> group)
 showed <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> alone was 151.45 ms on <code class="docutils literal notranslate"><span class="pre">grid_large</span></code> vs 9.68 ms on
 <code class="docutils literal notranslate"><span class="pre">grid_medium</span></code> – roughly a 15.6x time increase for a 4x object-count / 4x
 pixel-count increase, consistent with an O(pixels * objects) or O(pixels^2)
@@ -1844,7 +1845,7 @@ reference-preserving 3D offset range (<code class="docutils literal notranslate"
 radius) – only how it is evaluated changed, from O(total pixels) to O(1)
 per outline pixel.</p>
 <p>Correctness was re-verified immediately after the change, not assumed:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml   # pass
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cargo test --manifest-path crates/cp_anywhere/Cargo.toml   # pass
 uv run --frozen python scripts/parity/compare_native.py          # 1440/1440 pass (unchanged)
 # rebuild WASM, re-export fixtures, rebuild demo, re-run in Chromium:
 uv run --frozen python scripts/parity/compare_wasm.py            # 1440/1440 pass (unchanged)
@@ -1855,7 +1856,7 @@ change is a pure performance fix, not a semantics change.</p>
 </section>
 <section id="before-after-timing">
 <h2>Before / after timing<a class="headerlink" href="#before-after-timing" title="Link to this heading">#</a></h2>
-<p>Native Rust kernel only (<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core::measure</span></code>, no Python/FFI,
+<p>Native Rust kernel only (<code class="docutils literal notranslate"><span class="pre">cp_anywhere::measure</span></code>, no Python/FFI,
 <code class="docutils literal notranslate"><span class="pre">object_intensity</span></code> + <code class="docutils literal notranslate"><span class="pre">neighbors</span></code> families, Criterion, median of 100
 samples):</p>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -2035,7 +2036,7 @@ it over <code class="docutils literal notranslate"><span class="pre">benchmarks/
 </section>
 <section id="reproduce">
 <h2>Reproduce<a class="headerlink" href="#reproduce" title="Link to this heading">#</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>bench<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span>bench<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere/Cargo.toml
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/benchmarks/report_native_rust.py
 env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>benchmarks/benchmark_native.py
@@ -2086,13 +2087,13 @@ real scheduled GitHub Actions run.</p></li>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
 <td><p>OIDC trusted publishing (<code class="docutils literal notranslate"><span class="pre">pypa/gh-action-pypi-publish</span></code>); works from the first release via a PyPI “pending publisher”</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> (Rust crate)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> (Rust crate)</p></td>
 <td><p>crates.io</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-crate.yml</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">CARGO_REGISTRY_TOKEN</span></code> secret for the first release (crates.io OIDC trusted publishing can only be configured for a crate that already exists); can migrate to OIDC afterward</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> (npm package)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> (npm package)</p></td>
 <td><p>npm</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.github/workflows/publish-npm.yml</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">release:</span> <span class="pre">published</span></code></p></td>
@@ -2109,22 +2110,21 @@ real scheduled GitHub Actions run.</p></li>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">tools/sync_release_version.py</span></code> rewrites the Cargo workspace <code class="docutils literal notranslate"><span class="pre">version</span></code> from
 the release tag before any build; because all three crates
-(<code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code>) use
+(<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code>, <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code>) use
 <code class="docutils literal notranslate"><span class="pre">version.workspace</span> <span class="pre">=</span> <span class="pre">true</span></code>, this single rewrite keeps the PyPI wheel,
 npm package, and crates.io crate at the same version with no separate
 sync step. The git tag is the single source of truth for every published
 version across all three registries.</p>
-<p>Only <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code> is published to crates.io: it is the portable,
-dependency-free measurement kernel usable from any Rust project.
-<code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code> and <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code> are thin FFI bindings consumed
-through PyPI and npm respectively, not as Cargo dependencies of other
-projects.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> is the only crate configured for crates.io publishing. It includes
+segmentation, illumination, measurements, and <code class="docutils literal notranslate"><span class="pre">.cppipe</span></code> execution. To use
+the individual operations without pipeline parsing or its serialization
+dependencies, set <code class="docutils literal notranslate"><span class="pre">default-features</span> <span class="pre">=</span> <span class="pre">false</span></code> in your Cargo dependency.
+<code class="docutils literal notranslate"><span class="pre">cp_anywhere_python</span></code> and <code class="docutils literal notranslate"><span class="pre">cp_anywhere_wasm</span></code> remain internal binding crates.
+The Python and browser packages ship through PyPI and npm.</p>
 </section>
 <section id="one-time-setup-must-be-done-once-outside-this-repo-before-the-first-release">
 <h2>One-time setup (must be done once, outside this repo, before the first release)<a class="headerlink" href="#one-time-setup-must-be-done-once-outside-this-repo-before-the-first-release" title="Link to this heading">#</a></h2>
-<p>None of the three packages (<code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, <code class="docutils literal notranslate"><span class="pre">cp_anywhere_core</span></code>,
-<code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code>) have been published anywhere yet. Each registry has a
-different bootstrap story for a brand-new, never-published package:</p>
+<p>Each registry has different setup steps for a first release of its package:</p>
 <ol class="arabic">
 <li><p><strong>GitHub “release” environment.</strong> Already created
 (<code class="docutils literal notranslate"><span class="pre">repos/d33bs/cp-anywhere/environments/release</span></code>), referenced by all
@@ -2149,14 +2149,13 @@ cannot go through OIDC.</p>
 <li><p>Build the package once locally with the version you intend to tag,
 e.g. for <code class="docutils literal notranslate"><span class="pre">v0.1.0</span></code>:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/sync_release_version.py<span class="w"> </span>v0.1.0
-wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+python<span class="w"> </span>scripts/wasm/build_package.py
 <span class="nb">cd</span><span class="w"> </span>crates/cp_anywhere_wasm/pkg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>publish<span class="w"> </span>--access<span class="w"> </span>public
 git<span class="w"> </span>checkout<span class="w"> </span>Cargo.toml<span class="w"> </span>Cargo.lock<span class="w">  </span><span class="c1"># undo the local version bump</span>
 </pre></div>
 </div>
 </li>
-<li><p>Once <code class="docutils literal notranslate"><span class="pre">cp-anywhere-wasm</span></code> exists on npm, go to its package settings
+<li><p>Once <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> exists on npm, go to its package settings
 -&gt; Publishing access -&gt; add a trusted publisher: GitHub Actions,
 owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
 <code class="docutils literal notranslate"><span class="pre">publish-npm.yml</span></code>, environment <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
@@ -2202,13 +2201,12 @@ using the Cargo workspace version that <code class="docutils literal notranslate
 derived from the tag.</p></li>
 </ol>
 </section>
-<section id="verified-locally-every-m7-session-not-a-real-publish">
-<h2>Verified locally, every M7 session (not a real publish)<a class="headerlink" href="#verified-locally-every-m7-session-not-a-real-publish" title="Link to this heading">#</a></h2>
-<p>Every artifact below was built and checked locally in this session with
-the real toolchain – no registry credentials involved, nothing uploaded:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># crates.io: packaging + a full publish dry run (compiles the packaged</span>
-<span class="c1"># tarball from scratch, as crates.io would)</span>
-cargo<span class="w"> </span>publish<span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml<span class="w"> </span>--dry-run
+<section id="local-packaging-checks">
+<h2>Local packaging checks<a class="headerlink" href="#local-packaging-checks" title="Link to this heading">#</a></h2>
+<p>Build and check the artifacts locally before cutting a release. These
+commands do not upload anything:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="c1"># crates.io: build and verify the archive</span>
+cargo<span class="w"> </span>package<span class="w"> </span>--locked<span class="w"> </span>-p<span class="w"> </span>cp-anywhere
 
 <span class="c1"># PyPI: sdist + wheel build, then install from the wheel into a throwaway</span>
 <span class="c1"># venv with no project source on sys.path</span>
@@ -2217,25 +2215,21 @@ python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </
 /tmp/smoke/bin/python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import cp_anywhere; cp_anywhere.measure(...)&quot;</span>
 
 <span class="c1"># npm: wasm-pack build, then a full publish dry run</span>
-wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+python<span class="w"> </span>scripts/wasm/build_package.py
 <span class="nb">cd</span><span class="w"> </span>crates/cp_anywhere_wasm/pkg<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>publish<span class="w"> </span>--dry-run<span class="w"> </span>--access<span class="w"> </span>public
 </pre></div>
 </div>
-<p>Results: <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">publish</span> <span class="pre">--dry-run</span></code> packaged and compiled 7 files (46.5 KiB,
-12.9 KiB compressed) with zero errors. <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">build</span></code> produced a working
-abi3 wheel that installs and runs <code class="docutils literal notranslate"><span class="pre">measure()</span></code> correctly from a venv with no
-project source path. <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">publish</span> <span class="pre">--dry-run</span></code> packaged 5 files (97.0 KiB
-tarball, 224.2 KiB unpacked).</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">--allow-dirty</span></code> with <code class="docutils literal notranslate"><span class="pre">cargo</span> <span class="pre">package</span></code> to check uncommitted changes locally.
+The release workflow uses it because version sync modifies the checkout
+before building.</p>
 </section>
 <section id="known-gaps">
 <h2>Known gaps<a class="headerlink" href="#known-gaps" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p>The publish workflows themselves have not been exercised by a real
 GitHub Actions run (that would require actually cutting a release,
-which this session does not do). The dry runs above verify the
-artifacts the workflows would build and upload are correct; they do not
-verify the workflow YAML executes successfully end to end on GitHub’s
-runners.</p></li>
+which this session does not do). Local packaging checks do not verify
+registry authentication or publishing on GitHub’s runners.</p></li>
 <li><p>The one-time setup steps above (PyPI pending publisher, npm bootstrap
 publish + trusted publisher, crates.io token) require the registry
 account owner’s own login and have not been done yet – they are not
@@ -2336,7 +2330,7 @@ build status), and this dashboard (cross-target status) are all current.</p></li
 </section>
 <section id="id5">
 <h2>Reproduce<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere_core/Cargo.toml
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>cargo<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--manifest-path<span class="w"> </span>crates/cp_anywhere/Cargo.toml
 env<span class="w"> </span>-u<span class="w"> </span>CONDA_PREFIX<span class="w"> </span>uv<span class="w"> </span>run<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--release<span class="w"> </span>--uv
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_native.py
 
@@ -2536,7 +2530,7 @@ eight-argument <code class="docutils literal notranslate"><span class="pre">meas
 <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>scripts/cppipe/generate_size_shape_pipeline.py
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest<span class="w"> </span>tests/test_size_shape.py<span class="w"> </span>tests/cppipe/test_size_shape_pipeline.py
-wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+python<span class="w"> </span>scripts/wasm/build_package.py
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm_size_shape.py
 </pre></div>
 </div>
@@ -2632,7 +2626,7 @@ Chromium, not a simulated WASM runtime.</p>
 <span class="nv">PYTHONPATH</span><span class="o">=</span>/path/to/pinned/CellProfiler<span class="w"> </span>/path/to/reference/python<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>scripts/cppipe/generate_granularity_pipeline.py
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>pytest<span class="w"> </span>tests/test_granularity.py<span class="w"> </span>tests/cppipe/test_granularity_pipeline.py
-wasm-pack<span class="w"> </span>build<span class="w"> </span>crates/cp_anywhere_wasm<span class="w"> </span>--target<span class="w"> </span>web<span class="w"> </span>--release<span class="w"> </span>--out-dir<span class="w"> </span>pkg<span class="w"> </span>--out-name<span class="w"> </span>cp_anywhere
+python<span class="w"> </span>scripts/wasm/build_package.py
 uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>python<span class="w"> </span>scripts/parity/compare_wasm_granularity.py
 </pre></div>
 </div>
