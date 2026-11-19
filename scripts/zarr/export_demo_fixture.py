@@ -7,7 +7,7 @@ This is a demo-scale integration test fixture, not a scientific
 segmentation model: it is a deterministic `Greater(image, threshold)` graph,
 not instance segmentation or a learned model (see docs/browser-integration.md
 "Known limitations"). It exists to prove the real browser pipeline --
-Zarr read -> ONNX Runtime Web inference -> cp-anywhere-wasm measure() ->
+Zarr read -> ONNX Runtime Web inference -> cp-anywhere measure() ->
 DuckDB-WASM Parquet export -- runs end to end with no mocked stage, per the
 plan's explicit requirement.
 

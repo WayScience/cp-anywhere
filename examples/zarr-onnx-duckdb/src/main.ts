@@ -1,7 +1,7 @@
 // Real browser integration: Zarr read (zarrita.js) -> ONNX Runtime Web
-// inference (a reference/comparison mask) -> cp-anywhere-wasm's own
+// inference (a reference/comparison mask) -> cp-anywhere's own
 // IdentifyPrimaryObjects segmentation (CellProfiler-compatible
-// declumping, not the ONNX demo mask) -> cp-anywhere-wasm measurement
+// declumping, not the ONNX demo mask) -> cp-anywhere WASM measurement
 // -> DuckDB-WASM Parquet export, validated afterward by native DuckDB
 // in Python (scripts/zarr/validate_export.py). No stage here is mocked;
 // see docs/browser-integration.md for scope and known limitations.
@@ -11,7 +11,7 @@ import duckdbWorkerUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.
 import duckdbWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url";
 import * as ort from "onnxruntime-web/wasm";
 import * as zarr from "zarrita";
-import init, { identifyPrimaryObjects, measure } from "cp-anywhere-wasm";
+import init, { identifyPrimaryObjects, measure } from "cp-anywhere";
 
 declare global {
   interface Window {
@@ -52,7 +52,7 @@ async function run(): Promise<void> {
   log(`   onnx_foreground_pixels=${onnxForegroundPixels}`);
   await session.release();
 
-  log("3. Segmenting with cp-anywhere-wasm's own IdentifyPrimaryObjects...");
+  log("3. Segmenting with cp-anywhere's own IdentifyPrimaryObjects...");
   await init();
   const seg = identifyPrimaryObjects(
     block.data,
@@ -68,7 +68,7 @@ async function run(): Promise<void> {
   );
   log(`   cp_anywhere_object_count=${seg.objectCount} threshold=${seg.threshold.toFixed(6)}`);
 
-  log("4. Measuring with cp-anywhere-wasm (real Rust kernel)...");
+  log("4. Measuring with cp-anywhere (real Rust kernel in WASM)...");
   const resultJson = measure(
     Uint32Array.from(shape),
     ["DNA"],

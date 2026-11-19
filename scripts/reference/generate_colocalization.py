@@ -4,7 +4,7 @@
 Scope: the module's 2D case only (its own ``volumetric()`` returning ``True``
 means it nominally also supports 3D; that case is an explicit, documented
 gap, matching this project's house style for every other module ported so
-far -- see ``crates/cp_anywhere_core/src/colocalization.rs``).
+far -- see ``crates/cp_anywhere/src/colocalization.rs``).
 
 Run with the reference environment's Python and CellProfiler on PYTHONPATH.
 """
@@ -38,7 +38,7 @@ SOURCE_COMMIT = "2df090ff281cff80943fe679a1c3192fbda9cd6d"
 
 class _Settings(TypedDict):
     """A `MeasureColocalization` configuration, matching
-    `cp_anywhere_core::colocalization::Config`."""
+    `cp_anywhere::colocalization::Config`."""
 
     thr: float
     images_or_objects: str

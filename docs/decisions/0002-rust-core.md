@@ -3,6 +3,9 @@
 Status: accepted for M3. The browser target choice itself remains open
 for M4; this decision is about the native core only.
 
+The crate referred to here as `cp_anywhere_core` is now `cp-anywhere`,
+with `cp_anywhere` as the Rust import name.
+
 ## Decision
 
 Proceed with the Rust core built in M3. It implements the full declared

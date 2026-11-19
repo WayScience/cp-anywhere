@@ -66,6 +66,7 @@ jobs:
           cargo fmt --all -- --check
           cargo clippy --all-targets -- -D warnings
           cargo test
+          cargo test --locked -p cp-anywhere --no-default-features
       # build the native extension, then run the Python tests
       - name: Python tests
         run: |
@@ -96,13 +97,13 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
       - name: Add wasm32 target
         run: rustup target add wasm32-unknown-unknown
+      - name: Package the Rust library without publishing
+        run: cargo package --locked -p cp-anywhere
       - name: Install wasm-pack
         run: |
           curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM package
-        run: |
-          wasm-pack build crates/cp_anywhere_wasm --target web --release \
-            --out-dir pkg --out-name cp_anywhere
+        run: python scripts/wasm/build_package.py
       - name: Export golden fixtures for the browser demo
         run: uv run --frozen python scripts/wasm/export_fixtures.py
       - name: Export segmentation golden fixtures for the browser demo
@@ -128,6 +129,10 @@ jobs:
         run: uv run --frozen python scripts/parity/compare_wasm.py
       - name: WASM segmentation golden parity check (browser results)
         run: uv run --frozen python scripts/parity/compare_wasm_segmentation.py
+      - name: Batch parity across native Rust, Python, and Chromium WASM
+        run: uv run --frozen python -m scripts.parity.compare_batch
+      - name: Compare cppipe execution in Rust, Python, and Chromium WASM
+        run: uv run --frozen poe cppipe-parity
       - name: WASM size/shape parity check (real Chromium, real oracle)
         run: uv run --frozen python scripts/parity/compare_wasm_size_shape.py
       - name: WASM granularity parity check (real Chromium, real oracle)

@@ -5,7 +5,7 @@ oracle.
 Declared scope: 2D images only. Real CellProfiler's module also supports
 3D volumetric correspondence vectors (13 directions instead of 4); that
 case is an explicit, documented gap -- see
-``crates/cp_anywhere_core/src/texture.rs`` for the oracle-verified 2D
+``crates/cp_anywhere/src/texture.rs`` for the oracle-verified 2D
 numerics (``skimage.util.img_as_ubyte``'s exact rounding,
 ``skimage.exposure.rescale_intensity``'s division-before-multiply
 order, and ``mahotas.features.haralick``'s own co-occurrence-matrix and

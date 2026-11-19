@@ -1,6 +1,6 @@
 reference: CellProfiler 4.2.8, commit 2df090ff281cff80943fe679a1c3192fbda9cd6d
 engine: >-
-  cp-anywhere Rust core (crates/cp_anywhere_core, crates/cp_anywhere_python)
+  cp-anywhere Rust library (crates/cp_anywhere, crates/cp_anywhere_python)
 scope_contract: spec/compatibility.md
 feature_count: 119
 fixtures: 13
@@ -27,7 +27,7 @@ build:
     resolved under site-packages (no source-tree leakage); measure() on the
     touching_gradient fixture returned all 119 columns.
 reproduce:
-  - cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml
+  - cargo test --manifest-path crates/cp_anywhere/Cargo.toml
   - env -u CONDA_PREFIX uv run maturin develop --release --uv
   - uv run --frozen python scripts/parity/compare_native.py
   - CP_ANYWHERE_REFERENCE_PYTHON=.../venv/bin/python PYTHONPATH=.../cellprofiler

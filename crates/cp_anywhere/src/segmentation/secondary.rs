@@ -11,9 +11,10 @@
 //! -- callers get a clear error naming the method, never a silent
 //! fallback to a different one.
 
-use crate::declump::neighbor;
-use crate::{
-    DeclumpSettings, FillHoles, IdentifyPrimaryObjectsConfig, ThresholdMethod, ThresholdScope,
+use super::declump::{neighbor, MaximaSuppression, Smoothing, UnclumpMethod, WatershedMethod};
+use super::{
+    identify_primary_objects, DeclumpSettings, FillHoles, IdentifyPrimaryObjectsConfig,
+    ThresholdMethod, ThresholdScope,
 };
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -138,14 +139,14 @@ pub fn identify_secondary_objects(
                 maximum_object_count: None,
                 fill_holes: FillHoles::Never,
                 declump: DeclumpSettings {
-                    unclump: crate::declump::UnclumpMethod::None,
-                    watershed: crate::declump::WatershedMethod::None,
-                    smoothing: crate::declump::Smoothing::Automatic,
-                    suppression: crate::declump::MaximaSuppression::Automatic,
+                    unclump: UnclumpMethod::None,
+                    watershed: WatershedMethod::None,
+                    smoothing: Smoothing::Automatic,
+                    suppression: MaximaSuppression::Automatic,
                     low_resolution_maxima: false,
                 },
             };
-            let thresholded = crate::identify_primary_objects(
+            let thresholded = identify_primary_objects(
                 image,
                 integer_pixels,
                 image_mask,
@@ -180,7 +181,7 @@ pub fn identify_secondary_objects(
         // CP's mask is exactly labels_out == 0: the graph traversal is
         // unchanged, but writes to existing foreground are forbidden.
         let before = labels_out.clone();
-        crate::holes::fill_labeled_holes(&mut labels_out, rows, cols, None);
+        super::holes::fill_labeled_holes(&mut labels_out, rows, cols, None);
         for (filled, &original) in labels_out.iter_mut().zip(&before) {
             if original != 0 {
                 *filled = original;

@@ -1,6 +1,7 @@
 """CellProfiler-compatible native measurements."""
 
 from .api import MeasurementResult, measure, read_parquet_feature_names
+from .batch import ImageSetResult, run_batch
 from .colocalization import ColocalizationResult, measure_colocalization
 from .cppipe import (
     ColocalizationStep,
@@ -53,6 +54,7 @@ __all__ = [
     "IlluminationApplyImage",
     "IlluminationApplyStep",
     "IlluminationCalculateStep",
+    "ImageSetResult",
     "IntensityDistributionResult",
     "IntensityDistributionStep",
     "MeasurementResult",
@@ -83,5 +85,6 @@ __all__ = [
     "measure_texture",
     "preview_segmentation",
     "read_parquet_feature_names",
+    "run_batch",
     "save_array",
 ]

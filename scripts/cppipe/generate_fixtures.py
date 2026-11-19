@@ -49,7 +49,7 @@ from scripts.segmentation.generate_reference import (
 
 # A fixed twin-blob test image, shared by every case, already
 # oracle-verified many times over this project's segmentation work
-# (crates/cp_anywhere_segmentation's declump end-to-end test,
+# (the Rust segmentation module's declump end-to-end test,
 # fixtures/segmentation/synthetic_declump_*). uint16 so the real
 # default `Image(..., convert=True)` rescale this generator's own
 # `run_segmentation` applies is exercised, matching

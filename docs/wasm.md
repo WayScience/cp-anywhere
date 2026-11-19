@@ -2,12 +2,13 @@
 
 ## Result
 
-The Rust core compiles unmodified to `wasm32-unknown-unknown` (no feature
-gates needed; `cp_anywhere_core` has no dependencies beyond `std`).
+The Rust core compiles to `wasm32-unknown-unknown` with its default
+features, including the `.cppipe` executor. The core does not depend on
+Python or browser bindings.
 `crates/cp_anywhere_wasm` is a thin `wasm-bindgen` binding (JSON in/out for
-small metadata, typed arrays for the numeric payload) built with
-`wasm-pack build crates/cp_anywhere_wasm --target web --release`, producing
-a `cp-anywhere-wasm` npm package consumed by a real Vite example
+small metadata, typed arrays for the numeric payload). The build script
+`scripts/wasm/build_package.py` uses wasm-pack and names the npm package
+`cp-anywhere`. The Vite example
 (`examples/browser-vite`) that runs the module inside a dedicated web
 worker.
 
@@ -46,7 +47,7 @@ bug.
 ```sh
 cargo fmt --manifest-path crates/cp_anywhere_wasm/Cargo.toml --check
 cargo clippy --manifest-path crates/cp_anywhere_wasm/Cargo.toml --target wasm32-unknown-unknown --all-targets
-wasm-pack build crates/cp_anywhere_wasm --target web --release --out-dir pkg --out-name cp_anywhere
+python scripts/wasm/build_package.py
 
 cd examples/browser-vite
 npm install
@@ -63,7 +64,7 @@ uv run --frozen python scripts/parity/compare_wasm_segmentation.py
 ## Browser demo and npm package
 
 `examples/browser-vite` is a real Vite project (not a static mockup): its
-`src/worker.ts` imports the generated `cp-anywhere-wasm` package, fetches
+`src/worker.ts` imports the generated `cp-anywhere` package, fetches
 each fixture's raw binary arrays (see below), calls `measure()` and
 `identifyPrimaryObjects()`, and posts the results back; `src/main.ts`
 drives the worker from the page and renders status in `#status`.
@@ -84,7 +85,7 @@ recompiled per request.
 
 `identifyPrimaryObjects(pixels, rows, cols, mask, config_json)` shares
 its exact settings surface with the Python binding
-(`cp_anywhere_segmentation::build_config`/`ConfigParams` -- see
+(`cp_anywhere::segmentation::build_config`/`ConfigParams` -- see
 `spec/segmentation-modules.md`), so the same `config_json` field names
 (`threshold_method`, `unclump_method`, `watershed_method`, ...) work
 identically in both bindings, eliminating a second, driftable mapping.

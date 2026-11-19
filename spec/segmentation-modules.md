@@ -1,6 +1,6 @@
 # Segmentation module coverage
 
-This declares the exact scope of `crates/cp_anywhere_segmentation` /
+This declares the exact scope of `cp_anywhere::segmentation` /
 `cp_anywhere.identify_primary_objects` (native Python) /
 `identifyPrimaryObjects` (WASM, `crates/cp_anywhere_wasm`, same settings
 surface via the shared `build_config`/`ConfigParams`), against
@@ -203,7 +203,7 @@ being assembled:
 ### Hole filling, including the nested-object-absorption case
 
 `fill_holes` is implemented via a full foreground/background label
-graph (`crates/cp_anywhere_segmentation/src/holes.rs`, adapted from
+graph (`crates/cp_anywhere/src/segmentation/holes.rs`, adapted from
 `centrosome.cpmorphology.fill_labeled_holes`/
 `_cpmorphology2.fill_labeled_holes_loop`), not a simplified
 single-owner heuristic. This correctly handles:

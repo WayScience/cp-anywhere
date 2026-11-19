@@ -12,11 +12,11 @@ WASM build, with **no mocked stage**:
    (`public/threshold.onnx`) against that array, producing a reference
    threshold mask (logged for comparison; not used downstream -- see
    "Why the mask is only a reference" below).
-1. **cp-anywhere-wasm**'s own `identifyPrimaryObjects` (the same
+1. **cp-anywhere**'s own `identifyPrimaryObjects` (the same
    CellProfiler-compatible, oracle-verified segmentation the Python
    binding exposes -- Otsu threshold + Intensity declumping/watershed in
    this demo) segments the same Zarr pixels into real object labels.
-1. **cp-anywhere-wasm**'s `measure()` (this project's own Rust/WASM
+1. **cp-anywhere**'s `measure()` (this project's own Rust/WASM
    kernel, the same build verified in `docs/wasm.md`) measures the Zarr
    image using cp-anywhere's own segmentation output as the `Cells`
    object labels -- both segmentation and feature extraction now come
@@ -72,10 +72,10 @@ on the `touching_gradient` fixture's DNA channel (12x12, normalized to
 
 - Zarr read: shape `[12, 12]`, 144 pixels.
 - ONNX inference (reference only): 72 foreground pixels (`mask > 0.5`).
-- cp-anywhere-wasm `identifyPrimaryObjects()` (Otsu + Intensity
+- cp-anywhere `identifyPrimaryObjects()` (Otsu + Intensity
   declump/watershed, `min_diameter=4.0`): 1 object, threshold
   `0.486328125`.
-- cp-anywhere-wasm `measure()`: 21 `object_intensity` columns for that
+- cp-anywhere `measure()`: 21 `object_intensity` columns for that
   object.
 - DuckDB-WASM Parquet export: real `PAR1` magic bytes at both ends of the
   file, independently readable by native DuckDB.

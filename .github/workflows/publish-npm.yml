@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build_and_publish_npm:
-    name: build and publish cp-anywhere-wasm to npm
+    name: build and publish cp-anywhere to npm
     runs-on: ubuntu-26.04
     environment: release
     permissions:
@@ -42,9 +42,7 @@ jobs:
         shell: bash
         run: python tools/sync_release_version.py "$RELEASE_TAG"
       - name: Build WASM package
-        run: |
-          wasm-pack build crates/cp_anywhere_wasm --target web --release \
-            --out-dir pkg --out-name cp_anywhere
+        run: python scripts/wasm/build_package.py
       - name: Checksum the standalone .wasm artifact
         run: |
           cd crates/cp_anywhere_wasm/pkg

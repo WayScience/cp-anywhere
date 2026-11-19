@@ -80,7 +80,7 @@ PYTHONPATH=/path/to/pinned/CellProfiler /path/to/reference/python \
 PYTHONPATH=/path/to/pinned/CellProfiler /path/to/reference/python \
   scripts/cppipe/generate_size_shape_pipeline.py
 uv run --frozen pytest tests/test_size_shape.py tests/cppipe/test_size_shape_pipeline.py
-wasm-pack build crates/cp_anywhere_wasm --target web --release --out-dir pkg --out-name cp_anywhere
+python scripts/wasm/build_package.py
 uv run --frozen python scripts/parity/compare_wasm_size_shape.py
 ```
 

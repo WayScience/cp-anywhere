@@ -13,7 +13,7 @@ Scope: the module's DEFAULT center choice only (center_choice == "These
 objects", i.e. center_object_name is None in the real source -- the radial
 center is each object's own point farthest from its edge). The other two
 center choices need a second, separately-selected object set and are an
-explicit, documented gap in crates/cp_anywhere_core/src/intensity_distribution.rs.
+explicit, documented gap in crates/cp_anywhere/src/intensity_distribution.rs.
 
 Run with the reference environment's Python and CellProfiler on PYTHONPATH.
 """
@@ -70,7 +70,7 @@ def install_compatibility_adapter() -> None:
 
 class _Settings(TypedDict):
     """A `MeasureObjectIntensityDistribution` bin-count/Zernike
-    configuration, matching `cp_anywhere_core::intensity_distribution::Config`."""
+    configuration, matching `cp_anywhere::intensity_distribution::Config`."""
 
     bin_count: int
     wants_scaled: bool

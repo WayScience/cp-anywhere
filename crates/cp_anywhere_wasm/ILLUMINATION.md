@@ -75,8 +75,7 @@ throw JavaScript string errors. Existing WASM exports are unchanged.
 From the repository root:
 
 ```bash
-env -u CONDA_PREFIX wasm-pack build crates/cp_anywhere_wasm \
-  --target web --release --out-dir pkg --out-name cp_anywhere
+env -u CONDA_PREFIX python scripts/wasm/build_package.py
 node scripts/wasm/check_illumination.mjs
 env -u CONDA_PREFIX cargo fmt -p cp-anywhere-wasm -- --check
 env -u CONDA_PREFIX cargo clippy -p cp-anywhere-wasm \

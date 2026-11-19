@@ -1,6 +1,6 @@
 //! Typed-array illumination bindings; numerical calculation stays in the core.
 
-use cp_anywhere_core::illumination::{
+use cp_anywhere::illumination::{
     self, Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
 };
 use serde::Deserialize;

@@ -86,7 +86,7 @@ fn measure<'py>(
                 .map_err(|_| PyValueError::new_err("mask must be C-contiguous"))
         })
         .transpose()?;
-    let selected = cp_anywhere_core::Families {
+    let selected = cp_anywhere::Families {
         image_intensity: families.iter().any(|x| x == "image_intensity"),
         object_intensity: families.iter().any(|x| x == "object_intensity"),
         neighbors: families.iter().any(|x| x == "neighbors"),
@@ -95,7 +95,7 @@ fn measure<'py>(
     let neighbors_scope_refs: Vec<&str> = neighbors_scopes.iter().map(String::as_str).collect();
     let neighbors_expand = neighbors_expand.unwrap_or_default();
     let neighbors_expand_refs: Vec<&str> = neighbors_expand.iter().map(String::as_str).collect();
-    let input = cp_anywhere_core::Input {
+    let input = cp_anywhere::Input {
         shape: &shape,
         images: &image_views,
         objects: &object_views,
@@ -106,14 +106,14 @@ fn measure<'py>(
         size_shape: families
             .iter()
             .any(|family| family == "object_size_shape")
-            .then_some(cp_anywhere_core::SizeShapeOptions {
+            .then_some(cp_anywhere::SizeShapeOptions {
                 calculate_zernikes: size_shape_calculate_zernikes,
                 calculate_advanced: size_shape_calculate_advanced,
             }),
         neighbors_full_objects: &full_object_views,
     };
     let result = py
-        .detach(|| cp_anywhere_core::measure(&input))
+        .detach(|| cp_anywhere::measure(&input))
         .map_err(PyValueError::new_err)?;
     let root = PyDict::new(py);
     let features = PyDict::new(py);
@@ -123,12 +123,8 @@ fn measure<'py>(
         let group = PyDict::new(py);
         for (name, column) in columns {
             match column {
-                cp_anywhere_core::Column::Float(v) => {
-                    group.set_item(name, PyArray1::from_vec(py, v))?
-                }
-                cp_anywhere_core::Column::Int(v) => {
-                    group.set_item(name, PyArray1::from_vec(py, v))?
-                }
+                cp_anywhere::Column::Float(v) => group.set_item(name, PyArray1::from_vec(py, v))?,
+                cp_anywhere::Column::Int(v) => group.set_item(name, PyArray1::from_vec(py, v))?,
             }
         }
         features.set_item(scope, group)?;
@@ -209,7 +205,7 @@ fn identify_primary_objects<'py>(
     maxima_suppression_size: Option<f64>,
     low_resolution_maxima: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
-    use cp_anywhere_segmentation::{
+    use cp_anywhere::segmentation::{
         build_config, identify_primary_objects as segment, ConfigParams,
     };
 
@@ -346,10 +342,10 @@ fn identify_secondary_objects<'py>(
     distance_to_dilate: f64,
     fill_holes: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
-    use cp_anywhere_segmentation::secondary::{
+    use cp_anywhere::segmentation::secondary::{
         identify_secondary_objects as segment_secondary, SecondaryMethod, SecondaryObjectsConfig,
     };
-    use cp_anywhere_segmentation::{build_config, ConfigParams};
+    use cp_anywhere::segmentation::{build_config, ConfigParams};
 
     let image_slice = image
         .as_slice()
@@ -467,7 +463,7 @@ fn identify_tertiary_objects<'py>(
         .map_err(|_| PyValueError::new_err("secondary_labels must be C-contiguous"))?;
     let labels = py
         .detach(|| {
-            cp_anywhere_segmentation::tertiary::identify_tertiary_objects(
+            cp_anywhere::segmentation::tertiary::identify_tertiary_objects(
                 primary,
                 secondary,
                 cols,
@@ -528,7 +524,7 @@ fn measure_granularity<'py>(
         .map(String::as_str)
         .zip(object_slices.iter().copied())
         .collect();
-    let config = cp_anywhere_core::granularity::Config {
+    let config = cp_anywhere::granularity::Config {
         subsample_size,
         image_sample_size,
         element_size,
@@ -536,7 +532,7 @@ fn measure_granularity<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere_core::granularity::measure(
+            cp_anywhere::granularity::measure(
                 pixels_slice,
                 &object_pairs,
                 mask_slice,
@@ -588,7 +584,7 @@ fn calculate_illumination_each<'py>(
     size_of_smoothing_filter: f64,
     rescale_option: &str,
 ) -> PyResult<Bound<'py, PyArray1<f64>>> {
-    use cp_anywhere_core::illumination::{
+    use cp_anywhere::illumination::{
         Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
     };
     let pixels_slice = pixels
@@ -658,13 +654,7 @@ fn calculate_illumination_each<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere_core::illumination::calculate_each(
-                pixels_slice,
-                mask_slice,
-                rows,
-                cols,
-                &config,
-            )
+            cp_anywhere::illumination::calculate_each(pixels_slice, mask_slice, rows, cols, &config)
         })
         .map_err(PyValueError::new_err)?;
     Ok(PyArray1::from_vec(py, result))
@@ -699,7 +689,7 @@ fn calculate_illumination_across<'py>(
     size_of_smoothing_filter: f64,
     rescale_option: &str,
 ) -> PyResult<Bound<'py, PyArray1<f64>>> {
-    use cp_anywhere_core::illumination::{
+    use cp_anywhere::illumination::{
         Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
     };
     let mut pixel_slices: Vec<&[f64]> = Vec::with_capacity(images.len());
@@ -780,9 +770,7 @@ fn calculate_illumination_across<'py>(
         rescale_option,
     };
     let result = py
-        .detach(|| {
-            cp_anywhere_core::illumination::calculate_across(&image_pairs, rows, cols, &config)
-        })
+        .detach(|| cp_anywhere::illumination::calculate_across(&image_pairs, rows, cols, &config))
         .map_err(PyValueError::new_err)?;
     Ok(PyArray1::from_vec(py, result))
 }
@@ -822,7 +810,7 @@ fn measure_intensity_distribution<'py>(
     zernikes: &str,
     zernike_degree: u32,
 ) -> PyResult<Bound<'py, PyDict>> {
-    use cp_anywhere_core::intensity_distribution::{Config, ZernikeOption};
+    use cp_anywhere::intensity_distribution::{Config, ZernikeOption};
 
     let pixels_slice = pixels
         .as_slice()
@@ -854,7 +842,7 @@ fn measure_intensity_distribution<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere_core::intensity_distribution::measure(
+            cp_anywhere::intensity_distribution::measure(
                 pixels_slice,
                 labels_slice,
                 rows,
@@ -889,7 +877,7 @@ fn measure_texture<'py>(
     wants_image_measurements: bool,
     wants_object_measurements: bool,
 ) -> PyResult<(Bound<'py, PyDict>, Bound<'py, PyDict>)> {
-    use cp_anywhere_core::texture::Config;
+    use cp_anywhere::texture::Config;
 
     let pixels_slice = pixels
         .as_slice()
@@ -905,7 +893,7 @@ fn measure_texture<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere_core::texture::measure(
+            cp_anywhere::texture::measure(
                 pixels_slice,
                 rows,
                 cols,
@@ -953,7 +941,7 @@ fn measure_colocalization<'py>(
     wants_image_measurements: bool,
     wants_object_measurements: bool,
 ) -> PyResult<(Bound<'py, PyDict>, Bound<'py, PyDict>)> {
-    use cp_anywhere_core::colocalization::{Config, FastCostesMode};
+    use cp_anywhere::colocalization::{Config, FastCostesMode};
 
     let mut image_names: Vec<String> = Vec::with_capacity(images.len());
     let mut image_arrays: Vec<PyReadonlyArrayDyn<'py, f64>> = Vec::with_capacity(images.len());
@@ -1035,7 +1023,7 @@ fn measure_colocalization<'py>(
     };
     let result = py
         .detach(|| {
-            cp_anywhere_core::colocalization::measure(
+            cp_anywhere::colocalization::measure(
                 &image_pairs,
                 rows,
                 cols,

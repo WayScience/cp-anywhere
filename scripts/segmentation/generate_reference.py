@@ -7,7 +7,7 @@ reference/install.sh (same pinned CellProfiler source as
 scripts/reference/generate.py). It never imports cp_anywhere or
 substitutes another segmentation engine.
 
-Declared scope matches crates/cp_anywhere_segmentation's module docs:
+Declared scope matches the Rust core's segmentation module docs:
 every global/adaptive threshold operation, hole-filling, border
 exclusion, size/count filtering, and declumping/watershed (Intensity/
 Shape/Propagate). Every case uses CellProfiler's default

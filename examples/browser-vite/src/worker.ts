@@ -4,7 +4,7 @@
 // inputs are the project's real saved golden-fixture arrays, flattened by
 // `scripts/wasm/export_fixtures.py` (measurement) and
 // `scripts/wasm/export_segmentation_fixtures.py` (segmentation).
-import init, { identifyPrimaryObjects, measure } from "cp-anywhere-wasm";
+import init, { identifyPrimaryObjects, measure } from "cp-anywhere";
 
 interface FixtureMetadata {
   shape: number[];

@@ -5,29 +5,28 @@
 | Package                                          | Registry              | Workflow                                                          | Trigger              | Auth                                                                                                                                                                          |
 | ------------------------------------------------ | --------------------- | ----------------------------------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cp-anywhere` (sdist + abi3 wheels, 5 platforms) | PyPI                  | `.github/workflows/publish-pypi.yml`                              | `release: published` | OIDC trusted publishing (`pypa/gh-action-pypi-publish`); works from the first release via a PyPI "pending publisher"                                                          |
-| `cp_anywhere_core` (Rust crate)                  | crates.io             | `.github/workflows/publish-crate.yml`                             | `release: published` | `CARGO_REGISTRY_TOKEN` secret for the first release (crates.io OIDC trusted publishing can only be configured for a crate that already exists); can migrate to OIDC afterward |
-| `cp-anywhere-wasm` (npm package)                 | npm                   | `.github/workflows/publish-npm.yml`                               | `release: published` | OIDC trusted publishing (`id-token: write`, no stored token) -- **but only once the package already exists on npm**; see the bootstrap step below                             |
+| `cp-anywhere` (Rust crate)                       | crates.io             | `.github/workflows/publish-crate.yml`                             | `release: published` | `CARGO_REGISTRY_TOKEN` secret for the first release (crates.io OIDC trusted publishing can only be configured for a crate that already exists); can migrate to OIDC afterward |
+| `cp-anywhere` (npm package)                      | npm                   | `.github/workflows/publish-npm.yml`                               | `release: published` | OIDC trusted publishing (`id-token: write`, no stored token) -- **but only once the package already exists on npm**; see the bootstrap step below                             |
 | Standalone `.wasm` + checksum                    | GitHub Release assets | `.github/workflows/publish-npm.yml` (`build_and_publish_npm` job) | `release: published` | `GITHUB_TOKEN`                                                                                                                                                                |
 
 `tools/sync_release_version.py` rewrites the Cargo workspace `version` from
 the release tag before any build; because all three crates
-(`cp_anywhere_core`, `cp_anywhere_python`, `cp_anywhere_wasm`) use
+(`cp-anywhere`, `cp_anywhere_python`, `cp-anywhere-wasm`) use
 `version.workspace = true`, this single rewrite keeps the PyPI wheel,
 npm package, and crates.io crate at the same version with no separate
 sync step. The git tag is the single source of truth for every published
 version across all three registries.
 
-Only `cp_anywhere_core` is published to crates.io: it is the portable,
-dependency-free measurement kernel usable from any Rust project.
-`cp_anywhere_python` and `cp_anywhere_wasm` are thin FFI bindings consumed
-through PyPI and npm respectively, not as Cargo dependencies of other
-projects.
+`cp-anywhere` is the only crate configured for crates.io publishing. It includes
+segmentation, illumination, measurements, and `.cppipe` execution. To use
+the individual operations without pipeline parsing or its serialization
+dependencies, set `default-features = false` in your Cargo dependency.
+`cp_anywhere_python` and `cp_anywhere_wasm` remain internal binding crates.
+The Python and browser packages ship through PyPI and npm.
 
 ## One-time setup (must be done once, outside this repo, before the first release)
 
-None of the three packages (`cp-anywhere`, `cp_anywhere_core`,
-`cp-anywhere-wasm`) have been published anywhere yet. Each registry has a
-different bootstrap story for a brand-new, never-published package:
+Each registry has different setup steps for a first release of its package:
 
 1. **GitHub "release" environment.** Already created
    (`repos/d33bs/cp-anywhere/environments/release`), referenced by all
@@ -53,12 +52,11 @@ different bootstrap story for a brand-new, never-published package:
       e.g. for `v0.1.0`:
       ```sh
       python tools/sync_release_version.py v0.1.0
-      wasm-pack build crates/cp_anywhere_wasm --target web --release \
-        --out-dir pkg --out-name cp_anywhere
+      python scripts/wasm/build_package.py
       cd crates/cp_anywhere_wasm/pkg && npm publish --access public
       git checkout Cargo.toml Cargo.lock  # undo the local version bump
       ```
-   1. Once `cp-anywhere-wasm` exists on npm, go to its package settings
+   1. Once `cp-anywhere` exists on npm, go to its package settings
       -> Publishing access -> add a trusted publisher: GitHub Actions,
       owner `d33bs`, repository `cp-anywhere`, workflow filename
       `publish-npm.yml`, environment `release`.
@@ -98,15 +96,14 @@ different bootstrap story for a brand-new, never-published package:
    using the Cargo workspace version that `tools/sync_release_version.py`
    derived from the tag.
 
-## Verified locally, every M7 session (not a real publish)
+## Local packaging checks
 
-Every artifact below was built and checked locally in this session with
-the real toolchain -- no registry credentials involved, nothing uploaded:
+Build and check the artifacts locally before cutting a release. These
+commands do not upload anything:
 
 ```sh
-# crates.io: packaging + a full publish dry run (compiles the packaged
-# tarball from scratch, as crates.io would)
-cargo publish --manifest-path crates/cp_anywhere_core/Cargo.toml --dry-run
+# crates.io: build and verify the archive
+cargo package --locked -p cp-anywhere
 
 # PyPI: sdist + wheel build, then install from the wheel into a throwaway
 # venv with no project source on sys.path
@@ -115,24 +112,20 @@ python3 -m venv /tmp/smoke && /tmp/smoke/bin/pip install dist/*.whl numpy
 /tmp/smoke/bin/python -c "import cp_anywhere; cp_anywhere.measure(...)"
 
 # npm: wasm-pack build, then a full publish dry run
-wasm-pack build crates/cp_anywhere_wasm --target web --release --out-dir pkg --out-name cp_anywhere
+python scripts/wasm/build_package.py
 cd crates/cp_anywhere_wasm/pkg && npm publish --dry-run --access public
 ```
 
-Results: `cargo publish --dry-run` packaged and compiled 7 files (46.5 KiB,
-12.9 KiB compressed) with zero errors. `uv build` produced a working
-abi3 wheel that installs and runs `measure()` correctly from a venv with no
-project source path. `npm publish --dry-run` packaged 5 files (97.0 KiB
-tarball, 224.2 KiB unpacked).
+Use `--allow-dirty` with `cargo package` to check uncommitted changes locally.
+The release workflow uses it because version sync modifies the checkout
+before building.
 
 ## Known gaps
 
 - The publish workflows themselves have not been exercised by a real
   GitHub Actions run (that would require actually cutting a release,
-  which this session does not do). The dry runs above verify the
-  artifacts the workflows would build and upload are correct; they do not
-  verify the workflow YAML executes successfully end to end on GitHub's
-  runners.
+  which this session does not do). Local packaging checks do not verify
+  registry authentication or publishing on GitHub's runners.
 - The one-time setup steps above (PyPI pending publisher, npm bootstrap
   publish + trusted publisher, crates.io token) require the registry
   account owner's own login and have not been done yet -- they are not

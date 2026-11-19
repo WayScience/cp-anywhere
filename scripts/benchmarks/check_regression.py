@@ -9,7 +9,7 @@ workload's delta so a regression in one workload cannot hide behind others
 improving.
 
 Usage:
-    cargo bench --manifest-path crates/cp_anywhere_core/Cargo.toml
+    cargo bench --manifest-path crates/cp_anywhere/Cargo.toml
     uv run --frozen python scripts/benchmarks/report_native_rust.py
     uv run --frozen python scripts/benchmarks/check_regression.py
 

@@ -10,7 +10,7 @@
     "browser-check": "node run-browser-check.mjs"
   },
   "dependencies": {
-    "cp-anywhere-wasm": "file:../../crates/cp_anywhere_wasm/pkg"
+    "cp-anywhere": "file:../../crates/cp_anywhere_wasm/pkg"
   },
   "devDependencies": {
     "playwright": "1.65.1",

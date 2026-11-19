@@ -1,6 +1,6 @@
 // Reproducible headless-browser acceptance check for the Zarr/ONNX/DuckDB
 // integration demo: serves the real Vite production build, runs the real
-// zarrita.js -> onnxruntime-web -> cp-anywhere-wasm -> DuckDB-WASM pipeline
+// zarrita.js -> onnxruntime-web -> cp-anywhere -> DuckDB-WASM pipeline
 // in a real Chromium instance (Playwright, not a mock DOM), and writes the
 // captured results (including the real Parquet bytes) to disk so
 // scripts/zarr/validate_export.py can verify them with native DuckDB.

@@ -13,7 +13,7 @@ Pixel values are exported *already rescaled* (the same rescale
 `cp_anywhere.identify_primary_objects(..., rescale=case["rescale"])`
 would apply before calling the Rust core): the Rust/WASM core itself is
 unit-agnostic and has no rescale step of its own (see
-`crates/cp_anywhere_segmentation`'s module docs), so the browser-side
+`cp_anywhere::segmentation` module docs), so the browser-side
 call must receive pixels already in the units the oracle's own
 `threshold`/`threshold_value` was computed against.
 """
@@ -29,7 +29,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURE_DIR = ROOT / "fixtures/segmentation"
 
-# Settings fields `ConfigParams` (crates/cp_anywhere_segmentation) expects;
+# Settings fields `cp_anywhere::segmentation::ConfigParams` expects;
 # anything a fixture's raw `settings` dict omits is left out of the
 # exported config JSON too, so `build_config`'s own defaults apply --
 # matching the native/Python test harness's behavior exactly, not

@@ -7,18 +7,19 @@
 //! saves its output.
 //!
 //! Also exposes `identifyPrimaryObjects`, a wasm-bindgen binding for
-//! `cp_anywhere_segmentation::identify_primary_objects` -- the same
+//! `cp_anywhere::segmentation::identify_primary_objects` -- the same
 //! oracle-verified CellProfiler-compatible segmentation the Python
 //! binding (`cp_anywhere_python`) exposes, sharing its exact settings
-//! surface via `cp_anywhere_segmentation::build_config` (not a separate,
+//! surface via `cp_anywhere::segmentation::build_config` (not a separate,
 //! driftable reimplementation of the threshold/declump string mapping).
 
+mod cppipe;
 mod illumination;
 
-use cp_anywhere_core::{measure as core_measure, Column, Families, Input};
-use cp_anywhere_segmentation::{
+use cp_anywhere::segmentation::{
     build_config, identify_primary_objects as core_segment, ConfigParams,
 };
+use cp_anywhere::{measure as core_measure, Column, Families, Input};
 use serde::Deserialize;
 use serde_json::{Map, Value};
 use wasm_bindgen::prelude::*;
@@ -137,7 +138,7 @@ pub fn measure_with_options(
         size_shape: families
             .iter()
             .any(|family| family == "object_size_shape")
-            .then_some(cp_anywhere_core::SizeShapeOptions {
+            .then_some(cp_anywhere::SizeShapeOptions {
                 calculate_zernikes: size_shape_calculate_zernikes.unwrap_or(true),
                 calculate_advanced: size_shape_calculate_advanced.unwrap_or(false),
             }),
@@ -323,7 +324,7 @@ impl SegmentationResult {
 /// CellProfiler-compatible `identify_primary_objects` pipeline -- the
 /// identical Rust core the Python binding (`cp_anywhere_python`) calls,
 /// through the same `build_config`/`ConfigParams` settings surface (see
-/// `cp_anywhere_segmentation::ConfigParams` for the full field list; any
+/// `cp_anywhere::segmentation::ConfigParams` for the full field list; any
 /// field omitted from `config_json` uses CellProfiler's own equivalent
 /// default, e.g. `threshold_method: "otsu"`). `pixels`/`mask` are plain
 /// typed arrays (the bulk numeric data); `config_json` is a JSON object
@@ -414,7 +415,7 @@ pub fn identify_primary_objects_json(input: &str) -> Result<SegmentationResult, 
 /// (small-input JSON convention, matching `WasmInput`), `objects` maps
 /// object-set name to its flattened `u32` label array (same shape as
 /// `pixels`), and the remaining fields mirror
-/// `cp_anywhere_core::granularity::Config` with CellProfiler's own
+/// `cp_anywhere::granularity::Config` with CellProfiler's own
 /// `MeasureGranularity` module defaults.
 #[derive(Deserialize)]
 struct WasmGranularityInput {
@@ -447,7 +448,7 @@ fn default_granular_spectrum_length() -> usize {
 }
 
 /// Run CellProfiler's 2D granularity spectrum on typed-array/JSON input --
-/// the same oracle-verified `cp_anywhere_core::granularity` core the
+/// the same oracle-verified `cp_anywhere::granularity` core the
 /// Python binding (`cp_anywhere_python`) calls. Returns a JSON string
 /// `{"image": [...], "objects": {"<name>": [[...], ...]}}` (one inner
 /// array per scale, ascending 1-based object order), matching
@@ -467,13 +468,13 @@ pub fn measure_granularity_json(input: &str) -> Result<String, JsValue> {
         .iter()
         .map(|(name, labels)| (name.as_str(), labels.as_slice()))
         .collect();
-    let config = cp_anywhere_core::granularity::Config {
+    let config = cp_anywhere::granularity::Config {
         subsample_size: parsed.subsample_size,
         image_sample_size: parsed.image_sample_size,
         element_size: parsed.element_size,
         granular_spectrum_length: parsed.granular_spectrum_length,
     };
-    let result = cp_anywhere_core::granularity::measure(
+    let result = cp_anywhere::granularity::measure(
         &parsed.pixels,
         &object_pairs,
         parsed.mask.as_deref(),
@@ -502,7 +503,7 @@ pub fn measure_granularity_json(input: &str) -> Result<String, JsValue> {
 /// Input for `measureIntensityDistributionJson`: `pixels`/`labels` are
 /// plain arrays (small-input JSON convention, matching `WasmInput`), and
 /// the remaining fields mirror
-/// `cp_anywhere_core::intensity_distribution::Config` with CellProfiler's
+/// `cp_anywhere::intensity_distribution::Config` with CellProfiler's
 /// own `MeasureObjectIntensityDistribution` module defaults.
 #[derive(Deserialize)]
 struct WasmIntensityDistributionInput {
@@ -545,14 +546,14 @@ fn default_zernike_degree() -> u32 {
 
 /// Run CellProfiler's 2D radial intensity distribution on typed-array/
 /// JSON input -- the same oracle-verified
-/// `cp_anywhere_core::intensity_distribution` core the Python binding
+/// `cp_anywhere::intensity_distribution` core the Python binding
 /// (`cp_anywhere_python`) calls. Returns a JSON string
 /// `{"<RadialDistribution_... column name>": [...], ...}`, one value per
 /// object in ascending 1-based object ID order, matching
 /// `cp_anywhere.measure_intensity_distribution`'s own result shape.
 #[wasm_bindgen(js_name = measureIntensityDistributionJson)]
 pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValue> {
-    use cp_anywhere_core::intensity_distribution::{Config, ZernikeOption};
+    use cp_anywhere::intensity_distribution::{Config, ZernikeOption};
 
     let parsed: WasmIntensityDistributionInput =
         serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -583,7 +584,7 @@ pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValu
         maximum_radius: parsed.maximum_radius,
         zernikes,
     };
-    let result = cp_anywhere_core::intensity_distribution::measure(
+    let result = cp_anywhere::intensity_distribution::measure(
         &parsed.pixels,
         &parsed.labels,
         parsed.rows,
@@ -603,7 +604,7 @@ pub fn measure_intensity_distribution_json(input: &str) -> Result<String, JsValu
 
 /// Input for `measureTextureJson`: `pixels`/`labels` are plain arrays
 /// (small-input JSON convention, matching `WasmInput`), and the
-/// remaining fields mirror `cp_anywhere_core::texture::Config` with
+/// remaining fields mirror `cp_anywhere::texture::Config` with
 /// CellProfiler's own `MeasureTexture` module defaults.
 #[derive(Deserialize)]
 struct WasmTextureInput {
@@ -634,14 +635,14 @@ fn default_wants_object_measurements() -> bool {
 }
 
 /// Run CellProfiler's 2D Haralick texture measurements on typed-array/
-/// JSON input -- the same oracle-verified `cp_anywhere_core::texture`
+/// JSON input -- the same oracle-verified `cp_anywhere::texture`
 /// core the Python binding (`cp_anywhere_python`) calls. Returns a JSON
 /// string `{"image": {"<Texture_... column name>": <float>, ...},
 /// "objects": {"<column name>": [...one per object], ...}}`, matching
 /// `cp_anywhere.measure_texture`'s own result shape.
 #[wasm_bindgen(js_name = measureTextureJson)]
 pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
-    use cp_anywhere_core::texture::Config;
+    use cp_anywhere::texture::Config;
 
     let parsed: WasmTextureInput =
         serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -657,7 +658,7 @@ pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
         wants_image_measurements: parsed.wants_image_measurements,
         wants_object_measurements: parsed.wants_object_measurements,
     };
-    let result = cp_anywhere_core::texture::measure(
+    let result = cp_anywhere::texture::measure(
         &parsed.pixels,
         parsed.rows,
         parsed.cols,
@@ -688,7 +689,7 @@ pub fn measure_texture_json(input: &str) -> Result<String, JsValue> {
 /// matters, because real CellProfiler's `get_image_pairs()` yields
 /// `(images[i], images[j])` for `i < j`, and the asymmetric Correlation
 /// and Slope columns name the pair in exactly that order. Plus the
-/// rows/cols shape and `cp_anywhere_core::colocalization::Config`
+/// rows/cols shape and `cp_anywhere::colocalization::Config`
 /// fields with CellProfiler's own `MeasureColocalization` module
 /// defaults.
 #[derive(Deserialize)]
@@ -749,14 +750,14 @@ fn default_colocalization_wants_objects() -> bool {
 }
 
 /// Run CellProfiler's 2D pairwise colocalization on JSON input -- the
-/// same oracle-verified `cp_anywhere_core::colocalization` core the
+/// same oracle-verified `cp_anywhere::colocalization` core the
 /// Python binding (`cp_anywhere_python`) calls. Returns a JSON string
 /// `{"image": {"<Correlation_... column name>": <float>, ...},
 /// "objects": {"<column name>": [...one per object], ...}}`, matching
 /// `cp_anywhere.measure_colocalization`'s own result shape.
 #[wasm_bindgen(js_name = measureColocalizationJson)]
 pub fn measure_colocalization_json(input: &str) -> Result<String, JsValue> {
-    use cp_anywhere_core::colocalization::{Config, FastCostesMode};
+    use cp_anywhere::colocalization::{Config, FastCostesMode};
 
     let parsed: WasmColocalizationInput =
         serde_json::from_str(input).map_err(|e| JsValue::from_str(&e.to_string()))?;
@@ -834,7 +835,7 @@ pub fn measure_colocalization_json(input: &str) -> Result<String, JsValue> {
     } else {
         Some(mask_pairs.as_slice())
     };
-    let result = cp_anywhere_core::colocalization::measure(
+    let result = cp_anywhere::colocalization::measure(
         &image_pairs,
         parsed.rows,
         parsed.cols,

@@ -247,6 +247,8 @@ maturin develop --uv && pytest
 tasks.lint.shell = """
 pre-commit run --all-files
 """
+# requires the web WASM build and Playwright Chromium; see docs/cppipe.md
+tasks.cppipe-parity.cmd = "python -m scripts.parity.compare_cppipe"
 # full local pipeline: Rust tests, native build, linting, Python tests
 tasks.pipeline.shell = """
 cargo test && maturin develop --uv && pre-commit run --all-files && pytest

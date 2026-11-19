@@ -33,7 +33,7 @@ jobs:
       - name: uv sync
         run: uv sync --frozen
       - name: Run native Rust benchmark
-        run: cargo bench --manifest-path crates/cp_anywhere_core/Cargo.toml
+        run: cargo bench --manifest-path crates/cp_anywhere/Cargo.toml
       - name: Build benchmark report
         run: uv run --frozen python scripts/benchmarks/report_native_rust.py
       - name: Check against the throughput acceptance gate

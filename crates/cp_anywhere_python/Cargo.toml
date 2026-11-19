@@ -6,6 +6,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+publish = false
 
 [lib]
 # Produces the native extension module imported from Python as
@@ -14,8 +15,8 @@ name = "_native"
 crate-type = ["cdylib"]
 
 [dependencies]
-cp_anywhere_core = { path = "../cp_anywhere_core" }
-cp_anywhere_segmentation = { path = "../cp_anywhere_segmentation" }
+# Python keeps its own pipeline orchestration and uses the shared kernels.
+cp-anywhere = { path = "../cp_anywhere", default-features = false }
 # `abi3-py311` builds against CPython's stable ABI, so a single wheel per
 # platform works on Python 3.11 and every newer version -- no per-interpreter
 # build matrix, and forward compatibility with Python versions released after

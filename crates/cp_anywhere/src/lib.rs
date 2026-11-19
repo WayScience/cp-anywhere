@@ -1,14 +1,20 @@
-//! CellProfiler 4.2.8 compatible measurements over borrowed, contiguous arrays.
+//! CellProfiler 4.2.8 compatible segmentation and measurements over arrays.
 //! The core has no Python, filesystem, or platform dependency.
+//! The default `pipeline` feature also enables `.cppipe` execution.
 
 use std::collections::{BTreeMap, BTreeSet};
 
 pub const MAX_LABEL: u32 = 1_000_000;
 
+#[cfg(not(target_family = "wasm"))]
+pub mod batch;
 pub mod colocalization;
 pub mod granularity;
 pub mod illumination;
 pub mod intensity_distribution;
+#[cfg(feature = "pipeline")]
+pub mod pipeline;
+pub mod segmentation;
 pub mod size_shape;
 pub mod size_shape_moments;
 pub mod texture;

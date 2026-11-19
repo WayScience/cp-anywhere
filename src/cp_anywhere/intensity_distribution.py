@@ -5,7 +5,7 @@ Declared scope: 2D images, the module's default radial center ("These
 objects" -- each object's own point farthest from its edge). The "Centers
 of other objects" and "Edges of other objects" center choices need a
 second, separately selected object set and are an explicit, documented
-gap -- see ``crates/cp_anywhere_core/src/intensity_distribution.rs``'s own
+gap -- see ``crates/cp_anywhere/src/intensity_distribution.rs``'s own
 doc comment for the exact algorithm this reproduces (geodesic distance
 from each object's own farthest-from-edge seed, binned into concentric
 rings, with optional Zernike intensity moments) and

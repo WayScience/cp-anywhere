@@ -2,7 +2,7 @@
 
 ## Result
 
-The Rust core (`crates/cp_anywhere_core`) implements the complete declared
+The Rust library (`crates/cp_anywhere`) implements the complete declared
 scope from `spec/compatibility.md`: `MeasureImageIntensity`,
 `MeasureObjectIntensity` over `Cells`/`Nuclei` × `DNA`/`Actin`, and
 `MeasureObjectNeighbors` same-set `Adjacent` with directed relationship
@@ -20,7 +20,7 @@ Full counts and reasons are recorded in `spec/native-coverage.yaml` and
 `benchmarks/reports/native-parity.json`.
 
 ```sh
-cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml
+cargo test --manifest-path crates/cp_anywhere/Cargo.toml
 env -u CONDA_PREFIX uv run maturin develop --release --uv
 uv run --frozen python scripts/parity/compare_native.py
 CP_ANYWHERE_REFERENCE_PYTHON=/path/to/reference/venv/bin/python \
@@ -74,7 +74,7 @@ sources, not a cleaned-up reimplementation:
 - Rejected inputs: 1D or higher-than-3D shapes, boolean/float label
   arrays, non-real-numeric image dtypes, mismatched shapes, labels above
   `MAX_LABEL`, and (when neighbors are selected) no `Cells` object set.
-- The core (`cp_anywhere_core`) has no Python, filesystem, or platform
+- The library (`cp_anywhere`) has no Python, filesystem, or platform
   dependency: `Input`/`ResultTable` are plain Rust types over borrowed
   slices, which keeps a future WASM target possible without a rewrite.
 

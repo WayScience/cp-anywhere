@@ -49,7 +49,7 @@ def main() -> None:
 
     # Re-derive the identical inputs from source: the exact Zarr chunk bytes
     # (what zarrita.js actually read), fresh-segmented natively with the
-    # same settings main.ts passes to cp-anywhere-wasm's
+    # same settings main.ts passes to cp-anywhere's WASM bindings for
     # `identifyPrimaryObjects` (not the ONNX demo mask -- that model is
     # still run in the browser for comparison/logging only, see
     # docs/browser-integration.md).

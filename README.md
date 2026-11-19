@@ -88,6 +88,32 @@ cp_anywhere.save_array(overlay, "segmentation-preview.png", bit_depth="No conver
 
 To inspect the overlay in a notebook, use `plt.imshow(overlay)` with Matplotlib.
 
+### Run a pipeline on multiple fields
+
+Pass a supported CellProfiler pipeline and a mapping from image IDs to named
+channels. The channel names must match the pipeline. Paths and NumPy arrays both work.
+
+```python
+image_sets = {
+    "A01-site1": {"DNA": "a01_s1_dna.tif", "Stain": "a01_s1_actin.tif"},
+    "A01-site2": {"DNA": "a01_s2_dna.tif", "Stain": "a01_s2_actin.tif"},
+}
+for field in cp_anywhere.run_batch("pipeline.cppipe", image_sets, workers=2):
+    if field.measurements is not None:
+        field.measurements.to_parquet(f"{field.image_id}.parquet")
+```
+
+Omit `workers` for serial execution. With more than one worker, `backend="thread"`
+is the default. Use `backend="process"` in a Python script under an
+`if __name__ == "__main__":` guard. Results arrive in input order and retain
+their image IDs. For custom workflows, use `load_pipeline(...).run(...)` on a
+single field or call the individual functions. See the
+[batch experiment](https://github.com/d33bs/cp-anywhere/blob/main/docs/batch.md)
+and the [pipeline import limits](https://github.com/d33bs/cp-anywhere/blob/main/spec/cppipe-compatibility.md).
+
+The package is named `cp-anywhere` on PyPI, crates.io, and npm. The Rust
+library uses `cp_anywhere` in imports. See the [cross-runtime pipeline guide](https://github.com/d33bs/cp-anywhere/blob/main/docs/cppipe.md).
+
 ## Project links
 
 - [Documentation](https://d33bs.github.io/cp-anywhere/)

@@ -1,0 +1,26 @@
+[package]
+name = "cp-anywhere"
+description = "CellProfiler-compatible segmentation, measurements, and pipeline execution."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+# These checkout-only tests and benchmarks use the repository's fixture corpus.
+exclude = ["benches/", "tests/cppipe_parser.rs", "tests/data/"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"], optional = true }
+serde_json = { version = "1", features = ["float_roundtrip"], optional = true }
+
+[features]
+default = ["pipeline"]
+pipeline = ["serde", "dep:serde_json"]
+serde = ["dep:serde"]
+
+[dev-dependencies]
+criterion = "0.7"
+
+[[bench]]
+name = "throughput"
+harness = false

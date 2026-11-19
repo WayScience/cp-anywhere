@@ -206,7 +206,7 @@ pub fn declump(
         let mut foreground: Vec<bool> = labels.iter().map(|&l| l > 0).collect();
         if config.fill_holes_for_shape {
             let mut filled = labels.to_vec();
-            crate::holes::fill_labeled_holes(&mut filled, height, width, None);
+            super::holes::fill_labeled_holes(&mut filled, height, width, None);
             foreground = filled.iter().map(|&l| l > 0).collect();
         }
         let mut d = distance_transform_edt(&foreground, width, height);

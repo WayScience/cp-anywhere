@@ -20,13 +20,6 @@ declare global {
 }
 
 const statusEl = document.querySelector<HTMLPreElement>("#status");
-const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
-worker.onerror = (event: ErrorEvent) => {
-  if (statusEl) statusEl.textContent = `worker error: ${event.message}`;
-};
-worker.onmessageerror = (event: MessageEvent) => {
-  if (statusEl) statusEl.textContent = `worker message error: ${String(event.data)}`;
-};
 
 const BENCHMARK_FIXTURES = ["touching_gradient", "real_cell_cc0", "grid_medium", "grid_large"];
 
@@ -50,6 +43,13 @@ function wasmTransferBytesFallback(): number | null {
 }
 
 async function main(): Promise<void> {
+  const worker = new Worker(new URL("./worker.ts", import.meta.url), { type: "module" });
+  worker.onerror = (event: ErrorEvent) => {
+    if (statusEl) statusEl.textContent = `worker error: ${event.message}`;
+  };
+  worker.onmessageerror = (event: MessageEvent) => {
+    if (statusEl) statusEl.textContent = `worker message error: ${String(event.data)}`;
+  };
   const fixtures = await allFixtureNames();
   const segmentationFixtures = await allSegmentationFixtureNames();
   const results: NonNullable<Window["__CP_ANYWHERE_RESULTS__"]> = {
@@ -98,7 +98,11 @@ async function main(): Promise<void> {
   worker.postMessage({ type: "parity", fixtures });
 }
 
-main().catch((error: unknown) => {
+const start = new URLSearchParams(location.search).has("batch-check")
+  ? import("./batch-check").then(({ check }) => check())
+  : main();
+
+start.catch((error: unknown) => {
   if (statusEl) statusEl.textContent = `error: ${String(error)}`;
   throw error;
 });

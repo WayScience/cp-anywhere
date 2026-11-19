@@ -13,7 +13,7 @@ from cp_anywhere.segment import identify_secondary_objects
 # Real CellProfiler 4.2.8 IdentifySecondaryObjects, Propagation method,
 # regularization_factor=0.05, global Otsu threshold, fill_holes=True,
 # on a 10x12 radial-falloff image with two primary seeds at (5,3) and
-# (5,8) -- see crates/cp_anywhere_segmentation/src/secondary.rs's own
+# (5,8) -- see the Rust segmentation module's secondary.rs
 # identical Rust-level test for the full oracle-generation context.
 _ROWS, _COLS = 10, 12
 _YY, _XX = np.mgrid[0:_ROWS, 0:_COLS]

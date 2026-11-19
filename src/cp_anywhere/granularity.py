@@ -6,7 +6,7 @@ Declared scope: 2D images only. Real CellProfiler's own module divides by
 resolution, and raises ``ZeroDivisionError`` for any image with a 1-row or
 1-column dimension; :func:`measure_granularity` raises a clear
 :class:`ValueError` for that case instead of silently producing 0/NaN --
-see ``fixtures/granularity/`` and ``crates/cp_anywhere_core/src/granularity.rs``
+see ``fixtures/granularity/`` and ``crates/cp_anywhere/src/granularity.rs``
 for the oracle-verified numerics (bilinear and cubic-spline resampling,
 grayscale erosion/dilation, and morphological reconstruction all
 independently matched against the pinned reference)::

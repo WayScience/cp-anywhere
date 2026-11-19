@@ -61,7 +61,7 @@ or hidden threshold.
 ## Reproduce
 
 ```sh
-cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml
+cargo test --manifest-path crates/cp_anywhere/Cargo.toml
 env -u CONDA_PREFIX uv run maturin develop --release --uv
 uv run --frozen python scripts/parity/compare_native.py
 

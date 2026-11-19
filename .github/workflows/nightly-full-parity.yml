@@ -59,9 +59,7 @@ jobs:
         run: |
           curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
       - name: Build WASM package
-        run: |
-          wasm-pack build crates/cp_anywhere_wasm --target web --release \
-            --out-dir pkg --out-name cp_anywhere
+        run: python scripts/wasm/build_package.py
       - name: Export golden fixtures for the browser demo
         run: uv run --frozen python scripts/wasm/export_fixtures.py
       - name: Node setup

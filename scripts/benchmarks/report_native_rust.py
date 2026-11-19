@@ -1,7 +1,7 @@
 """Parse Criterion's raw sample data into the project's benchmark-report shape.
 
 Reads `target/criterion/object_intensity_and_neighbors/<fixture>/new/sample.json`
-(written by `cargo bench --manifest-path crates/cp_anywhere_core/Cargo.toml`)
+(written by `cargo bench --manifest-path crates/cp_anywhere/Cargo.toml`)
 for the four representative workloads, families `object_intensity` +
 `neighbors` only (matching exactly what the pinned `cp_measure` baseline in
 `benchmarks/baseline/initial-cp-measure-timing.json` computed), and writes
@@ -27,7 +27,7 @@ def load_samples(fixture: str) -> list[float]:
     if not path.exists():
         msg = (
             "Run `cargo bench --manifest-path "
-            f"crates/cp_anywhere_core/Cargo.toml` first: {path}"
+            f"crates/cp_anywhere/Cargo.toml` first: {path}"
         )
         raise FileNotFoundError(msg)
     data = json.loads(path.read_text())
@@ -50,8 +50,7 @@ def main() -> None:
     report = {
         "contract_version": 1,
         "engine": (
-            "cp-anywhere native Rust (cp_anywhere_core::measure, "
-            "no Python/FFI boundary)"
+            "cp-anywhere native Rust (cp_anywhere::measure, no Python/FFI boundary)"
         ),
         "families_timed": ["object_intensity", "neighbors"],
         "comparison_note": (
@@ -61,8 +60,7 @@ def main() -> None:
             "baseline computed on the same scope."
         ),
         "harness": (
-            "Criterion.rs, cargo bench --manifest-path "
-            "crates/cp_anywhere_core/Cargo.toml"
+            "Criterion.rs, cargo bench --manifest-path crates/cp_anywhere/Cargo.toml"
         ),
         "workloads": workloads,
     }

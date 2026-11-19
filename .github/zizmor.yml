@@ -6,9 +6,8 @@ rules:
   # crates.io's OIDC trusted-publishing reached general availability in
   # 2025 (unlike npm's, which has no path for a brand-new, never-published
   # package -- the trusted publisher can only be configured for a crate
-  # that already exists). cp_anywhere_core has not been published yet, so
-  # its first release still needs a scoped CARGO_REGISTRY_TOKEN secret to
-  # bootstrap the crate; OIDC (rust-lang/crates-io-auth-action) can be
+  # that already exists). The first release of cp-anywhere needs a scoped
+  # CARGO_REGISTRY_TOKEN to bootstrap the crate. OIDC can be
   # adopted afterward once the crate exists, see docs/release.md.
   use-trusted-publishing:
     ignore:

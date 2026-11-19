@@ -39,7 +39,7 @@ SOURCE_COMMIT = "2df090ff281cff80943fe679a1c3192fbda9cd6d"
 
 class _Settings(TypedDict):
     """A `MeasureTexture` configuration, matching
-    `cp_anywhere_core::texture::Config`."""
+    `cp_anywhere::texture::Config`."""
 
     gray_levels: int
     scales: list[int]

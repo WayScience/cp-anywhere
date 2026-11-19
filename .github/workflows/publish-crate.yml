@@ -1,5 +1,5 @@
 ---
-# used for publishing the core measurement crate to crates.io on release
+# Publish the full Rust library to crates.io on release.
 name: publish crates.io release
 on:
   release:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   publish_crate:
-    name: publish cp_anywhere_core to crates.io
+    name: publish cp-anywhere to crates.io
     runs-on: ubuntu-26.04
     environment: release
     permissions:
@@ -32,12 +32,10 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         shell: bash
         run: python tools/sync_release_version.py "$RELEASE_TAG"
-      # Only cp_anywhere_core is published: it is the portable,
-      # dependency-free measurement kernel usable from any Rust project.
-      # cp_anywhere_python and cp_anywhere_wasm are thin FFI bindings
-      # consumed through PyPI and npm respectively, not as Cargo
-      # dependencies.
-      - name: Publish cp_anywhere_core
+      # cp-anywhere includes segmentation, measurements, illumination,
+      # and pipeline execution. The bindings ship through PyPI and npm.
+      - name: Publish cp-anywhere
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
-        run: cargo publish --manifest-path crates/cp_anywhere_core/Cargo.toml
+        # The version-sync step intentionally edits the manifest and lockfile.
+        run: cargo publish --locked --allow-dirty -p cp-anywhere

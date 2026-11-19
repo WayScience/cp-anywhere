@@ -12,7 +12,7 @@ individually, and WASM round-trip times fell by 11x-33x at the same time.
 
 ## How the bug was found
 
-`crates/cp_anywhere_core/src/lib.rs`'s "touching" check (used for
+`crates/cp_anywhere/src/lib.rs`'s "touching" check (used for
 `PercentTouching` in `MeasureObjectNeighbors`) needs to know, for every
 outline pixel of object `k`, whether any pixel within a small fixed radius
 (1.5 px) belongs to a *different* object. The original implementation
@@ -25,7 +25,7 @@ This was invisible in the declared fixture set's smallest three workloads
 (it is a constant-factor cost there) but dominates at `grid_large` scale
 (36,864 px, 256 objects): a `cargo bench` run that split the combined
 `object_intensity_and_neighbors` timing by family
-(`crates/cp_anywhere_core/benches/throughput.rs`'s `by_family` group)
+(`crates/cp_anywhere/benches/throughput.rs`'s `by_family` group)
 showed `neighbors` alone was 151.45 ms on `grid_large` vs 9.68 ms on
 `grid_medium` -- roughly a 15.6x time increase for a 4x object-count / 4x
 pixel-count increase, consistent with an O(pixels * objects) or O(pixels^2)
@@ -48,7 +48,7 @@ per outline pixel.
 Correctness was re-verified immediately after the change, not assumed:
 
 ```text
-cargo test --manifest-path crates/cp_anywhere_core/Cargo.toml   # pass
+cargo test --manifest-path crates/cp_anywhere/Cargo.toml   # pass
 uv run --frozen python scripts/parity/compare_native.py          # 1440/1440 pass (unchanged)
 # rebuild WASM, re-export fixtures, rebuild demo, re-run in Chromium:
 uv run --frozen python scripts/parity/compare_wasm.py            # 1440/1440 pass (unchanged)
@@ -59,7 +59,7 @@ change is a pure performance fix, not a semantics change.
 
 ## Before / after timing
 
-Native Rust kernel only (`cp_anywhere_core::measure`, no Python/FFI,
+Native Rust kernel only (`cp_anywhere::measure`, no Python/FFI,
 `object_intensity` + `neighbors` families, Criterion, median of 100
 samples):
 
@@ -144,7 +144,7 @@ it over `benchmarks/baseline/native-rust-committed.json`.
 ## Reproduce
 
 ```sh
-cargo bench --manifest-path crates/cp_anywhere_core/Cargo.toml
+cargo bench --manifest-path crates/cp_anywhere/Cargo.toml
 uv run --frozen python scripts/benchmarks/report_native_rust.py
 env -u CONDA_PREFIX uv run maturin develop --release --uv
 uv run --frozen python benchmarks/benchmark_native.py

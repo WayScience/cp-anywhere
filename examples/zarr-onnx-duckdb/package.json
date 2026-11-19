@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@duckdb/duckdb-wasm": "1.33.1-dev57.0",
-    "cp-anywhere-wasm": "file:../../crates/cp_anywhere_wasm/pkg",
+    "cp-anywhere": "file:../../crates/cp_anywhere_wasm/pkg",
     "onnxruntime-web": "1.31.1",
     "zarrita": "0.7.5"
   },

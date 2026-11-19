@@ -1,8 +1,7 @@
 [workspace]
 members = [
-  "crates/cp_anywhere_core",
+  "crates/cp_anywhere",
   "crates/cp_anywhere_python",
-  "crates/cp_anywhere_segmentation",
   "crates/cp_anywhere_wasm",
 ]
 resolver = "2"

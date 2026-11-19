@@ -14,7 +14,7 @@ an iterative 2D spline background fit, respectively) raise a clear
 ``CorrectIlluminationApply`` (:func:`apply_illumination`) supports
 same-shaped arrays with divide/subtract and output clipping.
 See ``spec/illumination.md`` and
-``crates/cp_anywhere_core/src/illumination.rs`` for the oracle-verified
+``crates/cp_anywhere/src/illumination.rs`` for the oracle-verified
 numerics (confirmed against every real-fixture case in
 ``fixtures/illumination_calculate/``, ``fixtures/illumination_calculate_
 across/``, and ``fixtures/illumination_apply/``, including the

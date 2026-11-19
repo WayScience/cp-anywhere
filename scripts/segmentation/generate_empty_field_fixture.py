@@ -16,7 +16,7 @@ zero-initialized feature transform), whose seed-0-jittered maxima
 detection finds exactly one maximum at pixel (449, 449) -- and the
 max-size filter then erases that one 202500-px object (0 final
 objects; ``small_removed`` keeps it). See
-``crates/cp_anywhere_segmentation/src/declump.rs``'s
+``crates/cp_anywhere/src/segmentation/declump.rs``'s
 ``distance_transform_edt`` for the native-side counterpart.
 
 This script runs ONLY under the pinned reference environment (same

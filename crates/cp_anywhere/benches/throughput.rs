@@ -1,5 +1,5 @@
 //! Native throughput benchmark on the four representative workloads from
-//! `spec/benchmark-contract.yaml`, timing `cp_anywhere_core::measure`
+//! `spec/benchmark-contract.yaml`, timing `cp_anywhere::measure`
 //! directly (no Python/FFI boundary) with the `object_intensity` +
 //! `neighbors` families only, matching the exact scope the pinned
 //! `cp_measure` baseline computed
@@ -8,7 +8,7 @@
 //! parses Criterion's `estimates.json` output into the project's
 //! benchmark-report shape.
 
-use cp_anywhere_core::{measure, Families, Input};
+use cp_anywhere::{measure, Families, Input};
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use std::path::{Path, PathBuf};
 
