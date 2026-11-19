@@ -1,7 +1,7 @@
 ---
 # Publish the full Rust library to crates.io on release.
 name: publish crates.io release
-on:
+"on":
   release:
     types:
       - published
@@ -20,6 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ github.sha }}  # Commit referenced by the release tag.
           persist-credentials: false
       - name: Python setup
         uses: actions/setup-python@v7.1.0

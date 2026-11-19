@@ -9,13 +9,16 @@
 | `cp-anywhere` (npm package)                      | npm                   | `.github/workflows/publish-npm.yml`                               | `release: published` | OIDC trusted publishing (`id-token: write`, no stored token) -- **but only once the package already exists on npm**; see the bootstrap step below                             |
 | Standalone `.wasm` + checksum                    | GitHub Release assets | `.github/workflows/publish-npm.yml` (`build_and_publish_npm` job) | `release: published` | `GITHUB_TOKEN`                                                                                                                                                                |
 
-`tools/sync_release_version.py` rewrites the Cargo workspace `version` from
-the release tag before any build; because all three crates
-(`cp-anywhere`, `cp_anywhere_python`, `cp-anywhere-wasm`) use
-`version.workspace = true`, this single rewrite keeps the PyPI wheel,
-npm package, and crates.io crate at the same version with no separate
-sync step. The git tag is the single source of truth for every published
-version across all three registries.
+The GitHub release tag is the only version you set. All three workflows
+build the commit attached to that tag. `tools/sync_release_version.py`
+updates the Cargo workspace and lockfile in each build checkout and
+checks all three workspace packages before building. Do not bump versions
+in source files or commit the generated changes.
+
+For `v1.2.3`, all three registries get `1.2.3`. For prerelease tags such
+as `v1.2.3-rc.1`, crates.io and npm get `1.2.3-rc.1` and PyPI gets
+`1.2.3rc1`. Use `-alpha.N`, `-beta.N`, or `-rc.N` for prereleases.
+npm publishes prereleases under `next` and stable releases under `latest`.
 
 `cp-anywhere` is the only crate configured for crates.io publishing. It includes
 segmentation, illumination, measurements, and `.cppipe` execution. To use
@@ -48,21 +51,20 @@ Each registry has different setup steps for a first release of its package:
    attached to a package that already exists, so the very first publish
    cannot go through OIDC.
 
-   1. Build the package once locally with the version you intend to tag,
-      e.g. for `v0.1.0`:
+   1. Use a disposable checkout. Publish a bootstrap prerelease so the
+      GitHub workflow can publish the first stable version. For a first
+      stable release of `v0.1.0`, use:
       ```sh
-      python tools/sync_release_version.py v0.1.0
+      python tools/sync_release_version.py v0.1.0-rc.1
       python scripts/wasm/build_package.py
-      cd crates/cp_anywhere_wasm/pkg && npm publish --access public
-      git checkout Cargo.toml Cargo.lock  # undo the local version bump
+      npm publish ./crates/cp_anywhere_wasm/pkg --access public --tag next
       ```
    1. Once `cp-anywhere` exists on npm, go to its package settings
       -> Publishing access -> add a trusted publisher: GitHub Actions,
       owner `d33bs`, repository `cp-anywhere`, workflow filename
       `publish-npm.yml`, environment `release`.
-   1. Every release from that point on (including re-tagging `v0.1.0`'s
-      GitHub Release, or any later tag) publishes automatically via OIDC,
-      no token stored anywhere.
+   1. Enable direct `npm publish` for the trusted publisher. Publish the
+      first stable version through GitHub Releases, not by hand.
 
 1. **crates.io -- needs a token for the first release.** Trusted
    publishing on crates.io reached general availability in 2025, but like
@@ -91,10 +93,8 @@ Each registry has different setup steps for a first release of its package:
    `release: published` event fans out to all three publish workflows
    above, plus the `.wasm`/checksum release-asset upload. The tag is the
    only place a version is chosen; nothing else needs editing first.
-1. Watch the four jobs in the Actions tab. After the one-time setup above,
-   PyPI, npm, and crates.io all publish with no further manual steps,
-   using the Cargo workspace version that `tools/sync_release_version.py`
-   derived from the tag.
+1. Check the three publishing workflows in the Actions tab. After registry
+   setup, no per-release version edits or manual registry uploads are needed.
 
 ## Local packaging checks
 

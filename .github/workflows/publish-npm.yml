@@ -2,7 +2,7 @@
 # used for publishing the WASM bindings to npm, and attaching a
 # standalone .wasm artifact + checksum to the GitHub Release, on release
 name: publish npm release and release assets
-on:
+"on":
   release:
     types:
       - published
@@ -16,12 +16,13 @@ jobs:
     runs-on: ubuntu-26.04
     environment: release
     permissions:
-      contents: write # to upload release assets
-      id-token: write # for npm OIDC trusted publishing
+      contents: write  # to upload release assets
+      id-token: write  # for npm OIDC trusted publishing
     steps:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ github.sha }}  # Commit referenced by the release tag.
           persist-credentials: false
       - name: Python setup
         uses: actions/setup-python@v7.1.0
@@ -58,4 +59,12 @@ jobs:
             crates/cp_anywhere_wasm/pkg/cp_anywhere_bg.wasm.sha256 \
             --clobber
       - name: Publish to npm (OIDC trusted publishing, no stored token)
-        run: npm publish crates/cp_anywhere_wasm/pkg --access public
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          dist_tag=latest
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            dist_tag=next
+          fi
+          npm publish ./crates/cp_anywhere_wasm/pkg \
+            --access public --tag "$dist_tag"

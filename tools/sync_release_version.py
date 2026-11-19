@@ -1,19 +1,12 @@
-"""Synchronize the Cargo workspace version with a release tag.
-
-The pure-Python variant of this template versions itself dynamically from git
-tags via setuptools-scm. The Rust variant instead builds with maturin, which
-reads the package version from Cargo. This script bridges the two: given a
-release tag such as ``v1.2.3`` it rewrites the ``version`` line in the Cargo
-workspace so that ``maturin build`` produces a wheel versioned ``1.2.3``.
+"""Set all package versions from the GitHub release tag before building.
 
 Usage (run from the project root):
 
     python tools/sync_release_version.py v1.2.3          # rewrite Cargo.toml
     python tools/sync_release_version.py v1.2.3 --check  # verify only
 
-The release workflow (.github/workflows/publish-pypi.yml) runs the rewrite
-form before building wheels, so the tag is the single source of truth for the
-published version.
+Cargo, maturin, and wasm-pack all read the workspace version. For a
+prerelease, maturin converts the SemVer spelling to Python's version format.
 """
 
 from __future__ import annotations
@@ -22,11 +15,16 @@ import argparse
 import json
 import re
 import subprocess
+import tomllib
 from pathlib import Path
 
-PACKAGE_NAME = "cp_anywhere_python"
-VERSION_PATTERN = re.compile(r'^version = "\d+\.\d+\.\d+(?:[-+][^"]+)?"$', re.MULTILINE)
-TAG_PATTERN = re.compile(r"^v?(?P<version>\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?)$")
+PACKAGES = ("cp-anywhere", "cp_anywhere_python", "cp-anywhere-wasm")
+NUMBER = r"(?:0|[1-9][0-9]*)"
+TAG_PATTERN = re.compile(
+    rf"v?(?P<version>{NUMBER}\.{NUMBER}\.{NUMBER}(?:-(?:alpha|beta|rc)\.{NUMBER})?)"
+)
+WORKSPACE_PACKAGE = re.compile(r"(?m)^\[workspace\.package\][^\S\n]*$")
+VERSION_LINE = re.compile(r'(?m)^(version\s*=\s*")[^"\n]+(")')
 
 
 def main() -> int:
@@ -36,51 +34,56 @@ def main() -> int:
     args = parser.parse_args()
 
     version = version_from_tag(args.tag)
-    cargo_toml = Path("Cargo.toml")
-    current_text = cargo_toml.read_text()
-    next_text = VERSION_PATTERN.sub(f'version = "{version}"', current_text, count=1)
-    if current_text == next_text and f'version = "{version}"' not in current_text:
-        raise SystemExit("could not find workspace package version in Cargo.toml")
-
-    if args.check:
-        package_version = cargo_package_version(PACKAGE_NAME)
-        if package_version != version:
-            raise_version_mismatch(args.tag, package_version)
-        print(f"tag={version} package={package_version}")
-        return 0
-
-    cargo_toml.write_text(next_text)
-    subprocess.run(["cargo", "generate-lockfile"], check=True)
-    package_version = cargo_package_version(PACKAGE_NAME)
-    if package_version != version:
-        raise_version_mismatch(args.tag, package_version)
-    print(f"tag={version} package={package_version}")
+    if not args.check:
+        sync_workspace_version(version)
+        # Update local package versions without resolving every dependency anew.
+        subprocess.run(["cargo", "update", "--workspace"], check=True)
+    check_workspace_version(version)
+    print(f"Release version {version}: {', '.join(PACKAGES)}")
     return 0
 
 
 def version_from_tag(tag: str) -> str:
-    match = TAG_PATTERN.match(tag)
+    match = TAG_PATTERN.fullmatch(tag)
     if not match:
-        raise SystemExit(f"release tag must look like v1.2.3: {tag}")
+        raise SystemExit(
+            f"release tag must look like v1.2.3 or v1.2.3-rc.1 "
+            f"(alpha, beta, or rc prerelease): {tag!r}"
+        )
     return match.group("version")
 
 
-def cargo_package_version(package_name: str) -> str:
+def sync_workspace_version(version: str) -> None:
+    manifest = Path("Cargo.toml")
+    text = manifest.read_text(encoding="utf-8")
+    header = WORKSPACE_PACKAGE.search(text)
+    if header is None:
+        raise SystemExit("missing [workspace.package] in Cargo.toml")
+    start = header.end()
+    rest = text[start:]
+    next_header = re.search(r"(?m)^\[", rest)
+    end = next_header.start() if next_header else len(rest)
+    stanza, count = VERSION_LINE.subn(rf"\g<1>{version}\g<2>", rest[:end])
+    if count != 1:
+        raise SystemExit("expected one version in Cargo.toml [workspace.package]")
+    manifest.write_text(text[:start] + stanza + rest[end:], encoding="utf-8")
+
+
+def check_workspace_version(version: str) -> None:
     output = subprocess.check_output(
-        ["cargo", "metadata", "--no-deps", "--format-version", "1"],
+        ["cargo", "metadata", "--locked", "--no-deps", "--format-version", "1"],
         text=True,
     )
-    metadata = json.loads(output)
-    for package in metadata["packages"]:
-        if package["name"] == package_name:
-            return str(package["version"])
-    raise SystemExit(f"could not find Cargo package {package_name}")
-
-
-def raise_version_mismatch(tag: str, package_version: str) -> None:
-    raise SystemExit(
-        f"release tag {tag} does not match package version {package_version}"
-    )
+    packages = {row["name"]: row["version"] for row in json.loads(output)["packages"]}
+    lock = tomllib.loads(Path("Cargo.lock").read_text(encoding="utf-8"))
+    locked = {
+        row["name"]: row["version"] for row in lock["package"] if "source" not in row
+    }
+    for filename, versions in (("Cargo.toml", packages), ("Cargo.lock", locked)):
+        for name in PACKAGES:
+            found = versions.get(name, "missing")
+            if found != version:
+                raise SystemExit(f"{filename}: {name} is {found}, expected {version}")
 
 
 if __name__ == "__main__":

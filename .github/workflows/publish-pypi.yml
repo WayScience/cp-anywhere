@@ -1,7 +1,7 @@
 ---
 # used for publishing packages to pypi on release
 name: publish pypi release
-on:
+"on":
   release:
     types:
       - published
@@ -36,6 +36,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ github.sha }}  # Commit referenced by the release tag.
           persist-credentials: false
       - name: Python setup
         uses: actions/setup-python@v7.1.0
@@ -52,7 +53,7 @@ jobs:
         uses: PyO3/maturin-action@v1.51.0
         with:
           target: ${{ matrix.target }}
-          args: --release --out dist
+          args: --release --locked --out dist
           manylinux: auto
       - name: Upload wheel
         uses: actions/upload-artifact@v7
@@ -70,6 +71,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
         with:
+          ref: ${{ github.sha }}  # Commit referenced by the release tag.
           persist-credentials: false
       - name: Python setup
         uses: actions/setup-python@v7.1.0
