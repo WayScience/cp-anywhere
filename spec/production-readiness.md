@@ -119,8 +119,7 @@ Heavy arrays stay outside the repository.
 
 ## Local quality gates
 
-The current tree passed 743 Python tests (two skipped), Rust workspace tests,
-Clippy with warnings denied, and the full pre-commit suite.
+The current tree passed 745 Python tests (two skipped), Rust workspace tests, and Clippy with warnings denied. The full pre-commit suite currently fails on ten `PLC0415` lazy-import warnings in `scripts/validation/compare_jump.py` and `scripts/validation/plate_illumination_oracle.py`; these are separate from the Zernike change.
 A fresh full comparison of two original CPJUMP1 fields passed all 7,154 requested
 measurement columns per field with no discrepancies.
 The fresh BBBC007 strict native pilot passes; browser WASM full-field Zernike parity remains unverified and the targeted check fails.

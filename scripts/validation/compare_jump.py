@@ -1,4 +1,6 @@
 """Compare a bounded cp-anywhere run with saved CPJUMP1 reference fields."""
+# Separate reference and native interpreters require imports at their call sites.
+# ruff: noqa: PLC0415
 
 from __future__ import annotations
 

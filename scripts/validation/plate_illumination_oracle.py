@@ -10,6 +10,8 @@ The CSV is under cpg0000-jump-pilot/source_4/workspace/load_data_csv/
 the URL_* columns for the exact TIFFs. Run the compare subcommand with
 the pinned CellProfiler source and isolated reference interpreter.
 """
+# Separate reference and native interpreters require imports at their call sites.
+# ruff: noqa: PLC0415
 
 from __future__ import annotations
 

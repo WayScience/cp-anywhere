@@ -145,7 +145,7 @@ pub fn measure(
             .iter()
             .map(|(&id, pixels)| (id, convex_hull(pixels)))
             .collect();
-        enclosing_circles(hulls)
+        enclosing_circles(hulls, None)
     } else {
         BTreeMap::new()
     };
@@ -429,7 +429,30 @@ struct CircleCandidate {
     at_b: f64,
 }
 
-fn enclosing_circles(hulls: BTreeMap<u32, Vec<Point>>) -> BTreeMap<u32, (Point, f64)> {
+/// Diagnostic replay of the actual global circle sort, with full angle bits.
+pub fn diagnostic_circle_trace(labels: &[u32], cols: usize) -> Vec<String> {
+    let mut points: BTreeMap<u32, Vec<Point>> = BTreeMap::new();
+    for (i, &label) in labels.iter().enumerate() {
+        if label != 0 {
+            points.entry(label).or_default().push(Point {
+                row: (i / cols) as f64,
+                col: (i % cols) as f64,
+            });
+        }
+    }
+    let hulls = points
+        .iter()
+        .map(|(&id, pixels)| (id, convex_hull(pixels)))
+        .collect();
+    let mut trace = Vec::new();
+    let _ = enclosing_circles(hulls, Some(&mut trace));
+    trace
+}
+
+fn enclosing_circles(
+    hulls: BTreeMap<u32, Vec<Point>>,
+    mut trace: Option<&mut Vec<String>>,
+) -> BTreeMap<u32, (Point, f64)> {
     let mut states: Vec<_> = hulls
         .into_iter()
         .map(|(label, hull)| {
@@ -486,7 +509,16 @@ fn enclosing_circles(hulls: BTreeMap<u32, Vec<Point>>) -> BTreeMap<u32, (Point, 
         }
         let angles: Vec<_> = candidates.iter().map(|candidate| candidate.angle).collect();
         let mut selected = vec![None; states.len()];
-        for index in crate::numpy_argsort(&angles) {
+        let sorted = crate::numpy_argsort(&angles);
+        if let Some(ref mut lines) = trace {
+            lines.push(format!(
+                "angles={:?}; candidates={:?}; sorted={:?}",
+                angles.iter().map(|x| x.to_bits()).collect::<Vec<_>>(),
+                candidates.iter().map(|c| (states[c.object].label, c.vertex, c.at_a.to_bits(), c.at_b.to_bits())).collect::<Vec<_>>(),
+                sorted,
+            ));
+        }
+        for index in sorted {
             let candidate = candidates[index];
             if selected[candidate.object].is_none() {
                 selected[candidate.object] = Some(candidate);
@@ -508,6 +540,11 @@ fn enclosing_circles(hulls: BTreeMap<u32, Vec<Point>>) -> BTreeMap<u32, (Point, 
                 at_b,
                 ..
             } = candidate;
+            if let Some(ref mut lines) = trace {
+                lines.push(format!("chosen label={} vertex={} row={} col={} angle_bits={} a_bits={} b_bits={} s0={} s1={}",
+                    state.label, vertex, state.hull[vertex].row, state.hull[vertex].col,
+                    angle.to_bits(), at_a.to_bits(), at_b.to_bits(), state.s0, state.s1));
+            }
             if angle >= half_pi {
                 state.circle = Some(diameter(a, b));
                 continue;
@@ -579,6 +616,17 @@ fn zernike(points: &[Point], center: Point, radius: f64, n: usize, m: usize) -> 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn diagnostic_original_labels() {
+        let root = std::path::Path::new("/Users/buntend/.hermes/cache/scratch/cp-anywhere-zernike-wasm-diagnostics");
+        for scope in ["Nuclei", "Cells"] {
+            let data = std::fs::read(root.join(format!("{scope}.bin"))).unwrap();
+            let labels: Vec<u32> = data.chunks_exact(4).map(|x| u32::from_le_bytes(x.try_into().unwrap())).collect();
+            let trace = diagnostic_circle_trace(&labels, 400);
+            std::fs::write(root.join(format!("{scope}-native.trace")), trace.join("\n")).unwrap();
+        }
+    }
 
     // Captured by running the actual CP 4.2.8 module with centrosome 1.2.3
     // and skimage 0.21.0. This asymmetric hull has a non-diameter circle,
