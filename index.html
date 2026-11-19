@@ -204,7 +204,7 @@
           
           
           
-          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -315,7 +315,7 @@
           
           
           
-          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -354,20 +354,20 @@
   <!-- include contents from the root readme -->
 <section id="cp-anywhere">
 <h1>cp-anywhere<a class="headerlink" href="#cp-anywhere" title="Link to this heading">#</a></h1>
-<img src="https://raw.githubusercontent.com/d33bs/cp-anywhere/main/docs/src/_static/cp-anywhere.png" alt="cp-anywhere logo" width="300">
+<img src="https://raw.githubusercontent.com/wayscience/cp-anywhere/main/docs/src/_static/cp-anywhere.png" alt="cp-anywhere logo" width="300">
 <p>CellProfiler-compatible cell profiling in Python and the browser, powered by Rust.
 Correct illumination, segment images, measure cell features, and export analysis-ready tables.</p>
 <p>cp-anywhere turns microscopy images into per-cell feature tables without requiring
 the CellProfiler desktop application. Use image files or NumPy arrays in Python,
 work with pandas tables, or run the shared measurement engine in a browser through
-WebAssembly. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/compatibility.md">compatibility guide</a> for supported modules and settings.</p>
+WebAssembly. See the <a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/spec/compatibility.md">compatibility guide</a> for supported modules and settings.</p>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
 <p>To run from this repository, install Rust and uv, then run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--frozen</span></code>.
 Run the Python examples with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">python</span></code> or in the repository’s virtual environment.</p>
 <p>For a hands-on tour, read
-<a class="reference external" href="https://d33bs.github.io/cp-anywhere/cell-profiling-anywhere.html">Cell Profiling Anywhere</a>
-or open the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb">source notebook</a>.
+<a class="reference external" href="https://wayscience.github.io/cp-anywhere/cell-profiling-anywhere.html">Cell Profiling Anywhere</a>
+or open the <a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/docs/src/cell-profiling-anywhere.ipynb">source notebook</a>.
 The notebook follows a complete Python workflow: illumination correction,
 segmentation, measurements, plots, and image/table exports.
 Run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--frozen</span> <span class="pre">--group</span> <span class="pre">docs</span></code> first, then select the repository’s <code class="docutils literal notranslate"><span class="pre">.venv</span></code>
@@ -401,17 +401,17 @@ DataFrame can be written the same way with <code class="docutils literal notrans
 <p>For arrays already in memory, <code class="docutils literal notranslate"><span class="pre">cp_anywhere.measure(...)</span></code> is the lower-level
 entry point that returns a <code class="docutils literal notranslate"><span class="pre">MeasurementResult</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>;
 it has matching <code class="docutils literal notranslate"><span class="pre">to_json</span></code>/<code class="docutils literal notranslate"><span class="pre">to_csv</span></code>/<code class="docutils literal notranslate"><span class="pre">to_arrow</span></code> methods
-(see the <a class="reference external" href="https://d33bs.github.io/cp-anywhere/python-api.html">Python API reference</a>).</p>
+(see the <a class="reference external" href="https://wayscience.github.io/cp-anywhere/python-api.html">Python API reference</a>).</p>
 <section id="segmentation">
 <h3>Segmentation<a class="headerlink" href="#segmentation" title="Link to this heading">#</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">cp_anywhere.identify_primary_objects(...)</span></code> segments a 2D grayscale image
 into labeled objects. You can pass those labels directly to <code class="docutils literal notranslate"><span class="pre">measure</span></code>.
-See <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/segmentation-modules.md">segmentation coverage</a> for supported settings.</p>
+See <a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/spec/segmentation-modules.md">segmentation coverage</a> for supported settings.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">seg</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">identify_primary_objects</span><span class="p">(</span><span class="n">dna_image</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="s2">&quot;otsu&quot;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">cp_anywhere</span><span class="o">.</span><span class="n">measure</span><span class="p">({</span><span class="s2">&quot;DNA&quot;</span><span class="p">:</span> <span class="n">dna_image</span><span class="p">},</span> <span class="p">{</span><span class="s2">&quot;Nuclei&quot;</span><span class="p">:</span> <span class="n">seg</span><span class="o">.</span><span class="n">labels</span><span class="p">})</span>
 </pre></div>
 </div>
-<p>The <a class="reference external" href="https://github.com/d33bs/cp-anywhere/tree/main/tests/segmentation">segmentation tests</a> compare labels with CellProfiler 4.2.8 on synthetic and real microscopy fixtures.</p>
+<p>The <a class="reference external" href="https://github.com/wayscience/cp-anywhere/tree/main/tests/segmentation">segmentation tests</a> compare labels with CellProfiler 4.2.8 on synthetic and real microscopy fixtures.</p>
 <section id="preview-segmented-objects">
 <h4>Preview segmented objects<a class="headerlink" href="#preview-segmented-objects" title="Link to this heading">#</a></h4>
 <p>Use <code class="docutils literal notranslate"><span class="pre">preview_segmentation</span></code> to draw object outlines on the input image or show
@@ -443,21 +443,21 @@ is the default. Use <code class="docutils literal notranslate"><span class="pre"
 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">__name__</span> <span class="pre">==</span> <span class="pre">&quot;__main__&quot;:</span></code> guard. Results arrive in input order and retain
 their image IDs. For custom workflows, use <code class="docutils literal notranslate"><span class="pre">load_pipeline(...).run(...)</span></code> on a
 single field or call the individual functions. See the
-<a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/batch.md">batch experiment</a>
-and the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/spec/cppipe-compatibility.md">pipeline import limits</a>.</p>
+<a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/docs/batch.md">batch experiment</a>
+and the <a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/spec/cppipe-compatibility.md">pipeline import limits</a>.</p>
 <p>The package is named <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> on PyPI, crates.io, and npm. The Rust
-library uses <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code> in imports. See the <a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/cppipe.md">cross-runtime pipeline guide</a>.</p>
+library uses <code class="docutils literal notranslate"><span class="pre">cp_anywhere</span></code> in imports. See the <a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/docs/cppipe.md">cross-runtime pipeline guide</a>.</p>
 </section>
 </section>
 <section id="project-links">
 <h2>Project links<a class="headerlink" href="#project-links" title="Link to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://d33bs.github.io/cp-anywhere/">Documentation</a></p></li>
-<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/docs/wasm.md">Browser and WebAssembly integration</a></p></li>
-<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CONTRIBUTING.md">Development and contributing</a></p></li>
-<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/security/advisories/new">Report a security vulnerability</a></p></li>
-<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/CITATION.cff">Citation</a></p></li>
-<li><p><a class="reference external" href="https://github.com/d33bs/cp-anywhere/blob/main/LICENSE">BSD 3-Clause license</a></p></li>
+<li><p><a class="reference external" href="https://wayscience.github.io/cp-anywhere/">Documentation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/docs/wasm.md">Browser and WebAssembly integration</a></p></li>
+<li><p><a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/CONTRIBUTING.md">Development and contributing</a></p></li>
+<li><p><a class="reference external" href="https://github.com/wayscience/cp-anywhere/security/advisories/new">Report a security vulnerability</a></p></li>
+<li><p><a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/CITATION.cff">Citation</a></p></li>
+<li><p><a class="reference external" href="https://github.com/wayscience/cp-anywhere/blob/main/LICENSE">BSD 3-Clause license</a></p></li>
 </ul>
 <p><a class="reference download internal" download="" href="_downloads/ba4a16b48dc10d3fb2c660a45956fd1f/cell-profiling-anywhere.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">the</span> <span class="pre">Python</span> <span class="pre">example</span> <span class="pre">notebook</span></code></a></p>
 <p><a class="reference internal" href="browser-demo.html"><span class="std std-doc">Run the live WebAssembly demo</span></a></p>

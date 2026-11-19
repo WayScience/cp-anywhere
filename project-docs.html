@@ -204,7 +204,7 @@
           
           
           
-          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -313,7 +313,7 @@
           
           
           
-          <a href="https://github.com/d33bs/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -2155,7 +2155,7 @@ The Python and browser packages ship through PyPI and npm.</p>
 <p>Each registry has different setup steps for a first release of its package:</p>
 <ol class="arabic">
 <li><p><strong>GitHub “release” environment.</strong> Already created
-(<code class="docutils literal notranslate"><span class="pre">repos/d33bs/cp-anywhere/environments/release</span></code>), referenced by all
+(<code class="docutils literal notranslate"><span class="pre">repos/wayscience/cp-anywhere/environments/release</span></code>), referenced by all
 three publish workflows’ <code class="docutils literal notranslate"><span class="pre">environment:</span> <span class="pre">release</span></code>. Optional hardening:
 add required reviewers under Settings -&gt; Environments -&gt; release.</p></li>
 <li><p><strong>PyPI – zero-touch, even for the first release.</strong> PyPI supports a
@@ -2163,7 +2163,7 @@ add required reviewers under Settings -&gt; Environments -&gt; release.</p></li>
 <ol class="arabic simple">
 <li><p>Sign in at <a class="reference external" href="https://pypi.org/manage/account/publishing/">https://pypi.org/manage/account/publishing/</a>.</p></li>
 <li><p>Add a pending GitHub publisher: PyPI project name <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>,
-owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
+owner <code class="docutils literal notranslate"><span class="pre">wayscience</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
 <code class="docutils literal notranslate"><span class="pre">publish-pypi.yml</span></code>, environment name <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
 <li><p>Nothing else to do – the first tagged release creates the project
 and publishes to it automatically.</p></li>
@@ -2185,7 +2185,7 @@ npm<span class="w"> </span>publish<span class="w"> </span>./crates/cp_anywhere_w
 </li>
 <li><p>Once <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code> exists on npm, go to its package settings
 -&gt; Publishing access -&gt; add a trusted publisher: GitHub Actions,
-owner <code class="docutils literal notranslate"><span class="pre">d33bs</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
+owner <code class="docutils literal notranslate"><span class="pre">wayscience</span></code>, repository <code class="docutils literal notranslate"><span class="pre">cp-anywhere</span></code>, workflow filename
 <code class="docutils literal notranslate"><span class="pre">publish-npm.yml</span></code>, environment <code class="docutils literal notranslate"><span class="pre">release</span></code>.</p></li>
 <li><p>Enable direct <code class="docutils literal notranslate"><span class="pre">npm</span> <span class="pre">publish</span></code> for the trusted publisher. Publish the
 first stable version through GitHub Releases, not by hand.</p></li>
