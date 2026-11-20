@@ -55,3 +55,7 @@ jobs:
         with:
           branch: pages
           folder: pages
+          # Pin the push target: the action otherwise derives it from the
+          # event payload's repository.full_name, which stayed stale at
+          # d33bs/cp-anywhere after the transfer to the wayscience org.
+          repository-name: wayscience/cp-anywhere
