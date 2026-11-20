@@ -7,7 +7,7 @@ license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
 # These checkout-only tests and benchmarks use the repository's fixture corpus.
-exclude = ["benches/", "tests/cppipe_parser.rs", "tests/data/"]
+exclude = ["benches/", "tests/cppipe_parser.rs", "tests/outline_overlay.rs", "tests/data/"]
 
 [dependencies]
 serde = { version = "1", features = ["derive"], optional = true }

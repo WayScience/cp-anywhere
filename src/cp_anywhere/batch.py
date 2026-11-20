@@ -37,14 +37,16 @@ class ImageSetResult:
     primary: dict[str, SegmentationResult]
     derived: dict[str, SecondaryObjectsResult | TertiaryObjectsResult]
     measurements: MeasurementResult | None
+    skipped: bool = False
 
 
 def _run_image_set(
     pipeline: Pipeline, image_id: str, sources: Mapping[str, str | Path | np.ndarray]
 ) -> ImageSetResult:
-    primary, derived, result = pipeline.run(
+    field = pipeline.run_detailed(
         {name: load_array(source) for name, source in sources.items()}
     )
+    result = field.measurements
     if result is not None:
         # Pipeline.run identifies the field as "Image" in both the feature
         # table and its relationship endpoints. Rename them together.
@@ -56,7 +58,9 @@ def _run_image_set(
                     updated[key] = image_id
             relationships.append(updated)
         result = replace(result, image_id=image_id, relationships=relationships)
-    return ImageSetResult(image_id, primary, derived, result)
+    return ImageSetResult(
+        image_id, field.primary, field.secondary, result, field.skipped
+    )
 
 
 @contextmanager

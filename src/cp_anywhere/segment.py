@@ -400,6 +400,7 @@ def identify_secondary_objects(
     regularization_factor: float = 0.05,
     distance_to_dilate: float = 10.0,
     fill_holes: bool = False,
+    discard_edge: bool = False,
 ) -> SecondaryObjectsResult:
     """Grow a secondary object (e.g. ``"Cells"``) around each primary
     object (e.g. ``"Nuclei"``), matching CellProfiler 4.2.8's
@@ -442,6 +443,9 @@ def identify_secondary_objects(
 
     ``fill_holes`` uses CellProfiler's labeled-hole graph, but changes
     only background pixels. Existing nested foreground labels survive.
+    If ``discard_edge`` is true, remove secondary objects touching the
+    image border (or the four-connected mask border) and renumber survivors.
+    The primary labels do not change.
     ``small_removed_labels`` retains the grown labels before filtering,
     in the original seed numbering, for downstream neighbor measurements.
     """
@@ -514,6 +518,7 @@ def identify_secondary_objects(
         regularization_factor=regularization_factor,
         distance_to_dilate=distance_to_dilate,
         fill_holes=fill_holes,
+        discard_edge=discard_edge,
     )
     return SecondaryObjectsResult(
         labels=raw["labels"].reshape(array.shape),

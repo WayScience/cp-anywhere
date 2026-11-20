@@ -56,7 +56,7 @@ fn header_and_block_parsing_preserves_positional_values_and_skipped_order() {
         parse(&original).unwrap()
     );
     let empty = parse(&original.replace("ModuleCount:1", "ModuleCount:0")).unwrap();
-    assert_eq!(empty.as_object().unwrap().len(), 15);
+    assert_eq!(empty.as_object().unwrap().len(), 18);
     assert!(empty.as_object().unwrap().values().all(|v| *v == json!([])));
 }
 
@@ -136,10 +136,10 @@ fn rejects_known_unsupported_settings_in_real_blocks() {
             "object-restricted",
         ),
         (
-            EXPORT,
-            "Discard secondary objects touching the border of the image?:No",
-            "Discard secondary objects touching the border of the image?:Yes",
-            "Discard secondary objects",
+            "fixtures/cppipe/secondary_border_discard/propagation.cppipe",
+            "Discard the associated primary objects?:No",
+            "Discard the associated primary objects?:Yes",
+            "Discard the associated primary objects",
         ),
         (
             EXPORT,

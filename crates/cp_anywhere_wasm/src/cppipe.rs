@@ -48,6 +48,10 @@ fn run(pipeline: &Pipeline, images_json: &str, pixels: &[f64]) -> Result<String,
     }
     let images: Vec<ImageDescriptor> = serde_json::from_str(images_json)
         .map_err(|error| format!("invalid image descriptors: {error}"))?;
-    let output = pipeline.run(unpack_images(images, pixels)?)?;
+    let scaling = images
+        .iter()
+        .filter_map(|image| Some((image.name.clone(), image.scaling?)))
+        .collect();
+    let output = pipeline.run_with_scaling(unpack_images(images, pixels)?, &scaling)?;
     Ok(output.to_json_value().to_string())
 }

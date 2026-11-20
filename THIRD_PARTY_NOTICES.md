@@ -18,6 +18,13 @@ Copyright 2003–2021 Broad Institute, Inc.
 License: BSD-3-Clause; full notice in `licenses/cellprofiler.txt`.
 The original modules supply scientific reference measurements.
 
+Centrosome v1.2.3 source, revision `533caaa5dd56d20fa914da4db6e31be1c6ecea88`.
+Copyright 2003–2019 Broad Institute, Inc.
+License: BSD-3-Clause; full notice in `crates/cp_anywhere/LICENSE-centrosome`.
+The native `MeasureImageQuality` core follows the radial power spectrum and
+Haralick correlation behavior. The Rust FFT is standalone; centrosome and
+SciPy are required only to regenerate the reference measurements.
+
 cp_measure source, revision `cdf693187e3dcaf3d067da7b58bdd4ab8896f91e`, package version 0.3.0.
 Copyright 2025 Alán F. Muñoz.
 License: MIT; full notice in `licenses/cp_measure.txt`.

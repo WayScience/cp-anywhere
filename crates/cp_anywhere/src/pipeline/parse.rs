@@ -6,9 +6,11 @@ use std::collections::BTreeMap;
 
 mod measurement;
 mod output;
+mod overlay;
+mod quality;
 mod segmentation;
 
-const PIPELINE_FIELDS: [&str; 15] = [
+const PIPELINE_FIELDS: &[&str] = &[
     "segmentation_steps",
     "secondary_steps",
     "tertiary_steps",
@@ -21,9 +23,12 @@ const PIPELINE_FIELDS: [&str; 15] = [
     "illumination_calculate_steps",
     "illumination_apply_steps",
     "save_images_steps",
+    "overlay_outlines_steps",
     "skipped_modules",
     "image_math_steps",
     "image_step_order",
+    "flag_image_steps",
+    "image_quality_steps",
 ];
 
 type Translator = fn(&RawModule<'_>) -> Result<Value, String>;
@@ -34,9 +39,12 @@ type Translator = fn(&RawModule<'_>) -> Result<Value, String>;
 /// modules with unsupported revisions or settings return an error.
 pub fn parse(text: &str) -> Result<Value, String> {
     let mut pipeline: BTreeMap<_, Vec<Value>> = PIPELINE_FIELDS
-        .into_iter()
+        .iter()
+        .copied()
         .map(|field| (field, Vec::new()))
         .collect();
+    let mut module_order = Vec::new();
+    let mut analysis_started = false;
     for raw in raw_modules(text)? {
         if !raw.enabled {
             pipeline
@@ -71,7 +79,10 @@ pub fn parse(text: &str) -> Result<Value, String> {
                 ("5", "illumination_apply_steps", output::illumination_apply)
             }
             "SaveImages" => ("16", "save_images_steps", output::save_images),
+            "OverlayOutlines" => ("4", "overlay_outlines_steps", overlay::overlay_outlines),
             "ImageMath" => ("5", "image_math_steps", output::image_math),
+            "FlagImage" => ("5", "flag_image_steps", flag_image),
+            "MeasureImageQuality" => ("6", "image_quality_steps", quality::image_quality),
             _ => {
                 pipeline
                     .entry("skipped_modules")
@@ -86,10 +97,31 @@ pub fn parse(text: &str) -> Result<Value, String> {
                 raw.revision,
             )));
         }
-        pipeline.entry(field).or_default().push(translate(&raw)?);
+        if field == "flag_image_steps" && analysis_started {
+            return Err(raw.error("must precede segmentation, overlays, and measurements"));
+        }
+        analysis_started |= matches!(
+            field,
+            "segmentation_steps"
+                | "secondary_steps"
+                | "tertiary_steps"
+                | "measurement_steps"
+                | "granularity_steps"
+                | "intensity_distribution_steps"
+                | "texture_steps"
+                | "colocalization_steps"
+                | "overlay_outlines_steps"
+        );
+        let translated = pipeline.entry(field).or_default();
+        module_order.push((raw.name, field, translated.len()));
+        translated.push(translate(&raw)?);
         if matches!(
             field,
-            "image_math_steps" | "illumination_calculate_steps" | "illumination_apply_steps"
+            "image_math_steps"
+                | "illumination_calculate_steps"
+                | "illumination_apply_steps"
+                | "image_quality_steps"
+                | "flag_image_steps"
         ) {
             pipeline
                 .entry("image_step_order")
@@ -97,7 +129,19 @@ pub fn parse(text: &str) -> Result<Value, String> {
                 .push(json!(raw.name));
         }
     }
+    if !pipeline["overlay_outlines_steps"].is_empty() {
+        overlay::validate_order(
+            module_order
+                .iter()
+                .map(|&(module, field, index)| (module, &pipeline[field][index])),
+        )?;
+    }
     Ok(json!(pipeline))
+}
+
+fn flag_image(raw: &RawModule<'_>) -> Result<Value, String> {
+    let step = super::flag_image::parse(&raw.settings).map_err(|reason| raw.error(reason))?;
+    serde_json::to_value(step).map_err(|error| raw.error(error))
 }
 
 struct RawModule<'a> {

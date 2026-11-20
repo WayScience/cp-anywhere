@@ -4,6 +4,12 @@ from typing import Any
 
 import numpy as np
 
+def render_outline_overlay(
+    background: np.ndarray | None,
+    outlines: list[tuple[np.ndarray, tuple[int, int, int]]],
+    options: tuple[str, str, str],
+    float64: bool,
+) -> tuple[list[int], np.ndarray]: ...
 def measure(
     shape: tuple[int, ...],
     images: dict[str, np.ndarray],
@@ -79,6 +85,7 @@ def identify_secondary_objects(
     regularization_factor: float = ...,
     distance_to_dilate: float = ...,
     fill_holes: bool = ...,
+    discard_edge: bool = ...,
 ) -> dict[str, Any]: ...
 def identify_tertiary_objects(
     primary_labels: np.ndarray,
@@ -175,3 +182,12 @@ def calculate_illumination_across(
     size_of_smoothing_filter: float = ...,
     rescale_option: str = ...,
 ) -> np.ndarray: ...
+def measure_image_quality(
+    pixels: np.ndarray,
+    name: str,
+    blur_scales: list[int],
+    saturation: bool,
+    include_scaling: bool,
+    scaling: float | None,
+    float32: bool,
+) -> dict[str, float]: ...

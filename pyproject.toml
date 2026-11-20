@@ -70,6 +70,7 @@ python-source = "src"
 manifest-path = "crates/cp_anywhere_python/Cargo.toml"
 include = [
   { path = "LICENSE", format = "sdist" },
+  { path = "crates/cp_anywhere/LICENSE-centrosome", format = [ "sdist", "wheel" ] },
 ]
 features = [ "pyo3/extension-module" ]
 

@@ -10,7 +10,8 @@ implements (`IdentifyPrimaryObjects`, `IdentifySecondaryObjects`,
 `MeasureGranularity`, `MeasureObjectIntensityDistribution`,
 `MeasureTexture`, `MeasureColocalization`,
 `MeasureObjectNeighbors`, `ExportToDatabase`,
-`CorrectIlluminationCalculate`, `CorrectIlluminationApply`, `ImageMath`, and `SaveImages`)
+`CorrectIlluminationCalculate`, `CorrectIlluminationApply`, `ImageMath`,
+`OverlayOutlines`, `MeasureImageQuality`, `FlagImage`, and `SaveImages`)
 into this project's own configuration.
 Supported configuration can be reused without manual re-entry.
 The limits below apply to each module.
@@ -134,6 +135,13 @@ from the seeds within the threshold foreground and seed mask.
 `Distance - N` uses `distance_to_dilate` and does not threshold the image.
 `fill_holes` applies to all three methods.
 
+`wants_discard_edge = Yes` maps to `discard_edge=True`. After mapping grown
+objects to retained primary IDs, the step removes every secondary object that
+touches the border. It renumbers survivors in ascending order of overlapping
+primary IDs, even when `wants_discard_primary = No`. The primary labels do not
+change. For the direct Python API, a supplied mask uses its four-connected
+border instead of the image perimeter.
+
 Secondary seeds come from the primary result's `unedited_labels`, not
 `small_removed_labels`. Edge-touching seeds remain even if primary
 filtering excluded them; other seed pixels survive only where kept
@@ -141,23 +149,24 @@ primary labels are nonzero. Grown labels are mapped to final primary
 IDs by overlap, so filtering and renumbering do not erase valid cells.
 Hole filling changes background only and preserves nested foreground
 objects. Secondary results retain `small_removed_labels` before this
-mapping for downstream neighbor geometry.
+mapping and border discard for downstream neighbor geometry. CellProfiler
+4.2.8 uses the same plane for secondary `unedited_labels`.
 
 `fixtures/cppipe/secondary_regressions/` covers interior exclusions,
 border competition, oversized primaries, renumbering, nested objects,
 and all neighbor measurement columns against real reference runs.
+`fixtures/cppipe/secondary_border_discard/` covers border removal and ID
+renumbering with Propagation and Watershed - Image, including mask borders.
 
 ### `IdentifySecondaryObjects` explicit gaps
 
 - **`method = "Watershed - Gradient"` /
   `"Distance - B"`.** Not implemented by `cp_anywhere`'s segmentation
   core at all; `CppipeError` names the unsupported method.
-- **`wants_discard_edge = Yes`** ("Discard secondary objects touching
-  the border of the image?"). Not implemented; `CppipeError` raised.
-- **`wants_discard_primary`** (discarding/renaming the primary object
-  set that fed this step) is read but has no effect -- `cp_anywhere`
-  never mutates the primary object set as a side effect of running
-  `IdentifySecondaryObjects`.
+- **`wants_discard_primary = Yes`** with **`wants_discard_edge = Yes`**.
+  Import rejects this combination because creating the additional, filtered
+  primary object set is not supported. When border discard is off, the
+  associated-primary setting is inactive.
 
 ## `IdentifyTertiaryObjects`: settings mapping and limits
 
@@ -248,25 +257,14 @@ Per `spec/compatibility.md`'s own declared scope:
 
 ### Real-world coverage note
 
-A November 2026 survey of 10 real CellProfiler pipelines from the
-WayScience GitHub org found `MeasureObjectNeighbors`'s old `"Cells"`
--only, `wants_excluded_objects = No`-only restriction blocked **all
-10/10** of them from loading at all (every one uses
-`wants_excluded_objects = Yes`, CellProfiler's own default, and most
-also run it once per compartment -- e.g. once for `Nuclei`, once for
-`Cells`). Both restrictions were lifted the same session; 9/10 now
-load end to end (the remaining one uses `"Expand until adjacent"`, a
-distinct, still-open gap). `IdentifySecondaryObjects` support (this
-section) was added next, covering its real default (`Propagation`)
-and `Distance - N`. Tertiary-object subtraction is also implemented.
-The measurement modules each used by 8-10 of the 10 surveyed pipelines
-(`MeasureGranularity`, `MeasureObjectIntensityDistribution`,
-`MeasureTexture`, and `MeasureColocalization`) are all implemented
-now, with real-reference fixtures for each module's own settings
-surface. `MeasureObjectNeighbors`'s `"Expand until adjacent"` distance
-method -- the one remaining blocker from the survey -- has since been
-implemented too (see this file's own section below); every surveyed
-pipeline now loads and runs end to end.
+In a survey of 10 published WayScience pipelines, 7 requested secondary
+border discard, 4 used `OverlayOutlines`, 2 ran `MeasureImageQuality`, and
+1 ran `FlagImage`. The settings used in these blocks now translate.
+Nine files import as written. `Phenotypic_severity_and_variance` still
+requests an unsupported single-table database export. One of the nine
+imported files skips `RunCellpose`, so import does not imply that its
+required labels will be produced. These totals describe import checks,
+not end-to-end runs on the ten studies' images.
 
 ## `MeasureObjectNeighbors`: "Expand until adjacent"
 
@@ -393,6 +391,42 @@ A later calculation that depends on an earlier application is therefore not supp
 The runner also does not return intermediate correction images.
 `spec/illumination.md` gives the standalone API and numerical evidence.
 
+## `OverlayOutlines`: render derived images
+
+Revision 4 draws ordered object outlines on a 2D grayscale or RGB image,
+or on a blank image sized to the first object set. It supports color and
+grayscale output, inner/outer/thick lines, both brightness choices, and
+multiple outline groups. Colors accept `#RRGGBB` and basic named colors.
+The result is a float32 image. Dense label planes can be supplied by name;
+volumes, other channel counts, and overlapping labels within one object set
+are outside this subset.
+
+The executor renders after segmentation and measurement. An overlay can use
+an earlier overlay as its background. Background and object producers must
+precede the overlay in the file. Overlay outputs cannot feed other executable
+modules. Python callers can retrieve them from `Pipeline.run_detailed(...).derived_images`;
+an explicit `SaveImagesStep.write` can then save a supplied overlay array.
+
+## `MeasureImageQuality` and `FlagImage`
+
+`MeasureImageQuality` revision 6 supports 2D grayscale blur and saturation metrics
+and optional acquisition scale. `All loaded images` uses the caller's original
+named image planes. Use `Select...` for a subset or to exclude caller-supplied
+label arrays. Supply the original acquisition scale as metadata, not as a
+pixel multiplier. Missing acquisition scale yields `NaN`.
+
+`FlagImage` revision 5 supports whole-image lower and upper bounds, both
+any-fail and all-fail grouping, and optional field skipping. Place it after its
+QC measurements and before segmentation and downstream measurements. A skip
+keeps existing image measurements and flags, but stops later steps. The runner
+rejects unsupported sources (including object thresholds and rule files), and
+does not implement the last-cycle skip override. Image-quality intensity and
+threshold summaries are also outside this subset.
+
+The CellProfiler oracle checks the new power spectrum slope at `2e-6` absolute
+and relative tolerances for FFT rounding differences. Flag decisions are exact
+on the tested cases. Existing cross-runtime tolerances are unchanged.
+
 ## `SaveImages`: explicit writes, not automatic pipeline output
 
 Revision 16 has 18 positional fields and maps to `SaveImagesStep`.
@@ -440,6 +474,8 @@ PYTHONPATH=/path/to/pinned/CellProfiler /path/to/reference/venv/bin/python \
 
 PYTHONPATH=/path/to/pinned/CellProfiler /path/to/reference/venv/bin/python \
   scripts/cppipe/generate_tertiary_fixtures.py
+PYTHONPATH=/path/to/pinned/CellProfiler /path/to/reference/venv/bin/python \
+  scripts/cppipe/generate_overlay_outlines.py
 
 uv run --frozen pytest tests/cppipe
 ```

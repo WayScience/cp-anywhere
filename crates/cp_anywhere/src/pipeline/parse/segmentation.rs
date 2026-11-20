@@ -96,7 +96,7 @@ pub(super) fn primary(raw: &RawModule<'_>) -> Result<Value, String> {
 }
 
 pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
-    let [primary_object, output_object, method, input_image, distance_to_dilate, regularization_factor, wants_discard_edge, _wants_discard_primary, _new_primary_objects_name, fill_holes, tail @ ..] =
+    let [primary_object, output_object, method, input_image, distance_to_dilate, regularization_factor, wants_discard_edge, wants_discard_primary, _new_primary_objects_name, fill_holes, tail @ ..] =
         raw.exact::<28>()?;
     let method = raw.choice(
         "method",
@@ -107,8 +107,10 @@ pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
             ("Watershed - Image", "watershed_image"),
         ],
     )?;
-    if raw.yes_no("wants_discard_edge", wants_discard_edge)? {
-        return Err(raw.error("'Discard secondary objects touching the border of the image?' = Yes is not yet implemented"));
+    let discard_edge = raw.yes_no("wants_discard_edge", wants_discard_edge)?;
+    let discard_primary = raw.yes_no("wants_discard_primary", wants_discard_primary)?;
+    if discard_edge && discard_primary {
+        return Err(raw.error("'Discard the associated primary objects?' = Yes is not supported when discarding edge objects"));
     }
     let fill_holes = raw.yes_no("fill_holes", fill_holes)?;
     // Distance - N uses the seed geometry only; its saved Threshold tail is ignored.
@@ -129,6 +131,9 @@ pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
     };
     config.insert("method", json!(method));
     config.insert("fill_holes", json!(fill_holes));
+    if discard_edge {
+        config.insert("discard_edge", json!(true));
+    }
     Ok(
         json!({ "input_image": input_image, "primary_object": primary_object,
         "output_object": output_object, "config": config }),

@@ -13,6 +13,7 @@ pub struct ImageDescriptor {
     pub name: String,
     pub shape: Vec<usize>,
     pub dtype: Dtype,
+    pub scaling: Option<f64>,
 }
 
 /// Split a packed input buffer into named arrays without changing their values.
@@ -22,7 +23,10 @@ pub fn unpack_images(
 ) -> Result<Vec<(String, Plane)>, String> {
     let mut rest = pixels;
     let mut result = Vec::with_capacity(images.len());
-    for ImageDescriptor { name, shape, dtype } in images {
+    for ImageDescriptor {
+        name, shape, dtype, ..
+    } in images
+    {
         let count = pixel_count(&shape)?;
         let (values, remaining) = rest
             .split_at_checked(count)
@@ -132,6 +136,7 @@ impl RunResult {
             json!({"features": features, "object_ids": table.object_ids, "relationships": relationships})
         });
         json!({
+            "skipped": self.skipped,
             "primary": primary,
             "secondary": secondary,
             "tertiary": tertiary,

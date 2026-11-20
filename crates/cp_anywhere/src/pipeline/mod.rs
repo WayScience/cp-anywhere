@@ -10,7 +10,9 @@ use crate::segmentation::{secondary::SecondaryObjectsResult, SegmentationResult}
 use crate::ResultTable;
 
 mod execute;
+mod flag_image;
 mod measure;
+mod overlay;
 mod parse;
 mod wire;
 
@@ -136,6 +138,8 @@ pub struct TertiaryObjectsResult {
 /// Named segmentation outputs, corrected images, and optional measurements.
 #[derive(Debug)]
 pub struct RunResult {
+    /// True when FlagImage stopped processing this field.
+    pub skipped: bool,
     pub primary: BTreeMap<String, SegmentationResult>,
     pub secondary: BTreeMap<String, SecondaryObjectsResult>,
     pub tertiary: BTreeMap<String, TertiaryObjectsResult>,
@@ -201,6 +205,15 @@ impl Pipeline {
 
     /// Run the numerical stages without image or database side effects.
     pub fn run(&self, images: Vec<(String, Plane)>) -> Result<RunResult, String> {
-        execute::run(&self.plan, images)
+        self.run_with_scaling(images, &BTreeMap::new())
+    }
+
+    /// Supply original acquisition scaling metadata, keyed by input image name.
+    pub fn run_with_scaling(
+        &self,
+        images: Vec<(String, Plane)>,
+        scaling: &BTreeMap<String, f64>,
+    ) -> Result<RunResult, String> {
+        execute::run(&self.plan, images, scaling)
     }
 }

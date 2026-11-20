@@ -7,14 +7,34 @@
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
-    "colocalization_steps": [{"images": ["DNA", "GFP"], "objects": [], "threshold_percent": 15.0, "fast_costes": "faster", "do_corr_and_slope": true, "do_manders": false, "do_rwc": true, "do_overlap": true, "do_costes": true, "wants_image_measurements": true, "wants_object_measurements": false}],
+    "colocalization_steps": [
+      {
+        "images": [
+          "DNA",
+          "GFP"
+        ],
+        "objects": [],
+        "threshold_percent": 15.0,
+        "fast_costes": "faster",
+        "do_corr_and_slope": true,
+        "do_manders": false,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "wants_image_measurements": true,
+        "wants_object_measurements": false
+      }
+    ],
     "export_steps": [],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/colocalization/objects_both_varied_sizes.cppipe": {
     "segmentation_steps": [],
@@ -24,20 +44,112 @@
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
-    "colocalization_steps": [{"images": ["DNA", "GFP"], "objects": ["Cells"], "threshold_percent": 15.0, "fast_costes": "faster", "do_corr_and_slope": true, "do_manders": true, "do_rwc": true, "do_overlap": true, "do_costes": true, "wants_image_measurements": true, "wants_object_measurements": true}],
+    "colocalization_steps": [
+      {
+        "images": [
+          "DNA",
+          "GFP"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "threshold_percent": 15.0,
+        "fast_costes": "faster",
+        "do_corr_and_slope": true,
+        "do_manders": true,
+        "do_rwc": true,
+        "do_overlap": true,
+        "do_costes": true,
+        "wants_image_measurements": true,
+        "wants_object_measurements": true
+      }
+    ],
     "export_steps": [],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/adaptive_otsu.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "adaptive", "adaptive_window_size": 8, "threshold": "otsu", "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "adaptive",
+          "adaptive_window_size": 8,
+          "threshold": "otsu",
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -46,15 +158,88 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/adaptive_sauvola.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "adaptive", "adaptive_window_size": 8, "threshold": "sauvola", "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "adaptive",
+          "adaptive_window_size": 8,
+          "threshold": "sauvola",
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -63,15 +248,88 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/declump_shape_propagate_manual_smoothing.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "otsu", "exclude_size": false, "min_diameter": 10.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "shape", "watershed_method": "propagate", "smoothing_filter_size": 3.0, "maxima_suppression_size": 4.0, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "otsu",
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "shape",
+          "watershed_method": "propagate",
+          "smoothing_filter_size": 3.0,
+          "maxima_suppression_size": 4.0,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -80,49 +338,288 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/export_to_database/all_objects_overwrite_schema.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Nuclei", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 1.3488, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "exclude_size": false, "min_diameter": 10.0, "max_diameter": 40.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "after_thresholding_and_declump", "unclump_method": "intensity", "watershed_method": "intensity", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": true}}],
-    "secondary_steps": [{"input_image": "Stain", "primary_object": "Nuclei", "output_object": "Cells", "config": {"method": "propagation", "fill_holes": true, "threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "regularization_factor": 0.05}}],
-    "tertiary_steps": [{"primary_object": "Nuclei", "secondary_object": "Cells", "output_object": "Cytoplasm", "shrink_primary": true}],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["Stain"], "objects": ["Cytoplasm"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 1.3488,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 40.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "after_thresholding_and_declump",
+          "unclump_method": "intensity",
+          "watershed_method": "intensity",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "propagation",
+          "fill_holes": true,
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "regularization_factor": 0.05
+        }
+      }
+    ],
+    "tertiary_steps": [
+      {
+        "primary_object": "Nuclei",
+        "secondary_object": "Cells",
+        "output_object": "Cytoplasm",
+        "shrink_primary": true
+      }
+    ],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "Stain"
+        ],
+        "objects": [
+          "Cytoplasm"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
     "colocalization_steps": [],
-    "export_steps": [{"sqlite_file": "MyExpt.db", "objects_choice": "all", "objects": [], "if_exists": "replace"}],
+    "export_steps": [
+      {
+        "sqlite_file": "MyExpt.db",
+        "objects_choice": "all",
+        "objects": [],
+        "if_exists": "replace"
+      }
+    ],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/export_to_database/select_objects_never_overwrite.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Nuclei", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 1.3488, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "exclude_size": false, "min_diameter": 10.0, "max_diameter": 40.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "after_thresholding_and_declump", "unclump_method": "intensity", "watershed_method": "intensity", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": true}}],
-    "secondary_steps": [{"input_image": "Stain", "primary_object": "Nuclei", "output_object": "Cells", "config": {"method": "propagation", "fill_holes": true, "threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "regularization_factor": 0.05}}],
-    "tertiary_steps": [{"primary_object": "Nuclei", "secondary_object": "Cells", "output_object": "Cytoplasm", "shrink_primary": true}],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["Stain"], "objects": ["Cytoplasm"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 1.3488,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 40.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "after_thresholding_and_declump",
+          "unclump_method": "intensity",
+          "watershed_method": "intensity",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "propagation",
+          "fill_holes": true,
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "regularization_factor": 0.05
+        }
+      }
+    ],
+    "tertiary_steps": [
+      {
+        "primary_object": "Nuclei",
+        "secondary_object": "Cells",
+        "output_object": "Cytoplasm",
+        "shrink_primary": true
+      }
+    ],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "Stain"
+        ],
+        "objects": [
+          "Cytoplasm"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
     "colocalization_steps": [],
-    "export_steps": [{"sqlite_file": "MyExpt.db", "objects_choice": "select", "objects": ["Cells"], "if_exists": "append"}],
+    "export_steps": [
+      {
+        "sqlite_file": "MyExpt.db",
+        "objects_choice": "select",
+        "objects": [
+          "Cells"
+        ],
+        "if_exists": "append"
+      }
+    ],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/fill_holes_border_limit.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "otsu", "exclude_size": true, "min_diameter": 5.0, "max_diameter": 50.0, "exclude_border_objects": true, "maximum_object_count": 200, "fill_holes": "after_thresholding_and_declump", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "otsu",
+          "exclude_size": true,
+          "min_diameter": 5.0,
+          "max_diameter": 50.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": 200,
+          "fill_holes": "after_thresholding_and_declump",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -131,9 +628,12 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/illumination/illumination_calculate_apply.cppipe": {
     "segmentation_steps": [],
@@ -145,12 +645,45 @@
     "texture_steps": [],
     "colocalization_steps": [],
     "export_steps": [],
-    "illumination_calculate_steps": [{"input_image": "DNA", "output_image": "Illum", "intensity_choice": "Regular", "dilate_objects": false, "object_dilation_radius": 1, "block_size": 60, "rescale_option": "Yes", "smoothing_method": "Gaussian Filter", "automatic_object_width": "Automatic", "object_width": 10.0, "size_of_smoothing_filter": 10.0}],
-    "illumination_apply_steps": [{"images": [{"input_image": "DNA", "output_image": "DNACorrected", "illumination_function_image": "Illum", "divide_or_subtract": "Divide"}], "truncate_low": true, "truncate_high": true}],
+    "illumination_calculate_steps": [
+      {
+        "input_image": "DNA",
+        "output_image": "Illum",
+        "intensity_choice": "Regular",
+        "dilate_objects": false,
+        "object_dilation_radius": 1,
+        "block_size": 60,
+        "rescale_option": "Yes",
+        "smoothing_method": "Gaussian Filter",
+        "automatic_object_width": "Automatic",
+        "object_width": 10.0,
+        "size_of_smoothing_filter": 10.0
+      }
+    ],
+    "illumination_apply_steps": [
+      {
+        "images": [
+          {
+            "input_image": "DNA",
+            "output_image": "DNACorrected",
+            "illumination_function_image": "Illum",
+            "divide_or_subtract": "Divide"
+          }
+        ],
+        "truncate_low": true,
+        "truncate_high": true
+      }
+    ],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": ["CorrectIlluminationCalculate", "CorrectIlluminationApply"]
+    "image_step_order": [
+      "CorrectIlluminationCalculate",
+      "CorrectIlluminationApply"
+    ],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/illumination/image_math_order.cppipe": {
     "segmentation_steps": [],
@@ -162,12 +695,70 @@
     "texture_steps": [],
     "colocalization_steps": [],
     "export_steps": [],
-    "illumination_calculate_steps": [{"input_image": "DNA", "output_image": "Flat2", "intensity_choice": "Regular", "dilate_objects": false, "object_dilation_radius": 1, "block_size": 60, "rescale_option": "No", "smoothing_method": "No smoothing", "automatic_object_width": "Automatic", "object_width": 10.0, "size_of_smoothing_filter": 10.0}],
-    "illumination_apply_steps": [{"images": [{"input_image": "Raw", "output_image": "PreDNA", "illumination_function_image": "Flat", "divide_or_subtract": "Divide"}], "truncate_low": true, "truncate_high": true}, {"images": [{"input_image": "DNA", "output_image": "Final", "illumination_function_image": "Flat2", "divide_or_subtract": "Divide"}], "truncate_low": true, "truncate_high": true}],
+    "illumination_calculate_steps": [
+      {
+        "input_image": "DNA",
+        "output_image": "Flat2",
+        "intensity_choice": "Regular",
+        "dilate_objects": false,
+        "object_dilation_radius": 1,
+        "block_size": 60,
+        "rescale_option": "No",
+        "smoothing_method": "No smoothing",
+        "automatic_object_width": "Automatic",
+        "object_width": 10.0,
+        "size_of_smoothing_filter": 10.0
+      }
+    ],
+    "illumination_apply_steps": [
+      {
+        "images": [
+          {
+            "input_image": "Raw",
+            "output_image": "PreDNA",
+            "illumination_function_image": "Flat",
+            "divide_or_subtract": "Divide"
+          }
+        ],
+        "truncate_low": true,
+        "truncate_high": true
+      },
+      {
+        "images": [
+          {
+            "input_image": "DNA",
+            "output_image": "Final",
+            "illumination_function_image": "Flat2",
+            "divide_or_subtract": "Divide"
+          }
+        ],
+        "truncate_low": true,
+        "truncate_high": true
+      }
+    ],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
-    "image_math_steps": [{"input_image": "PreDNA", "output_image": "DNA", "input_factor": 1.5, "output_factor": 0.5, "addend": -0.125, "truncate_low": true, "truncate_high": true, "replace_nan": true}],
-    "image_step_order": ["CorrectIlluminationApply", "ImageMath", "CorrectIlluminationCalculate", "CorrectIlluminationApply"]
+    "image_math_steps": [
+      {
+        "input_image": "PreDNA",
+        "output_image": "DNA",
+        "input_factor": 1.5,
+        "output_factor": 0.5,
+        "addend": -0.125,
+        "truncate_low": true,
+        "truncate_high": true,
+        "replace_nan": true
+      }
+    ],
+    "image_step_order": [
+      "CorrectIlluminationApply",
+      "ImageMath",
+      "CorrectIlluminationCalculate",
+      "CorrectIlluminationApply"
+    ],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/illumination/save_images.cppipe": {
     "segmentation_steps": [],
@@ -181,16 +772,253 @@
     "export_steps": [],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
-    "save_images_steps": [{"image_name": "DNACorrected", "file_name": "dna_corrected", "file_format": "tiff", "bit_depth": "16-bit integer", "overwrite": true}],
+    "save_images_steps": [
+      {
+        "image_name": "DNACorrected",
+        "file_name": "dna_corrected",
+        "file_format": "tiff",
+        "bit_depth": "16-bit integer",
+        "overwrite": true
+      }
+    ],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/image_quality/flag_all.cppipe": {
+    "segmentation_steps": [],
+    "secondary_steps": [],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [],
+    "skipped_modules": [],
+    "image_math_steps": [],
+    "image_step_order": [
+      "FlagImage"
+    ],
+    "flag_image_steps": [
+      {
+        "flags": [
+          {
+            "name": "QC_Rejected",
+            "all": true,
+            "skip": true,
+            "criteria": [
+              {
+                "measurement": "Slope",
+                "minimum": -3.0,
+                "maximum": -1.0
+              },
+              {
+                "measurement": "Percent",
+                "minimum": null,
+                "maximum": 4.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/image_quality/flag_any.cppipe": {
+    "segmentation_steps": [],
+    "secondary_steps": [],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [],
+    "skipped_modules": [],
+    "image_math_steps": [],
+    "image_step_order": [
+      "FlagImage"
+    ],
+    "flag_image_steps": [
+      {
+        "flags": [
+          {
+            "name": "QC_Rejected",
+            "all": false,
+            "skip": true,
+            "criteria": [
+              {
+                "measurement": "Slope",
+                "minimum": -3.0,
+                "maximum": -1.0
+              },
+              {
+                "measurement": "Percent",
+                "minimum": null,
+                "maximum": 4.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/image_quality/quality_flag.cppipe": {
+    "segmentation_steps": [],
+    "secondary_steps": [],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [],
+    "skipped_modules": [],
+    "image_math_steps": [
+      {
+        "input_image": "DNA",
+        "output_image": "AfterQC",
+        "input_factor": 1.0,
+        "output_factor": 1.0,
+        "addend": 0.0,
+        "truncate_low": true,
+        "truncate_high": true,
+        "replace_nan": true
+      }
+    ],
+    "image_step_order": [
+      "MeasureImageQuality",
+      "FlagImage",
+      "ImageMath"
+    ],
+    "flag_image_steps": [
+      {
+        "flags": [
+          {
+            "name": "QC_Rejected",
+            "all": false,
+            "skip": true,
+            "criteria": [
+              {
+                "measurement": "ImageQuality_PercentMaximal_DNA",
+                "minimum": null,
+                "maximum": 10.0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "image_quality_steps": [
+      {
+        "all_loaded": false,
+        "groups": [
+          {
+            "images": [
+              "DNA"
+            ],
+            "blur_scales": [
+              20
+            ],
+            "saturation": true,
+            "include_scaling": true
+          }
+        ]
+      }
+    ]
   },
   "fixtures/cppipe/li.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -199,15 +1027,88 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/manual.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": 0.3, "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.3,
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -216,15 +1117,88 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/neighbors_excluded_border_object.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "otsu", "exclude_size": false, "min_diameter": 8.0, "max_diameter": 1000000000.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "shape", "watershed_method": "shape", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "otsu",
+          "exclude_size": false,
+          "min_diameter": 8.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "shape",
+          "watershed_method": "shape",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": true, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": true,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -233,15 +1207,88 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/neighbors_expand_until_adjacent.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "otsu", "exclude_size": false, "min_diameter": 8.0, "max_diameter": 1000000000.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "shape", "watershed_method": "shape", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "otsu",
+          "exclude_size": false,
+          "min_diameter": 8.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "shape",
+          "watershed_method": "shape",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": true, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": true,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -250,15 +1297,89 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/otsu_three_class_background.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "otsu_three_class", "assign_middle_to_foreground": false, "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "otsu_three_class",
+          "assign_middle_to_foreground": false,
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -267,15 +1388,351 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/overlay_outlines/overlay.cppipe": {
+    "segmentation_steps": [],
+    "secondary_steps": [],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [
+      {
+        "input_image": null,
+        "output_image": "SurveyColor",
+        "display_mode": "color",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": null,
+        "output_image": "JumpGray",
+        "display_mode": "grayscale",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              255,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "DNA",
+        "output_image": "Rgb",
+        "display_mode": "color",
+        "line_mode": "thick",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          },
+          {
+            "objects_name": "Edges",
+            "color": [
+              0,
+              0,
+              255
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "DNA",
+        "output_image": "Reversed",
+        "display_mode": "color",
+        "line_mode": "thick",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Edges",
+            "color": [
+              0,
+              0,
+              255
+            ]
+          },
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "Rgb",
+        "output_image": "Gray",
+        "display_mode": "grayscale",
+        "line_mode": "outer",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Edges",
+            "color": [
+              0,
+              0,
+              255
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "Gray",
+        "output_image": "GrayToRgb",
+        "display_mode": "color",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Edges",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "DNA",
+        "output_image": "GrayMax",
+        "display_mode": "grayscale",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "DNA",
+        "output_image": "GrayWhite",
+        "display_mode": "grayscale",
+        "line_mode": "inner",
+        "brightness": "max_possible",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "RgbInput",
+        "output_image": "Outer",
+        "display_mode": "color",
+        "line_mode": "outer",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "RgbInput",
+        "output_image": "RgbMax",
+        "display_mode": "grayscale",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Cells",
+            "color": [
+              0,
+              128,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": "Binary",
+        "output_image": "BinaryGray",
+        "display_mode": "grayscale",
+        "line_mode": "thick",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Full",
+            "color": [
+              255,
+              0,
+              0
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": null,
+        "output_image": "FullBackground",
+        "display_mode": "color",
+        "line_mode": "inner",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Full",
+            "color": [
+              255,
+              255,
+              255
+            ]
+          }
+        ]
+      },
+      {
+        "input_image": null,
+        "output_image": "EmptyBackground",
+        "display_mode": "color",
+        "line_mode": "outer",
+        "brightness": "max_of_image",
+        "outlines": [
+          {
+            "objects_name": "Empty",
+            "color": [
+              255,
+              255,
+              255
+            ]
+          }
+        ]
+      }
+    ],
+    "skipped_modules": [],
+    "image_math_steps": [],
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/robust_background.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Cells", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "robust_background", "robust_background_lower_outlier_fraction": 0.1, "robust_background_upper_outlier_fraction": 0.02, "robust_background_averaging_method": "median", "robust_background_variance_method": "mad", "robust_background_number_of_deviations": 3.0, "exclude_size": false, "min_diameter": 0.0, "max_diameter": 1000000000.0, "exclude_border_objects": false, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": false}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Cells",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "robust_background",
+          "robust_background_lower_outlier_fraction": 0.1,
+          "robust_background_upper_outlier_fraction": 0.02,
+          "robust_background_averaging_method": "median",
+          "robust_background_variance_method": "mad",
+          "robust_background_number_of_deviations": 3.0,
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 1000000000.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": false
+        }
+      }
+    ],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA"], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -284,15 +1741,210 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/secondary_border_discard/propagation.cppipe": {
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.5,
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 40.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "propagation",
+          "fill_holes": true,
+          "discard_edge": true,
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.5,
+          "regularization_factor": 0.05
+        }
+      }
+    ],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [],
+    "skipped_modules": [],
+    "image_math_steps": [],
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
+  },
+  "fixtures/cppipe/secondary_border_discard/watershed_image.cppipe": {
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.5,
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 40.0,
+          "exclude_border_objects": false,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "watershed_image",
+          "fill_holes": true,
+          "discard_edge": true,
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.5
+        }
+      }
+    ],
+    "tertiary_steps": [],
+    "measurement_steps": [],
+    "granularity_steps": [],
+    "intensity_distribution_steps": [],
+    "texture_steps": [],
+    "colocalization_steps": [],
+    "export_steps": [],
+    "illumination_calculate_steps": [],
+    "illumination_apply_steps": [],
+    "save_images_steps": [],
+    "overlay_outlines_steps": [],
+    "skipped_modules": [],
+    "image_math_steps": [],
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/secondary_regressions/pipeline_border_distance_n.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Nuclei", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": 0.5, "exclude_size": false, "min_diameter": 0.0, "max_diameter": 4.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "never", "unclump_method": "none", "watershed_method": "none", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": true}}],
-    "secondary_steps": [{"input_image": "Stain", "primary_object": "Nuclei", "output_object": "Cells", "config": {"method": "distance_n", "fill_holes": false, "distance_to_dilate": 30.0}}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": 0.5,
+          "exclude_size": false,
+          "min_diameter": 0.0,
+          "max_diameter": 4.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "never",
+          "unclump_method": "none",
+          "watershed_method": "none",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "distance_n",
+          "fill_holes": false,
+          "distance_to_dilate": 30.0
+        }
+      }
+    ],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": true, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": true,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -301,15 +1953,129 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/cppipe/size_shape/shrink.cppipe": {
-    "segmentation_steps": [{"input_image": "DNA", "output_object": "Nuclei", "config": {"threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 1.3488, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "exclude_size": false, "min_diameter": 10.0, "max_diameter": 40.0, "exclude_border_objects": true, "maximum_object_count": null, "fill_holes": "after_thresholding_and_declump", "unclump_method": "intensity", "watershed_method": "intensity", "smoothing_filter_size": null, "maxima_suppression_size": null, "low_resolution_maxima": true}}],
-    "secondary_steps": [{"input_image": "Stain", "primary_object": "Nuclei", "output_object": "Cells", "config": {"method": "propagation", "fill_holes": true, "threshold_correction_factor": 1.0, "threshold_range": [0.0, 1.0], "threshold_smoothing_scale": 0.0, "log_transform": false, "threshold_scope": "global", "adaptive_window_size": 50, "threshold": "li", "regularization_factor": 0.05}}],
-    "tertiary_steps": [{"primary_object": "Nuclei", "secondary_object": "Cells", "output_object": "Cytoplasm", "shrink_primary": true}],
-    "measurement_steps": [{"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["Stain"], "objects": ["Cytoplasm"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectSizeShape", "family": "object_size_shape", "images": [], "objects": ["Nuclei"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectSizeShape", "family": "object_size_shape", "images": [], "objects": ["Cells"], "calculate_zernikes": false, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectSizeShape", "family": "object_size_shape", "images": [], "objects": ["Cytoplasm"], "calculate_zernikes": true, "calculate_advanced": true, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "segmentation_steps": [
+      {
+        "input_image": "DNA",
+        "output_object": "Nuclei",
+        "config": {
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 1.3488,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "exclude_size": false,
+          "min_diameter": 10.0,
+          "max_diameter": 40.0,
+          "exclude_border_objects": true,
+          "maximum_object_count": null,
+          "fill_holes": "after_thresholding_and_declump",
+          "unclump_method": "intensity",
+          "watershed_method": "intensity",
+          "smoothing_filter_size": null,
+          "maxima_suppression_size": null,
+          "low_resolution_maxima": true
+        }
+      }
+    ],
+    "secondary_steps": [
+      {
+        "input_image": "Stain",
+        "primary_object": "Nuclei",
+        "output_object": "Cells",
+        "config": {
+          "method": "propagation",
+          "fill_holes": true,
+          "threshold_correction_factor": 1.0,
+          "threshold_range": [
+            0.0,
+            1.0
+          ],
+          "threshold_smoothing_scale": 0.0,
+          "log_transform": false,
+          "threshold_scope": "global",
+          "adaptive_window_size": 50,
+          "threshold": "li",
+          "regularization_factor": 0.05
+        }
+      }
+    ],
+    "tertiary_steps": [
+      {
+        "primary_object": "Nuclei",
+        "secondary_object": "Cells",
+        "output_object": "Cytoplasm",
+        "shrink_primary": true
+      }
+    ],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "Stain"
+        ],
+        "objects": [
+          "Cytoplasm"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectSizeShape",
+        "family": "object_size_shape",
+        "images": [],
+        "objects": [
+          "Nuclei"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectSizeShape",
+        "family": "object_size_shape",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": false,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectSizeShape",
+        "family": "object_size_shape",
+        "images": [],
+        "objects": [
+          "Cytoplasm"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": true,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -318,16 +2084,34 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/granularity/defaults.cppipe": {
     "segmentation_steps": [],
     "secondary_steps": [],
     "tertiary_steps": [],
     "measurement_steps": [],
-    "granularity_steps": [{"images": ["Input"], "objects": ["Cells", "Points", "Empty"], "subsample_size": 0.25, "image_sample_size": 0.25, "element_size": 10, "granular_spectrum_length": 16}],
+    "granularity_steps": [
+      {
+        "images": [
+          "Input"
+        ],
+        "objects": [
+          "Cells",
+          "Points",
+          "Empty"
+        ],
+        "subsample_size": 0.25,
+        "image_sample_size": 0.25,
+        "element_size": 10,
+        "granular_spectrum_length": 16
+      }
+    ],
     "intensity_distribution_steps": [],
     "texture_steps": [],
     "colocalization_steps": [],
@@ -335,16 +2119,34 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/granularity/uneven.cppipe": {
     "segmentation_steps": [],
     "secondary_steps": [],
     "tertiary_steps": [],
     "measurement_steps": [],
-    "granularity_steps": [{"images": ["Input"], "objects": ["Cells", "Points", "Empty"], "subsample_size": 0.63, "image_sample_size": 0.57, "element_size": 2, "granular_spectrum_length": 7}],
+    "granularity_steps": [
+      {
+        "images": [
+          "Input"
+        ],
+        "objects": [
+          "Cells",
+          "Points",
+          "Empty"
+        ],
+        "subsample_size": 0.63,
+        "image_sample_size": 0.57,
+        "element_size": 2,
+        "granular_spectrum_length": 7
+      }
+    ],
     "intensity_distribution_steps": [],
     "texture_steps": [],
     "colocalization_steps": [],
@@ -352,9 +2154,12 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/intensity_distribution/high_bins_high_degree.cppipe": {
     "segmentation_steps": [],
@@ -362,16 +2167,34 @@
     "tertiary_steps": [],
     "measurement_steps": [],
     "granularity_steps": [],
-    "intensity_distribution_steps": [{"images": ["Input"], "objects": ["Cells"], "bin_count": 8, "wants_scaled": true, "maximum_radius": 100.0, "zernikes": "magnitudes_and_phase", "zernike_degree": 7, "additional_bin_groups": []}],
+    "intensity_distribution_steps": [
+      {
+        "images": [
+          "Input"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "bin_count": 8,
+        "wants_scaled": true,
+        "maximum_radius": 100.0,
+        "zernikes": "magnitudes_and_phase",
+        "zernike_degree": 7,
+        "additional_bin_groups": []
+      }
+    ],
     "texture_steps": [],
     "colocalization_steps": [],
     "export_steps": [],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "fixtures/texture/multi_scale.cppipe": {
     "segmentation_steps": [],
@@ -380,21 +2203,85 @@
     "measurement_steps": [],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
-    "texture_steps": [{"images": ["Input"], "objects": ["Cells"], "gray_levels": 256, "scales": [2, 7], "wants_image_measurements": true, "wants_object_measurements": true}],
+    "texture_steps": [
+      {
+        "images": [
+          "Input"
+        ],
+        "objects": [
+          "Cells"
+        ],
+        "gray_levels": 256,
+        "scales": [
+          2,
+          7
+        ],
+        "wants_image_measurements": true,
+        "wants_object_measurements": true
+      }
+    ],
     "colocalization_steps": [],
     "export_steps": [],
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   },
   "reference/pipelines/intensity_neighbors.cppipe": {
     "segmentation_steps": [],
     "secondary_steps": [],
     "tertiary_steps": [],
-    "measurement_steps": [{"module_name": "MeasureImageIntensity", "family": "image_intensity", "images": ["DNA", "Actin"], "objects": [], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectIntensity", "family": "object_intensity", "images": ["DNA", "Actin"], "objects": ["Cells", "Nuclei"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}, {"module_name": "MeasureObjectNeighbors", "family": "neighbors", "images": [], "objects": ["Cells"], "calculate_zernikes": true, "calculate_advanced": false, "wants_excluded_objects": false, "wants_expand": false, "neighbors_distance": null}],
+    "measurement_steps": [
+      {
+        "module_name": "MeasureImageIntensity",
+        "family": "image_intensity",
+        "images": [
+          "DNA",
+          "Actin"
+        ],
+        "objects": [],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectIntensity",
+        "family": "object_intensity",
+        "images": [
+          "DNA",
+          "Actin"
+        ],
+        "objects": [
+          "Cells",
+          "Nuclei"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      },
+      {
+        "module_name": "MeasureObjectNeighbors",
+        "family": "neighbors",
+        "images": [],
+        "objects": [
+          "Cells"
+        ],
+        "calculate_zernikes": true,
+        "calculate_advanced": false,
+        "wants_excluded_objects": false,
+        "wants_expand": false,
+        "neighbors_distance": null
+      }
+    ],
     "granularity_steps": [],
     "intensity_distribution_steps": [],
     "texture_steps": [],
@@ -403,8 +2290,11 @@
     "illumination_calculate_steps": [],
     "illumination_apply_steps": [],
     "save_images_steps": [],
+    "overlay_outlines_steps": [],
     "skipped_modules": [],
     "image_math_steps": [],
-    "image_step_order": []
+    "image_step_order": [],
+    "flag_image_steps": [],
+    "image_quality_steps": []
   }
 }

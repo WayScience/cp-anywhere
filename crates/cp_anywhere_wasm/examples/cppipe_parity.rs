@@ -19,7 +19,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             Ok(pipeline) => pipeline,
             Err(error) => return json!({"error": error}),
         };
-        match unpack_images(case.images, &case.pixels).and_then(|images| pipeline.run(images)) {
+        let scaling = case
+            .images
+            .iter()
+            .filter_map(|image| Some((image.name.clone(), image.scaling?)))
+            .collect();
+        match unpack_images(case.images, &case.pixels)
+            .and_then(|images| pipeline.run_with_scaling(images, &scaling))
+        {
             Ok(result) => json!({"plan": pipeline.plan(), "result": result.to_json_value()}),
             Err(error) => json!({"plan": pipeline.plan(), "error": error}),
         }

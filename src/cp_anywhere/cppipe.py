@@ -39,13 +39,14 @@ supplies already-loaded image arrays by the same names the pipeline's
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from math import isfinite
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
 
+from cp_anywhere import _native
 from cp_anywhere.api import _MAX_NEIGHBOR_DISTANCE, MeasurementResult, measure
 from cp_anywhere.colocalization import measure_colocalization
 from cp_anywhere.granularity import measure_granularity
@@ -53,6 +54,14 @@ from cp_anywhere.illumination import apply_illumination, calculate_illumination
 from cp_anywhere.intensity_distribution import (
     _measure_intensity_distribution,
     _ZernikeOption,
+)
+from cp_anywhere.outline_overlay import (
+    REVISION as _OVERLAY_REVISION,
+)
+from cp_anywhere.outline_overlay import (
+    OverlayStep,
+    translate_overlay,
+    validate_overlay_order,
 )
 from cp_anywhere.save_images import BIT_DEPTH_8, save_array
 from cp_anywhere.segment import (
@@ -955,11 +964,12 @@ def _translate_identify_secondary_objects(raw: _RawModule) -> SecondaryObjectsSt
         "explicit, not-yet-implemented gap ('Watershed - Gradient' and "
         "'Distance - B' are not yet supported)",
     )
+    discard_edge = _YES_NO[values["wants_discard_edge"]]
+    discard_primary = _YES_NO[values["wants_discard_primary"]]
     _require(
-        not _YES_NO[values["wants_discard_edge"]],
-        "IdentifySecondaryObjects with 'Discard secondary objects "
-        "touching the border of the image?' = Yes is an explicit, "
-        "not-yet-implemented gap",
+        not (discard_edge and discard_primary),
+        "IdentifySecondaryObjects does not support "
+        "'Discard the associated primary objects?' = Yes when discarding edge objects",
     )
     method = _SECONDARY_METHOD[values["method"]]
 
@@ -967,6 +977,8 @@ def _translate_identify_secondary_objects(raw: _RawModule) -> SecondaryObjectsSt
         "method": method,
         "fill_holes": _YES_NO[values["fill_holes"]],
     }
+    if discard_edge:
+        config["discard_edge"] = True
     if method != "distance_n":
         config.update(_translate_threshold_tail(values))
         if method == "propagation":
@@ -1604,7 +1616,251 @@ def _translate_image_math(raw: _RawModule) -> ImageMathStep:
     )
 
 
+@dataclass(frozen=True)
+class FlagCriterion:
+    measurement: str
+    minimum: float | None
+    maximum: float | None
+
+
+@dataclass(frozen=True)
+class ImageFlag:
+    name: str
+    all: bool
+    skip: bool
+    criteria: tuple[FlagCriterion, ...]
+
+
+@dataclass(frozen=True)
+class FlagImageStep:
+    """Thresholds on whole-image measurements, in saved flag order."""
+
+    flags: tuple[ImageFlag, ...]
+
+    def evaluate(
+        self, measurements: Mapping[str, float | int]
+    ) -> tuple[dict[str, int], bool]:
+        """Return named flags (0/1) and whether the field must be skipped."""
+        results: dict[str, int] = {}
+        skip = False
+        for flag in self.flags:
+            outside = []
+            for criterion in flag.criteria:
+                name = criterion.measurement
+                value = results.get(name, measurements.get(name))
+                if value is None:
+                    raise CppipeError(
+                        f"FlagImage needs a prior image measurement {name!r}"
+                    )
+                outside.append(
+                    (criterion.minimum is not None and value < criterion.minimum)
+                    or (criterion.maximum is not None and value > criterion.maximum)
+                )
+            failed = all(outside) if flag.all else any(outside)
+            results[flag.name] = int(failed)
+            skip |= failed and flag.skip
+        return results, skip
+
+
+_FLAG_IMAGE_REVISION = 5
+_FLAG_FIELDS = 5
+_FLAG_CRITERION_FIELDS = 11
+_QC_MIN_HEADER_FIELDS = 2
+_QUALITY_REVISION = 6
+_QUALITY_MAX_COUNT = 0xFFFF_FFFF
+
+
+def _flag_bound(enabled: str, text: str) -> float | None:
+    _require(enabled in _YES_NO, "FlagImage requires Yes/No threshold switches")
+    if enabled == "No":
+        return None
+    value = float(text)
+    _require(isfinite(value), "FlagImage threshold must be finite")
+    return value
+
+
+def _translate_flag_image(raw: _RawModule) -> FlagImageStep:
+    _require(
+        raw.variable_revision_number == _FLAG_IMAGE_REVISION,
+        "FlagImage requires revision 5",
+    )
+    values = raw.settings
+    _require(
+        len(values) >= _QC_MIN_HEADER_FIELDS,
+        "FlagImage is missing the flag count or last-cycle setting",
+    )
+    _require(
+        values[-1] == "No", "FlagImage requires 'Ignore flag skips on last cycle?' = No"
+    )
+    flag_count = int(values[0])
+    _require(flag_count > 0, "FlagImage needs a positive flag count")
+    position = 1
+    flags = []
+    for _ in range(flag_count):
+        end = position + _FLAG_FIELDS
+        _require(end < len(values), "FlagImage has an incomplete flag group")
+        count, category, name, combination, skip = values[position:end]
+        _require(
+            bool(category.strip() and name.strip()),
+            "FlagImage category and name must not be empty",
+        )
+        _require(
+            combination in ("Flag if all fail", "Flag if any fail"),
+            f"FlagImage has unsupported combination {combination!r}",
+        )
+        _require(skip in _YES_NO, "FlagImage requires a Yes/No skip switch")
+        position = end
+        criteria_count = int(count)
+        _require(criteria_count > 0, "FlagImage needs a positive measurement count")
+        criteria = []
+        for _ in range(criteria_count):
+            end = position + _FLAG_CRITERION_FIELDS
+            _require(end < len(values), "FlagImage has an incomplete measurement group")
+            source, _, measurement, has_min, minimum, has_max, maximum, *_ = values[
+                position:end
+            ]
+            _require(
+                source == "Whole-image measurement",
+                f"FlagImage has unsupported flag source {source!r}",
+            )
+            _require(
+                bool(measurement.strip() and measurement != "None"),
+                "FlagImage requires a named measurement",
+            )
+            criteria.append(
+                FlagCriterion(
+                    measurement,
+                    _flag_bound(has_min, minimum),
+                    _flag_bound(has_max, maximum),
+                )
+            )
+            position = end
+        flags.append(
+            ImageFlag(
+                f"{category}_{name}",
+                combination == "Flag if all fail",
+                _YES_NO[skip],
+                tuple(criteria),
+            )
+        )
+    _require(
+        position == len(values) - 1,
+        "FlagImage has unexpected settings after the flag groups",
+    )
+    return FlagImageStep(tuple(flags))
+
+
+@dataclass(frozen=True)
+class QualityGroup:
+    images: tuple[str, ...]
+    blur_scales: tuple[int, ...]
+    saturation: bool
+    include_scaling: bool
+
+
+@dataclass(frozen=True)
+class ImageQualityStep:
+    all_loaded: bool
+    groups: tuple[QualityGroup, ...]
+
+
+def _quality_count(value: str) -> int:
+    count = int(value)
+    _require(
+        0 < count <= _QUALITY_MAX_COUNT,
+        "MeasureImageQuality requires positive 32-bit counts and scales",
+    )
+    return count
+
+
+def _quality_group(
+    values: tuple[str, ...], scale_count: int, all_loaded: bool
+) -> QualityGroup:
+    names, scaling, blur, *tail = values
+    images = (
+        ()
+        if all_loaded
+        else tuple(name.strip() for name in names.split(",") if name.strip())
+    )
+    saturation, intensity, threshold, *_ = tail[scale_count:]
+    _require(
+        all_loaded or bool(images),
+        "MeasureImageQuality Select... requires named images",
+    )
+    _require(
+        all(
+            value in _YES_NO
+            for value in (scaling, blur, saturation, intensity, threshold)
+        ),
+        "MeasureImageQuality requires Yes/No switches",
+    )
+    _require(
+        intensity == threshold == "No",
+        "MeasureImageQuality intensity and threshold metrics are not supported",
+    )
+    scales = tuple(map(_quality_count, tail[:scale_count])) if blur == "Yes" else ()
+    return QualityGroup(images, scales, _YES_NO[saturation], _YES_NO[scaling])
+
+
+def _translate_image_quality(raw: _RawModule) -> ImageQualityStep:
+    values = raw.settings
+    _require(
+        raw.variable_revision_number == _QUALITY_REVISION,
+        "MeasureImageQuality requires revision 6",
+    )
+    _require(
+        len(values) >= _QC_MIN_HEADER_FIELDS,
+        "MeasureImageQuality is missing image group count",
+    )
+    choice, count_text, *_ = values
+    _require(
+        choice in ("All loaded images", "Select..."),
+        f"MeasureImageQuality unsupported image choice {choice!r}",
+    )
+    all_loaded = choice == "All loaded images"
+    count = _quality_count(count_text)
+    position = 2 + 2 * count
+    _require(
+        position <= len(values), "MeasureImageQuality has incomplete image group counts"
+    )
+    _require(
+        not all_loaded or count == 1,
+        "MeasureImageQuality All loaded images requires one image group",
+    )
+    groups = []
+    for i in range(2, position, 2):
+        scales, thresholds = map(_quality_count, values[i : i + 2])
+        end = position + 7 + scales + 5 * thresholds
+        _require(
+            end <= len(values),
+            "MeasureImageQuality has an incomplete image quality group",
+        )
+        groups.append(_quality_group(values[position:end], scales, all_loaded))
+        position = end
+    _require(
+        position == len(values),
+        "MeasureImageQuality has unexpected settings after the image quality groups",
+    )
+    return ImageQualityStep(all_loaded, tuple(groups))
+
+
+def _translate_overlay_outlines(raw: _RawModule) -> OverlayStep:
+    _require(
+        raw.variable_revision_number == _OVERLAY_REVISION,
+        f"OverlayOutlines: variable_revision_number={raw.variable_revision_number} "
+        f"is not supported (only {_OVERLAY_REVISION} is)",
+    )
+    try:
+        return translate_overlay(raw.settings)
+    except ValueError as error:
+        msg = f"OverlayOutlines: {error}"
+        raise CppipeError(msg) from error
+
+
 _TRANSLATORS = {
+    "OverlayOutlines": _translate_overlay_outlines,
+    "MeasureImageQuality": _translate_image_quality,
+    "FlagImage": _translate_flag_image,
     "ImageMath": _translate_image_math,
     "IdentifyPrimaryObjects": _translate_identify_primary_objects,
     "MeasureObjectSizeShape": _translate_measure_object_size_shape,
@@ -1677,13 +1933,31 @@ class Pipeline:
     )
     illumination_apply_steps: list[IlluminationApplyStep] = field(default_factory=list)
     save_images_steps: list[SaveImagesStep] = field(default_factory=list)
+    overlay_outlines_steps: list[OverlayStep] = field(default_factory=list)
     skipped_modules: list[str] = field(default_factory=list)
     image_math_steps: list[ImageMathStep] = field(default_factory=list)
     image_step_order: list[str] = field(default_factory=list)
+    flag_image_steps: list[FlagImageStep] = field(default_factory=list)
+    image_quality_steps: list[ImageQualityStep] = field(default_factory=list)
 
     def prepare_images(self, images: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
         """Return inputs and prepared planes without modifying the caller's arrays."""
+        return self._prepare_with_quality(images, {})[0]
+
+    def _prepare_with_quality(
+        self, images: Mapping[str, np.ndarray], scaling: Mapping[str, float]
+    ) -> tuple[dict[str, np.ndarray], dict[str, float | int], bool]:
+        if any(
+            name not in images or not isfinite(value) or value <= 0
+            for name, value in scaling.items()
+        ):
+            raise CppipeError(
+                "image scaling must name a supplied image and be finite and positive"
+            )
         all_images = dict(images)
+        columns: dict[str, float | int] = {}
+        quality = iter(self.image_quality_steps)
+        flags = iter(self.flag_image_steps)
         groups = {
             "CorrectIlluminationCalculate": iter(self.illumination_calculate_steps),
             "CorrectIlluminationApply": iter(self.illumination_apply_steps),
@@ -1693,13 +1967,58 @@ class Pipeline:
             ["CorrectIlluminationCalculate"] * len(self.illumination_calculate_steps)
             + ["CorrectIlluminationApply"] * len(self.illumination_apply_steps)
             + ["ImageMath"] * len(self.image_math_steps)
+            + ["MeasureImageQuality"] * len(self.image_quality_steps)
+            + ["FlagImage"] * len(self.flag_image_steps)
         )
         for module in order:
-            _prepare_image(all_images, module, next(groups[module]))
-        return all_images
+            if module == "MeasureImageQuality":
+                columns.update(
+                    _quality_columns(next(quality), images, all_images, scaling)
+                )
+            elif module == "FlagImage":
+                values, skip = next(flags).evaluate(columns)
+                columns.update(values)
+                if skip:
+                    return all_images, columns, True
+            else:
+                _prepare_image(all_images, module, next(groups[module]))
+        return all_images, columns, False
 
-    # Keep the execution stages together so label provenance remains visible.
-    def run(  # noqa: C901, PLR0912, PLR0915
+    def render_overlays(
+        self, all_images: dict[str, np.ndarray], labels: Mapping[str, np.ndarray]
+    ) -> None:
+        """Add overlay outputs to the working image dictionary, in file order.
+
+        An overlay can use an earlier overlay as its background. Named label
+        planes can also be supplied in the image dictionary.
+        """
+        for step in self.overlay_outlines_steps:
+            try:
+                source = (
+                    None if step.input_image is None else all_images[step.input_image]
+                )
+            except KeyError as error:
+                msg = f"OverlayOutlines needs image {step.input_image!r}"
+                raise CppipeError(msg) from error
+            try:
+                outlines = {
+                    name: labels[name] if name in labels else all_images[name]
+                    for name in (group.objects_name for group in step.outlines)
+                }
+            except KeyError as error:
+                msg = f"OverlayOutlines needs object set {error.args[0]!r}"
+                raise CppipeError(msg) from error
+            try:
+                all_images[step.output_image] = step.render(
+                    None if source is None else _cp_converted_pixels(source),
+                    outlines,
+                    float64=source is not None and source.dtype.kind == "b",
+                )
+            except (TypeError, ValueError) as error:
+                msg = f"OverlayOutlines: {error}"
+                raise CppipeError(msg) from error
+
+    def run(
         self, images: Mapping[str, np.ndarray]
     ) -> tuple[
         dict[str, SegmentationResult],
@@ -1707,8 +2026,45 @@ class Pipeline:
         MeasurementResult | None,
     ]:
         """Prepare images, identify primary/secondary/tertiary objects, and measure."""
+        result = self.run_detailed(images)
+        return result.primary, result.secondary, result.measurements
+
+    def run_detailed(
+        self,
+        images: Mapping[str, np.ndarray],
+        *,
+        scaling: Mapping[str, float] | None = None,
+    ) -> PipelineRunResult:
+        """Run a field and return derived images, QC measurements and skip status."""
+        all_images, columns, skipped = self._prepare_with_quality(images, scaling or {})
+        primary, secondary, measured = {}, {}, None
+        if not skipped:
+            primary, secondary, measured = self._run_prepared(all_images)
+        if columns:
+            if measured is None:
+                measured = MeasurementResult("Image", {}, {}, [])
+            measured.features.setdefault("Image", {}).update(columns)
+        return PipelineRunResult(
+            primary,
+            secondary,
+            measured,
+            {
+                name: plane
+                for name, plane in all_images.items()
+                if plane is not images.get(name)
+            },
+            skipped,
+        )
+
+    # Keep the execution stages together so label provenance remains visible.
+    def _run_prepared(  # noqa: C901, PLR0912, PLR0915
+        self, all_images: dict[str, np.ndarray]
+    ) -> tuple[
+        dict[str, SegmentationResult],
+        dict[str, SecondaryObjectsResult | TertiaryObjectsResult],
+        MeasurementResult | None,
+    ]:
         segmentations: dict[str, SegmentationResult] = {}
-        all_images = self.prepare_images(images)
         # Real CellProfiler's ImageSet holds every image converted by
         # Image(convert=True): integer pixels rescaled to [0, 1] float32,
         # float pixels downcast to float32 (see cellprofiler_core's
@@ -1792,6 +2148,7 @@ class Pipeline:
             and not self.texture_steps
             and not self.colocalization_steps
         ):
+            self.render_overlays(all_images, all_object_labels)
             return segmentations, secondary_results, None
 
         families = sorted(
@@ -2169,7 +2526,50 @@ class Pipeline:
                 image_features = measured.features.setdefault("Image", {})
                 for column, value in colocalization_result.image.items():
                     image_features[column] = value
+        self.render_overlays(all_images, all_object_labels)
         return segmentations, secondary_results, measured
+
+
+@dataclass(frozen=True)
+class PipelineRunResult:
+    primary: dict[str, SegmentationResult]
+    secondary: dict[str, SecondaryObjectsResult | TertiaryObjectsResult]
+    measurements: MeasurementResult | None
+    derived_images: dict[str, np.ndarray]
+    skipped: bool
+
+
+def _quality_columns(
+    step: ImageQualityStep,
+    loaded: Mapping[str, np.ndarray],
+    images: Mapping[str, np.ndarray],
+    scaling: Mapping[str, float],
+) -> dict[str, float]:
+    columns = {}
+    for group in step.groups:
+        for name in sorted(loaded) if step.all_loaded else group.images:
+            if name not in images:
+                raise CppipeError(
+                    f"MeasureImageQuality needs image {name!r}, not provided to run()"
+                )
+            plane = images[name]
+            try:
+                columns.update(
+                    _native.measure_image_quality(
+                        np.ascontiguousarray(
+                            _cp_converted_pixels(plane), dtype=np.float64
+                        ),
+                        name,
+                        list(group.blur_scales),
+                        group.saturation,
+                        group.include_scaling,
+                        scaling.get(name) if plane is loaded.get(name) else None,
+                        plane.dtype.kind != "b",
+                    )
+                )
+            except ValueError as error:
+                raise CppipeError(f"MeasureImageQuality: {error}") from error
+    return columns
 
 
 def _prepare_image(
@@ -2244,7 +2644,10 @@ def _append_step(
         | IlluminationCalculateStep
         | IlluminationApplyStep
         | ImageMathStep
+        | OverlayStep
         | SaveImagesStep
+        | FlagImageStep
+        | ImageQualityStep
         | MeasurementStep
     ),
 ) -> None:
@@ -2257,7 +2660,10 @@ def _append_step(
             IlluminationCalculateStep,
             IlluminationApplyStep,
             ImageMathStep,
+            OverlayStep,
             SaveImagesStep,
+            FlagImageStep,
+            ImageQualityStep,
         ),
     ):
         _append_output_step(pipeline, step)
@@ -2286,7 +2692,10 @@ def _append_output_step(
     step: IlluminationCalculateStep
     | IlluminationApplyStep
     | ImageMathStep
-    | SaveImagesStep,
+    | OverlayStep
+    | SaveImagesStep
+    | FlagImageStep
+    | ImageQualityStep,
 ) -> None:
     """The ``CorrectIlluminationCalculate``/``CorrectIlluminationApply``/
     ``SaveImages`` half of :func:`_append_step`'s dispatch, split out to
@@ -2301,6 +2710,14 @@ def _append_output_step(
     elif isinstance(step, ImageMathStep):
         pipeline.image_math_steps.append(step)
         pipeline.image_step_order.append("ImageMath")
+    elif isinstance(step, OverlayStep):
+        pipeline.overlay_outlines_steps.append(step)
+    elif isinstance(step, FlagImageStep):
+        pipeline.flag_image_steps.append(step)
+        pipeline.image_step_order.append("FlagImage")
+    elif isinstance(step, ImageQualityStep):
+        pipeline.image_quality_steps.append(step)
+        pipeline.image_step_order.append("MeasureImageQuality")
     else:
         pipeline.save_images_steps.append(step)
 
@@ -2405,10 +2822,37 @@ def load_pipeline(path: str | Path) -> Pipeline:
     """
     text = Path(path).read_text(encoding="utf-8-sig")
     pipeline = Pipeline()
+    translated = []
+    analysis_started = False
     for raw in _parse_text(text):
         translator = _TRANSLATORS.get(raw.name)
         if translator is None or not raw.enabled:
             pipeline.skipped_modules.append(raw.name)
             continue
-        _append_step(pipeline, translator(raw))
+        step = translator(raw)
+        if isinstance(step, FlagImageStep) and analysis_started:
+            raise CppipeError(
+                "FlagImage must precede segmentation, overlays, and measurements"
+            )
+        analysis_started |= isinstance(
+            step,
+            (
+                SegmentationStep,
+                SecondaryObjectsStep,
+                TertiaryObjectsStep,
+                MeasurementStep,
+                GranularityStep,
+                IntensityDistributionStep,
+                TextureStep,
+                ColocalizationStep,
+                OverlayStep,
+            ),
+        )
+        translated.append((raw.name, step))
+        _append_step(pipeline, step)
+    if pipeline.overlay_outlines_steps:
+        try:
+            validate_overlay_order([(name, asdict(step)) for name, step in translated])
+        except ValueError as error:
+            raise CppipeError(str(error)) from error
     return pipeline

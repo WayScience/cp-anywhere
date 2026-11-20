@@ -4,7 +4,7 @@ Use the same `.cppipe` text and the same named image planes in Python, native Ru
 
 ## Python
 
-Use `cp_anywhere.load_pipeline(path).run(images)` for one field. Use [`run_batch`](batch.md) to process multiple fields. The existing Python APIs and result types are unchanged.
+Use `cp_anywhere.load_pipeline(path).run(images)` for the original three-value result. Use `run_detailed(images)` to also get `derived_images` and the `skipped` flag. Pass `scaling={"DNA": 65535}` only when that is the original acquisition scale. Use [`run_batch`](batch.md) to process multiple fields.
 
 Use `cp_anywhere.inspect_pipeline(path)` before running an unfamiliar file.
 It reports each module in file order, including disabled modules, caller-managed
@@ -27,7 +27,7 @@ Build the [web package](wasm.md), then initialize it as usual. Use `compile_cppi
 
 To reuse a parsed pipeline, construct `new CppipePipeline(text)` once per worker. Call its `run(imagesJson, pixels)` method for each complete image set. Call `free()` when the worker no longer needs the pipeline.
 
-Parse the returned JSON to read `primary`, `secondary`, `tertiary`, `object_shapes`, `derived_images`, and `measurements`. Arrays are flat and row-major. `measurements` is `null` when the pipeline has no measurement steps. Numeric nonfinite outputs use the strings `NaN`, `Infinity`, or `-Infinity`. When packing 64-bit integer inputs, check that each value converts to `Float64` without loss; not every 64-bit integer is representable.
+The image descriptors also accept optional `scaling` metadata. Parse the returned JSON to read `primary`, `secondary`, `tertiary`, `object_shapes`, `derived_images`, `measurements`, and `skipped`. Arrays are flat and row-major. A skipped field retains its QC measurements but does not run later stages. Numeric nonfinite outputs use the strings `NaN`, `Infinity`, or `-Infinity`. When packing 64-bit integer inputs, check that each value converts to `Float64` without loss; not every 64-bit integer is representable.
 
 ## Execution limits
 

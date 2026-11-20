@@ -225,7 +225,7 @@ def _run(args: argparse.Namespace) -> int:
     unsupported = [
         m.name for m in inspect_pipeline(path) if m.status.startswith("unsupported")
     ]
-    if unsupported != ["OverlayOutlines", "OverlayOutlines"]:
+    if unsupported:
         raise ValueError(f"Unexpected unsupported modules: {unsupported}")
     blocks, overrides = _measurement_scope(args.focus)
     pipeline = replace(pipeline, **overrides)

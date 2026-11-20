@@ -1,4 +1,4 @@
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::illumination::{
     self, Config, FilterSizeMethod, IntensityChoice, RescaleOption, SmoothingMethod,
@@ -10,6 +10,7 @@ use crate::segmentation::tertiary::identify_tertiary_objects;
 use crate::segmentation::{
     build_config, identify_primary_objects, ConfigParams, IdentifyPrimaryObjectsConfig,
 };
+use serde::Deserialize;
 use serde_json::Value;
 
 use super::{measure, Dtype, Plane, RunResult, State, TertiaryObjectsResult};
@@ -228,10 +229,77 @@ fn run_image_math(step: &Value, state: &mut State) -> Result<(), String> {
     Ok(())
 }
 
-fn run_preprocessing(plan: &Value, state: &mut State) -> Result<(), String> {
+#[derive(Deserialize)]
+struct QualityStep {
+    all_loaded: bool,
+    groups: Vec<QualityGroup>,
+}
+
+#[derive(Deserialize)]
+struct QualityGroup {
+    images: Vec<String>,
+    blur_scales: Vec<usize>,
+    saturation: bool,
+    include_scaling: bool,
+}
+
+type ImageColumns = BTreeMap<String, crate::Column>;
+
+fn run_quality(
+    step: &Value,
+    state: &State,
+    loaded: &BTreeSet<String>,
+    scaling: &BTreeMap<String, f64>,
+    columns: &mut ImageColumns,
+) -> Result<(), String> {
+    use crate::image_quality::{measure, Options};
+    let step = QualityStep::deserialize(step).map_err(|e| format!("MeasureImageQuality: {e}"))?;
+    for group in step.groups {
+        let names: Vec<_> = if step.all_loaded {
+            loaded.iter().collect()
+        } else {
+            group.images.iter().collect()
+        };
+        for name in names {
+            let plane = require_image(state, "MeasureImageQuality", name)?;
+            let values = measure(
+                &plane.shape,
+                &plane.converted(),
+                None,
+                name,
+                Options {
+                    blur_scales: &group.blur_scales,
+                    saturation: group.saturation,
+                    include_scaling: group.include_scaling,
+                    scaling: scaling
+                        .get(name)
+                        .copied()
+                        .filter(|_| !state.derived.contains(name)),
+                    float32: !matches!(plane.dtype, Dtype::Bool),
+                },
+            )?;
+            columns.extend(
+                values
+                    .into_iter()
+                    .map(|(name, value)| (name, crate::Column::Float(vec![value]))),
+            );
+        }
+    }
+    Ok(())
+}
+
+fn run_preprocessing(
+    plan: &Value,
+    state: &mut State,
+    loaded: &BTreeSet<String>,
+    scaling: &BTreeMap<String, f64>,
+    columns: &mut ImageColumns,
+) -> Result<bool, String> {
     let mut calculate = steps(plan, "illumination_calculate_steps");
     let mut apply = steps(plan, "illumination_apply_steps");
     let mut math = steps(plan, "image_math_steps");
+    let mut quality = steps(plan, "image_quality_steps");
+    let mut flags = steps(plan, "flag_image_steps");
     for module in steps(plan, "image_step_order") {
         let missing = || format!("missing preprocessing step {module}");
         match module.as_str() {
@@ -242,10 +310,37 @@ fn run_preprocessing(plan: &Value, state: &mut State) -> Result<(), String> {
                 run_apply(apply.next().ok_or_else(missing)?, state)?
             }
             Some("ImageMath") => run_image_math(math.next().ok_or_else(missing)?, state)?,
+            Some("MeasureImageQuality") => {
+                run_quality(
+                    quality.next().ok_or_else(missing)?,
+                    state,
+                    loaded,
+                    scaling,
+                    columns,
+                )?;
+            }
+            Some("FlagImage") => {
+                use super::flag_image::{evaluate, Step};
+                use crate::Column;
+                let step = Step::deserialize(flags.next().ok_or_else(missing)?)
+                    .map_err(|e| format!("FlagImage: {e}"))?;
+                let (values, skip) = evaluate(&step, |name| match columns.get(name)? {
+                    Column::Float(values) => values.first().copied(),
+                    Column::Int(values) => values.first().map(|&value| value as f64),
+                })?;
+                columns.extend(
+                    values
+                        .into_iter()
+                        .map(|(name, value)| (name, Column::Int(vec![value]))),
+                );
+                if skip {
+                    return Ok(true);
+                }
+            }
             _ => return Err(format!("unknown preprocessing module {module}")),
         }
     }
-    Ok(())
+    Ok(false)
 }
 
 fn segmentation_pixels(plane: &Plane) -> Result<std::borrow::Cow<'_, [f64]>, String> {
@@ -360,6 +455,7 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
                 regularization_factor,
                 distance_to_dilate,
                 fill_holes: boolean(raw, "fill_holes")?,
+                discard_edge: raw.get("discard_edge").is_some() && boolean(raw, "discard_edge")?,
                 threshold_method: threshold.threshold_method,
                 threshold_correction_factor: threshold.threshold_correction_factor,
                 threshold_range: threshold.threshold_range,
@@ -414,10 +510,14 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
     Ok(())
 }
 
-pub(crate) fn run(plan: &Value, images: Vec<(String, Plane)>) -> Result<RunResult, String> {
+pub(crate) fn run(
+    plan: &Value,
+    images: Vec<(String, Plane)>,
+    scaling: &BTreeMap<String, f64>,
+) -> Result<RunResult, String> {
     let mut names = BTreeSet::new();
     for (name, plane) in &images {
-        if !names.insert(name) {
+        if !names.insert(name.clone()) {
             return Err(format!("duplicate image name {name:?}"));
         }
         plane
@@ -434,10 +534,34 @@ pub(crate) fn run(plan: &Value, images: Vec<(String, Plane)>) -> Result<RunResul
         primary_shapes: Default::default(),
         derived: Default::default(),
     };
-    run_preprocessing(plan, &mut state)?;
-    run_segmentation(plan, &mut state)?;
-    let measurements = measure::measure(plan, &state)?;
+    if scaling
+        .iter()
+        .any(|(name, value)| !names.contains(name) || !value.is_finite() || *value <= 0.0)
+    {
+        return Err("image scaling must name a supplied image and be finite and positive".into());
+    }
+    let mut columns = ImageColumns::new();
+    let skipped = run_preprocessing(plan, &mut state, &names, scaling, &mut columns)?;
+    let mut measurements = None;
+    if !skipped {
+        run_segmentation(plan, &mut state)?;
+        measurements = measure::measure(plan, &state)?;
+        super::overlay::run(plan, &mut state)?;
+    }
+    if !columns.is_empty() {
+        let table = measurements.get_or_insert_with(|| crate::ResultTable {
+            features: BTreeMap::new(),
+            object_ids: BTreeMap::new(),
+            relationships: Vec::new(),
+        });
+        table
+            .features
+            .entry("Image".into())
+            .or_default()
+            .extend(columns);
+    }
     Ok(RunResult {
+        skipped,
         primary: state.primary,
         secondary: state.secondary,
         tertiary: state.tertiary,

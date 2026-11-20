@@ -1,0 +1,28 @@
+{
+  "kept": {
+    "skipped": false,
+    "columns": {
+      "ImageQuality_Correlation_DNA_20": -0.02336807974128401,
+      "ImageQuality_FocusScore_DNA": 0.03180941340721875,
+      "ImageQuality_LocalFocusScore_DNA_20": 0.00011957743317194278,
+      "ImageQuality_PercentMaximal_DNA": 0.390625,
+      "ImageQuality_PercentMinimal_DNA": 0.21484375,
+      "ImageQuality_PowerLogLogSlope_DNA": 0.9192250404751583,
+      "ImageQuality_Scaling_DNA": 4095,
+      "QC_Rejected": 0
+    }
+  },
+  "skipped": {
+    "skipped": true,
+    "columns": {
+      "ImageQuality_Correlation_DNA_20": 0.0,
+      "ImageQuality_FocusScore_DNA": 0.0,
+      "ImageQuality_LocalFocusScore_DNA_20": 0,
+      "ImageQuality_PercentMaximal_DNA": 100.0,
+      "ImageQuality_PercentMinimal_DNA": 100.0,
+      "ImageQuality_PowerLogLogSlope_DNA": 0,
+      "ImageQuality_Scaling_DNA": 4095,
+      "QC_Rejected": 1
+    }
+  }
+}

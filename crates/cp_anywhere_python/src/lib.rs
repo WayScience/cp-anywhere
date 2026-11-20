@@ -5,6 +5,9 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList};
 
+mod image_quality;
+mod outline_overlay;
+
 #[allow(clippy::too_many_arguments)]
 #[pyfunction]
 #[pyo3(signature = (shape, images, objects, mask, image_id, families, neighbors_scopes=None, neighbors_expand=None, neighbors_full_objects=None, size_shape_calculate_zernikes=true, size_shape_calculate_advanced=false, neighbors_distances=None, float32_images=None))]
@@ -321,6 +324,7 @@ fn identify_primary_objects<'py>(
     regularization_factor=0.05,
     distance_to_dilate=10.0,
     fill_holes=false,
+    discard_edge=false,
 ))]
 fn identify_secondary_objects<'py>(
     py: Python<'py>,
@@ -350,6 +354,7 @@ fn identify_secondary_objects<'py>(
     regularization_factor: f64,
     distance_to_dilate: f64,
     fill_holes: bool,
+    discard_edge: bool,
 ) -> PyResult<Bound<'py, PyDict>> {
     use cp_anywhere::segmentation::secondary::{
         identify_secondary_objects as segment_secondary, SecondaryMethod, SecondaryObjectsConfig,
@@ -419,6 +424,7 @@ fn identify_secondary_objects<'py>(
         regularization_factor,
         distance_to_dilate,
         fill_holes,
+        discard_edge,
         threshold_method: threshold_config.threshold_method,
         threshold_correction_factor: threshold_config.threshold_correction_factor,
         threshold_range: threshold_config.threshold_range,
@@ -786,6 +792,10 @@ fn calculate_illumination_across<'py>(
 
 #[pymodule]
 fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
+    module.add_function(wrap_pyfunction!(
+        image_quality::measure_image_quality,
+        module
+    )?)?;
     module.add_function(wrap_pyfunction!(measure, module)?)?;
     module.add_function(wrap_pyfunction!(identify_primary_objects, module)?)?;
     module.add_function(wrap_pyfunction!(identify_secondary_objects, module)?)?;
@@ -796,6 +806,10 @@ fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
     module.add_function(wrap_pyfunction!(measure_colocalization, module)?)?;
     module.add_function(wrap_pyfunction!(calculate_illumination_each, module)?)?;
     module.add_function(wrap_pyfunction!(calculate_illumination_across, module)?)?;
+    module.add_function(wrap_pyfunction!(
+        outline_overlay::render_outline_overlay,
+        module
+    )?)?;
     Ok(())
 }
 

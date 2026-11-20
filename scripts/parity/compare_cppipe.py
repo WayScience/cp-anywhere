@@ -28,13 +28,11 @@ import numpy as np
 
 from cp_anywhere import (
     CppipeError,
-    MeasurementResult,
     Pipeline,
-    SecondaryObjectsResult,
-    SegmentationResult,
     TertiaryObjectsResult,
     load_pipeline,
 )
+from cp_anywhere.cppipe import PipelineRunResult
 
 ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = ROOT / "fixtures/cppipe"
@@ -111,13 +109,19 @@ class Case:
     # A diagnostic fragment from the Python test, not an entire error spelling.
     compile_error: str | None = None
     run_error: str | None = None
+    scaling: dict[str, float] | None = None
 
     def payload(self) -> dict:
         """Pack unnormalized C-order planes in descriptor order."""
         return {
             "text": self.text,
             "images": [
-                {"name": name, "shape": image.shape, "dtype": image.dtype.name}
+                {
+                    "name": name,
+                    "shape": image.shape,
+                    "dtype": image.dtype.name,
+                    "scaling": (self.scaling or {}).get(name),
+                }
                 for name, image in self.images.items()
             ],
             "pixels": [
@@ -186,6 +190,17 @@ def _radial_groups() -> list[Case]:
     return cases
 
 
+def _overlay_case() -> Case:
+    """Use the raw typed backgrounds and label planes from CellProfiler."""
+    name = "overlay_outlines/overlay"
+    oracle = json.loads(_read(FIXTURES / f"{name}.json"))
+    inputs = {
+        key: np.asarray(plane["values"], dtype=plane["dtype"]).reshape(plane["shape"])
+        for key, plane in (oracle["images"] | oracle["labels"]).items()
+    }
+    return _fixture(name, inputs)
+
+
 def _fixture_cases() -> list[Case]:
     cases = [_fixture(name, {"DNA": _primary_image(name)}) for name in PRIMARY_CASES]
     for case in REGRESSIONS:
@@ -194,6 +209,13 @@ def _fixture_cases() -> list[Case]:
         cases.append(
             _fixture(name, {k: np.asarray(v) for k, v in fixture["images"].items()})
         )
+    for method in ("propagation", "watershed_image"):
+        name = f"secondary_border_discard/{method}"
+        fixture = json.loads(_read(FIXTURES / f"{name}.json"))
+        images = {
+            k: np.asarray(v, dtype=np.float32) for k, v in fixture["images"].items()
+        }
+        cases.append(_fixture(name, images))
     cases.extend(_compartments())
     cases.extend(
         (
@@ -219,8 +241,31 @@ def _fixture_cases() -> list[Case]:
         _fixture(name, tertiary_images)
         for name in (EXPORT, "export_to_database/select_objects_never_overwrite")
     )
+    cases.append(_overlay_case())
+    cases.extend(_quality_cases())
     _guard_inventory(FIXTURES, {case.name for case in cases})
     return cases
+
+
+def _quality_cases() -> list[Case]:
+    path = FIXTURES / "image_quality/quality_flag"
+    return [
+        Case(
+            "image_quality/quality_flag",
+            _read(path.with_suffix(".cppipe")),
+            {"DNA": np.load(path.with_suffix(".kept.npy"))},
+            scaling={"DNA": 4095},
+        ),
+        *(
+            Case(
+                f"image_quality/flag_{mode}",
+                _read(path.with_name(f"flag_{mode}.cppipe")),
+                {},
+                run_error="FlagImage.*Slope",
+            )
+            for mode in ("any", "all")
+        ),
+    ]
 
 
 def _shape_cases() -> list[Case]:
@@ -372,6 +417,13 @@ def _rejected_settings(cases: dict[str, Case]) -> list[Case]:
             "Method to determine neighbors:Adjacent",
             "Method to determine neighbors:Within",
             "distance method",
+        ),
+        (
+            "secondary_border_discard/propagation",
+            "discard_associated_primary_objects",
+            "Discard the associated primary objects?:No",
+            "Discard the associated primary objects?:Yes",
+            "Discard the associated primary objects",
         ),
         (
             "intensity_distribution/shrink",
@@ -632,6 +684,15 @@ def _cases() -> list[Case]:
         raise ValueError(msg)
     lookup = {case.name: case for case in cases}
     cases.extend(_integration_cases(lookup))
+    cases.append(
+        replace(
+            lookup["image_quality/quality_flag"],
+            name="variant/quality_flag_skips",
+            images={
+                "DNA": np.load(FIXTURES / "image_quality/quality_flag.skipped.npy")
+            },
+        )
+    )
     cases.extend(_raw_tertiary_cases(lookup))
     cases.extend(_dtype_cases(lookup["otsu_simple"]))
     cases.extend(_revision_cases(lookup))
@@ -676,15 +737,6 @@ def _expected_error(outcome: object, pattern: str, path: str) -> None:
     raise ValueError(msg)
 
 
-def _derived_images(pipeline: Pipeline, inputs: dict[str, np.ndarray]) -> dict:
-    """Read prepared planes separately from the stable Python run tuple."""
-    return {
-        name: {"shape": plane.shape, "values": plane}
-        for name, plane in pipeline.prepare_images(inputs).items()
-        if plane is not inputs.get(name)
-    }
-
-
 def _python_result(case: Case, directory: Path) -> dict:
     source = directory / "source.cppipe"
     source.write_text(case.text, encoding="utf-8")
@@ -701,7 +753,7 @@ def _python_result(case: Case, directory: Path) -> dict:
         raise ValueError(msg)
     plan = _json_value(asdict(pipeline))
     try:
-        primary, derived, measured = pipeline.run(case.images)
+        result = pipeline.run_detailed(case.images, scaling=case.scaling)
     except CppipeError as error:
         if case.run_error is None:
             raise
@@ -713,17 +765,16 @@ def _python_result(case: Case, directory: Path) -> dict:
         raise ValueError(msg)
     return {
         "plan": plan,
-        "result": _serialize_run(case, pipeline, primary, derived, measured),
+        "result": _serialize_run(case, pipeline, result),
     }
 
 
 def _serialize_run(
     case: Case,
     pipeline: Pipeline,
-    primary: dict[str, SegmentationResult],
-    derived: dict[str, SecondaryObjectsResult | TertiaryObjectsResult],
-    measured: MeasurementResult | None,
+    run: PipelineRunResult,
 ) -> object:
+    primary, derived, measured = run.primary, run.secondary, run.measurements
     secondary = {}
     tertiary = {}
     shapes = {name: result.labels.shape for name, result in primary.items()}
@@ -732,7 +783,7 @@ def _serialize_run(
             asdict(result)
         )
         shapes[name] = result.labels.shape
-    for step in pipeline.tertiary_steps:
+    for step in () if run.skipped else pipeline.tertiary_steps:
         for name in (step.primary_object, step.secondary_object):
             if name in case.images and name not in shapes:
                 shapes[name] = case.images[name].shape
@@ -752,7 +803,11 @@ def _serialize_run(
             "tertiary": tertiary,
             "measurements": measurements,
             "object_shapes": shapes,
-            "derived_images": _derived_images(pipeline, case.images),
+            "derived_images": {
+                name: {"shape": plane.shape, "values": plane}
+                for name, plane in run.derived_images.items()
+            },
+            "skipped": run.skipped,
         }
     )
 

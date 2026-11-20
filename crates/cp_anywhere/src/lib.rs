@@ -11,8 +11,10 @@ pub mod batch;
 pub mod colocalization;
 pub mod granularity;
 pub mod illumination;
+pub mod image_quality;
 pub mod intensity_distribution;
 mod neighbors_distance;
+pub mod outline_overlay;
 #[cfg(feature = "pipeline")]
 pub mod pipeline;
 pub mod segmentation;

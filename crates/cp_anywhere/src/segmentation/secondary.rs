@@ -4,12 +4,8 @@
 //!
 //! # Declared scope (this increment)
 //!
-//! `Propagation` (the module's own default method) and `Distance - N`
-//! are implemented and oracle-verified end to end. `Distance - B`,
-//! `Watershed - Gradient`, and `Watershed - Image` are tracked as
-//! explicit, not-yet-implemented gaps (see `spec/segmentation-modules.md`)
-//! -- callers get a clear error naming the method, never a silent
-//! fallback to a different one.
+//! Supports `Propagation`, `Distance - N`, and `Watershed - Image`.
+//! Does not produce a new primary object set when discarding secondary objects.
 
 use super::declump::{neighbor, MaximaSuppression, Smoothing, UnclumpMethod, WatershedMethod};
 use super::{
@@ -30,10 +26,7 @@ pub enum SecondaryMethod {
     WatershedImage,
 }
 
-/// Mirrors the subset of `IdentifySecondaryObjects` settings this
-/// module implements -- see `spec/segmentation-modules.md` for the
-/// settings this does *not* yet cover (`Distance - B`,
-/// `Watershed - Gradient`, `Watershed - Image`, `wants_discard_edge`).
+/// Mirrors the supported subset of `IdentifySecondaryObjects` settings.
 #[derive(Clone, Copy, Debug)]
 pub struct SecondaryObjectsConfig {
     pub method: SecondaryMethod,
@@ -43,6 +36,8 @@ pub struct SecondaryObjectsConfig {
     pub distance_to_dilate: f64,
     /// `IdentifySecondaryObjects.fill_holes`.
     pub fill_holes: bool,
+    /// Discard secondary objects at the image or mask border and renumber survivors.
+    pub discard_edge: bool,
     /// The secondary image's own threshold settings (`Propagation`
     /// only -- `Distance - N` never thresholds anything). Reuses
     /// `IdentifyPrimaryObjectsConfig`'s threshold-only fields; the
@@ -79,7 +74,8 @@ pub struct SecondaryObjectsResult {
 /// After growth, each secondary ID maps to the maximum final primary
 /// ID overlapping it (`scipy.ndimage.maximum`); zero-overlap objects
 /// are removed. Filtering is not based on membership of the seed ID
-/// in the final primary set.
+/// in the final primary set. Optional border filtering runs after this
+/// mapping and does not change the diagnostic labels or primary objects.
 #[allow(clippy::too_many_arguments)]
 pub fn identify_secondary_objects(
     image: &[f64],
@@ -102,17 +98,12 @@ pub fn identify_secondary_objects(
     if n == 0 {
         return Err("image must be nonempty".into());
     }
+    if image_mask.is_some_and(|mask| mask.len() != n) {
+        return Err("mask must match rows * cols".into());
+    }
     // CP starts with unedited labels, retains every edge-touching label,
     // and removes other seed pixels where final primary segmentation is 0.
-    let mut edge_ids = BTreeSet::new();
-    for row in 0..rows {
-        edge_ids.insert(primary_labels_in[row * cols]);
-        edge_ids.insert(primary_labels_in[row * cols + cols - 1]);
-    }
-    for col in 0..cols {
-        edge_ids.insert(primary_labels_in[col]);
-        edge_ids.insert(primary_labels_in[(rows - 1) * cols + col]);
-    }
+    let edge_ids = image_edge_ids(primary_labels_in, rows, cols);
     let seeds: Vec<u32> = primary_labels_in
         .iter()
         .zip(primary_kept_labels)
@@ -222,11 +213,75 @@ pub fn identify_secondary_objects(
     for id in &mut labels_out {
         *id = lookup.get(id).copied().unwrap_or(0);
     }
+    if config.discard_edge {
+        discard_edge_objects(&mut labels_out, primary_kept_labels, image_mask, rows, cols);
+    }
     Ok(SecondaryObjectsResult {
         labels: labels_out,
         small_removed_labels,
         threshold,
     })
+}
+
+fn image_edge_ids(labels: &[u32], rows: usize, cols: usize) -> BTreeSet<u32> {
+    labels[..cols]
+        .iter()
+        .chain(&labels[(rows - 1) * cols..])
+        .copied()
+        .chain(
+            labels
+                .chunks_exact(cols)
+                .flat_map(|row| [row[0], row[cols - 1]]),
+        )
+        .collect()
+}
+
+fn discard_edge_objects(
+    labels: &mut [u32],
+    primary: &[u32],
+    mask: Option<&[bool]>,
+    rows: usize,
+    cols: usize,
+) {
+    let edge_ids = if let Some(mask) = mask {
+        // CP uses mask minus its four-connected erosion, with False outside the image.
+        (0..labels.len())
+            .filter(|&i| {
+                let (row, col) = (i / cols, i % cols);
+                mask[i]
+                    && (row == 0
+                        || col == 0
+                        || row + 1 == rows
+                        || col + 1 == cols
+                        || !mask[i - cols]
+                        || !mask[i + cols]
+                        || !mask[i - 1]
+                        || !mask[i + 1])
+            })
+            .map(|i| labels[i])
+            .collect()
+    } else {
+        image_edge_ids(labels, rows, cols)
+    };
+
+    // CP ranks primary IDs whose pixels overlap any surviving secondary label.
+    // It uses that lookup for the final secondary plane even when no new primary
+    // set is requested. The input primary plane retains its original IDs.
+    let surviving_primary: BTreeSet<_> = labels
+        .iter()
+        .zip(primary)
+        .filter_map(|(&cell, &seed)| {
+            (cell != 0 && seed != 0 && !edge_ids.contains(&cell)).then_some(seed)
+        })
+        .collect();
+    let new_ids: BTreeMap<_, _> = surviving_primary.into_iter().zip(1..).collect();
+    for id in labels {
+        *id = if edge_ids.contains(id) {
+            0
+        } else {
+            new_ids.get(id).copied().unwrap_or(0)
+        };
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -687,6 +742,7 @@ mod tests {
             regularization_factor: 0.05,
             distance_to_dilate: 0.0,
             fill_holes: true,
+            discard_edge: false,
             threshold_method: ThresholdMethod::OtsuTwoClass,
             threshold_correction_factor: 1.0,
             threshold_range: (0.0, 1.0),
@@ -715,6 +771,7 @@ mod tests {
             regularization_factor: 0.0,
             distance_to_dilate: 1.5,
             fill_holes: false,
+            discard_edge: false,
             threshold_method: ThresholdMethod::OtsuTwoClass,
             threshold_correction_factor: 1.0,
             threshold_range: (0.0, 1.0),
