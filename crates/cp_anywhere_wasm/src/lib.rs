@@ -24,12 +24,6 @@ use serde::Deserialize;
 use serde_json::{Map, Value};
 use wasm_bindgen::prelude::*;
 
-/// Diagnostic replay: same labels and circle routine as production measurement.
-#[wasm_bindgen(js_name = diagnosticCircleTrace)]
-pub fn diagnostic_circle_trace(labels: Vec<u32>, cols: usize) -> String {
-    cp_anywhere::size_shape_moments::diagnostic_circle_trace(&labels, cols).join("\n")
-}
-
 #[derive(Deserialize)]
 struct WasmInput {
     shape: Vec<usize>,
