@@ -366,6 +366,7 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -379,9 +380,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageMathStep.addend">addend (src.cp_anywhere.cppipe.ImageMathStep attribute)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.IntensityDistributionStep.additional_bin_groups">additional_bin_groups (src.cp_anywhere.cppipe.IntensityDistributionStep attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="python-api.html#src.cp_anywhere.cppipe.IntensityDistributionStep.additional_bin_groups">additional_bin_groups (src.cp_anywhere.cppipe.IntensityDistributionStep attribute)</a>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageFlag.all">all (src.cp_anywhere.cppipe.ImageFlag attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageQualityStep.all_loaded">all_loaded (src.cp_anywhere.cppipe.ImageQualityStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep.automatic_object_width">automatic_object_width (src.cp_anywhere.cppipe.IlluminationCalculateStep attribute)</a>
 </li>
@@ -403,6 +408,8 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep.block_size">block_size (src.cp_anywhere.cppipe.IlluminationCalculateStep attribute)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.QualityGroup.blur_scales">blur_scales (src.cp_anywhere.cppipe.QualityGroup attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -415,10 +422,10 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.colocalization_steps">colocalization_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep">ColocalizationStep (class in src.cp_anywhere.cppipe)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SecondaryObjectsStep.config">config (src.cp_anywhere.cppipe.SecondaryObjectsStep attribute)</a>
 
       <ul>
@@ -427,22 +434,26 @@
       </ul></li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.CppipeError">CppipeError</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageFlag.criteria">criteria (src.cp_anywhere.cppipe.ImageFlag attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult.derived_images">derived_images (src.cp_anywhere.cppipe.PipelineRunResult attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineModuleCheck.detail">detail (src.cp_anywhere.cppipe.PipelineModuleCheck attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep.dilate_objects">dilate_objects (src.cp_anywhere.cppipe.IlluminationCalculateStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationApplyImage.divide_or_subtract">divide_or_subtract (src.cp_anywhere.cppipe.IlluminationApplyImage attribute)</a>
 </li>
-      <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep.do_corr_and_slope">do_corr_and_slope (src.cp_anywhere.cppipe.ColocalizationStep attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep.do_corr_and_slope">do_corr_and_slope (src.cp_anywhere.cppipe.ColocalizationStep attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep.do_costes">do_costes (src.cp_anywhere.cppipe.ColocalizationStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep.do_manders">do_manders (src.cp_anywhere.cppipe.ColocalizationStep attribute)</a>
@@ -463,6 +474,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagImageStep.evaluate">evaluate() (src.cp_anywhere.cppipe.FlagImageStep method)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.export_steps">export_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ExportToDatabaseStep">ExportToDatabaseStep (class in src.cp_anywhere.cppipe)</a>
@@ -477,13 +490,21 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ColocalizationStep.fast_costes">fast_costes (src.cp_anywhere.cppipe.ColocalizationStep attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.api.MeasurementResult.features">features (src.cp_anywhere.api.MeasurementResult attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep.file_format">file_format (src.cp_anywhere.cppipe.SaveImagesStep attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep.file_name">file_name (src.cp_anywhere.cppipe.SaveImagesStep attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.flag_image_steps">flag_image_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagCriterion">FlagCriterion (class in src.cp_anywhere.cppipe)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagImageStep">FlagImageStep (class in src.cp_anywhere.cppipe)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagImageStep.flags">flags (src.cp_anywhere.cppipe.FlagImageStep attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -495,11 +516,13 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.granularity_steps">granularity_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.GranularityStep">GranularityStep (class in src.cp_anywhere.cppipe)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.TextureStep.gray_levels">gray_levels (src.cp_anywhere.cppipe.TextureStep attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageQualityStep.groups">groups (src.cp_anywhere.cppipe.ImageQualityStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.segment.SegmentationResult.guide_threshold">guide_threshold (src.cp_anywhere.segment.SegmentationResult attribute)</a>
 </li>
@@ -535,11 +558,17 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep.image_name">image_name (src.cp_anywhere.cppipe.SaveImagesStep attribute)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.image_quality_steps">image_quality_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.GranularityStep.image_sample_size">image_sample_size (src.cp_anywhere.cppipe.GranularityStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.image_step_order">image_step_order (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageFlag">ImageFlag (class in src.cp_anywhere.cppipe)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageMathStep">ImageMathStep (class in src.cp_anywhere.cppipe)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageQualityStep">ImageQualityStep (class in src.cp_anywhere.cppipe)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -554,10 +583,14 @@
 </li>
         <li><a href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep.images">(src.cp_anywhere.cppipe.MeasurementStep attribute)</a>
 </li>
+        <li><a href="python-api.html#src.cp_anywhere.cppipe.QualityGroup.images">(src.cp_anywhere.cppipe.QualityGroup attribute)</a>
+</li>
         <li><a href="python-api.html#src.cp_anywhere.cppipe.TextureStep.images">(src.cp_anywhere.cppipe.TextureStep attribute)</a>
 </li>
       </ul></li>
       <li><a href="python-api.html#src.cp_anywhere.batch.ImageSetResult">ImageSetResult (class in src.cp_anywhere.batch)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.QualityGroup.include_scaling">include_scaling (src.cp_anywhere.cppipe.QualityGroup attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageMathStep.input_factor">input_factor (src.cp_anywhere.cppipe.ImageMathStep attribute)</a>
 </li>
@@ -607,6 +640,8 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagCriterion.maximum">maximum (src.cp_anywhere.cppipe.FlagCriterion attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IntensityDistributionStep.maximum_radius">maximum_radius (src.cp_anywhere.cppipe.IntensityDistributionStep attribute)</a>
 
       <ul>
@@ -617,14 +652,20 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.io.measure_files">measure_files() (in module src.cp_anywhere.io)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagCriterion.measurement">measurement (src.cp_anywhere.cppipe.FlagCriterion attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.measurement_steps">measurement_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.api.MeasurementResult">MeasurementResult (class in src.cp_anywhere.api)</a>
 </li>
-      <li><a href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep">MeasurementStep (class in src.cp_anywhere.cppipe)</a>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult.measurements">measurements (src.cp_anywhere.cppipe.PipelineRunResult attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep">MeasurementStep (class in src.cp_anywhere.cppipe)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.FlagCriterion.minimum">minimum (src.cp_anywhere.cppipe.FlagCriterion attribute)</a>
+</li>
       <li>
     module
 
@@ -650,8 +691,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineModuleCheck.name">name (src.cp_anywhere.cppipe.PipelineModuleCheck attribute)</a>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageFlag.name">name (src.cp_anywhere.cppipe.ImageFlag attribute)</a>
+
+      <ul>
+        <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineModuleCheck.name">(src.cp_anywhere.cppipe.PipelineModuleCheck attribute)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.MeasurementStep.neighbors_distance">neighbors_distance (src.cp_anywhere.cppipe.MeasurementStep attribute)</a>
@@ -706,6 +751,8 @@
         <li><a href="python-api.html#src.cp_anywhere.cppipe.TertiaryObjectsStep.output_object">(src.cp_anywhere.cppipe.TertiaryObjectsStep attribute)</a>
 </li>
       </ul></li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.overlay_outlines_steps">overlay_outlines_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep.overwrite">overwrite (src.cp_anywhere.cppipe.SaveImagesStep attribute)</a>
 </li>
   </ul></td>
@@ -718,6 +765,8 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineModuleCheck">PipelineModuleCheck (class in src.cp_anywhere.cppipe)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult">PipelineRunResult (class in src.cp_anywhere.cppipe)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineModuleCheck.position">position (src.cp_anywhere.cppipe.PipelineModuleCheck attribute)</a>
 </li>
   </ul></td>
@@ -726,12 +775,22 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.preview.preview_segmentation">preview_segmentation() (in module src.cp_anywhere.preview)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult.primary">primary (src.cp_anywhere.cppipe.PipelineRunResult attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SecondaryObjectsStep.primary_object">primary_object (src.cp_anywhere.cppipe.SecondaryObjectsStep attribute)</a>
 
       <ul>
         <li><a href="python-api.html#src.cp_anywhere.cppipe.TertiaryObjectsStep.primary_object">(src.cp_anywhere.cppipe.TertiaryObjectsStep attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.QualityGroup">QualityGroup (class in src.cp_anywhere.cppipe)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -743,6 +802,8 @@
       <li><a href="python-api.html#src.cp_anywhere.api.read_parquet_feature_names">read_parquet_feature_names() (in module src.cp_anywhere.api)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.api.MeasurementResult.relationships">relationships (src.cp_anywhere.api.MeasurementResult attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.render_overlays">render_overlays() (src.cp_anywhere.cppipe.Pipeline method)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageMathStep.replace_nan">replace_nan (src.cp_anywhere.cppipe.ImageMathStep attribute)</a>
 </li>
@@ -756,17 +817,23 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.batch.run_batch">run_batch() (in module src.cp_anywhere.batch)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.run_detailed">run_detailed() (src.cp_anywhere.cppipe.Pipeline method)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.QualityGroup.saturation">saturation (src.cp_anywhere.cppipe.QualityGroup attribute)</a>
+</li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.save_images_steps">save_images_steps (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.SaveImagesStep">SaveImagesStep (class in src.cp_anywhere.cppipe)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.TextureStep.scales">scales (src.cp_anywhere.cppipe.TextureStep attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult.secondary">secondary (src.cp_anywhere.cppipe.PipelineRunResult attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.TertiaryObjectsStep.secondary_object">secondary_object (src.cp_anywhere.cppipe.TertiaryObjectsStep attribute)</a>
 </li>
@@ -790,6 +857,12 @@
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep.size_of_smoothing_filter">size_of_smoothing_filter (src.cp_anywhere.cppipe.IlluminationCalculateStep attribute)</a>
 </li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.ImageFlag.skip">skip (src.cp_anywhere.cppipe.ImageFlag attribute)</a>
+</li>
+      <li><a href="python-api.html#src.cp_anywhere.cppipe.PipelineRunResult.skipped">skipped (src.cp_anywhere.cppipe.PipelineRunResult attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.Pipeline.skipped_modules">skipped_modules (src.cp_anywhere.cppipe.Pipeline attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.segment.SecondaryObjectsResult.small_removed_labels">small_removed_labels (src.cp_anywhere.segment.SecondaryObjectsResult attribute)</a>
@@ -798,8 +871,6 @@
         <li><a href="python-api.html#src.cp_anywhere.segment.SegmentationResult.small_removed_labels">(src.cp_anywhere.segment.SegmentationResult attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.IlluminationCalculateStep.smoothing_method">smoothing_method (src.cp_anywhere.cppipe.IlluminationCalculateStep attribute)</a>
 </li>
       <li><a href="python-api.html#src.cp_anywhere.cppipe.ExportToDatabaseStep.sqlite_file">sqlite_file (src.cp_anywhere.cppipe.ExportToDatabaseStep attribute)</a>

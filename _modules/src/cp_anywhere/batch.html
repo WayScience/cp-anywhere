@@ -417,16 +417,18 @@
     <span class="n">image_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">primary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">]</span>
     <span class="n">derived</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SecondaryObjectsResult</span> <span class="o">|</span> <span class="n">TertiaryObjectsResult</span><span class="p">]</span>
-    <span class="n">measurements</span><span class="p">:</span> <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span></div>
+    <span class="n">measurements</span><span class="p">:</span> <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">skipped</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_image_set</span><span class="p">(</span>
     <span class="n">pipeline</span><span class="p">:</span> <span class="n">Pipeline</span><span class="p">,</span> <span class="n">image_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sources</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImageSetResult</span><span class="p">:</span>
-    <span class="n">primary</span><span class="p">,</span> <span class="n">derived</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run_detailed</span><span class="p">(</span>
         <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">load_array</span><span class="p">(</span><span class="n">source</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">source</span> <span class="ow">in</span> <span class="n">sources</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
     <span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">measurements</span>
     <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Pipeline.run identifies the field as &quot;Image&quot; in both the feature</span>
         <span class="c1"># table and its relationship endpoints. Rename them together.</span>
@@ -438,7 +440,9 @@
                     <span class="n">updated</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_id</span>
             <span class="n">relationships</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">updated</span><span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">,</span> <span class="n">relationships</span><span class="o">=</span><span class="n">relationships</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ImageSetResult</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">primary</span><span class="p">,</span> <span class="n">derived</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ImageSetResult</span><span class="p">(</span>
+        <span class="n">image_id</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">skipped</span>
+    <span class="p">)</span>
 
 
 <span class="nd">@contextmanager</span>

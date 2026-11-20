@@ -790,6 +790,7 @@
     <span class="n">regularization_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="n">distance_to_dilate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
     <span class="n">fill_holes</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">discard_edge</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SecondaryObjectsResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Grow a secondary object (e.g. ``&quot;Cells&quot;``) around each primary</span>
 <span class="sd">    object (e.g. ``&quot;Nuclei&quot;``), matching CellProfiler 4.2.8&#39;s</span>
@@ -832,6 +833,9 @@
 
 <span class="sd">    ``fill_holes`` uses CellProfiler&#39;s labeled-hole graph, but changes</span>
 <span class="sd">    only background pixels. Existing nested foreground labels survive.</span>
+<span class="sd">    If ``discard_edge`` is true, remove secondary objects touching the</span>
+<span class="sd">    image border (or the four-connected mask border) and renumber survivors.</span>
+<span class="sd">    The primary labels do not change.</span>
 <span class="sd">    ``small_removed_labels`` retains the grown labels before filtering,</span>
 <span class="sd">    in the original seed numbering, for downstream neighbor measurements.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -904,6 +908,7 @@
         <span class="n">regularization_factor</span><span class="o">=</span><span class="n">regularization_factor</span><span class="p">,</span>
         <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">distance_to_dilate</span><span class="p">,</span>
         <span class="n">fill_holes</span><span class="o">=</span><span class="n">fill_holes</span><span class="p">,</span>
+        <span class="n">discard_edge</span><span class="o">=</span><span class="n">discard_edge</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">SecondaryObjectsResult</span><span class="p">(</span>
         <span class="n">labels</span><span class="o">=</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span>

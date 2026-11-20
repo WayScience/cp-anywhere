@@ -418,13 +418,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">isfinite</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MAX_NEIGHBOR_DISTANCE</span><span class="p">,</span> <span class="n">MeasurementResult</span><span class="p">,</span> <span class="n">measure</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.colocalization</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_colocalization</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.granularity</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_granularity</span>
@@ -432,6 +433,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.intensity_distribution</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_measure_intensity_distribution</span><span class="p">,</span>
     <span class="n">_ZernikeOption</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.outline_overlay</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">REVISION</span> <span class="k">as</span> <span class="n">_OVERLAY_REVISION</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.outline_overlay</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">OverlayStep</span><span class="p">,</span>
+    <span class="n">translate_overlay</span><span class="p">,</span>
+    <span class="n">validate_overlay_order</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.save_images</span><span class="w"> </span><span class="kn">import</span> <span class="n">BIT_DEPTH_8</span><span class="p">,</span> <span class="n">save_array</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.segment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -1391,11 +1400,12 @@
         <span class="s2">&quot;explicit, not-yet-implemented gap (&#39;Watershed - Gradient&#39; and &quot;</span>
         <span class="s2">&quot;&#39;Distance - B&#39; are not yet supported)&quot;</span><span class="p">,</span>
     <span class="p">)</span>
+    <span class="n">discard_edge</span> <span class="o">=</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;wants_discard_edge&quot;</span><span class="p">]]</span>
+    <span class="n">discard_primary</span> <span class="o">=</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;wants_discard_primary&quot;</span><span class="p">]]</span>
     <span class="n">_require</span><span class="p">(</span>
-        <span class="ow">not</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;wants_discard_edge&quot;</span><span class="p">]],</span>
-        <span class="s2">&quot;IdentifySecondaryObjects with &#39;Discard secondary objects &quot;</span>
-        <span class="s2">&quot;touching the border of the image?&#39; = Yes is an explicit, &quot;</span>
-        <span class="s2">&quot;not-yet-implemented gap&quot;</span><span class="p">,</span>
+        <span class="ow">not</span> <span class="p">(</span><span class="n">discard_edge</span> <span class="ow">and</span> <span class="n">discard_primary</span><span class="p">),</span>
+        <span class="s2">&quot;IdentifySecondaryObjects does not support &quot;</span>
+        <span class="s2">&quot;&#39;Discard the associated primary objects?&#39; = Yes when discarding edge objects&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">_SECONDARY_METHOD</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]]</span>
 
@@ -1403,6 +1413,8 @@
         <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="p">,</span>
         <span class="s2">&quot;fill_holes&quot;</span><span class="p">:</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;fill_holes&quot;</span><span class="p">]],</span>
     <span class="p">}</span>
+    <span class="k">if</span> <span class="n">discard_edge</span><span class="p">:</span>
+        <span class="n">config</span><span class="p">[</span><span class="s2">&quot;discard_edge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;distance_n&quot;</span><span class="p">:</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_translate_threshold_tail</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;propagation&quot;</span><span class="p">:</span>
@@ -2040,7 +2052,269 @@
     <span class="p">)</span>
 
 
+<div class="viewcode-block" id="FlagCriterion">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.FlagCriterion">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlagCriterion</span><span class="p">:</span>
+    <span class="n">measurement</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">minimum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">maximum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ImageFlag">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.ImageFlag">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageFlag</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="nb">all</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">skip</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">criteria</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FlagCriterion</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="FlagImageStep">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.FlagImageStep">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlagImageStep</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thresholds on whole-image measurements, in saved flag order.&quot;&quot;&quot;</span>
+
+    <span class="n">flags</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ImageFlag</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+<div class="viewcode-block" id="FlagImageStep.evaluate">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.FlagImageStep.evaluate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">evaluate</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">measurements</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return named flags (0/1) and whether the field must be skipped.&quot;&quot;&quot;</span>
+        <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">skip</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">flag</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flags</span><span class="p">:</span>
+            <span class="n">outside</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">criterion</span> <span class="ow">in</span> <span class="n">flag</span><span class="o">.</span><span class="n">criteria</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">criterion</span><span class="o">.</span><span class="n">measurement</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">measurements</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;FlagImage needs a prior image measurement </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">outside</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">criterion</span><span class="o">.</span><span class="n">minimum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="n">criterion</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">criterion</span><span class="o">.</span><span class="n">maximum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">criterion</span><span class="o">.</span><span class="n">maximum</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="n">failed</span> <span class="o">=</span> <span class="nb">all</span><span class="p">(</span><span class="n">outside</span><span class="p">)</span> <span class="k">if</span> <span class="n">flag</span><span class="o">.</span><span class="n">all</span> <span class="k">else</span> <span class="nb">any</span><span class="p">(</span><span class="n">outside</span><span class="p">)</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">flag</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">failed</span><span class="p">)</span>
+            <span class="n">skip</span> <span class="o">|=</span> <span class="n">failed</span> <span class="ow">and</span> <span class="n">flag</span><span class="o">.</span><span class="n">skip</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">skip</span></div>
+</div>
+
+
+
+<span class="n">_FLAG_IMAGE_REVISION</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">_FLAG_FIELDS</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">_FLAG_CRITERION_FIELDS</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">_QC_MIN_HEADER_FIELDS</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_QUALITY_REVISION</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">_QUALITY_MAX_COUNT</span> <span class="o">=</span> <span class="mh">0xFFFF_FFFF</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_flag_bound</span><span class="p">(</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span><span class="n">enabled</span> <span class="ow">in</span> <span class="n">_YES_NO</span><span class="p">,</span> <span class="s2">&quot;FlagImage requires Yes/No threshold switches&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">enabled</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span><span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">),</span> <span class="s2">&quot;FlagImage threshold must be finite&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_flag_image</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FlagImageStep</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_FLAG_IMAGE_REVISION</span><span class="p">,</span>
+        <span class="s2">&quot;FlagImage requires revision 5&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_QC_MIN_HEADER_FIELDS</span><span class="p">,</span>
+        <span class="s2">&quot;FlagImage is missing the flag count or last-cycle setting&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span> <span class="s2">&quot;FlagImage requires &#39;Ignore flag skips on last cycle?&#39; = No&quot;</span>
+    <span class="p">)</span>
+    <span class="n">flag_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">_require</span><span class="p">(</span><span class="n">flag_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;FlagImage needs a positive flag count&quot;</span><span class="p">)</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">flags</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">flag_count</span><span class="p">):</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="n">_FLAG_FIELDS</span>
+        <span class="n">_require</span><span class="p">(</span><span class="n">end</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;FlagImage has an incomplete flag group&quot;</span><span class="p">)</span>
+        <span class="n">count</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">combination</span><span class="p">,</span> <span class="n">skip</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">position</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="nb">bool</span><span class="p">(</span><span class="n">category</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span>
+            <span class="s2">&quot;FlagImage category and name must not be empty&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">combination</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Flag if all fail&quot;</span><span class="p">,</span> <span class="s2">&quot;Flag if any fail&quot;</span><span class="p">),</span>
+            <span class="sa">f</span><span class="s2">&quot;FlagImage has unsupported combination </span><span class="si">{</span><span class="n">combination</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_require</span><span class="p">(</span><span class="n">skip</span> <span class="ow">in</span> <span class="n">_YES_NO</span><span class="p">,</span> <span class="s2">&quot;FlagImage requires a Yes/No skip switch&quot;</span><span class="p">)</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="n">criteria_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="n">_require</span><span class="p">(</span><span class="n">criteria_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;FlagImage needs a positive measurement count&quot;</span><span class="p">)</span>
+        <span class="n">criteria</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">criteria_count</span><span class="p">):</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="n">_FLAG_CRITERION_FIELDS</span>
+            <span class="n">_require</span><span class="p">(</span><span class="n">end</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;FlagImage has an incomplete measurement group&quot;</span><span class="p">)</span>
+            <span class="n">source</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">measurement</span><span class="p">,</span> <span class="n">has_min</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">has_max</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span>
+                <span class="n">position</span><span class="p">:</span><span class="n">end</span>
+            <span class="p">]</span>
+            <span class="n">_require</span><span class="p">(</span>
+                <span class="n">source</span> <span class="o">==</span> <span class="s2">&quot;Whole-image measurement&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;FlagImage has unsupported flag source </span><span class="si">{</span><span class="n">source</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_require</span><span class="p">(</span>
+                <span class="nb">bool</span><span class="p">(</span><span class="n">measurement</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">and</span> <span class="n">measurement</span> <span class="o">!=</span> <span class="s2">&quot;None&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;FlagImage requires a named measurement&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">criteria</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">FlagCriterion</span><span class="p">(</span>
+                    <span class="n">measurement</span><span class="p">,</span>
+                    <span class="n">_flag_bound</span><span class="p">(</span><span class="n">has_min</span><span class="p">,</span> <span class="n">minimum</span><span class="p">),</span>
+                    <span class="n">_flag_bound</span><span class="p">(</span><span class="n">has_max</span><span class="p">,</span> <span class="n">maximum</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">ImageFlag</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">category</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">combination</span> <span class="o">==</span> <span class="s2">&quot;Flag if all fail&quot;</span><span class="p">,</span>
+                <span class="n">_YES_NO</span><span class="p">[</span><span class="n">skip</span><span class="p">],</span>
+                <span class="nb">tuple</span><span class="p">(</span><span class="n">criteria</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">position</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;FlagImage has unexpected settings after the flag groups&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">FlagImageStep</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">flags</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="QualityGroup">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.QualityGroup">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">QualityGroup</span><span class="p">:</span>
+    <span class="n">images</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">blur_scales</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">saturation</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">include_scaling</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<div class="viewcode-block" id="ImageQualityStep">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.ImageQualityStep">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ImageQualityStep</span><span class="p">:</span>
+    <span class="n">all_loaded</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">groups</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">QualityGroup</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quality_count</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">_QUALITY_MAX_COUNT</span><span class="p">,</span>
+        <span class="s2">&quot;MeasureImageQuality requires positive 32-bit counts and scales&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">count</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quality_group</span><span class="p">(</span>
+    <span class="n">values</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">scale_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">all_loaded</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QualityGroup</span><span class="p">:</span>
+    <span class="n">names</span><span class="p">,</span> <span class="n">scaling</span><span class="p">,</span> <span class="n">blur</span><span class="p">,</span> <span class="o">*</span><span class="n">tail</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="n">images</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">()</span>
+        <span class="k">if</span> <span class="n">all_loaded</span>
+        <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+    <span class="p">)</span>
+    <span class="n">saturation</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">tail</span><span class="p">[</span><span class="n">scale_count</span><span class="p">:]</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">all_loaded</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="n">images</span><span class="p">),</span>
+        <span class="s2">&quot;MeasureImageQuality Select... requires named images&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">all</span><span class="p">(</span>
+            <span class="n">value</span> <span class="ow">in</span> <span class="n">_YES_NO</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="n">scaling</span><span class="p">,</span> <span class="n">blur</span><span class="p">,</span> <span class="n">saturation</span><span class="p">,</span> <span class="n">intensity</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;MeasureImageQuality requires Yes/No switches&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">intensity</span> <span class="o">==</span> <span class="n">threshold</span> <span class="o">==</span> <span class="s2">&quot;No&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;MeasureImageQuality intensity and threshold metrics are not supported&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_quality_count</span><span class="p">,</span> <span class="n">tail</span><span class="p">[:</span><span class="n">scale_count</span><span class="p">]))</span> <span class="k">if</span> <span class="n">blur</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span> <span class="k">else</span> <span class="p">()</span>
+    <span class="k">return</span> <span class="n">QualityGroup</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">scales</span><span class="p">,</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">saturation</span><span class="p">],</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">scaling</span><span class="p">])</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_image_quality</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ImageQualityStep</span><span class="p">:</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">settings</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_QUALITY_REVISION</span><span class="p">,</span>
+        <span class="s2">&quot;MeasureImageQuality requires revision 6&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">_QC_MIN_HEADER_FIELDS</span><span class="p">,</span>
+        <span class="s2">&quot;MeasureImageQuality is missing image group count&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">choice</span><span class="p">,</span> <span class="n">count_text</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">values</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">choice</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;All loaded images&quot;</span><span class="p">,</span> <span class="s2">&quot;Select...&quot;</span><span class="p">),</span>
+        <span class="sa">f</span><span class="s2">&quot;MeasureImageQuality unsupported image choice </span><span class="si">{</span><span class="n">choice</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">all_loaded</span> <span class="o">=</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;All loaded images&quot;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">_quality_count</span><span class="p">(</span><span class="n">count_text</span><span class="p">)</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">position</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="s2">&quot;MeasureImageQuality has incomplete image group counts&quot;</span>
+    <span class="p">)</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="ow">not</span> <span class="n">all_loaded</span> <span class="ow">or</span> <span class="n">count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">&quot;MeasureImageQuality All loaded images requires one image group&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">scales</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">_quality_count</span><span class="p">,</span> <span class="n">values</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">position</span> <span class="o">+</span> <span class="mi">7</span> <span class="o">+</span> <span class="n">scales</span> <span class="o">+</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">thresholds</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">end</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+            <span class="s2">&quot;MeasureImageQuality has an incomplete image quality group&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_quality_group</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">position</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">scales</span><span class="p">,</span> <span class="n">all_loaded</span><span class="p">))</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">end</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">position</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">),</span>
+        <span class="s2">&quot;MeasureImageQuality has unexpected settings after the image quality groups&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ImageQualityStep</span><span class="p">(</span><span class="n">all_loaded</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">groups</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_translate_overlay_outlines</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="n">_RawModule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OverlayStep</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span> <span class="o">==</span> <span class="n">_OVERLAY_REVISION</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;OverlayOutlines: variable_revision_number=</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">variable_revision_number</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;is not supported (only </span><span class="si">{</span><span class="n">_OVERLAY_REVISION</span><span class="si">}</span><span class="s2"> is)&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">translate_overlay</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">settings</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OverlayOutlines: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+
+
 <span class="n">_TRANSLATORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;OverlayOutlines&quot;</span><span class="p">:</span> <span class="n">_translate_overlay_outlines</span><span class="p">,</span>
+    <span class="s2">&quot;MeasureImageQuality&quot;</span><span class="p">:</span> <span class="n">_translate_image_quality</span><span class="p">,</span>
+    <span class="s2">&quot;FlagImage&quot;</span><span class="p">:</span> <span class="n">_translate_flag_image</span><span class="p">,</span>
     <span class="s2">&quot;ImageMath&quot;</span><span class="p">:</span> <span class="n">_translate_image_math</span><span class="p">,</span>
     <span class="s2">&quot;IdentifyPrimaryObjects&quot;</span><span class="p">:</span> <span class="n">_translate_identify_primary_objects</span><span class="p">,</span>
     <span class="s2">&quot;MeasureObjectSizeShape&quot;</span><span class="p">:</span> <span class="n">_translate_measure_object_size_shape</span><span class="p">,</span>
@@ -2115,15 +2389,34 @@
     <span class="p">)</span>
     <span class="n">illumination_apply_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">IlluminationApplyStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">save_images_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">SaveImagesStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">overlay_outlines_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">OverlayStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">skipped_modules</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">image_math_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ImageMathStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">image_step_order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">flag_image_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlagImageStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">image_quality_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ImageQualityStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Pipeline.prepare_images">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.prepare_images">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return inputs and prepared planes without modifying the caller&#39;s arrays.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_with_quality</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="p">{})[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_with_quality</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">scaling</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">images</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">isfinite</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">scaling</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+                <span class="s2">&quot;image scaling must name a supplied image and be finite and positive&quot;</span>
+            <span class="p">)</span>
         <span class="n">all_images</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">quality</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_quality_steps</span><span class="p">)</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flag_image_steps</span><span class="p">)</span>
         <span class="n">groups</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;CorrectIlluminationCalculate&quot;</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">illumination_calculate_steps</span><span class="p">),</span>
             <span class="s2">&quot;CorrectIlluminationApply&quot;</span><span class="p">:</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">illumination_apply_steps</span><span class="p">),</span>
@@ -2133,16 +2426,63 @@
             <span class="p">[</span><span class="s2">&quot;CorrectIlluminationCalculate&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">illumination_calculate_steps</span><span class="p">)</span>
             <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;CorrectIlluminationApply&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">illumination_apply_steps</span><span class="p">)</span>
             <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;ImageMath&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_math_steps</span><span class="p">)</span>
+            <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;MeasureImageQuality&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_quality_steps</span><span class="p">)</span>
+            <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;FlagImage&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flag_image_steps</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
-            <span class="n">_prepare_image</span><span class="p">(</span><span class="n">all_images</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="n">module</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">all_images</span></div>
+            <span class="k">if</span> <span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;MeasureImageQuality&quot;</span><span class="p">:</span>
+                <span class="n">columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="n">_quality_columns</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">quality</span><span class="p">),</span> <span class="n">images</span><span class="p">,</span> <span class="n">all_images</span><span class="p">,</span> <span class="n">scaling</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">module</span> <span class="o">==</span> <span class="s2">&quot;FlagImage&quot;</span><span class="p">:</span>
+                <span class="n">values</span><span class="p">,</span> <span class="n">skip</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+                <span class="n">columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">skip</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">all_images</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_prepare_image</span><span class="p">(</span><span class="n">all_images</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="n">groups</span><span class="p">[</span><span class="n">module</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">all_images</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Pipeline.render_overlays">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.render_overlays">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">render_overlays</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">all_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">labels</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add overlay outputs to the working image dictionary, in file order.</span>
+
+<span class="sd">        An overlay can use an earlier overlay as its background. Named label</span>
+<span class="sd">        planes can also be supplied in the image dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlay_outlines_steps</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">source</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">None</span> <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">input_image</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">all_images</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">input_image</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OverlayOutlines needs image </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">input_image</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">outlines</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">name</span><span class="p">:</span> <span class="n">labels</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">else</span> <span class="n">all_images</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">objects_name</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">outlines</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OverlayOutlines needs object set </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">all_images</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">output_image</span><span class="p">]</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                    <span class="kc">None</span> <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_cp_converted_pixels</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
+                    <span class="n">outlines</span><span class="p">,</span>
+                    <span class="n">float64</span><span class="o">=</span><span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;OverlayOutlines: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span></div>
 
 
-    <span class="c1"># Keep the execution stages together so label provenance remains visible.</span>
 <div class="viewcode-block" id="Pipeline.run">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.run">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>  <span class="c1"># noqa: C901, PLR0912, PLR0915</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">],</span>
@@ -2150,8 +2490,49 @@
         <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare images, identify primary/secondary/tertiary objects, and measure.&quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_detailed</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">measurements</span></div>
+
+
+<div class="viewcode-block" id="Pipeline.run_detailed">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.run_detailed">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run_detailed</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">scaling</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelineRunResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a field and return derived images, QC measurements and skip status.&quot;&quot;&quot;</span>
+        <span class="n">all_images</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">skipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_with_quality</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">scaling</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">measured</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">skipped</span><span class="p">:</span>
+            <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">measured</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_prepared</span><span class="p">(</span><span class="n">all_images</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">measured</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">measured</span> <span class="o">=</span> <span class="n">MeasurementResult</span><span class="p">(</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">[])</span>
+            <span class="n">measured</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PipelineRunResult</span><span class="p">(</span>
+            <span class="n">primary</span><span class="p">,</span>
+            <span class="n">secondary</span><span class="p">,</span>
+            <span class="n">measured</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="n">name</span><span class="p">:</span> <span class="n">plane</span>
+                <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">all_images</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">images</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="p">},</span>
+            <span class="n">skipped</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># Keep the execution stages together so label provenance remains visible.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_prepared</span><span class="p">(</span>  <span class="c1"># noqa: C901, PLR0912, PLR0915</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">all_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">],</span>
+        <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SecondaryObjectsResult</span> <span class="o">|</span> <span class="n">TertiaryObjectsResult</span><span class="p">],</span>
+        <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">]:</span>
         <span class="n">segmentations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">all_images</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prepare_images</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
         <span class="c1"># Real CellProfiler&#39;s ImageSet holds every image converted by</span>
         <span class="c1"># Image(convert=True): integer pixels rescaled to [0, 1] float32,</span>
         <span class="c1"># float pixels downcast to float32 (see cellprofiler_core&#39;s</span>
@@ -2235,6 +2616,7 @@
             <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture_steps</span>
             <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">colocalization_steps</span>
         <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">render_overlays</span><span class="p">(</span><span class="n">all_images</span><span class="p">,</span> <span class="n">all_object_labels</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">segmentations</span><span class="p">,</span> <span class="n">secondary_results</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="n">families</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
@@ -2612,9 +2994,54 @@
                 <span class="n">image_features</span> <span class="o">=</span> <span class="n">measured</span><span class="o">.</span><span class="n">features</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="p">{})</span>
                 <span class="k">for</span> <span class="n">column</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">colocalization_result</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">image_features</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">render_overlays</span><span class="p">(</span><span class="n">all_images</span><span class="p">,</span> <span class="n">all_object_labels</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">segmentations</span><span class="p">,</span> <span class="n">secondary_results</span><span class="p">,</span> <span class="n">measured</span></div>
-</div>
 
+
+
+<div class="viewcode-block" id="PipelineRunResult">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.PipelineRunResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PipelineRunResult</span><span class="p">:</span>
+    <span class="n">primary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">]</span>
+    <span class="n">secondary</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SecondaryObjectsResult</span> <span class="o">|</span> <span class="n">TertiaryObjectsResult</span><span class="p">]</span>
+    <span class="n">measurements</span><span class="p">:</span> <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">derived_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+    <span class="n">skipped</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quality_columns</span><span class="p">(</span>
+    <span class="n">step</span><span class="p">:</span> <span class="n">ImageQualityStep</span><span class="p">,</span>
+    <span class="n">loaded</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">scaling</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">groups</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">loaded</span><span class="p">)</span> <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">all_loaded</span> <span class="k">else</span> <span class="n">group</span><span class="o">.</span><span class="n">images</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;MeasureImageQuality needs image </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, not provided to run()&quot;</span>
+                <span class="p">)</span>
+            <span class="n">plane</span> <span class="o">=</span> <span class="n">images</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">columns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="n">_native</span><span class="o">.</span><span class="n">measure_image_quality</span><span class="p">(</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                            <span class="n">_cp_converted_pixels</span><span class="p">(</span><span class="n">plane</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                        <span class="p">),</span>
+                        <span class="n">name</span><span class="p">,</span>
+                        <span class="nb">list</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">blur_scales</span><span class="p">),</span>
+                        <span class="n">group</span><span class="o">.</span><span class="n">saturation</span><span class="p">,</span>
+                        <span class="n">group</span><span class="o">.</span><span class="n">include_scaling</span><span class="p">,</span>
+                        <span class="n">scaling</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">plane</span> <span class="ow">is</span> <span class="n">loaded</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                        <span class="n">plane</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;b&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MeasureImageQuality: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+    <span class="k">return</span> <span class="n">columns</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_image</span><span class="p">(</span>
@@ -2689,7 +3116,10 @@
         <span class="o">|</span> <span class="n">IlluminationCalculateStep</span>
         <span class="o">|</span> <span class="n">IlluminationApplyStep</span>
         <span class="o">|</span> <span class="n">ImageMathStep</span>
+        <span class="o">|</span> <span class="n">OverlayStep</span>
         <span class="o">|</span> <span class="n">SaveImagesStep</span>
+        <span class="o">|</span> <span class="n">FlagImageStep</span>
+        <span class="o">|</span> <span class="n">ImageQualityStep</span>
         <span class="o">|</span> <span class="n">MeasurementStep</span>
     <span class="p">),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2702,7 +3132,10 @@
             <span class="n">IlluminationCalculateStep</span><span class="p">,</span>
             <span class="n">IlluminationApplyStep</span><span class="p">,</span>
             <span class="n">ImageMathStep</span><span class="p">,</span>
+            <span class="n">OverlayStep</span><span class="p">,</span>
             <span class="n">SaveImagesStep</span><span class="p">,</span>
+            <span class="n">FlagImageStep</span><span class="p">,</span>
+            <span class="n">ImageQualityStep</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">):</span>
         <span class="n">_append_output_step</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
@@ -2731,7 +3164,10 @@
     <span class="n">step</span><span class="p">:</span> <span class="n">IlluminationCalculateStep</span>
     <span class="o">|</span> <span class="n">IlluminationApplyStep</span>
     <span class="o">|</span> <span class="n">ImageMathStep</span>
-    <span class="o">|</span> <span class="n">SaveImagesStep</span><span class="p">,</span>
+    <span class="o">|</span> <span class="n">OverlayStep</span>
+    <span class="o">|</span> <span class="n">SaveImagesStep</span>
+    <span class="o">|</span> <span class="n">FlagImageStep</span>
+    <span class="o">|</span> <span class="n">ImageQualityStep</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``CorrectIlluminationCalculate``/``CorrectIlluminationApply``/</span>
 <span class="sd">    ``SaveImages`` half of :func:`_append_step`&#39;s dispatch, split out to</span>
@@ -2746,6 +3182,14 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">ImageMathStep</span><span class="p">):</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">image_math_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">image_step_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ImageMath&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">OverlayStep</span><span class="p">):</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">overlay_outlines_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">FlagImageStep</span><span class="p">):</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">flag_image_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">image_step_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;FlagImage&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">ImageQualityStep</span><span class="p">):</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">image_quality_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">pipeline</span><span class="o">.</span><span class="n">image_step_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;MeasureImageQuality&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pipeline</span><span class="o">.</span><span class="n">save_images_steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
 
@@ -2858,12 +3302,39 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span>
     <span class="n">pipeline</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">()</span>
+    <span class="n">translated</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">analysis_started</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">_parse_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
         <span class="n">translator</span> <span class="o">=</span> <span class="n">_TRANSLATORS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">translator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">raw</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
             <span class="n">pipeline</span><span class="o">.</span><span class="n">skipped_modules</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">continue</span>
-        <span class="n">_append_step</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">translator</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">translator</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">FlagImageStep</span><span class="p">)</span> <span class="ow">and</span> <span class="n">analysis_started</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+                <span class="s2">&quot;FlagImage must precede segmentation, overlays, and measurements&quot;</span>
+            <span class="p">)</span>
+        <span class="n">analysis_started</span> <span class="o">|=</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">step</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">SegmentationStep</span><span class="p">,</span>
+                <span class="n">SecondaryObjectsStep</span><span class="p">,</span>
+                <span class="n">TertiaryObjectsStep</span><span class="p">,</span>
+                <span class="n">MeasurementStep</span><span class="p">,</span>
+                <span class="n">GranularityStep</span><span class="p">,</span>
+                <span class="n">IntensityDistributionStep</span><span class="p">,</span>
+                <span class="n">TextureStep</span><span class="p">,</span>
+                <span class="n">ColocalizationStep</span><span class="p">,</span>
+                <span class="n">OverlayStep</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">translated</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
+        <span class="n">_append_step</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">overlay_outlines_steps</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">validate_overlay_order</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">step</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">translated</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">))</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
     <span class="k">return</span> <span class="n">pipeline</span></div>
 
 </pre></div>
