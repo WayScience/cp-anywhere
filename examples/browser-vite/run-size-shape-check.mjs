@@ -39,10 +39,11 @@ try {
     const wasm = await import("/crates/cp_anywhere_wasm/pkg/cp_anywhere.js");
     await wasm.default();
     return cases.map((input) => {
+      const [scope] = Object.keys(input.objects);
       const json = JSON.parse(wasm.measureJson(JSON.stringify(input)));
       const typed = JSON.parse(wasm.measureWithOptions(
         new Uint32Array(input.shape), ["DNA"], new Float64Array(input.images.DNA),
-        ["Cells"], new Uint32Array(input.objects.Cells), undefined,
+        [scope], new Uint32Array(input.objects[scope]), undefined,
         input.image_id, input.families, [], [], [], new Uint32Array(),
         input.size_shape_calculate_zernikes, input.size_shape_calculate_advanced,
       ));

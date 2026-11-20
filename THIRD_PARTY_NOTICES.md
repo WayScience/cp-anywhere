@@ -1,7 +1,7 @@
 # Third-party notices
 
-The project uses BSD-3-Clause; see `LICENSE`.
-Third-party notices do not change their respective licenses.
+Original project code uses BSD-3-Clause; see `LICENSE`.
+Third-party code retains its own license.
 
 ## Repository template
 
@@ -28,6 +28,14 @@ Copyright 2005–2022 NumPy Developers.
 License: BSD-3-Clause; full notice in `licenses/numpy.txt`.
 The native core translates NumPy's index quicksort ordering to match the pinned
 SciPy maximum-position behavior for tied image intensities.
+
+## SLEEF
+
+SLEEF 3.9.0 source, revision `906ca7512ee483296780a81a21b9ca715d40dfe1`.
+Copyright Naoki Shibata and contributors 2010–2025.
+The Zernike circle solver uses a Rust port of the scalar `acos_u35` path.
+The port retains the full Boost Software License 1.0 notice and source file
+references in `crates/cp_anywhere/src/sleef_acos.rs`.
 
 Dependency notices remain in their package distributions and lockfiles.
 Fixture-specific source and redistribution terms are recorded alongside fixture provenance.

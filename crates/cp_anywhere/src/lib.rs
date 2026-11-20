@@ -18,6 +18,7 @@ pub mod pipeline;
 pub mod segmentation;
 pub mod size_shape;
 pub mod size_shape_moments;
+mod sleef_acos;
 pub mod texture;
 
 /// Optional MeasureObjectSizeShape settings. Selecting this module is explicit

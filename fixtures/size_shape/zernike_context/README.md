@@ -2,9 +2,17 @@
 
 ## Current status
 
-Native now coordinates circle iterations across all labels and uses NumPy 1.23.5's global angle sort. The strict check passes all 90 target scores at the original `rtol=1e-10`, `atol=1e-10`. A fresh 14-case BBBC007 run against independently executed CP 4.2.8 passes with zero mismatches, including identical-input measurements. Report: `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-global-fixed-20261119/report.json`. Neither oracle nor tolerances changed.
+The solver coordinates circle iterations across all labels and uses NumPy 1.23.5's global angle sort.
+Platform `acos` can round the same input differently, which changes the sort order and the selected vertex.
+The circle solver uses the pinned SLEEF scalar `acos_u35` port to avoid that platform difference.
+See `THIRD_PARTY_NOTICES.md` for the source revision and license.
 
-Browser WASM passes 32 existing size/shape fixture cases but fails an additional full-field check for Nuclei object 6: 30 Zernike values on each of its two entry points. Report: `~/.hermes/cache/scratch/cp-anywhere-production-pilot/zernike-full-field-wasm-20261119.json`. Native parity does not establish WASM full-field parity.
+The strict native check passes all 90 target scores on macOS arm64 and Linux x86-64.
+`scripts/parity/compare_wasm_size_shape.py` checks the same 90 scores through each of two Chromium WASM entry points.
+An additional replay of all 101 objects per label plane matched 12,120 scores across those entry points.
+An independent CP 4.2.8 replay matched all 14 BBBC007 cases on macOS (308,591 feature values, zero mismatches).
+The label planes, oracle scores, and tolerances (`rtol=1e-10`, `atol=1e-10`) did not change.
+These results describe the tested fields, not all possible pipelines.
 
 ## Historical diagnosis (before the native fix)
 

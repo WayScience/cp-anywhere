@@ -465,16 +465,14 @@ fn enclosing_circles(hulls: BTreeMap<u32, Vec<Point>>) -> BTreeMap<u32, (Point, 
                 if state.ranks[vertex] < 2 {
                     continue;
                 }
-                let at_b = (((a.row - b.row) * (v.row - b.row)
+                let cosine_at_b = ((a.row - b.row) * (v.row - b.row)
                     + (a.col - b.col) * (v.col - b.col))
-                    / (ab2 * distance_squared(v, b)).sqrt())
-                .acos()
-                .abs();
-                let at_a = (((b.row - a.row) * (v.row - a.row)
+                    / (ab2 * distance_squared(v, b)).sqrt();
+                let cosine_at_a = ((b.row - a.row) * (v.row - a.row)
                     + (b.col - a.col) * (v.col - a.col))
-                    / (ab2 * distance_squared(v, a)).sqrt())
-                .acos()
-                .abs();
+                    / (ab2 * distance_squared(v, a)).sqrt();
+                let at_b = crate::sleef_acos::acos(cosine_at_b).abs();
+                let at_a = crate::sleef_acos::acos(cosine_at_a).abs();
                 candidates.push(CircleCandidate {
                     object,
                     vertex,
