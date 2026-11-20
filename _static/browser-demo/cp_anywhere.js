@@ -269,28 +269,6 @@ export function compile_cppipe(text) {
 }
 
 /**
- * Diagnostic replay: same labels and circle routine as production measurement.
- * @param {Uint32Array | number[]} labels
- * @param {number} cols
- * @returns {string}
- */
-export function diagnosticCircleTrace(labels, cols) {
-    let deferred3_0;
-    let deferred3_1;
-    try {
-        const val2 = +cols;
-        const ptr0 = passArray32ToWasm0(labels, wasm.__wbindgen_malloc);
-        const len0 = WASM_VECTOR_LEN;
-        const ret = wasm.diagnosticCircleTrace(ptr0, len0, val2);
-        deferred3_0 = ret[0];
-        deferred3_1 = ret[1];
-        return getStringFromWasm0(ret[0], ret[1]);
-    } finally {
-        wasm.__wbindgen_free(deferred3_0, deferred3_1, 1);
-    }
-}
-
-/**
  * Segment typed-array pixel input using the real, oracle-verified
  * CellProfiler-compatible `identify_primary_objects` pipeline -- the
  * identical Rust core the Python binding (`cp_anywhere_python`) calls,
