@@ -630,8 +630,9 @@ export function measureWithOptions(shape, image_names, images, object_names, obj
 
 /**
  * Run original `.cppipe` text over named, decoded row-major planes.
- * `images_json` describes each plane's name, shape, and original dtype;
- * `pixels` contains all planes concatenated in that same order.
+ * `images_json` describes the name, shape, dtype, and optional role of each plane.
+ * Use `image` (default), `objects` (retained), or `object_diagnostics` (small-removed).
+ * Only images accept scaling. `pixels` concatenates the planes in descriptor order.
  * @param {string} text
  * @param {string} images_json
  * @param {Float64Array | number[]} pixels

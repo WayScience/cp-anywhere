@@ -418,7 +418,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">replace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">isfinite</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
@@ -426,7 +426,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">_MAX_NEIGHBOR_DISTANCE</span><span class="p">,</span> <span class="n">MeasurementResult</span><span class="p">,</span> <span class="n">measure</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_MAX_NEIGHBOR_DISTANCE</span><span class="p">,</span>
+    <span class="n">MeasurementResult</span><span class="p">,</span>
+    <span class="n">_label_array</span><span class="p">,</span>
+    <span class="n">measure</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.colocalization</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_colocalization</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.granularity</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_granularity</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.illumination</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_illumination</span><span class="p">,</span> <span class="n">calculate_illumination</span>
@@ -452,7 +457,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.texture</span><span class="w"> </span><span class="kn">import</span> <span class="n">measure_texture</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
 
     <span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere.segment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -2396,6 +2401,10 @@
     <span class="n">flag_image_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FlagImageStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
     <span class="n">image_quality_steps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ImageQualityStep</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Keep file-order validation metadata out of the public plan schema.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_object_order_error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+
 <div class="viewcode-block" id="Pipeline.prepare_images">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.prepare_images">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">prepare_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -2483,14 +2492,20 @@
 <div class="viewcode-block" id="Pipeline.run">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.Pipeline.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">object_diagnostics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">],</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SecondaryObjectsResult</span> <span class="o">|</span> <span class="n">TertiaryObjectsResult</span><span class="p">],</span>
         <span class="n">MeasurementResult</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Prepare images, identify primary/secondary/tertiary objects, and measure.&quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_detailed</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">run_detailed</span><span class="p">(</span>
+            <span class="n">images</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span><span class="n">objects</span><span class="p">,</span> <span class="n">object_diagnostics</span><span class="o">=</span><span class="n">object_diagnostics</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">primary</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">secondary</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">measurements</span></div>
 
 
@@ -2501,12 +2516,22 @@
         <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">scaling</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">object_diagnostics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PipelineRunResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run a field and return derived images, QC measurements and skip status.&quot;&quot;&quot;</span>
+        <span class="n">supplied</span><span class="p">,</span> <span class="n">diagnostics</span> <span class="o">=</span> <span class="n">_validate_external_objects</span><span class="p">(</span>
+            <span class="n">objects</span> <span class="ow">or</span> <span class="p">{},</span> <span class="n">object_diagnostics</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="p">)</span>
         <span class="n">all_images</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">skipped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_with_quality</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">scaling</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">measured</span> <span class="o">=</span> <span class="p">{},</span> <span class="p">{},</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skipped</span><span class="p">:</span>
-            <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">measured</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_prepared</span><span class="p">(</span><span class="n">all_images</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_order_error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_object_order_error</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_object_dependencies</span><span class="p">(</span><span class="n">all_images</span><span class="p">,</span> <span class="n">supplied</span><span class="p">,</span> <span class="n">diagnostics</span><span class="p">)</span>
+            <span class="n">primary</span><span class="p">,</span> <span class="n">secondary</span><span class="p">,</span> <span class="n">measured</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_prepared</span><span class="p">(</span>
+                <span class="n">all_images</span><span class="p">,</span> <span class="n">supplied</span><span class="p">,</span> <span class="n">diagnostics</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">measured</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">measured</span> <span class="o">=</span> <span class="n">MeasurementResult</span><span class="p">(</span><span class="s2">&quot;Image&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">[])</span>
@@ -2524,9 +2549,83 @@
         <span class="p">)</span></div>
 
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_object_dependencies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">diagnostics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">producers</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">segmentation_steps</span><span class="p">,</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">secondary_steps</span><span class="p">,</span>
+            <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">tertiary_steps</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">producers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">output_object</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Object set </span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="si">!r}</span><span class="s2"> is already produced &quot;</span>
+                    <span class="s2">&quot;by the pipeline&quot;</span>
+                <span class="p">)</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">objects</span><span class="p">)</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">diagnostics</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">segmentation_steps</span><span class="p">:</span>
+            <span class="n">available</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+            <span class="n">full</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_steps</span><span class="p">:</span>
+            <span class="n">_require</span><span class="p">(</span>
+                <span class="n">step</span><span class="o">.</span><span class="n">primary_object</span> <span class="ow">in</span> <span class="n">available</span><span class="p">,</span>
+                <span class="n">_missing_objects</span><span class="p">(</span><span class="s2">&quot;IdentifySecondaryObjects&quot;</span><span class="p">,</span> <span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_steps</span><span class="p">:</span>
+            <span class="n">available</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+            <span class="n">full</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tertiary_steps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">,</span> <span class="n">step</span><span class="o">.</span><span class="n">secondary_object</span><span class="p">):</span>
+                <span class="n">_require</span><span class="p">(</span>
+                    <span class="n">name</span> <span class="ow">in</span> <span class="n">available</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">images</span><span class="p">,</span>
+                    <span class="n">_missing_objects</span><span class="p">(</span><span class="s2">&quot;IdentifyTertiaryObjects&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="c1"># Tertiary execution retains each legacy label plane it reads.</span>
+                <span class="n">available</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">available</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+            <span class="n">full</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_measurement_dependencies</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">available</span><span class="p">,</span> <span class="n">full</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_measurement_dependencies</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">available</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">full</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;MeasureGranularity&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">granularity_steps</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;MeasureObjectIntensityDistribution&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">intensity_distribution_steps</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;MeasureTexture&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">texture_steps</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;MeasureColocalization&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">colocalization_steps</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">measurement_steps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+                <span class="n">_require</span><span class="p">(</span>
+                    <span class="n">name</span> <span class="ow">in</span> <span class="n">available</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">images</span><span class="p">,</span>
+                    <span class="n">_missing_objects</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">module_name</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">wants_excluded_objects</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">_missing_diagnostics</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">module_name</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">module</span><span class="p">,</span> <span class="n">steps</span> <span class="ow">in</span> <span class="n">groups</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
+                    <span class="n">_require</span><span class="p">(</span><span class="n">name</span> <span class="ow">in</span> <span class="n">available</span><span class="p">,</span> <span class="n">_missing_objects</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">overlay</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">overlay_outlines_steps</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">overlay</span><span class="o">.</span><span class="n">outlines</span><span class="p">:</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">group</span><span class="o">.</span><span class="n">objects_name</span>
+                <span class="n">_require</span><span class="p">(</span>
+                    <span class="n">name</span> <span class="ow">in</span> <span class="n">available</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">images</span><span class="p">,</span>
+                    <span class="n">_missing_objects</span><span class="p">(</span><span class="s2">&quot;OverlayOutlines&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span>
+                <span class="p">)</span>
+
     <span class="c1"># Keep the execution stages together so label provenance remains visible.</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_prepared</span><span class="p">(</span>  <span class="c1"># noqa: C901, PLR0912, PLR0915</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">all_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">all_images</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">supplied</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">diagnostics</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationResult</span><span class="p">],</span>
         <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SecondaryObjectsResult</span> <span class="o">|</span> <span class="n">TertiaryObjectsResult</span><span class="p">],</span>
@@ -2569,25 +2668,19 @@
                     <span class="s2">&quot;not provided to run()&quot;</span>
                 <span class="p">)</span>
                 <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">primary_object</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">segmentations</span><span class="p">:</span>
-                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;IdentifySecondaryObjects needs primary object set &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="si">!r}</span><span class="s2">, not produced by a translated &quot;</span>
-                    <span class="s2">&quot;IdentifyPrimaryObjects step in this same pipeline&quot;</span>
-                <span class="p">)</span>
-                <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="n">primary</span> <span class="o">=</span> <span class="n">segmentations</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">]</span>
+            <span class="n">primary</span> <span class="o">=</span> <span class="n">segmentations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">)</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">identify_secondary_objects</span><span class="p">(</span>
                 <span class="n">all_images</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">input_image</span><span class="p">],</span>
-                <span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
-                <span class="n">primary_labels_in</span><span class="o">=</span><span class="n">primary</span><span class="o">.</span><span class="n">unedited_labels</span><span class="p">,</span>
+                <span class="n">supplied</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">]</span> <span class="k">if</span> <span class="n">primary</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+                <span class="n">primary_labels_in</span><span class="o">=</span><span class="kc">None</span> <span class="k">if</span> <span class="n">primary</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">primary</span><span class="o">.</span><span class="n">unedited_labels</span><span class="p">,</span>
                 <span class="o">**</span><span class="n">step</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
             <span class="p">)</span>
             <span class="n">secondary_results</span><span class="p">[</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
 
-        <span class="n">all_object_labels</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">name</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">labels</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">segmentations</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span>
+        <span class="n">all_object_labels</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">supplied</span><span class="p">)</span>
+        <span class="n">all_object_labels</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">labels</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">segmentations</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="p">)</span>
         <span class="n">all_object_labels</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
             <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">labels</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">secondary_results</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="p">)</span>
@@ -2649,12 +2742,10 @@
                         <span class="s2">&quot;IdentifySecondaryObjects step or provided to run()&quot;</span>
                     <span class="p">)</span>
                     <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">measure_images</span><span class="p">:</span>
-            <span class="c1"># A pipeline with only MeasureObjectNeighbors has no image</span>
-            <span class="c1"># inputs; measure() still requires at least one named image.</span>
-            <span class="n">measure_images</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">name</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">measurement_images</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_unused&quot;</span><span class="p">,)</span>
-            <span class="p">}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">measure_images</span> <span class="ow">and</span> <span class="n">measure_objects</span><span class="p">:</span>
+            <span class="c1"># Geometry-only measurements need a shape, not intensity pixels.</span>
+            <span class="n">labels</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">measure_objects</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="n">measure_images</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_unused&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">)}</span>
         <span class="n">measured</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">measure</span><span class="p">(</span><span class="n">measure_images</span><span class="p">,</span> <span class="n">measure_objects</span><span class="p">,</span> <span class="n">families</span><span class="o">=</span><span class="n">families</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">families</span>
@@ -2671,7 +2762,7 @@
             <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">family</span> <span class="o">!=</span> <span class="s2">&quot;neighbors&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span><span class="p">:</span>
-                <span class="n">diagnostic</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">diagnostic</span> <span class="o">=</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">segmentations</span><span class="p">:</span>
                     <span class="n">diagnostic</span> <span class="o">=</span> <span class="n">segmentations</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">small_removed_labels</span>
                 <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">secondary_results</span><span class="p">:</span>
@@ -2696,10 +2787,7 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">diagnostic</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">if</span> <span class="n">step</span><span class="o">.</span><span class="n">wants_excluded_objects</span> <span class="ow">and</span> <span class="n">diagnostic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;MeasureObjectNeighbors on </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> with excluded &quot;</span>
-                        <span class="s2">&quot;objects requires a translated segmentation result&quot;</span>
-                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="n">_missing_diagnostics</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">module_name</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="n">measure</span><span class="p">(</span>
                     <span class="n">measure_images</span><span class="p">,</span>
                     <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">kept</span><span class="p">},</span>
@@ -3011,6 +3099,53 @@
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_missing_objects</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> needs object set </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; supply its labels in objects &quot;</span>
+        <span class="s2">&quot;or enable a supported producer&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_missing_diagnostics</span><span class="p">(</span><span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> requires its small-removed plane in object_diagnostics&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_external_labels</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">_require</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;object names must not be empty&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Object set </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> requires a nonempty 2D or 3D label plane&quot;</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_label_array</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Object set </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_validate_external_objects</span><span class="p">(</span>
+    <span class="n">objects</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">diagnostics</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="n">orphaned</span> <span class="o">:=</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">objects</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">CppipeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;object_diagnostics requires supplied objects for </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">orphaned</span><span class="p">)</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">_external_labels</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">plane</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">objects</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">_external_labels</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">plane</span><span class="p">,</span> <span class="n">objects</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">plane</span> <span class="ow">in</span> <span class="n">diagnostics</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_quality_columns</span><span class="p">(</span>
     <span class="n">step</span><span class="p">:</span> <span class="n">ImageQualityStep</span><span class="p">,</span>
     <span class="n">loaded</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
@@ -3214,6 +3349,7 @@
         <span class="s2">&quot;caller_managed&quot;</span><span class="p">,</span>
         <span class="s2">&quot;unsupported_module&quot;</span><span class="p">,</span>
         <span class="s2">&quot;unsupported_settings&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;missing_dependency&quot;</span><span class="p">,</span>
         <span class="s2">&quot;supported&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
@@ -3256,11 +3392,110 @@
 
 <div class="viewcode-block" id="inspect_pipeline">
 <a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.cppipe.inspect_pipeline">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">inspect_pipeline</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PipelineModuleCheck</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Report each module&#39;s compatibility without reading image files or running it.&quot;&quot;&quot;</span>
-    <span class="n">raw_modules</span> <span class="o">=</span> <span class="n">_parse_text</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_inspect_module</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">raw</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw_modules</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span></div>
+<span class="k">def</span><span class="w"> </span><span class="nf">inspect_pipeline</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">available_objects</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="n">available_object_diagnostics</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">PipelineModuleCheck</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Report module compatibility and required object sets without executing.</span>
 
+<span class="sd">    Declare external object names in ``available_objects`` and names with</span>
+<span class="sd">    small-removed planes in ``available_object_diagnostics``. Pass ``None``</span>
+<span class="sd">    for ``available_objects`` to check settings only.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_modules</span> <span class="o">=</span> <span class="n">_parse_text</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">))</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="p">[</span><span class="n">_inspect_module</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">raw</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw_modules</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="n">available_objects</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">external</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">available_objects</span><span class="p">)</span>
+        <span class="n">available</span> <span class="o">=</span> <span class="n">external</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">non_seeds</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">available_object_diagnostics</span><span class="p">)</span>
+        <span class="n">_require</span><span class="p">(</span>
+            <span class="n">full</span> <span class="o">&lt;=</span> <span class="n">available</span><span class="p">,</span>
+            <span class="s2">&quot;available_object_diagnostics requires matching available_objects&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="n">raw_modules</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="s2">&quot;supported&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">_TRANSLATORS</span><span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">](</span><span class="n">raw</span><span class="p">)</span>
+            <span class="n">detail</span> <span class="o">=</span> <span class="n">_inspect_object_dependency</span><span class="p">(</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">available</span><span class="p">,</span> <span class="n">full</span><span class="p">,</span> <span class="n">non_seeds</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">detail</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">SegmentationStep</span><span class="p">,</span> <span class="n">SecondaryObjectsStep</span><span class="p">,</span> <span class="n">TertiaryObjectsStep</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">step</span><span class="o">.</span><span class="n">output_object</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">external</span><span class="p">:</span>
+                    <span class="n">detail</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Object set </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> is already produced by </span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">available</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">full</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SegmentationStep</span><span class="p">):</span>
+                        <span class="n">non_seeds</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">non_seeds</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">detail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">entries</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;missing_dependency&quot;</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="n">detail</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">entries</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_object_references</span><span class="p">(</span><span class="n">step</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SecondaryObjectsStep</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">TertiaryObjectsStep</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">primary_object</span><span class="p">,</span> <span class="n">step</span><span class="o">.</span><span class="n">secondary_object</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">step</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">MeasurementStep</span><span class="p">,</span>
+            <span class="n">GranularityStep</span><span class="p">,</span>
+            <span class="n">IntensityDistributionStep</span><span class="p">,</span>
+            <span class="n">TextureStep</span><span class="p">,</span>
+            <span class="n">ColocalizationStep</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">step</span><span class="o">.</span><span class="n">objects</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">OverlayStep</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">group</span><span class="o">.</span><span class="n">objects_name</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">step</span><span class="o">.</span><span class="n">outlines</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_inspect_object_dependency</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="n">available</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">full</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">non_seeds</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_object_references</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">available</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_missing_objects</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">SecondaryObjectsStep</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">non_seeds</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> needs primary or caller-supplied seeds, not </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">MeasurementStep</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">step</span><span class="o">.</span><span class="n">wants_excluded_objects</span>
+            <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">_missing_diagnostics</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_forward_object_reference</span><span class="p">(</span><span class="n">translated</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">translated</span><span class="p">)</span>
+    <span class="n">positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">SegmentationStep</span><span class="p">,</span> <span class="n">SecondaryObjectsStep</span><span class="p">,</span> <span class="n">TertiaryObjectsStep</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="n">positions</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">step</span><span class="o">.</span><span class="n">output_object</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">position</span><span class="p">,</span> <span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_object_references</span><span class="p">(</span><span class="n">step</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">positions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">position</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> needs object set </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">, which is produced later&quot;</span>
+    <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_radial_groups</span><span class="p">(</span>
@@ -3330,6 +3565,7 @@
         <span class="p">)</span>
         <span class="n">translated</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">raw</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">step</span><span class="p">))</span>
         <span class="n">_append_step</span><span class="p">(</span><span class="n">pipeline</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">pipeline</span><span class="o">.</span><span class="n">_object_order_error</span> <span class="o">=</span> <span class="n">_forward_object_reference</span><span class="p">(</span><span class="n">translated</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">overlay_outlines_steps</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">validate_overlay_order</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="n">asdict</span><span class="p">(</span><span class="n">step</span><span class="p">))</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">step</span> <span class="ow">in</span> <span class="n">translated</span><span class="p">])</span>
