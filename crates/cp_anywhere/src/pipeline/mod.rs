@@ -16,7 +16,7 @@ mod overlay;
 mod parse;
 mod wire;
 
-pub use wire::{unpack_images, ImageDescriptor};
+pub use wire::{unpack_images, unpack_inputs, ImageDescriptor, InputDescriptor, InputRole};
 
 /// Original type of a decoded plane, before CellProfiler pixel conversion.
 #[derive(Clone, Copy, Debug, Deserialize)]
@@ -58,6 +58,18 @@ pub struct Plane {
     pub shape: Vec<usize>,
     pub values: Vec<f64>,
     pub dtype: Dtype,
+}
+
+/// Inputs for one field. Image and object names occupy separate namespaces.
+#[derive(Debug, Default)]
+pub struct PipelineInputs {
+    pub images: Vec<(String, Plane)>,
+    /// Retained labels, supplied instead of a pipeline segmentation output.
+    pub objects: Vec<(String, Plane)>,
+    /// Optional small-removed labels, keyed by a matching supplied object name.
+    pub object_diagnostics: Vec<(String, Plane)>,
+    /// Original acquisition scaling, keyed by input image name.
+    pub scaling: BTreeMap<String, f64>,
 }
 
 impl Plane {
@@ -154,6 +166,7 @@ pub(crate) struct State {
     pub(crate) secondary: BTreeMap<String, SecondaryObjectsResult>,
     pub(crate) tertiary: BTreeMap<String, TertiaryObjectsResult>,
     raw_labels: BTreeMap<String, Vec<u32>>,
+    object_diagnostics: BTreeMap<String, Vec<u32>>,
     shapes: BTreeMap<String, Vec<usize>>,
     primary_shapes: BTreeMap<String, Vec<usize>>,
     derived: std::collections::BTreeSet<String>,
@@ -188,13 +201,16 @@ impl State {
 #[derive(Debug)]
 pub struct Pipeline {
     plan: Value,
+    object_order_error: Option<String>,
 }
 
 impl Pipeline {
     /// Parse original CellProfiler text without Python or filesystem access.
     pub fn parse(text: &str) -> Result<Self, String> {
+        let (plan, object_order_error) = parse::parse(text)?;
         Ok(Self {
-            plan: parse::parse(text)?,
+            plan,
+            object_order_error,
         })
     }
 
@@ -214,6 +230,15 @@ impl Pipeline {
         images: Vec<(String, Plane)>,
         scaling: &BTreeMap<String, f64>,
     ) -> Result<RunResult, String> {
-        execute::run(&self.plan, images, scaling)
+        self.run_with_inputs(PipelineInputs {
+            images,
+            scaling: scaling.clone(),
+            ..PipelineInputs::default()
+        })
+    }
+
+    /// Run with explicit retained labels and optional diagnostic labels.
+    pub fn run_with_inputs(&self, inputs: PipelineInputs) -> Result<RunResult, String> {
+        execute::run(&self.plan, inputs, self.object_order_error.as_deref())
     }
 }

@@ -13,7 +13,7 @@ use crate::segmentation::{
 use serde::Deserialize;
 use serde_json::Value;
 
-use super::{measure, Dtype, Plane, RunResult, State, TertiaryObjectsResult};
+use super::{measure, Dtype, PipelineInputs, Plane, RunResult, State, TertiaryObjectsResult};
 
 fn steps<'a>(plan: &'a Value, key: &str) -> impl Iterator<Item = &'a Value> {
     plan[key].as_array().into_iter().flatten()
@@ -48,6 +48,14 @@ fn require_image<'a>(state: &'a State, module: &str, name: &str) -> Result<&'a P
     state
         .image(name)
         .ok_or_else(|| format!("{module} needs image {name:?}, not provided to run()"))
+}
+
+pub(super) fn missing_objects(module: &str, name: &str) -> String {
+    format!("{module} needs object set {name:?}. Supply its labels in objects or enable a supported producer.")
+}
+
+pub(super) fn missing_diagnostics(name: &str) -> String {
+    format!("MeasureObjectNeighbors on {name:?} needs small-removed labels from a supported producer or object_diagnostics")
 }
 
 fn grid(shape: &[usize]) -> Result<(usize, usize), String> {
@@ -393,6 +401,100 @@ fn segmentation_config(
     build_config(&config)
 }
 
+const PRODUCERS: [(&str, &str); 3] = [
+    ("segmentation_steps", "IdentifyPrimaryObjects"),
+    ("secondary_steps", "IdentifySecondaryObjects"),
+    ("tertiary_steps", "IdentifyTertiaryObjects"),
+];
+
+fn check_object_dependencies(plan: &Value, state: &State) -> Result<(), String> {
+    let mut available: BTreeSet<&str> = state.raw_labels.keys().map(String::as_str).collect();
+    let mut full: BTreeSet<&str> = state
+        .object_diagnostics
+        .keys()
+        .map(String::as_str)
+        .collect();
+    for (key, module) in PRODUCERS {
+        for step in steps(plan, key) {
+            let name = text(step, "output_object")?;
+            if available.contains(name) {
+                return Err(format!(
+                    "Supplied object set {name:?} is produced by {module}"
+                ));
+            }
+        }
+    }
+    for step in steps(plan, "segmentation_steps") {
+        let name = text(step, "output_object")?;
+        available.insert(name);
+        full.insert(name);
+    }
+    // Secondary steps use only primary results or explicit retained labels as seeds.
+    for step in steps(plan, "secondary_steps") {
+        let seed = text(step, "primary_object")?;
+        if !available.contains(seed) {
+            return Err(missing_objects("IdentifySecondaryObjects", seed));
+        }
+    }
+    for step in steps(plan, "secondary_steps") {
+        let name = text(step, "output_object")?;
+        available.insert(name);
+        full.insert(name);
+    }
+    for step in steps(plan, "tertiary_steps") {
+        for key in ["primary_object", "secondary_object"] {
+            let name = text(step, key)?;
+            if !available.contains(name) && state.image(name).is_none() {
+                return Err(missing_objects("IdentifyTertiaryObjects", name));
+            }
+            // The executor keeps a copy if a legacy image was used as labels.
+            available.insert(name);
+        }
+        let name = text(step, "output_object")?;
+        available.insert(name);
+        full.insert(name);
+    }
+    for step in steps(plan, "measurement_steps") {
+        let module = text(step, "module_name")?;
+        for entry in steps(step, "objects") {
+            let name = entry.as_str().ok_or("invalid object name")?;
+            if !available.contains(name) && state.image(name).is_none() {
+                return Err(missing_objects(module, name));
+            }
+            if step["wants_excluded_objects"].as_bool() == Some(true) && !full.contains(name) {
+                return Err(missing_diagnostics(name));
+            }
+        }
+    }
+    for (key, module) in [
+        ("granularity_steps", "MeasureGranularity"),
+        (
+            "intensity_distribution_steps",
+            "MeasureObjectIntensityDistribution",
+        ),
+        ("texture_steps", "MeasureTexture"),
+        ("colocalization_steps", "MeasureColocalization"),
+    ] {
+        for step in steps(plan, key) {
+            for entry in steps(step, "objects") {
+                let name = entry.as_str().ok_or("invalid object name")?;
+                if !available.contains(name) {
+                    return Err(missing_objects(module, name));
+                }
+            }
+        }
+    }
+    for step in steps(plan, "overlay_outlines_steps") {
+        for outline in steps(step, "outlines") {
+            let name = text(outline, "objects_name")?;
+            if !available.contains(name) && state.image(name).is_none() {
+                return Err(missing_objects("OverlayOutlines", name));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
     for step in steps(plan, "segmentation_steps") {
         let image = require_image(state, "IdentifyPrimaryObjects", text(step, "input_image")?)?;
@@ -418,11 +520,19 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
             text(step, "input_image")?,
         )?;
         let seed = text(step, "primary_object")?;
-        let primary = state
-            .primary
-            .get(seed)
-            .ok_or_else(|| format!("IdentifySecondaryObjects needs primary object set {seed:?}"))?;
-        if state.primary_shapes[seed] != image.shape {
+        let (seed_shape, kept, unedited) = if let Some(primary) = state.primary.get(seed) {
+            (
+                &state.primary_shapes[seed],
+                &primary.labels,
+                &primary.unedited_labels,
+            )
+        } else if let Some(kept) = state.raw_labels.get(seed) {
+            // A small-removed diagnostic is not an unedited seed plane.
+            (&state.shapes[seed], kept, kept)
+        } else {
+            return Err(missing_objects("IdentifySecondaryObjects", seed));
+        };
+        if *seed_shape != image.shape {
             return Err("primary labels must have the image shape".into());
         }
         let (rows, cols) = grid(&image.shape)?;
@@ -446,8 +556,8 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
             &segmentation_pixels(image)?,
             None,
             None,
-            &primary.unedited_labels,
-            &primary.labels,
+            unedited,
+            kept,
             rows,
             cols,
             &SecondaryObjectsConfig {
@@ -510,11 +620,36 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
     Ok(())
 }
 
-pub(crate) fn run(
+fn input_labels(name: &str, plane: &Plane) -> Result<Vec<u32>, String> {
+    if name.is_empty() {
+        return Err("object names must not be empty".into());
+    }
+    plane
+        .validate()
+        .map_err(|e| format!("object set {name:?}: {e}"))?;
+    let labels = plane
+        .labels()
+        .map_err(|e| format!("object set {name:?}: {e}"))?;
+    if labels.iter().any(|&id| id > crate::MAX_LABEL) {
+        return Err(format!(
+            "object set {name:?}: labels must not exceed {}",
+            crate::MAX_LABEL
+        ));
+    }
+    Ok(labels)
+}
+
+pub(super) fn run(
     plan: &Value,
-    images: Vec<(String, Plane)>,
-    scaling: &BTreeMap<String, f64>,
+    inputs: PipelineInputs,
+    object_order_error: Option<&str>,
 ) -> Result<RunResult, String> {
+    let PipelineInputs {
+        images,
+        objects,
+        object_diagnostics,
+        scaling,
+    } = inputs;
     let mut names = BTreeSet::new();
     for (name, plane) in &images {
         if !names.insert(name.clone()) {
@@ -530,6 +665,7 @@ pub(crate) fn run(
         secondary: Default::default(),
         tertiary: Default::default(),
         raw_labels: Default::default(),
+        object_diagnostics: Default::default(),
         shapes: Default::default(),
         primary_shapes: Default::default(),
         derived: Default::default(),
@@ -540,10 +676,38 @@ pub(crate) fn run(
     {
         return Err("image scaling must name a supplied image and be finite and positive".into());
     }
+    for (name, plane) in objects {
+        if state.raw_labels.contains_key(&name) {
+            return Err(format!("duplicate objects name {name:?}"));
+        }
+        let labels = input_labels(&name, &plane)?;
+        state.raw_labels.insert(name.clone(), labels);
+        state.shapes.insert(name, plane.shape);
+    }
+    for (name, plane) in object_diagnostics {
+        if state.object_diagnostics.contains_key(&name) {
+            return Err(format!("duplicate object_diagnostics name {name:?}"));
+        }
+        let kept_shape = state
+            .shapes
+            .get(&name)
+            .ok_or_else(|| format!("object_diagnostics for {name:?} requires matching objects"))?;
+        if *kept_shape != plane.shape {
+            return Err(format!(
+                "object_diagnostics and objects for {name:?} must have the same shape"
+            ));
+        }
+        let labels = input_labels(&name, &plane)?;
+        state.object_diagnostics.insert(name, labels);
+    }
     let mut columns = ImageColumns::new();
-    let skipped = run_preprocessing(plan, &mut state, &names, scaling, &mut columns)?;
+    let skipped = run_preprocessing(plan, &mut state, &names, &scaling, &mut columns)?;
     let mut measurements = None;
     if !skipped {
+        if let Some(error) = object_order_error {
+            return Err(error.into());
+        }
+        check_object_dependencies(plan, &state)?;
         run_segmentation(plan, &mut state)?;
         measurements = measure::measure(plan, &state)?;
         super::overlay::run(plan, &mut state)?;

@@ -28,8 +28,10 @@ already handle loading files by name; replicating CellProfiler's own
 file-matching/grouping rules is out of scope).
 
 `inspect_pipeline(path)` reports each module separately. It distinguishes
-disabled modules, caller-managed I/O, unsupported modules, and unsupported
-configuration. Successful translation does not check image and object dependencies.
+disabled modules, caller-managed I/O, unsupported modules, unsupported
+configuration, and missing object dependencies. Declare caller-supplied
+object names and diagnostic names when inspecting a pipeline that uses them.
+The check does not validate image inputs or pixel data.
 Within image preparation, `ImageMath` (revision 5, single-image `None` operation,
 exponent 1) and both illumination modules run in file order. `ImageMath` uses
 float32 input and supports the input factor, output factor, addend, clipping,

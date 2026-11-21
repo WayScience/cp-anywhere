@@ -37,7 +37,7 @@ type Translator = fn(&RawModule<'_>) -> Result<Value, String>;
 ///
 /// Unknown module names are kept in `skipped_modules`, in file order. Known
 /// modules with unsupported revisions or settings return an error.
-pub fn parse(text: &str) -> Result<Value, String> {
+pub(super) fn parse(text: &str) -> Result<(Value, Option<String>), String> {
     let mut pipeline: BTreeMap<_, Vec<Value>> = PIPELINE_FIELDS
         .iter()
         .copied()
@@ -136,7 +136,50 @@ pub fn parse(text: &str) -> Result<Value, String> {
                 .map(|&(module, field, index)| (module, &pipeline[field][index])),
         )?;
     }
-    Ok(json!(pipeline))
+    let order_error = forward_object_reference(&module_order, &pipeline);
+    Ok((json!(pipeline), order_error))
+}
+
+fn forward_object_reference(
+    order: &[(&str, &str, usize)],
+    pipeline: &BTreeMap<&str, Vec<Value>>,
+) -> Option<String> {
+    let mut producers = BTreeMap::new();
+    for (position, &(_, field, index)) in order.iter().enumerate() {
+        if matches!(
+            field,
+            "segmentation_steps" | "secondary_steps" | "tertiary_steps"
+        ) {
+            if let Some(name) = pipeline[field][index]["output_object"].as_str() {
+                producers.entry(name).or_insert(position);
+            }
+        }
+    }
+    for (position, &(module, field, index)) in order.iter().enumerate() {
+        let step = &pipeline[field][index];
+        let needs: Vec<_> = match field {
+            "secondary_steps" => vec![&step["primary_object"]],
+            "tertiary_steps" => vec![&step["primary_object"], &step["secondary_object"]],
+            "overlay_outlines_steps" => step["outlines"]
+                .as_array()
+                .into_iter()
+                .flatten()
+                .map(|group| &group["objects_name"])
+                .collect(),
+            _ => step["objects"].as_array().into_iter().flatten().collect(),
+        };
+        for name in needs.into_iter().filter_map(Value::as_str) {
+            if producers
+                .get(name)
+                .is_some_and(|&producer| producer > position)
+            {
+                return Some(format!(
+                    "{module} needs object set {name:?}, which is produced later"
+                ));
+            }
+        }
+    }
+    None
 }
 
 fn flag_image(raw: &RawModule<'_>) -> Result<Value, String> {

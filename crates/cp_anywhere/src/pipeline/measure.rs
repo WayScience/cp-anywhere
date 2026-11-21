@@ -7,6 +7,7 @@ use crate::{self as core, Column, Families, Input, ResultTable, SizeShapeOptions
 use serde::Deserialize;
 use serde_json::Value;
 
+use super::execute::{missing_diagnostics, missing_objects};
 use super::{pixel_count, Plane, State};
 
 #[derive(Default, Deserialize)]
@@ -149,11 +150,9 @@ fn object<'a>(
     module: &str,
     name: &str,
 ) -> Result<(&'a [usize], &'a [u32]), String> {
-    state.objects(name).ok_or_else(|| {
-        format!(
-            "{module} needs object set {name:?}, not produced by a translated segmentation step"
-        )
-    })
+    state
+        .objects(name)
+        .ok_or_else(|| missing_objects(module, name))
 }
 
 fn same_shape(
@@ -229,10 +228,7 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
                         .map_err(|e| format!("{}: object set {name:?}: {e}", step.module_name))?;
                     (raw.shape.as_slice(), Cow::Owned(labels))
                 } else {
-                    return Err(format!(
-                        "{} needs object set {name:?}, not produced or provided",
-                        step.module_name
-                    ));
+                    return Err(missing_objects(&step.module_name, name));
                 };
                 objects.insert(name.as_str(), (shape, labels));
             }
@@ -245,13 +241,24 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
     }
 
     // The core requires an image even for measurements that only use labels.
-    // Python uses the first pipeline image in that case, under the name _unused.
+    // Use label geometry rather than an unrelated input image when available.
+    let placeholder;
     if images.is_empty() {
-        let first = state
-            .images
-            .first()
-            .ok_or("images and objects must be nonempty")?;
-        images.push(("_unused", &first.1));
+        let plane = if let Some((shape, _)) = objects.values().next() {
+            placeholder = Plane {
+                shape: shape.to_vec(),
+                values: vec![0.0; pixel_count(shape)?],
+                dtype: super::Dtype::Float64,
+            };
+            &placeholder
+        } else {
+            &state
+                .images
+                .first()
+                .ok_or("images and objects must be nonempty")?
+                .1
+        };
+        images.push(("_unused", plane));
     }
     let shape = images[0].1.shape.as_slice();
     let size = pixel_count(shape)?;
@@ -307,7 +314,8 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
                         .secondary
                         .get(name)
                         .map(|r| r.small_removed_labels.as_slice())
-                });
+                })
+                .or_else(|| state.object_diagnostics.get(name).map(Vec::as_slice));
             if step.wants_excluded_objects || fixed_scopes.contains(name) {
                 if let Some(primary_shape) = state.primary_shapes.get(name) {
                     same_shape("MeasureObjectNeighbors", name, primary_shape, shape)?;
@@ -335,7 +343,7 @@ fn measure_basic(steps: &[MeasurementStep], state: &State) -> Result<Option<Resu
                 None
             };
             if step.wants_excluded_objects && diagnostic.is_none() {
-                return Err(format!("MeasureObjectNeighbors on {name:?} with excluded objects requires a translated segmentation result"));
+                return Err(missing_diagnostics(name));
             }
             let diagnostics: Vec<_> = diagnostic
                 .into_iter()
@@ -709,6 +717,7 @@ mod tests {
             secondary: Default::default(),
             tertiary: Default::default(),
             raw_labels: Default::default(),
+            object_diagnostics: Default::default(),
             shapes: Default::default(),
             primary_shapes: Default::default(),
             derived: Default::default(),

@@ -1,5 +1,5 @@
 //! Browser entry point for the same pipeline executor used by native Rust.
-use cp_anywhere::pipeline::{unpack_images, ImageDescriptor, Pipeline};
+use cp_anywhere::pipeline::{unpack_inputs, InputDescriptor, Pipeline};
 use wasm_bindgen::prelude::*;
 
 /// Translate original `.cppipe` text to an inspectable plan.
@@ -11,8 +11,9 @@ pub fn compile_cppipe(text: &str) -> Result<String, JsValue> {
 }
 
 /// Run original `.cppipe` text over named, decoded row-major planes.
-/// `images_json` describes each plane's name, shape, and original dtype;
-/// `pixels` contains all planes concatenated in that same order.
+/// `images_json` describes the name, shape, dtype, and optional role of each plane.
+/// Use `image` (default), `objects` (retained), or `object_diagnostics` (small-removed).
+/// Only images accept scaling. `pixels` concatenates the planes in descriptor order.
 #[wasm_bindgen]
 pub fn run_cppipe(text: &str, images_json: &str, pixels: &[f64]) -> Result<String, JsValue> {
     CppipePipeline::new(text)?.run(images_json, pixels)
@@ -46,12 +47,8 @@ fn run(pipeline: &Pipeline, images_json: &str, pixels: &[f64]) -> Result<String,
     if !images_json.trim_start().starts_with('[') {
         return Err("image descriptors must be a JSON array".into());
     }
-    let images: Vec<ImageDescriptor> = serde_json::from_str(images_json)
+    let images: Vec<InputDescriptor> = serde_json::from_str(images_json)
         .map_err(|error| format!("invalid image descriptors: {error}"))?;
-    let scaling = images
-        .iter()
-        .filter_map(|image| Some((image.name.clone(), image.scaling?)))
-        .collect();
-    let output = pipeline.run_with_scaling(unpack_images(images, pixels)?, &scaling)?;
+    let output = pipeline.run_with_inputs(unpack_inputs(images, pixels)?)?;
     Ok(output.to_json_value().to_string())
 }

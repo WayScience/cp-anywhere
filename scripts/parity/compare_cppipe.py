@@ -110,9 +110,20 @@ class Case:
     compile_error: str | None = None
     run_error: str | None = None
     scaling: dict[str, float] | None = None
+    objects: dict[str, np.ndarray] | None = None
+    object_diagnostics: dict[str, np.ndarray] | None = None
 
     def payload(self) -> dict:
         """Pack unnormalized C-order planes in descriptor order."""
+        planes = [
+            (role, name, plane)
+            for role, inputs in (
+                ("image", self.images),
+                ("objects", self.objects or {}),
+                ("object_diagnostics", self.object_diagnostics or {}),
+            )
+            for name, plane in inputs.items()
+        ]
         return {
             "text": self.text,
             "images": [
@@ -120,13 +131,16 @@ class Case:
                     "name": name,
                     "shape": image.shape,
                     "dtype": image.dtype.name,
-                    "scaling": (self.scaling or {}).get(name),
+                    "role": role,
+                    "scaling": (self.scaling or {}).get(name)
+                    if role == "image"
+                    else None,
                 }
-                for name, image in self.images.items()
+                for role, name, image in planes
             ],
             "pixels": [
                 pixel
-                for image in self.images.values()
+                for _, _, image in planes
                 for pixel in image.astype(np.float64).ravel().tolist()
             ],
         }
@@ -665,6 +679,56 @@ def _raw_tertiary_cases(cases: dict[str, Case]) -> list[Case]:
     return inputs
 
 
+def _explicit_object_cases(manual: Case) -> list[Case]:
+    header, primary, *steps = manual.text.strip().split("\n\n")
+    plugin = "RunCellpose:[module_num:1|variable_revision_number:3|enabled:True]"
+    simple = "\n\n".join((header, plugin, *steps)) + "\n"
+    excluded = _substitute(
+        simple,
+        "Consider objects discarded for touching image border?:No",
+        "Consider objects discarded for touching image border?:Yes",
+    )
+    labels = np.zeros((5, 6), dtype=np.uint32)
+    labels[1:3, 1:3] = 1
+    diagnostic = labels.copy()
+    diagnostic[1:3, 3:5] = 2
+    images = {"DNA": np.ones(labels.shape, dtype=np.float32)}
+    supplied = Case("objects/supplied", simple, images, objects={"Cells": labels})
+    return [
+        supplied,
+        Case(
+            "rejected/later_object_producer",
+            "\n\n".join((header, steps[0], primary, *steps[1:])) + "\n",
+            images,
+            run_error=r"MeasureObjectIntensity.*Cells.*later",
+        ),
+        Case(
+            "objects/geometry_without_matching_image",
+            _read(ROOT / "fixtures/size_shape/rectangle.cppipe"),
+            {"Unrelated": np.zeros((2, 3), dtype=np.float32)},
+            objects={"Cells": labels},
+        ),
+        replace(
+            supplied,
+            name="objects/excluded_neighbors",
+            text=excluded,
+            object_diagnostics={"Cells": diagnostic},
+        ),
+        replace(
+            supplied,
+            name="rejected/missing_objects",
+            objects=None,
+            run_error=r"MeasureObjectIntensity.*Cells",
+        ),
+        replace(
+            supplied,
+            name="rejected/missing_diagnostics",
+            text=excluded,
+            run_error=r"MeasureObjectNeighbors.*Cells.*object_diagnostics",
+        ),
+    ]
+
+
 def _cases() -> list[Case]:
     cases = _fixture_cases() + _standalone_cases()
     neighbor = ROOT / "fixtures/neighbors_distance/primary_mixed"
@@ -694,6 +758,7 @@ def _cases() -> list[Case]:
         )
     )
     cases.extend(_raw_tertiary_cases(lookup))
+    cases.extend(_explicit_object_cases(lookup["manual"]))
     cases.extend(_dtype_cases(lookup["otsu_simple"]))
     cases.extend(_revision_cases(lookup))
     cases.extend(_rejected_settings(lookup))
@@ -753,7 +818,12 @@ def _python_result(case: Case, directory: Path) -> dict:
         raise ValueError(msg)
     plan = _json_value(asdict(pipeline))
     try:
-        result = pipeline.run_detailed(case.images, scaling=case.scaling)
+        result = pipeline.run_detailed(
+            case.images,
+            scaling=case.scaling,
+            objects=case.objects,
+            object_diagnostics=case.object_diagnostics,
+        )
     except CppipeError as error:
         if case.run_error is None:
             raise
@@ -777,7 +847,8 @@ def _serialize_run(
     primary, derived, measured = run.primary, run.secondary, run.measurements
     secondary = {}
     tertiary = {}
-    shapes = {name: result.labels.shape for name, result in primary.items()}
+    shapes = {name: labels.shape for name, labels in (case.objects or {}).items()}
+    shapes.update({name: result.labels.shape for name, result in primary.items()})
     for name, result in derived.items():
         (tertiary if isinstance(result, TertiaryObjectsResult) else secondary)[name] = (
             asdict(result)

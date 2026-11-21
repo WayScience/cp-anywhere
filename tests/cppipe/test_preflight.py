@@ -22,7 +22,7 @@ def test_preflight_reports_each_block_without_running(tmp_path: Path) -> None:
     text += "\nExportToSpreadsheet:[variable_revision_number:13|enabled:True]\n"
     path = tmp_path / "assessment.cppipe"
     path.write_text(text)
-    entries = inspect_pipeline(path)
+    entries = inspect_pipeline(path, available_objects=None)
     assert [(e.position, e.name, e.status) for e in entries] == [
         (1, "IdentifyPrimaryObjects", "unsupported_settings"),
         (2, "MeasureObjectIntensity", "disabled"),

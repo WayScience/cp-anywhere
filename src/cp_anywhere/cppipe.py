@@ -39,7 +39,7 @@ supplies already-loaded image arrays by the same names the pipeline's
 from __future__ import annotations
 
 import re
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from math import isfinite
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -47,7 +47,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from cp_anywhere import _native
-from cp_anywhere.api import _MAX_NEIGHBOR_DISTANCE, MeasurementResult, measure
+from cp_anywhere.api import (
+    _MAX_NEIGHBOR_DISTANCE,
+    MeasurementResult,
+    _label_array,
+    measure,
+)
 from cp_anywhere.colocalization import measure_colocalization
 from cp_anywhere.granularity import measure_granularity
 from cp_anywhere.illumination import apply_illumination, calculate_illumination
@@ -73,7 +78,7 @@ from cp_anywhere.segment import (
 from cp_anywhere.texture import measure_texture
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Iterable, Mapping
     from typing import Literal
 
     from cp_anywhere.segment import (
@@ -1940,6 +1945,10 @@ class Pipeline:
     flag_image_steps: list[FlagImageStep] = field(default_factory=list)
     image_quality_steps: list[ImageQualityStep] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        # Keep file-order validation metadata out of the public plan schema.
+        self._object_order_error: str | None = None
+
     def prepare_images(self, images: Mapping[str, np.ndarray]) -> dict[str, np.ndarray]:
         """Return inputs and prepared planes without modifying the caller's arrays."""
         return self._prepare_with_quality(images, {})[0]
@@ -2019,14 +2028,20 @@ class Pipeline:
                 raise CppipeError(msg) from error
 
     def run(
-        self, images: Mapping[str, np.ndarray]
+        self,
+        images: Mapping[str, np.ndarray],
+        *,
+        objects: Mapping[str, np.ndarray] | None = None,
+        object_diagnostics: Mapping[str, np.ndarray] | None = None,
     ) -> tuple[
         dict[str, SegmentationResult],
         dict[str, SecondaryObjectsResult | TertiaryObjectsResult],
         MeasurementResult | None,
     ]:
         """Prepare images, identify primary/secondary/tertiary objects, and measure."""
-        result = self.run_detailed(images)
+        result = self.run_detailed(
+            images, objects=objects, object_diagnostics=object_diagnostics
+        )
         return result.primary, result.secondary, result.measurements
 
     def run_detailed(
@@ -2034,12 +2049,22 @@ class Pipeline:
         images: Mapping[str, np.ndarray],
         *,
         scaling: Mapping[str, float] | None = None,
+        objects: Mapping[str, np.ndarray] | None = None,
+        object_diagnostics: Mapping[str, np.ndarray] | None = None,
     ) -> PipelineRunResult:
         """Run a field and return derived images, QC measurements and skip status."""
+        supplied, diagnostics = _validate_external_objects(
+            objects or {}, object_diagnostics or {}
+        )
         all_images, columns, skipped = self._prepare_with_quality(images, scaling or {})
         primary, secondary, measured = {}, {}, None
         if not skipped:
-            primary, secondary, measured = self._run_prepared(all_images)
+            if self._object_order_error is not None:
+                raise CppipeError(self._object_order_error)
+            self._check_object_dependencies(all_images, supplied, diagnostics)
+            primary, secondary, measured = self._run_prepared(
+                all_images, supplied, diagnostics
+            )
         if columns:
             if measured is None:
                 measured = MeasurementResult("Image", {}, {}, [])
@@ -2056,9 +2081,83 @@ class Pipeline:
             skipped,
         )
 
+    def _check_object_dependencies(
+        self,
+        images: Mapping[str, np.ndarray],
+        objects: Mapping[str, np.ndarray],
+        diagnostics: Mapping[str, np.ndarray],
+    ) -> None:
+        producers = (
+            *self.segmentation_steps,
+            *self.secondary_steps,
+            *self.tertiary_steps,
+        )
+        for step in producers:
+            if step.output_object in objects:
+                raise CppipeError(
+                    f"Object set {step.output_object!r} is already produced "
+                    "by the pipeline"
+                )
+        available = set(objects)
+        full = set(diagnostics)
+        for step in self.segmentation_steps:
+            available.add(step.output_object)
+            full.add(step.output_object)
+        for step in self.secondary_steps:
+            _require(
+                step.primary_object in available,
+                _missing_objects("IdentifySecondaryObjects", step.primary_object),
+            )
+        for step in self.secondary_steps:
+            available.add(step.output_object)
+            full.add(step.output_object)
+        for step in self.tertiary_steps:
+            for name in (step.primary_object, step.secondary_object):
+                _require(
+                    name in available or name in images,
+                    _missing_objects("IdentifyTertiaryObjects", name),
+                )
+                # Tertiary execution retains each legacy label plane it reads.
+                available.add(name)
+            available.add(step.output_object)
+            full.add(step.output_object)
+        self._check_measurement_dependencies(images, available, full)
+
+    def _check_measurement_dependencies(
+        self, images: Mapping[str, np.ndarray], available: set[str], full: set[str]
+    ) -> None:
+        groups = (
+            ("MeasureGranularity", self.granularity_steps),
+            ("MeasureObjectIntensityDistribution", self.intensity_distribution_steps),
+            ("MeasureTexture", self.texture_steps),
+            ("MeasureColocalization", self.colocalization_steps),
+        )
+        for step in self.measurement_steps:
+            for name in step.objects:
+                _require(
+                    name in available or name in images,
+                    _missing_objects(step.module_name, name),
+                )
+                if step.wants_excluded_objects and name not in full:
+                    raise CppipeError(_missing_diagnostics(step.module_name, name))
+        for module, steps in groups:
+            for step in steps:
+                for name in step.objects:
+                    _require(name in available, _missing_objects(module, name))
+        for overlay in self.overlay_outlines_steps:
+            for group in overlay.outlines:
+                name = group.objects_name
+                _require(
+                    name in available or name in images,
+                    _missing_objects("OverlayOutlines", name),
+                )
+
     # Keep the execution stages together so label provenance remains visible.
     def _run_prepared(  # noqa: C901, PLR0912, PLR0915
-        self, all_images: dict[str, np.ndarray]
+        self,
+        all_images: dict[str, np.ndarray],
+        supplied: dict[str, np.ndarray],
+        diagnostics: dict[str, np.ndarray],
     ) -> tuple[
         dict[str, SegmentationResult],
         dict[str, SecondaryObjectsResult | TertiaryObjectsResult],
@@ -2101,25 +2200,19 @@ class Pipeline:
                     "not provided to run()"
                 )
                 raise CppipeError(msg)
-            if step.primary_object not in segmentations:
-                msg = (
-                    f"IdentifySecondaryObjects needs primary object set "
-                    f"{step.primary_object!r}, not produced by a translated "
-                    "IdentifyPrimaryObjects step in this same pipeline"
-                )
-                raise CppipeError(msg)
-            primary = segmentations[step.primary_object]
+            primary = segmentations.get(step.primary_object)
             result = identify_secondary_objects(
                 all_images[step.input_image],
-                primary.labels,
-                primary_labels_in=primary.unedited_labels,
+                supplied[step.primary_object] if primary is None else primary.labels,
+                primary_labels_in=None if primary is None else primary.unedited_labels,
                 **step.config,  # ty: ignore[invalid-argument-type]
             )
             secondary_results[step.output_object] = result
 
-        all_object_labels: dict[str, np.ndarray] = {
-            name: result.labels for name, result in segmentations.items()
-        }
+        all_object_labels = dict(supplied)
+        all_object_labels.update(
+            {name: result.labels for name, result in segmentations.items()}
+        )
         all_object_labels.update(
             {name: result.labels for name, result in secondary_results.items()}
         )
@@ -2181,12 +2274,10 @@ class Pipeline:
                         "IdentifySecondaryObjects step or provided to run()"
                     )
                     raise CppipeError(msg)
-        if not measure_images:
-            # A pipeline with only MeasureObjectNeighbors has no image
-            # inputs; measure() still requires at least one named image.
-            measure_images = {
-                name: next(iter(measurement_images.values())) for name in ("_unused",)
-            }
+        if not measure_images and measure_objects:
+            # Geometry-only measurements need a shape, not intensity pixels.
+            labels = next(iter(measure_objects.values()))
+            measure_images = {"_unused": np.broadcast_to(np.float32(0), labels.shape)}
         measured = (
             measure(measure_images, measure_objects, families=families)
             if families
@@ -2203,7 +2294,7 @@ class Pipeline:
             if step.family != "neighbors":
                 continue
             for name in step.objects:
-                diagnostic = None
+                diagnostic = diagnostics.get(name)
                 if name in segmentations:
                     diagnostic = segmentations[name].small_removed_labels
                 elif name in secondary_results:
@@ -2228,10 +2319,7 @@ class Pipeline:
                 else:
                     diagnostic = None
                 if step.wants_excluded_objects and diagnostic is None:
-                    raise CppipeError(
-                        f"MeasureObjectNeighbors on {name!r} with excluded "
-                        "objects requires a translated segmentation result"
-                    )
+                    raise CppipeError(_missing_diagnostics(step.module_name, name))
                 result = measure(
                     measure_images,
                     {name: kept},
@@ -2539,6 +2627,53 @@ class PipelineRunResult:
     skipped: bool
 
 
+def _missing_objects(module: str, name: str) -> str:
+    return (
+        f"{module} needs object set {name!r}; supply its labels in objects "
+        "or enable a supported producer"
+    )
+
+
+def _missing_diagnostics(module: str, name: str) -> str:
+    return (
+        f"{module} on {name!r} requires its small-removed plane in object_diagnostics"
+    )
+
+
+def _external_labels(
+    name: str, array: np.ndarray, shape: tuple[int, ...]
+) -> np.ndarray:
+    _require(bool(name), "object names must not be empty")
+    if array.ndim not in (2, 3) or not array.size:
+        raise CppipeError(
+            f"Object set {name!r} requires a nonempty 2D or 3D label plane"
+        )
+    try:
+        return _label_array(array, shape)
+    except (TypeError, ValueError) as error:
+        raise CppipeError(f"Object set {name!r}: {error}") from error
+
+
+def _validate_external_objects(
+    objects: Mapping[str, np.ndarray],
+    diagnostics: Mapping[str, np.ndarray],
+) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
+    if orphaned := diagnostics.keys() - objects.keys():
+        raise CppipeError(
+            f"object_diagnostics requires supplied objects for {sorted(orphaned)!r}"
+        )
+    return (
+        {
+            name: _external_labels(name, plane, plane.shape)
+            for name, plane in objects.items()
+        },
+        {
+            name: _external_labels(name, plane, objects[name].shape)
+            for name, plane in diagnostics.items()
+        },
+    )
+
+
 def _quality_columns(
     step: ImageQualityStep,
     loaded: Mapping[str, np.ndarray],
@@ -2742,6 +2877,7 @@ if TYPE_CHECKING:
         "caller_managed",
         "unsupported_module",
         "unsupported_settings",
+        "missing_dependency",
         "supported",
     ]
 
@@ -2779,10 +2915,109 @@ def _inspect_module(position: int, raw: _RawModule) -> PipelineModuleCheck:
     return result("supported", "Settings translated; execution was not checked.")
 
 
-def inspect_pipeline(path: str | Path) -> tuple[PipelineModuleCheck, ...]:
-    """Report each module's compatibility without reading image files or running it."""
+def inspect_pipeline(
+    path: str | Path,
+    *,
+    available_objects: Iterable[str] | None = (),
+    available_object_diagnostics: Iterable[str] = (),
+) -> tuple[PipelineModuleCheck, ...]:
+    """Report module compatibility and required object sets without executing.
+
+    Declare external object names in ``available_objects`` and names with
+    small-removed planes in ``available_object_diagnostics``. Pass ``None``
+    for ``available_objects`` to check settings only.
+    """
     raw_modules = _parse_text(Path(path).read_text(encoding="utf-8-sig"))
-    return tuple(_inspect_module(i, raw) for i, raw in enumerate(raw_modules, 1))
+    entries = [_inspect_module(i, raw) for i, raw in enumerate(raw_modules, 1)]
+    if available_objects is not None:
+        external = set(available_objects)
+        available = external.copy()
+        non_seeds: set[str] = set()
+        full = set(available_object_diagnostics)
+        _require(
+            full <= available,
+            "available_object_diagnostics requires matching available_objects",
+        )
+        for i, (entry, raw) in enumerate(zip(entries, raw_modules, strict=True)):
+            if entry.status != "supported":
+                continue
+            step = _TRANSLATORS[raw.name](raw)
+            detail = _inspect_object_dependency(
+                raw.name, step, available, full, non_seeds
+            )
+            if detail is None and isinstance(
+                step, (SegmentationStep, SecondaryObjectsStep, TertiaryObjectsStep)
+            ):
+                name = step.output_object
+                if name in external:
+                    detail = f"Object set {name!r} is already produced by {raw.name}"
+                else:
+                    available.add(name)
+                    full.add(name)
+                    if isinstance(step, SegmentationStep):
+                        non_seeds.discard(name)
+                    else:
+                        non_seeds.add(name)
+            if detail is not None:
+                entries[i] = replace(entry, status="missing_dependency", detail=detail)
+    return tuple(entries)
+
+
+def _object_references(step: object) -> tuple[str, ...]:
+    if isinstance(step, SecondaryObjectsStep):
+        return (step.primary_object,)
+    if isinstance(step, TertiaryObjectsStep):
+        return (step.primary_object, step.secondary_object)
+    if isinstance(
+        step,
+        (
+            MeasurementStep,
+            GranularityStep,
+            IntensityDistributionStep,
+            TextureStep,
+            ColocalizationStep,
+        ),
+    ):
+        return step.objects
+    if isinstance(step, OverlayStep):
+        return tuple(group.objects_name for group in step.outlines)
+    return ()
+
+
+def _inspect_object_dependency(
+    module: str,
+    step: object,
+    available: set[str],
+    full: set[str],
+    non_seeds: set[str],
+) -> str | None:
+    for name in _object_references(step):
+        if name not in available:
+            return _missing_objects(module, name)
+        if isinstance(step, SecondaryObjectsStep) and name in non_seeds:
+            return f"{module} needs primary or caller-supplied seeds, not {name!r}"
+        if (
+            isinstance(step, MeasurementStep)
+            and step.wants_excluded_objects
+            and name not in full
+        ):
+            return _missing_diagnostics(module, name)
+    return None
+
+
+def _forward_object_reference(translated: Iterable[tuple[str, object]]) -> str | None:
+    steps = tuple(translated)
+    positions: dict[str, int] = {}
+    for position, (_, step) in enumerate(steps):
+        if isinstance(
+            step, (SegmentationStep, SecondaryObjectsStep, TertiaryObjectsStep)
+        ):
+            positions.setdefault(step.output_object, position)
+    for position, (module, step) in enumerate(steps):
+        for name in _object_references(step):
+            if positions.get(name, position) > position:
+                return f"{module} needs object set {name!r}, which is produced later"
+    return None
 
 
 def _run_radial_groups(
@@ -2850,6 +3085,7 @@ def load_pipeline(path: str | Path) -> Pipeline:
         )
         translated.append((raw.name, step))
         _append_step(pipeline, step)
+    pipeline._object_order_error = _forward_object_reference(translated)
     if pipeline.overlay_outlines_steps:
         try:
             validate_overlay_order([(name, asdict(step)) for name, step in translated])
