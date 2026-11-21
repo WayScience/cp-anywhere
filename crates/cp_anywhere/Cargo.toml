@@ -6,6 +6,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 rust-version.workspace = true
+readme = "../../README.md"
 # These checkout-only tests and benchmarks use the repository's fixture corpus.
 exclude = ["benches/", "tests/cppipe_parser.rs", "tests/outline_overlay.rs", "tests/data/"]
 
