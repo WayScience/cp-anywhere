@@ -32,10 +32,10 @@ def main() -> None:
     package = json.loads(manifest.read_text(encoding="utf-8"))
     # wasm-pack uses the binding crate's Cargo name, not the public npm name.
     package["name"] = "cp-anywhere"
-    notice = "LICENSE-centrosome"
-    copyfile(ROOT / "crates/cp_anywhere" / notice, manifest.parent / notice)
-    if notice not in package["files"]:
-        package["files"].append(notice)
+    for notice in ("LICENSE-centrosome", "LICENSE-stardist"):
+        copyfile(ROOT / "crates/cp_anywhere" / notice, manifest.parent / notice)
+        if notice not in package["files"]:
+            package["files"].append(notice)
     manifest.write_text(json.dumps(package, indent=2) + "\n", encoding="utf-8")
 
 

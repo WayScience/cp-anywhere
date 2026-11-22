@@ -4,6 +4,19 @@ from typing import Any
 
 import numpy as np
 
+# Only present in native builds that enable the stardist-model feature.
+def stardist_segment(
+    image: np.ndarray,
+    rows: int,
+    cols: int,
+    model_bytes: bytes,
+    n_rays: int,
+    grid_rows: int,
+    grid_cols: int,
+    prob_thresh: float,
+    nms_thresh: float,
+    border: int = 2,
+) -> dict[str, Any]: ...
 def render_outline_overlay(
     background: np.ndarray | None,
     outlines: list[tuple[np.ndarray, tuple[int, int, int]]],

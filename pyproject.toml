@@ -195,6 +195,11 @@ lint.per-file-ignores."src/cp_anywhere/intensity_distribution.py" = [
 # imports so loading one file format doesn't require the others, and
 # `measure_files` stays usable without pandas imported at module load.
 lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
+# Ignore `PLC0415` (deferred native-extension import, same reason as
+# api.py) and `PLR0913` (QcProfile.from_criteria's keyword arguments
+# each name one independent profile property -- name/version/criteria/
+# combination/blur_scale/source -- not a function to shrink).
+lint.per-file-ignores."src/cp_anywhere/quality.py" = [ "PLC0415", "PLR0913" ]
 # Ignore `PLC0415` for `save_images.py`, same reason as `io.py` above:
 # defers `tifffile`/`PIL` imports so writing one file format doesn't
 # require the other.
@@ -244,6 +249,13 @@ cargo test
 # rebuild the extension, then run the Python tests
 tasks.test.shell = """
 maturin develop --uv && pytest
+"""
+# Exercise the opt-in pipeline with the real model, not the feature-off skips.
+tasks.test-stardist.shell = """
+cargo test --locked -p cp-anywhere --features stardist-model stardist &&
+maturin develop --uv --locked --features stardist-model &&
+python -c 'from cp_anywhere._native import stardist_segment' &&
+pytest --no-cov tests/quality/test_autosegment.py -k stardist
 """
 tasks.lint.shell = """
 pre-commit run --all-files

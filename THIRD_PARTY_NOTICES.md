@@ -44,5 +44,14 @@ The Zernike circle solver uses a Rust port of the scalar `acos_u35` path.
 The port retains the full Boost Software License 1.0 notice and source file
 references in `crates/cp_anywhere/src/sleef_acos.rs`.
 
+## StarDist
+
+The Rust polygon decoder adapts StarDist code at revision
+`e80c6de700693bc228ed3c9ba1dc19c3785667ee`, under BSD-3-Clause.
+See `crates/cp_anywhere/LICENSE-stardist` for the code license.
+The Python package also includes an ONNX conversion of the v0.1
+`2D_versatile_fluo` model. See `src/cp_anywhere/data/stardist/NOTICE.md`
+for the separate model license, source archive, and checksums.
+
 Dependency notices remain in their package distributions and lockfiles.
 Fixture-specific source and redistribution terms are recorded alongside fixture provenance.

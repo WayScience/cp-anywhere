@@ -8,19 +8,37 @@ repository.workspace = true
 rust-version.workspace = true
 readme = "../../README.md"
 # These checkout-only tests and benchmarks use the repository's fixture corpus.
-exclude = ["benches/", "tests/cppipe_parser.rs", "tests/outline_overlay.rs", "tests/data/"]
+exclude = [
+    "benches/",
+    "tests/cppipe_parser.rs",
+    "tests/outline_overlay.rs",
+    "tests/data/",
+    "tests/stardist_decode.rs",
+    "tests/stardist_fixtures/",
+]
 
 [dependencies]
 serde = { version = "1", features = ["derive"], optional = true }
 serde_json = { version = "1", features = ["float_roundtrip"], optional = true }
+tract-onnx = { version = "0.23", optional = true }
+# Enable getrandom's JS backend for tract's wasm32 compilation.
+getrandom = { version = "0.4", features = ["wasm_js"], optional = true }
 
 [features]
 default = ["pipeline"]
 pipeline = ["serde", "dep:serde_json"]
 serde = ["dep:serde"]
+# Optional StarDist (M2) ONNX inference via tract, a pure-Rust ONNX
+# runtime (no native shared library) chosen so this also compiles for
+# wasm32. Off by default: it adds a substantial dependency tree for a
+# single, optional nuclei-detection candidate pipeline. The decode
+# algorithm in segmentation::stardist has no dependency on this
+# feature at all and is always available.
+stardist-model = ["dep:tract-onnx", "dep:getrandom"]
 
 [dev-dependencies]
 criterion = "0.7"
+serde_json = { version = "1", features = ["float_roundtrip"] }
 
 [[bench]]
 name = "throughput"

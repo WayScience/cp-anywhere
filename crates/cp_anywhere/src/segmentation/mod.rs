@@ -2579,4 +2579,7 @@ mod tests {
 pub mod declump;
 mod holes;
 pub mod secondary;
+pub mod stardist;
+#[cfg(feature = "stardist-model")]
+pub mod stardist_model;
 pub mod tertiary;

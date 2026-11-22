@@ -23,3 +23,9 @@ cp-anywhere = { path = "../cp_anywhere", default-features = false }
 # this pyo3.
 pyo3 = { workspace = true, features = ["extension-module", "abi3-py311"] }
 numpy = "0.29"
+
+[features]
+# Off by default: see cp-anywhere's own `stardist-model` feature note
+# (crates/cp_anywhere/Cargo.toml) -- this adds the tract ONNX runtime
+# for the optional StarDist (M2) nuclei-detection candidate pipeline.
+stardist-model = ["cp-anywhere/stardist-model"]
