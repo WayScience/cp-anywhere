@@ -90,3 +90,10 @@ relative-docs: docs/src/
 relative-images:
 ---
 ```
+
+```{include} ../autosegment.md
+---
+relative-docs: docs/src/
+relative-images:
+---
+```

@@ -2812,6 +2812,133 @@ statically (<code class="docutils literal notranslate"><span class="pre">actionl
 </ul>
 </section>
 </section>
+<section id="autosegment-image-quality-pipeline-selection-and-reporting">
+<h1>AutoSegment: image quality, pipeline selection, and reporting<a class="headerlink" href="#autosegment-image-quality-pipeline-selection-and-reporting" title="Link to this heading">#</a></h1>
+<p>AutoSegment picks and runs a segmentation pipeline with minimal manual
+tuning, after checking that each image meets a basic technical quality
+bar. It follows the five-stage design in the project’s own
+<code class="docutils literal notranslate"><span class="pre">cp-anywhere-autosegment-plan.md</span></code> (repository root): Stage 0 image
+quality, Stage 1 pipeline selection, Stage 2 parameter search, Stage 3
+apply, Stage 4 report and optional human review.</p>
+<p><strong>Scope in this release:</strong> Stage 0 (<code class="docutils literal notranslate"><span class="pre">cp_anywhere.quality</span></code>) is complete.
+Stage 1-4 (<code class="docutils literal notranslate"><span class="pre">cp_anywhere.autosegment</span></code>) wrap this project’s own existing,
+oracle-verified classical segmentation (<code class="docutils literal notranslate"><span class="pre">identify_primary_objects</span></code> +
+<code class="docutils literal notranslate"><span class="pre">identify_secondary_objects</span></code> + <code class="docutils literal notranslate"><span class="pre">identify_tertiary_objects</span></code>) into one
+named pipeline and run real selection, search, apply, and reporting
+logic over it. A second, learned nuclei candidate – <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>
+(plan milestone M2) – is implemented against the real pretrained
+StarDist <code class="docutils literal notranslate"><span class="pre">2D_versatile_fluo</span></code> model, but is <strong>off by default</strong>: it
+needs the native extension rebuilt with cp-anywhere’s <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code>
+Cargo feature (<code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">develop</span> <span class="pre">--features</span> <span class="pre">stardist-model</span></code>). Without
+that build, requesting <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code> raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> naming the
+rebuild command rather than silently falling back to the classical
+threshold. External scientific validation against expert-reviewed masks
+is out of scope for this module; it needs real annotated data this
+release does not ship.</p>
+<section id="stage-0-the-image-quality-gate">
+<h2>Stage 0: the image-quality gate<a class="headerlink" href="#stage-0-the-image-quality-gate" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">quality</span>
+
+<span class="n">profile</span> <span class="o">=</span> <span class="n">quality</span><span class="o">.</span><span class="n">QcProfile</span><span class="o">.</span><span class="n">from_cppipe</span><span class="p">(</span><span class="s2">&quot;published_qc_pipeline.cppipe&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">quality</span><span class="o">.</span><span class="n">assess</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">profile</span><span class="p">)</span>  <span class="c1"># images: id -&gt; {channel: array}</span>
+<span class="n">result</span><span class="o">.</span><span class="n">accepted</span>  <span class="c1"># image IDs eligible for AutoSegment&#39;s pipeline search</span>
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">QcProfile</span></code> is calibration evidence, not an invented universal
+standard. Build one from a real, pinned pipeline’s own
+<code class="docutils literal notranslate"><span class="pre">MeasureImageQuality</span></code>/<code class="docutils literal notranslate"><span class="pre">FlagImage</span></code> pair with <code class="docutils literal notranslate"><span class="pre">QcProfile.from_cppipe</span></code>, or
+from explicit, caller-calibrated bounds with <code class="docutils literal notranslate"><span class="pre">QcProfile.from_criteria</span></code>.
+This module ships no built-in numeric thresholds and no preset named
+profile (e.g. no built-in <code class="docutils literal notranslate"><span class="pre">&quot;cell-painting&quot;</span></code> profile) – supply your own.</p>
+<p>Metrics reuse this project’s own <code class="docutils literal notranslate"><span class="pre">MeasureImageQuality</span></code> kernel
+(<code class="docutils literal notranslate"><span class="pre">ImageQuality_*</span></code>, already verified against CellProfiler 4.2.8) plus a
+few new, non-CellProfiler <code class="docutils literal notranslate"><span class="pre">Intensity_*</span></code> robust statistics (median, MAD,
+extreme quantiles, a simple background estimate, near-zero fraction).
+Every image gets <code class="docutils literal notranslate"><span class="pre">pass</span></code>, <code class="docutils literal notranslate"><span class="pre">review</span></code>, or <code class="docutils literal notranslate"><span class="pre">fail</span></code>:</p>
+<ul class="simple">
+<li><p><strong>fail</strong>: a structural problem (missing/non-2D/wrong-dtype/non-finite
+channel), or a configured bound was outside range.</p></li>
+<li><p><strong>review</strong>: the profile needed a channel or measurement the caller
+did not supply – ambiguous, not confidently bad.</p></li>
+<li><p><strong>pass</strong>: every configured criterion was satisfied.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">review</span></code> images need a recorded override (<code class="docutils literal notranslate"><span class="pre">QualityGateResult.accept_overrides</span></code>)
+to enter AutoSegment’s selection; <code class="docutils literal notranslate"><span class="pre">fail</span></code> images never enter automatic
+selection.</p>
+</section>
+<section id="stage-1-4-cp-anywhere-autosegment-auto">
+<h2>Stage 1-4: <code class="docutils literal notranslate"><span class="pre">cp_anywhere.autosegment.auto</span></code><a class="headerlink" href="#stage-1-4-cp-anywhere-autosegment-auto" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cp_anywhere</span><span class="w"> </span><span class="kn">import</span> <span class="n">autosegment</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">autosegment</span><span class="o">.</span><span class="n">auto</span><span class="p">(</span>
+    <span class="n">images</span><span class="p">,</span>  <span class="c1"># id -&gt; {channel: array}, same shape as quality.assess</span>
+    <span class="n">channels</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;nuclei&quot;</span><span class="p">:</span> <span class="s2">&quot;DNA&quot;</span><span class="p">,</span> <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="s2">&quot;AGP&quot;</span><span class="p">},</span>
+    <span class="n">quality_profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+    <span class="n">pipelines</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;classical&quot;</span><span class="p">],</span>  <span class="c1"># or [&quot;stardist&quot;] (see the M2 note below)</span>
+    <span class="n">trials</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">review_mode</span><span class="o">=</span><span class="s2">&quot;optional&quot;</span><span class="p">,</span>  <span class="c1"># default: never blocks Stage 3</span>
+<span class="p">)</span>
+<span class="n">result</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;segmentation-config.json&quot;</span><span class="p">)</span>
+<span class="n">masks</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">segment</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>  <span class="c1"># Stage 3, works regardless of review_mode</span>
+<span class="n">result</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>  <span class="c1"># Stage 4, self-contained and offline</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">result.status</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;selected&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;awaiting_approval&quot;</span></code> (selected, but
+<code class="docutils literal notranslate"><span class="pre">review_mode=&quot;required&quot;</span></code> withholds final approval), or
+<code class="docutils literal notranslate"><span class="pre">&quot;review_required&quot;</span></code> (too few accepted images, or no candidate pipeline
+passed its hard constraints). Stage 2’s random search is seeded and
+reproducible: the same <code class="docutils literal notranslate"><span class="pre">seed</span></code> and inputs always pick the same
+parameters. Hard constraints reject a trial with no nuclei, an empty or
+near-total whole-cell mask, or a nucleus with no matching cell.</p>
+<p><code class="docutils literal notranslate"><span class="pre">result.review</span></code> records accept/override/reject decisions
+(<code class="docutils literal notranslate"><span class="pre">result.review.accept(reviewer=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.override(selected=...,</span> <span class="pre">...)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.reject(...)</span></code>) without altering the original automatic recommendation;
+<code class="docutils literal notranslate"><span class="pre">result.save_review(&quot;review.json&quot;)</span></code> persists that audit trail.</p>
+</section>
+<section id="the-stardist-m2-nuclei-candidate">
+<h2>The StarDist (M2) nuclei candidate<a class="headerlink" href="#the-stardist-m2-nuclei-candidate" title="Link to this heading">#</a></h2>
+<p>StarDist uses the pretrained <code class="docutils literal notranslate"><span class="pre">2D_versatile_fluo</span></code> model on one 2D
+fluorescent nuclei channel. It scales the image by its 1st and 99.8th
+percentiles, then runs ONNX inference in Rust on the CPU. Existing
+propagation and subtraction kernels produce the cell and cytoplasm
+masks. Both AutoSegment candidates exclude all nucleus pixels from
+cytoplasm. This does not change <code class="docutils literal notranslate"><span class="pre">IdentifyTertiaryObjects</span></code> defaults.</p>
+<p>From a source checkout, enable the native feature:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--features<span class="w"> </span>stardist-model
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">pipelines=[&quot;stardist&quot;]</span></code> to evaluate only StarDist, or pass
+<code class="docutils literal notranslate"><span class="pre">pipelines=[&quot;classical&quot;,</span> <span class="pre">&quot;stardist&quot;]</span></code> to compare both. If the feature is
+absent, requesting StarDist raises an error; it does not fall back.
+The model is included in the Python package. Inference needs no network
+access, TensorFlow, or separate Python StarDist installation.</p>
+<p>The initial probability and suppression thresholds (about 0.479 and
+0.3) come from the pretrained model. The saved configuration includes
+the model name and SHA-256. See <code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/data/stardist/NOTICE.md</span></code>
+for the model source, license, and conversion details.</p>
+<p>The Rust decoder uses rasterized overlap for non-maximum suppression.
+It can differ from upstream StarDist at boundaries or near suppression
+thresholds. Tests exercise the real model on synthetic fluorescence
+fields. They do not establish accuracy on a new assay. This integration
+supports native CPU builds only; the browser API does not expose StarDist.</p>
+<p>Run the opt-in checks with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--frozen</span> <span class="pre">poe</span> <span class="pre">test-stardist</span></code>.</p>
+</section>
+<section id="what-this-module-intentionally-does-not-do-yet">
+<h2>What this module intentionally does not do yet<a class="headerlink" href="#what-this-module-intentionally-does-not-do-yet" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>No acquisition-group (plate/well/batch) calibration inside Stage 0 –
+callers calibrate their own profile.</p></li>
+<li><p>The Stage 4 report has the plan’s section structure (image-quality
+gate, decision summary, parameter search, human review,
+reproducibility) but not yet the full literature technique catalog,
+response-surface plots, or a failure-crop gallery.</p></li>
+<li><p>No external validation against expert-reviewed ground-truth masks.</p></li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">cp-anywhere-autosegment-plan.md</span></code> for the full design and the
+remaining milestone checklist.</p>
+</section>
+</section>
 
 
                 </article>
