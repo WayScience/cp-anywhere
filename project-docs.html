@@ -2886,11 +2886,27 @@ selection.</p>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">result.status</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;selected&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;awaiting_approval&quot;</span></code> (selected, but
 <code class="docutils literal notranslate"><span class="pre">review_mode=&quot;required&quot;</span></code> withholds final approval), or
-<code class="docutils literal notranslate"><span class="pre">&quot;review_required&quot;</span></code> (too few accepted images, or no candidate pipeline
-passed its hard constraints). Stage 2’s random search is seeded and
+<code class="docutils literal notranslate"><span class="pre">&quot;review_required&quot;</span></code> (too few accepted images, no candidate pipeline
+passed its hard constraints, or the tuned configuration did not hold up
+on the held-out check). Stage 2’s random search is seeded and
 reproducible: the same <code class="docutils literal notranslate"><span class="pre">seed</span></code> and inputs always pick the same
 parameters. Hard constraints reject a trial with no nuclei, an empty or
 near-total whole-cell mask, or a nucleus with no matching cell.</p>
+<p>The accepted images are split into a tuning set and a held-out set.
+Search and screening run only on the tuning images; after tuning, the
+winning configuration is re-run on the held-out images, which it never
+saw during tuning. Pass <code class="docutils literal notranslate"><span class="pre">acquisition_groups</span></code> (a map from image ID to a
+group name, such as its plate) and images from the same acquisition
+always land on the same side of the split, so held-out evidence comes
+from acquisitions the search never touched. Without groups the split
+only alternates the sorted image IDs. Every screening, tuning, and
+held-out run records one evaluation row (image, phase, pipeline,
+runtime seconds, failures) on <code class="docutils literal notranslate"><span class="pre">result.evaluations</span></code>, with the two sides
+listed on <code class="docutils literal notranslate"><span class="pre">result.tuning_ids</span></code> and <code class="docutils literal notranslate"><span class="pre">result.validation_ids</span></code>. Pass
+<code class="docutils literal notranslate"><span class="pre">max_field_seconds</span></code> to bound how long one image may take in a
+candidate run; images that run longer fail that run with a “runtime
+limit” failure and leave the search, which ends the run as
+<code class="docutils literal notranslate"><span class="pre">&quot;review_required&quot;</span></code> if no candidate evidence remains.</p>
 <p><code class="docutils literal notranslate"><span class="pre">result.review</span></code> records accept/override/reject decisions
 (<code class="docutils literal notranslate"><span class="pre">result.review.accept(reviewer=...)</span></code>, <code class="docutils literal notranslate"><span class="pre">.override(selected=...,</span> <span class="pre">...)</span></code>,
 <code class="docutils literal notranslate"><span class="pre">.reject(...)</span></code>) without altering the original automatic recommendation;

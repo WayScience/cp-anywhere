@@ -477,6 +477,7 @@ library uses <code class="docutils literal notranslate"><span class="pre">cp_any
 <li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#segment-nuclei-cells-and-cytoplasm">3. Segment nuclei, cells, and cytoplasm</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#measure-cell-features">4. Measure cell features</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#save-the-results">5. Save the results</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#let-autosegment-pick-and-tune-the-pipeline">6. Let AutoSegment pick and tune the pipeline</a></li>
 <li class="toctree-l2"><a class="reference internal" href="cell-profiling-anywhere.html#a-few-optional-extras">A few optional extras</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="cell-profiling-anywhere.html#add-texture-measurements">Add texture measurements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="cell-profiling-anywhere.html#already-have-images-and-labels-on-disk">Already have images and labels on disk?</a></li>
@@ -543,6 +544,27 @@ library uses <code class="docutils literal notranslate"><span class="pre">cp_any
 <li class="toctree-l2"><a class="reference internal" href="python-api.html#batch-processing">Batch processing</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.batch.ImageSetResult"><code class="docutils literal notranslate"><span class="pre">ImageSetResult</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.batch.run_batch"><code class="docutils literal notranslate"><span class="pre">run_batch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#image-quality-gate">Image quality gate</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.ImageQualityReport"><code class="docutils literal notranslate"><span class="pre">ImageQualityReport</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.QcCriterion"><code class="docutils literal notranslate"><span class="pre">QcCriterion</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.QcProfile"><code class="docutils literal notranslate"><span class="pre">QcProfile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.QualityGateResult"><code class="docutils literal notranslate"><span class="pre">QualityGateResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.Reason"><code class="docutils literal notranslate"><span class="pre">Reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.Status"><code class="docutils literal notranslate"><span class="pre">Status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.assess"><code class="docutils literal notranslate"><span class="pre">assess()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.quality.assess_image"><code class="docutils literal notranslate"><span class="pre">assess_image()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="python-api.html#autosegment">AutoSegment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult"><code class="docutils literal notranslate"><span class="pre">AutoSegmentResult</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.ClassicalPipeline"><code class="docutils literal notranslate"><span class="pre">ClassicalPipeline</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.EvaluationRow"><code class="docutils literal notranslate"><span class="pre">EvaluationRow</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.ReviewState"><code class="docutils literal notranslate"><span class="pre">ReviewState</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.SegmentationOutcome"><code class="docutils literal notranslate"><span class="pre">SegmentationOutcome</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.StarDistPipeline"><code class="docutils literal notranslate"><span class="pre">StarDistPipeline</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="python-api.html#src.cp_anywhere.autosegment.auto"><code class="docutils literal notranslate"><span class="pre">auto()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -1,0 +1,1289 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>src.cp_anywhere.autosegment &#8212; cp-anywhere  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=05d2301c" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/src/cp_anywhere/autosegment';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class=" navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">cp-anywhere</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class=" navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../browser-demo.html">
+    Cell profiling in your browser
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../cell-profiling-anywhere.html">
+    Cell Profiling Anywhere
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../browser-demo.html">
+    Cell profiling in your browser
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../python-api.html">
+    Python API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../project-docs.html">
+    Project documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/wayscience/cp-anywhere" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">src.cp_anywhere.autosegment</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for src.cp_anywhere.autosegment</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;M1/M2/M3/M4: pipeline wrappers plus a two-stage AutoSegment selector.</span>
+
+<span class="sd">M1 wraps this project&#39;s existing, oracle-verified classical primitives</span>
+<span class="sd">(:func:`cp_anywhere.identify_primary_objects`,</span>
+<span class="sd">:func:`cp_anywhere.identify_secondary_objects`,</span>
+<span class="sd">:func:`cp_anywhere.identify_tertiary_objects`) into one named</span>
+<span class="sd">``Nuclei -&gt; Cells -&gt; Cytoplasm`` pipeline. **No new segmentation</span>
+<span class="sd">algorithm is implemented here.**</span>
+
+<span class="sd">M2 uses the pretrained StarDist ``2D_versatile_fluo`` model for nuclei.</span>
+<span class="sd">ONNX inference and polygon decoding run in Rust. Both candidates use</span>
+<span class="sd">classical propagation and subtraction for cells and cytoplasm. StarDist</span>
+<span class="sd">requires the opt-in ``stardist-model`` feature in the native extension.</span>
+
+<span class="sd">The selector uses QC exclusion, hard constraints, and a seeded parameter</span>
+<span class="sd">search over the requested candidates. It returns ``review_required`` if</span>
+<span class="sd">none passes.</span>
+
+<span class="sd">M4 implements Stage 3 (apply the selected configuration) and a reduced</span>
+<span class="sd">Stage 4 (a self-contained, offline HTML report with the plan&#39;s section</span>
+<span class="sd">structure, plus ``review.json`` provenance for accept/override/reject</span>
+<span class="sd">decisions). It does not yet include response-surface plots, a failure</span>
+<span class="sd">gallery, or the full literature technique catalog.</span>
+
+<span class="sd">M5 (external scientific validation against expert-reviewed masks) is</span>
+<span class="sd">out of scope for this module; see the plan&#39;s own Stage 1 validation</span>
+<span class="sd">notes for what that would require.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">html</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">PackageNotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span> <span class="k">as</span> <span class="n">_package_version</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_native</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.quality</span><span class="w"> </span><span class="kn">import</span> <span class="n">QcProfile</span><span class="p">,</span> <span class="n">QualityGateResult</span><span class="p">,</span> <span class="n">assess</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.segment</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">identify_primary_objects</span><span class="p">,</span>
+    <span class="n">identify_secondary_objects</span><span class="p">,</span>
+    <span class="n">identify_tertiary_objects</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;AutoSegmentResult&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ClassicalPipeline&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;EvaluationRow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ReviewState&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SegmentationOutcome&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;StarDistPipeline&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_cp_anywhere_version</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_package_version</span><span class="p">(</span><span class="s2">&quot;cp-anywhere&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">PackageNotFoundError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;unknown&quot;</span>
+
+
+<span class="n">_DEFAULT_TRIALS</span> <span class="o">=</span> <span class="mi">16</span>
+<span class="n">_DEFAULT_TOP_K</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_REVIEW_MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;optional&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+<span class="n">_SUPPORTED_PIPELINES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;classical&quot;</span><span class="p">,</span> <span class="s2">&quot;stardist&quot;</span><span class="p">)</span>
+<span class="n">_MAX_CELL_COVERAGE</span> <span class="o">=</span> <span class="mf">0.98</span>
+<span class="c1"># From the shipped model&#39;s own thresholds.json/config.json -- not invented.</span>
+<span class="n">_STARDIST_MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;2D_versatile_fluo&quot;</span>
+<span class="n">_STARDIST_MODEL_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;4d0c5663417544c88a6be2abaf09c4052f1202a71577425baa408d1a2d73741d&quot;</span>
+<span class="p">)</span>
+<span class="n">_STARDIST_N_RAYS</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">_STARDIST_GRID</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">_IMAGE_NDIM</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_STARDIST_DEFAULT_PROB_THRESH</span> <span class="o">=</span> <span class="mf">0.479071463157368</span>
+<span class="n">_STARDIST_DEFAULT_NMS_THRESH</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+<span class="c1"># Stage 2&#39;s search space (plan section 6): sensible method-specific ranges,</span>
+<span class="c1"># not a Cartesian grid. Keys match ClassicalPipeline&#39;s own override names.</span>
+<span class="n">CLASSICAL_PARAMETER_SPACE</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;nuclei_threshold_correction_factor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">),</span>
+    <span class="s2">&quot;nuclei_min_diameter&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">16.0</span><span class="p">),</span>
+    <span class="s2">&quot;cells_threshold_correction_factor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">),</span>
+    <span class="s2">&quot;cells_regularization_factor&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>
+    <span class="s2">&quot;cells_distance_to_dilate&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">),</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="SegmentationOutcome">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.SegmentationOutcome">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SegmentationOutcome</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One field&#39;s Nuclei/Cells/Cytoplasm labels plus reproducibility data.&quot;&quot;&quot;</span>
+
+    <span class="n">nuclei</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">cells</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">cytoplasm</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">pipeline_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="n">stats</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compartment_stats</span><span class="p">(</span><span class="n">labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fast, mask-only plausibility numbers -- not a morphology measurement.&quot;&quot;&quot;</span>
+    <span class="n">ids</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">return_counts</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">ids</span> <span class="o">!=</span> <span class="mi">0</span>
+    <span class="n">ids</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="n">keep</span><span class="p">],</span> <span class="n">counts</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">border</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">labels</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">labels</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">labels</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">labels</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="n">border_touching</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">border</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="mi">0</span><span class="p">})</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;object_count&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ids</span><span class="o">.</span><span class="n">size</span><span class="p">),</span>
+        <span class="s2">&quot;median_area&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span> <span class="k">if</span> <span class="n">counts</span><span class="o">.</span><span class="n">size</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;coverage_fraction&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">counts</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span> <span class="k">if</span> <span class="n">total</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;border_touching_count&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">border_touching</span><span class="p">),</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="ClassicalPipeline">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.ClassicalPipeline">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ClassicalPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;CellProfiler-compatible Nuclei -&gt; Cells -&gt; Cytoplasm, one named pipeline.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;classical&quot;</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;nuclei_threshold_correction_factor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;nuclei_min_diameter&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+            <span class="s2">&quot;cells_threshold_correction_factor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;cells_regularization_factor&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="s2">&quot;cells_distance_to_dilate&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+<div class="viewcode-block" id="ClassicalPipeline.run">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.ClassicalPipeline.run">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuclei_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationOutcome</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the full Nuclei -&gt; Cells -&gt; Cytoplasm chain on one field.&quot;&quot;&quot;</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+        <span class="n">primary</span> <span class="o">=</span> <span class="n">identify_primary_objects</span><span class="p">(</span>
+            <span class="n">nuclei_image</span><span class="p">,</span>
+            <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;nuclei_threshold_correction_factor&quot;</span><span class="p">],</span>
+            <span class="n">min_diameter</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;nuclei_min_diameter&quot;</span><span class="p">],</span>
+            <span class="n">unclump_method</span><span class="o">=</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span>
+            <span class="n">watershed_method</span><span class="o">=</span><span class="s2">&quot;shape&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">secondary</span> <span class="o">=</span> <span class="n">identify_secondary_objects</span><span class="p">(</span>
+            <span class="n">cell_image</span><span class="p">,</span>
+            <span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">primary_labels_in</span><span class="o">=</span><span class="n">primary</span><span class="o">.</span><span class="n">unedited_labels</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+            <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_threshold_correction_factor&quot;</span><span class="p">],</span>
+            <span class="n">regularization_factor</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_regularization_factor&quot;</span><span class="p">],</span>
+            <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_distance_to_dilate&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">tertiary</span> <span class="o">=</span> <span class="n">identify_tertiary_objects</span><span class="p">(</span>
+            <span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">shrink_primary</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nuclei&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+            <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+            <span class="s2">&quot;cytoplasm&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">SegmentationOutcome</span><span class="p">(</span>
+            <span class="n">nuclei</span><span class="o">=</span><span class="n">primary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">cells</span><span class="o">=</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">cytoplasm</span><span class="o">=</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">pipeline_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="nd">@cache</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_stardist_model_bytes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;stardist&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_STARDIST_MODEL_NAME</span><span class="si">}</span><span class="s2">.onnx&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">!=</span> <span class="n">_STARDIST_MODEL_SHA256</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;StarDist model checksum mismatch: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_stardist</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_native</span><span class="p">,</span> <span class="s2">&quot;stardist_segment&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;The native extension does not include StarDist. &quot;</span>
+            <span class="s2">&quot;Rebuild it with `maturin develop --features stardist-model`.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_native</span><span class="o">.</span><span class="n">stardist_segment</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_percentile_normalize</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale a fluorescence image by its 1st and 99.8th percentiles.&quot;&quot;&quot;</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">99.8</span><span class="p">))</span>
+    <span class="c1"># Do not clip: pixels beyond the two percentiles retain their relative value.</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">((</span><span class="n">values</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">+</span> <span class="mf">1e-20</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="StarDistPipeline">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.StarDistPipeline">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StarDistPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nuclei via the pretrained StarDist model; Cells/Cytoplasm stay classical.</span>
+
+<span class="sd">    Requires the native extension to have been built with</span>
+<span class="sd">    cp-anywhere&#39;s `stardist-model` Cargo feature (off by default --</span>
+<span class="sd">    see the module docstring). Raises ``RuntimeError`` naming that gap</span>
+<span class="sd">    if it was not, rather than silently falling back to the classical</span>
+<span class="sd">    nuclei threshold.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;stardist&quot;</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;prob_thresh&quot;</span><span class="p">:</span> <span class="n">_STARDIST_DEFAULT_PROB_THRESH</span><span class="p">,</span>
+            <span class="s2">&quot;nms_thresh&quot;</span><span class="p">:</span> <span class="n">_STARDIST_DEFAULT_NMS_THRESH</span><span class="p">,</span>
+            <span class="s2">&quot;cells_threshold_correction_factor&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s2">&quot;cells_regularization_factor&quot;</span><span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span>
+            <span class="s2">&quot;cells_distance_to_dilate&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuclei_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationOutcome</span><span class="p">:</span>
+        <span class="n">stardist_segment</span> <span class="o">=</span> <span class="n">_require_stardist</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nuclei_image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_IMAGE_NDIM</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;StarDist needs a nonempty 2D nuclei image&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;buif&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;StarDist needs a finite real-valued nuclei image&quot;</span><span class="p">)</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">normalized</span> <span class="o">=</span> <span class="n">_percentile_normalize</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">stardist_segment</span><span class="p">(</span>
+            <span class="n">normalized</span><span class="p">,</span>
+            <span class="n">rows</span><span class="p">,</span>
+            <span class="n">cols</span><span class="p">,</span>
+            <span class="n">_stardist_model_bytes</span><span class="p">(),</span>
+            <span class="n">_STARDIST_N_RAYS</span><span class="p">,</span>
+            <span class="n">_STARDIST_GRID</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">_STARDIST_GRID</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;prob_thresh&quot;</span><span class="p">],</span>
+            <span class="n">params</span><span class="p">[</span><span class="s2">&quot;nms_thresh&quot;</span><span class="p">],</span>
+            <span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">nuclei_labels</span> <span class="o">=</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">secondary</span> <span class="o">=</span> <span class="n">identify_secondary_objects</span><span class="p">(</span>
+            <span class="n">cell_image</span><span class="p">,</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">primary_labels_in</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+            <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_threshold_correction_factor&quot;</span><span class="p">],</span>
+            <span class="n">regularization_factor</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_regularization_factor&quot;</span><span class="p">],</span>
+            <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;cells_distance_to_dilate&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="n">tertiary</span> <span class="o">=</span> <span class="n">identify_tertiary_objects</span><span class="p">(</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span> <span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">shrink_primary</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nuclei&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">nuclei_labels</span><span class="p">),</span>
+            <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+            <span class="s2">&quot;cytoplasm&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">SegmentationOutcome</span><span class="p">(</span>
+            <span class="n">nuclei</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">cells</span><span class="o">=</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">cytoplasm</span><span class="o">=</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">pipeline_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="n">_PIPELINE_FACTORIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;classical&quot;</span><span class="p">:</span> <span class="n">ClassicalPipeline</span><span class="p">,</span> <span class="s2">&quot;stardist&quot;</span><span class="p">:</span> <span class="n">StarDistPipeline</span><span class="p">}</span>
+<span class="n">_PARAMETER_SPACES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;classical&quot;</span><span class="p">:</span> <span class="n">CLASSICAL_PARAMETER_SPACE</span><span class="p">,</span>
+    <span class="c1"># StarDist&#39;s architecture/weights are fixed (pretrained); only its two</span>
+    <span class="c1"># decision thresholds are tunable, within a narrow band around the</span>
+    <span class="c1"># model&#39;s own calibrated defaults (plan section 6: &quot;sensible,</span>
+    <span class="c1"># method-specific ranges&quot;).</span>
+    <span class="s2">&quot;stardist&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;prob_thresh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span>
+        <span class="s2">&quot;nms_thresh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_hard_constraint_failures</span><span class="p">(</span><span class="n">outcome</span><span class="p">:</span> <span class="n">SegmentationOutcome</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plan section 5.4: invalid labels, broken parent-child, unreasonable coverage.&quot;&quot;&quot;</span>
+    <span class="n">failures</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;nuclei&quot;</span><span class="p">][</span><span class="s2">&quot;object_count&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;no nuclei detected&quot;</span><span class="p">)</span>
+    <span class="n">coverage</span> <span class="o">=</span> <span class="n">outcome</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;cells&quot;</span><span class="p">][</span><span class="s2">&quot;coverage_fraction&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">coverage</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;whole-cell mask is empty&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">coverage</span> <span class="o">&gt;</span> <span class="n">_MAX_CELL_COVERAGE</span><span class="p">:</span>
+        <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;whole-cell mask covers nearly the entire image&quot;</span><span class="p">)</span>
+    <span class="n">nucleus_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">nuclei</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+    <span class="n">cell_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span> <span class="o">-</span> <span class="p">{</span><span class="mi">0</span><span class="p">}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nucleus_ids</span> <span class="o">&lt;=</span> <span class="n">cell_ids</span><span class="p">:</span>
+        <span class="n">failures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;a nucleus has no matching cell (broken parent-child link)&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">failures</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_sample_parameters</span><span class="p">(</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">space</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">Random</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">space</span><span class="o">.</span><span class="n">items</span><span class="p">())}</span>
+
+
+<div class="viewcode-block" id="EvaluationRow">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.EvaluationRow">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvaluationRow</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One candidate-pipeline run against one image in one selection phase.&quot;&quot;&quot;</span>
+
+    <span class="n">image_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">pipeline_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">runtime_seconds</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">failures</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Trial</span><span class="p">:</span>
+    <span class="n">parameters</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">outcomes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationOutcome</span><span class="p">]</span>
+    <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_score_trial</span><span class="p">(</span><span class="n">outcomes</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationOutcome</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Higher is better: more detected objects, less degenerate coverage.</span>
+
+<span class="sd">    A simple, documented ranking (plan section 7.2), not a literature-backed</span>
+<span class="sd">    composite score.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;nuclei&quot;</span><span class="p">][</span><span class="s2">&quot;object_count&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">outcomes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="n">coverage</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">&quot;cells&quot;</span><span class="p">][</span><span class="s2">&quot;coverage_fraction&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">outcomes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">counts</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;-inf&quot;</span><span class="p">)</span>
+    <span class="n">balance</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">-</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">coverage</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">coverage</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">counts</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span> <span class="o">*</span> <span class="n">balance</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_split_tuning_validation</span><span class="p">(</span>
+    <span class="n">image_ids</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">acquisition_groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Split accepted images into tuning and held-out sets (plan section 5).</span>
+
+<span class="sd">    Disjointness is enforced at the acquisition-group level: every image</span>
+<span class="sd">    sharing a group with a tuning image is kept out of held-out evidence,</span>
+<span class="sd">    so plate-to-plate drift cannot leak between selection and validation.</span>
+<span class="sd">    Without group metadata the split alternates the sorted image IDs,</span>
+<span class="sd">    which guarantees only image-level disjointness.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">acquisition_groups</span><span class="p">:</span>
+        <span class="n">group_of</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">image_id</span><span class="p">:</span> <span class="n">acquisition_groups</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">image_id</span><span class="p">,</span> <span class="n">image_id</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span>
+        <span class="p">}</span>
+        <span class="n">tuning_groups</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">group_of</span><span class="o">.</span><span class="n">values</span><span class="p">()))[::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">tuning</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">image_id</span> <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span> <span class="k">if</span> <span class="n">group_of</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="ow">in</span> <span class="n">tuning_groups</span>
+        <span class="p">)</span>
+        <span class="n">validation</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="n">image_id</span>
+            <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">image_ids</span>
+            <span class="k">if</span> <span class="n">group_of</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tuning_groups</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">image_ids</span><span class="p">)</span>
+        <span class="n">tuning</span> <span class="o">=</span> <span class="n">ordered</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">validation</span> <span class="o">=</span> <span class="n">ordered</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tuning</span><span class="p">,</span> <span class="n">validation</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_pipeline_on_sample</span><span class="p">(</span>
+    <span class="n">pipeline</span><span class="p">:</span> <span class="n">ClassicalPipeline</span> <span class="o">|</span> <span class="n">StarDistPipeline</span><span class="p">,</span>
+    <span class="n">sample</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EvaluationRow</span><span class="p">],</span>
+    <span class="n">max_field_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationOutcome</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run one configuration over a sample, timing each image.</span>
+
+<span class="sd">    Every run appends one ``EvaluationRow`` per image -- including images</span>
+<span class="sd">    that fail a hard constraint or the optional ``max_field_seconds``</span>
+<span class="sd">    runtime bound.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">outcomes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationOutcome</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">failures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">image_id</span><span class="p">,</span> <span class="p">(</span><span class="n">nuclei_image</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sample</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">started</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">nuclei_image</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">)</span>
+        <span class="n">runtime_seconds</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span>
+        <span class="n">problems</span> <span class="o">=</span> <span class="n">_hard_constraint_failures</span><span class="p">(</span><span class="n">outcome</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_field_seconds</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">runtime_seconds</span> <span class="o">&gt;</span> <span class="n">max_field_seconds</span><span class="p">:</span>
+            <span class="n">problems</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">problems</span><span class="p">,</span>
+                <span class="s2">&quot;runtime limit exceeded: &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">runtime_seconds</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">s ran against the &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_field_seconds</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">s maximum&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">EvaluationRow</span><span class="p">(</span>
+                <span class="n">image_id</span><span class="o">=</span><span class="n">image_id</span><span class="p">,</span>
+                <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+                <span class="n">pipeline_name</span><span class="o">=</span><span class="n">outcome</span><span class="o">.</span><span class="n">pipeline_name</span><span class="p">,</span>
+                <span class="n">runtime_seconds</span><span class="o">=</span><span class="n">runtime_seconds</span><span class="p">,</span>
+                <span class="n">failures</span><span class="o">=</span><span class="n">problems</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">problems</span><span class="p">:</span>
+            <span class="n">failures</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">problems</span>
+            <span class="k">continue</span>
+        <span class="n">outcomes</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">outcome</span>
+    <span class="k">return</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">failures</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_search_pipeline</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">sample</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">trials</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EvaluationRow</span><span class="p">],</span>
+    <span class="n">max_field_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Trial</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stage 2: a bounded, reproducible random search over one pipeline.&quot;&quot;&quot;</span>
+    <span class="n">best</span><span class="p">:</span> <span class="n">_Trial</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">trial_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trials</span><span class="p">):</span>
+        <span class="c1"># Evaluate the published StarDist defaults before tuning its thresholds.</span>
+        <span class="n">overrides</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">{}</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;stardist&quot;</span> <span class="ow">and</span> <span class="n">trial_index</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="n">_sample_parameters</span><span class="p">(</span><span class="n">seed</span> <span class="o">+</span> <span class="n">trial_index</span><span class="p">,</span> <span class="n">_PARAMETER_SPACES</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">_PIPELINE_FACTORIES</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="n">outcomes</span><span class="p">,</span> <span class="n">failures</span> <span class="o">=</span> <span class="n">_run_pipeline_on_sample</span><span class="p">(</span>
+            <span class="n">pipeline</span><span class="p">,</span>
+            <span class="n">sample</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">max_field_seconds</span><span class="o">=</span><span class="n">max_field_seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">outcomes</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">_score_trial</span><span class="p">(</span><span class="n">outcomes</span><span class="p">)</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="n">_Trial</span><span class="p">(</span><span class="n">pipeline</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">score</span><span class="p">,</span> <span class="n">outcomes</span><span class="p">,</span> <span class="n">failures</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">best</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">trial</span><span class="o">.</span><span class="n">score</span> <span class="o">&gt;</span> <span class="n">best</span><span class="o">.</span><span class="n">score</span><span class="p">:</span>
+            <span class="n">best</span> <span class="o">=</span> <span class="n">trial</span>
+    <span class="k">return</span> <span class="n">best</span>
+
+
+<div class="viewcode-block" id="ReviewState">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.ReviewState">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReviewState</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stage 4&#39;s human-judgment provenance (plan section 9).&quot;&quot;&quot;</span>
+
+    <span class="n">review_mode</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">decisions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_record</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">fields</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">review_mode</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;review controls are disabled for this run&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="n">action</span><span class="p">,</span>
+                <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                <span class="o">**</span><span class="n">fields</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;accept&quot;</span><span class="p">,</span> <span class="s2">&quot;override&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;accepted&quot;</span>
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;reject&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;rejected&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reviewer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="s2">&quot;accept&quot;</span><span class="p">,</span> <span class="n">reviewer</span><span class="o">=</span><span class="n">reviewer</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">override</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">selected</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reviewer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="s2">&quot;override&quot;</span><span class="p">,</span> <span class="n">selected</span><span class="o">=</span><span class="n">selected</span><span class="p">,</span> <span class="n">reviewer</span><span class="o">=</span><span class="n">reviewer</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reject</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reviewer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_record</span><span class="p">(</span><span class="s2">&quot;reject&quot;</span><span class="p">,</span> <span class="n">reviewer</span><span class="o">=</span><span class="n">reviewer</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;review_mode&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">review_mode</span><span class="p">,</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="s2">&quot;decisions&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">decisions</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="AutoSegmentResult">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AutoSegmentResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Everything Stage 0-2 produced, plus Stage 3/4 entry points.&quot;&quot;&quot;</span>
+
+    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">stage0</span><span class="p">:</span> <span class="n">QualityGateResult</span>
+    <span class="n">selected_pipeline_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">selected_parameters</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">candidates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_Trial</span><span class="p">]</span>
+    <span class="n">channels</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">review</span><span class="p">:</span> <span class="n">ReviewState</span>
+    <span class="n">cp_anywhere_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">_cp_anywhere_version</span><span class="p">)</span>
+    <span class="n">evaluations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EvaluationRow</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">tuning_ids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">validation_ids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+
+<div class="viewcode-block" id="AutoSegmentResult.segment">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult.segment">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">segment</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">SegmentationOutcome</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stage 3: apply the selected configuration to (possibly new) images.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;no pipeline was selected; status is review_required&quot;</span><span class="p">)</span>
+        <span class="n">pipeline</span> <span class="o">=</span> <span class="n">_PIPELINE_FACTORIES</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span><span class="p">](</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span><span class="p">,</span>
+            <span class="n">overrides</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_parameters</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">image_id</span><span class="p">,</span> <span class="n">channels</span> <span class="ow">in</span> <span class="n">images</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nuclei_image</span> <span class="o">=</span> <span class="n">channels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;nuclei&quot;</span><span class="p">]]</span>
+            <span class="n">cell_image</span> <span class="o">=</span> <span class="n">channels</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;cells&quot;</span><span class="p">]]</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">pipeline</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">nuclei_image</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">results</span></div>
+
+
+<div class="viewcode-block" id="AutoSegmentResult.save">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult.save">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``segmentation-config.json``: selected pipeline, settings, provenance.&quot;&quot;&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;cp_anywhere_version&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cp_anywhere_version</span><span class="p">,</span>
+            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="s2">&quot;selected_pipeline&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span><span class="p">,</span>
+            <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_parameters</span><span class="p">,</span>
+            <span class="s2">&quot;channels&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">,</span>
+            <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">seed</span><span class="p">,</span>
+            <span class="s2">&quot;stage0_accepted&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">accepted</span><span class="p">),</span>
+            <span class="s2">&quot;stage0_rejected&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">rejected</span><span class="p">),</span>
+            <span class="s2">&quot;stage0_review&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">review</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span> <span class="o">==</span> <span class="s2">&quot;stardist&quot;</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">_STARDIST_MODEL_NAME</span><span class="p">,</span>
+                <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="n">_STARDIST_MODEL_SHA256</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="AutoSegmentResult.save_review">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult.save_review">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">save_review</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``review.json``: review mode, status, decisions, audit trail.&quot;&quot;&quot;</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">review</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="AutoSegmentResult.report">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.AutoSegmentResult.report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A self-contained, offline HTML report (plan section 9 structure).&quot;&quot;&quot;</span>
+        <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">_render_report</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_escape</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_render_report</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">AutoSegmentResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">stage0_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">image_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span><span class="si">}</span><span class="s2">&lt;/td&gt;&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">criteria_failed</span><span class="p">))</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">reports</span>
+    <span class="p">)</span>
+    <span class="n">candidate_rows</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">score</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">))</span><span class="si">}</span><span class="s2">&lt;/td&gt;&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;&lt;td&gt;</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">trial</span><span class="o">.</span><span class="n">parameters</span><span class="p">))</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">trial</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">model_note</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;stardist&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidates</span><span class="p">:</span>
+        <span class="n">model_note</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;StarDist model: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_STARDIST_MODEL_NAME</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;SHA-256: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_STARDIST_MODEL_SHA256</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
+<span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
+<span class="s2">&lt;head&gt;&lt;meta charset=&quot;utf-8&quot;&gt;&lt;title&gt;cp-anywhere AutoSegment report&lt;/title&gt;&lt;/head&gt;</span>
+<span class="s2">&lt;body&gt;</span>
+<span class="s2">&lt;h1&gt;cp-anywhere AutoSegment report&lt;/h1&gt;</span>
+
+<span class="s2">&lt;h2&gt;Image-quality gate&lt;/h2&gt;</span>
+<span class="s2">&lt;p&gt;Profile: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">profile_name</span><span class="p">)</span><span class="si">}</span>
+<span class="s2">(</span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">profile_version</span><span class="p">)</span><span class="si">}</span><span class="s2">).</span>
+<span class="s2">Accepted: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">accepted</span><span class="p">)</span><span class="si">}</span><span class="s2">. Rejected: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">rejected</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">Review: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stage0</span><span class="o">.</span><span class="n">review</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;</span>
+<span class="s2">&lt;table&gt;&lt;tr&gt;&lt;th&gt;Image&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;th&gt;Criteria failed&lt;/th&gt;&lt;/tr&gt;</span>
+<span class="si">{</span><span class="n">stage0_rows</span><span class="si">}</span><span class="s2">&lt;/table&gt;</span>
+
+<span class="s2">&lt;h2&gt;Decision summary&lt;/h2&gt;</span>
+<span class="s2">&lt;p&gt;Status: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="si">}</span><span class="s2">. Selected pipeline:</span>
+<span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">selected_pipeline_name</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">Seed: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span><span class="si">}</span><span class="s2">. Channels: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">channels</span><span class="p">))</span><span class="si">}</span><span class="s2">.&lt;/p&gt;</span>
+
+<span class="s2">&lt;h2&gt;Parameter search&lt;/h2&gt;</span>
+<span class="s2">&lt;table&gt;&lt;tr&gt;&lt;th&gt;Pipeline&lt;/th&gt;&lt;th&gt;Score&lt;/th&gt;&lt;th&gt;Parameters&lt;/th&gt;&lt;/tr&gt;</span><span class="si">{</span><span class="n">candidate_rows</span><span class="si">}</span><span class="s2">&lt;/table&gt;</span>
+
+<span class="s2">&lt;h2&gt;Human review&lt;/h2&gt;</span>
+<span class="s2">&lt;p&gt;Review mode: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">review</span><span class="o">.</span><span class="n">review_mode</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">Status: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">review</span><span class="o">.</span><span class="n">status</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span>
+<span class="s2">Decisions: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">review</span><span class="o">.</span><span class="n">decisions</span><span class="p">))</span><span class="si">}</span><span class="s2">.&lt;/p&gt;</span>
+
+<span class="s2">&lt;h2&gt;Reproducibility&lt;/h2&gt;</span>
+<span class="s2">&lt;p&gt;cp-anywhere </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">cp_anywhere_version</span><span class="p">)</span><span class="si">}</span><span class="s2">. Seed </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;</span>
+<span class="si">{</span><span class="n">model_note</span><span class="si">}</span>
+<span class="s2">&lt;p&gt;This report embeds no remote resources; see</span>
+<span class="s2">cp-anywhere-autosegment-plan.md for the method catalog and literature</span>
+<span class="s2">references not yet included in this reduced report.&lt;/p&gt;</span>
+<span class="s2">&lt;/body&gt;</span>
+<span class="s2">&lt;/html&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="auto">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.auto">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">auto</span><span class="p">(</span>  <span class="c1"># noqa: C901, PLR0912, PLR0913</span>
+    <span class="n">images</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">channels</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">quality_profile</span><span class="p">:</span> <span class="n">QcProfile</span><span class="p">,</span>
+    <span class="n">pipelines</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;classical&quot;</span><span class="p">,),</span>
+    <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_DEFAULT_TOP_K</span><span class="p">,</span>
+    <span class="n">trials</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">_DEFAULT_TRIALS</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">42</span><span class="p">,</span>
+    <span class="n">minimum_accepted</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">review_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;optional&quot;</span><span class="p">,</span>
+    <span class="n">acquisition_groups</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">max_field_seconds</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AutoSegmentResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stage 0 through Stage 2: assess quality, select, and tune a pipeline.</span>
+
+<span class="sd">    ``channels`` maps the segmentation roles ``&quot;nuclei&quot;`` and ``&quot;cells&quot;``</span>
+<span class="sd">    to channel names present in every image&#39;s own mapping.</span>
+<span class="sd">    ``&quot;classical&quot;`` and ``&quot;stardist&quot;`` are implemented (see the module</span>
+<span class="sd">    docstring for ``&quot;stardist&quot;``&#39;s native-build requirement); any other</span>
+<span class="sd">    name in ``pipelines`` raises ``NotImplementedError`` naming the</span>
+<span class="sd">    specific gap. ``device`` only accepts ``&quot;cpu&quot;`` in this release --</span>
+<span class="sd">    every underlying primitive is a native CPU Rust kernel; no GPU path</span>
+<span class="sd">    exists to dispatch to.</span>
+
+<span class="sd">    ``acquisition_groups`` optionally maps image IDs to acquisition</span>
+<span class="sd">    groups (e.g. plates). The tuning and held-out splits never share a</span>
+<span class="sd">    group, so held-out evidence always comes from acquisitions unseen</span>
+<span class="sd">    during tuning (plan section 5); when it is omitted the split</span>
+<span class="sd">    alternates the sorted image IDs instead. Every candidate run&#39;s</span>
+<span class="sd">    per-image outcome, phase, and runtime is recorded on the result&#39;s</span>
+<span class="sd">    ``evaluations``, and ``max_field_seconds`` optionally bounds each</span>
+<span class="sd">    image&#39;s runtime: runs exceeding it fail with a &quot;runtime limit&quot;</span>
+<span class="sd">    failure and the image is excluded from that candidate&#39;s evidence.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">device</span> <span class="o">!=</span> <span class="s2">&quot;cpu&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;device=</span><span class="si">{</span><span class="n">device</span><span class="si">!r}</span><span class="s1"> is not supported; only &quot;cpu&quot; is implemented&#39;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">review_mode</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_REVIEW_MODES</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;review_mode must be one of </span><span class="si">{</span><span class="n">_REVIEW_MODES</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">unsupported</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">pipelines</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">_SUPPORTED_PIPELINES</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">unsupported</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;pipeline(s) </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unsupported</span><span class="p">)</span><span class="si">!r}</span><span class="s2"> are not implemented in this &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;release. Only </span><span class="si">{</span><span class="n">_SUPPORTED_PIPELINES</span><span class="si">!r}</span><span class="s2"> are available.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;stardist&quot;</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+        <span class="n">_require_stardist</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nuclei&quot;</span><span class="p">,</span> <span class="s2">&quot;cells&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;channels must map </span><span class="si">{</span><span class="n">role</span><span class="si">!r}</span><span class="s2"> to a channel name&quot;</span><span class="p">)</span>
+
+    <span class="n">stage0</span> <span class="o">=</span> <span class="n">assess</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">quality_profile</span><span class="p">)</span>
+    <span class="n">review</span> <span class="o">=</span> <span class="n">ReviewState</span><span class="p">(</span><span class="n">review_mode</span><span class="o">=</span><span class="n">review_mode</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s2">&quot;not_reviewed&quot;</span><span class="p">)</span>
+    <span class="n">tuning_ids</span><span class="p">,</span> <span class="n">validation_ids</span> <span class="o">=</span> <span class="n">_split_tuning_validation</span><span class="p">(</span>
+        <span class="n">stage0</span><span class="o">.</span><span class="n">accepted</span><span class="p">,</span> <span class="n">acquisition_groups</span>
+    <span class="p">)</span>
+    <span class="n">accepted_sample</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">image_id</span><span class="p">:</span> <span class="p">(</span>
+            <span class="n">images</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;nuclei&quot;</span><span class="p">]],</span>
+            <span class="n">images</span><span class="p">[</span><span class="n">image_id</span><span class="p">][</span><span class="n">channels</span><span class="p">[</span><span class="s2">&quot;cells&quot;</span><span class="p">]],</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">stage0</span><span class="o">.</span><span class="n">accepted</span>
+    <span class="p">}</span>
+    <span class="n">tuning_sample</span> <span class="o">=</span> <span class="p">{</span><span class="n">image_id</span><span class="p">:</span> <span class="n">accepted_sample</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">tuning_ids</span><span class="p">}</span>
+    <span class="n">validation_sample</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">image_id</span><span class="p">:</span> <span class="n">accepted_sample</span><span class="p">[</span><span class="n">image_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">image_id</span> <span class="ow">in</span> <span class="n">validation_ids</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_result</span><span class="p">(</span>
+        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">selected_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">selected_parameters</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_Trial</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">evaluations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EvaluationRow</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AutoSegmentResult</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">AutoSegmentResult</span><span class="p">(</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">stage0</span><span class="o">=</span><span class="n">stage0</span><span class="p">,</span>
+            <span class="n">selected_pipeline_name</span><span class="o">=</span><span class="n">selected_name</span><span class="p">,</span>
+            <span class="n">selected_parameters</span><span class="o">=</span><span class="n">selected_parameters</span><span class="p">,</span>
+            <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span> <span class="ow">or</span> <span class="p">{},</span>
+            <span class="n">channels</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">channels</span><span class="p">),</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">review</span><span class="o">=</span><span class="n">review</span><span class="p">,</span>
+            <span class="n">tuning_ids</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">tuning_ids</span><span class="p">),</span>
+            <span class="n">validation_ids</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">validation_ids</span><span class="p">),</span>
+            <span class="n">evaluations</span><span class="o">=</span><span class="n">evaluations</span> <span class="ow">or</span> <span class="p">[],</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stage0</span><span class="o">.</span><span class="n">accepted</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">minimum_accepted</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_result</span><span class="p">(</span><span class="s2">&quot;review_required&quot;</span><span class="p">)</span>
+
+    <span class="n">evaluations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EvaluationRow</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">candidates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_Trial</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+        <span class="c1"># Stage 1 screens each candidate&#39;s published defaults, Stage 2 tunes.</span>
+        <span class="n">screen_pipeline</span> <span class="o">=</span> <span class="n">_PIPELINE_FACTORIES</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">{})</span>
+        <span class="n">_run_pipeline_on_sample</span><span class="p">(</span>
+            <span class="n">screen_pipeline</span><span class="p">,</span>
+            <span class="n">tuning_sample</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;screen&quot;</span><span class="p">,</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">evaluations</span><span class="p">,</span>
+            <span class="n">max_field_seconds</span><span class="o">=</span><span class="n">max_field_seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">trial</span> <span class="o">=</span> <span class="n">_search_pipeline</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span>
+            <span class="n">tuning_sample</span><span class="p">,</span>
+            <span class="n">trials</span><span class="o">=</span><span class="n">trials</span><span class="p">,</span>
+            <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;tuning&quot;</span><span class="p">,</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">evaluations</span><span class="p">,</span>
+            <span class="n">max_field_seconds</span><span class="o">=</span><span class="n">max_field_seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">trial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">candidates</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">trial</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_result</span><span class="p">(</span><span class="s2">&quot;review_required&quot;</span><span class="p">,</span> <span class="n">evaluations</span><span class="o">=</span><span class="n">evaluations</span><span class="p">)</span>
+
+    <span class="n">ranked</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">candidates</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">best_name</span><span class="p">,</span> <span class="n">best_trial</span> <span class="o">=</span> <span class="n">ranked</span><span class="p">[:</span> <span class="n">top_k</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranked</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;selected&quot;</span>
+    <span class="k">if</span> <span class="n">review_mode</span> <span class="o">==</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;awaiting_approval&quot;</span>
+
+    <span class="c1"># Stage 2 validation: rerun the tuned configuration on held-out</span>
+    <span class="c1"># acquisitions so selection confidence rests on unseen evidence.</span>
+    <span class="k">if</span> <span class="n">validation_sample</span><span class="p">:</span>
+        <span class="n">tuned_pipeline</span> <span class="o">=</span> <span class="n">_PIPELINE_FACTORIES</span><span class="p">[</span><span class="n">best_name</span><span class="p">](</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">best_name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">best_trial</span><span class="o">.</span><span class="n">parameters</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">held_out</span><span class="p">,</span> <span class="n">_held_out_failures</span> <span class="o">=</span> <span class="n">_run_pipeline_on_sample</span><span class="p">(</span>
+            <span class="n">tuned_pipeline</span><span class="p">,</span>
+            <span class="n">validation_sample</span><span class="p">,</span>
+            <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;held_out&quot;</span><span class="p">,</span>
+            <span class="n">rows</span><span class="o">=</span><span class="n">evaluations</span><span class="p">,</span>
+            <span class="n">max_field_seconds</span><span class="o">=</span><span class="n">max_field_seconds</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">held_out</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_result</span><span class="p">(</span>
+                <span class="s2">&quot;review_required&quot;</span><span class="p">,</span> <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span> <span class="n">evaluations</span><span class="o">=</span><span class="n">evaluations</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">_result</span><span class="p">(</span>
+        <span class="n">status</span><span class="p">,</span>
+        <span class="n">selected_name</span><span class="o">=</span><span class="n">best_name</span><span class="p">,</span>
+        <span class="n">selected_parameters</span><span class="o">=</span><span class="n">best_trial</span><span class="o">.</span><span class="n">parameters</span><span class="p">,</span>
+        <span class="n">candidates</span><span class="o">=</span><span class="n">candidates</span><span class="p">,</span>
+        <span class="n">evaluations</span><span class="o">=</span><span class="n">evaluations</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Dave Bunten.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__center">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.20.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
