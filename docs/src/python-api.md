@@ -74,3 +74,35 @@ processing does not replace single-field or individual module calls.
 .. automodule:: src.cp_anywhere.batch
    :members:
 ```
+
+```{eval-rst}
+Image quality gate
+------------------
+Stage 0 of AutoSegment: every image is compared against a ``QcProfile``
+built from a real, pinned CellProfiler pipeline's
+``MeasureImageQuality``/``FlagImage`` pair, or from explicit
+caller-calibrated criteria. Decisions carry reason codes and override
+provenance; nothing here is an invented universal image-quality
+standard. See
+`AutoSegment <project-docs.html#autosegment-image-quality-pipeline-selection-and-reporting>`_
+for the full stage descriptions.
+
+.. automodule:: src.cp_anywhere.quality
+   :members:
+```
+
+```{eval-rst}
+AutoSegment
+-----------
+One call runs the quality gate, splits accepted fields into tuning and
+held-out sets (never sharing an acquisition when ``acquisition_groups``
+is given), picks a candidate pipeline, tunes its parameters with a
+seeded search, re-checks the winner on held-out fields, applies the
+selected configuration to new images, and writes offline reports and
+review provenance. ``"classical"`` is always available; ``"stardist"``
+needs the opt-in ``stardist-model`` native build and raises rather than
+falling back silently.
+
+.. automodule:: src.cp_anywhere.autosegment
+   :members:
+```

@@ -77,11 +77,28 @@ result.report("report.html")  # Stage 4, self-contained and offline
 
 `result.status` is `"selected"`, `"awaiting_approval"` (selected, but
 `review_mode="required"` withholds final approval), or
-`"review_required"` (too few accepted images, or no candidate pipeline
-passed its hard constraints). Stage 2's random search is seeded and
+`"review_required"` (too few accepted images, no candidate pipeline
+passed its hard constraints, or the tuned configuration did not hold up
+on the held-out check). Stage 2's random search is seeded and
 reproducible: the same `seed` and inputs always pick the same
 parameters. Hard constraints reject a trial with no nuclei, an empty or
 near-total whole-cell mask, or a nucleus with no matching cell.
+
+The accepted images are split into a tuning set and a held-out set.
+Search and screening run only on the tuning images; after tuning, the
+winning configuration is re-run on the held-out images, which it never
+saw during tuning. Pass `acquisition_groups` (a map from image ID to a
+group name, such as its plate) and images from the same acquisition
+always land on the same side of the split, so held-out evidence comes
+from acquisitions the search never touched. Without groups the split
+only alternates the sorted image IDs. Every screening, tuning, and
+held-out run records one evaluation row (image, phase, pipeline,
+runtime seconds, failures) on `result.evaluations`, with the two sides
+listed on `result.tuning_ids` and `result.validation_ids`. Pass
+`max_field_seconds` to bound how long one image may take in a
+candidate run; images that run longer fail that run with a "runtime
+limit" failure and leave the search, which ends the run as
+`"review_required"` if no candidate evidence remains.
 
 `result.review` records accept/override/reject decisions
 (`result.review.accept(reviewer=...)`, `.override(selected=..., ...)`,

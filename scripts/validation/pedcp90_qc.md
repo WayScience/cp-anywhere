@@ -23,6 +23,8 @@ There were zero criterion, flag, skip, or downstream-execution differences acros
 
 ## Run from the repository root
 
+Keep the inputs and run directory outside the checkout. Use only data you are authorized to process. The upstream repository license and file checksums do not establish redistribution permission for raw images stored elsewhere. Do not commit or upload original TIFFs, illumination maps, decoded arrays, or run manifests. Share a decision summary only if the data owner permits it.
+
 Stage the original files by manifest basename in one local directory per plate. Use the pinned CellProfiler environment from `reference/install.sh` and a cp-anywhere environment with the native extension built. Repeat `--field` for up to eight distinct fields. Choose a new run directory for each run.
 
 ```sh

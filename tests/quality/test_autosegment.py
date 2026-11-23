@@ -225,6 +225,42 @@ def test_auto_select_runs_stage0_through_stage2_and_picks_classical() -> None:
     assert masks["field-0"].nuclei.shape == images["field-0"]["DNA"].shape
 
 
+def test_auto_uses_disjoint_acquisition_groups_for_held_out_evidence() -> None:
+    images = {name: _synthetic_field() for name in ("a1", "a2", "b1", "b2")}
+    groups = {"a1": "plate-a", "a2": "plate-a", "b1": "plate-b", "b2": "plate-b"}
+    result = autosegment.auto(
+        images,
+        channels={"nuclei": "DNA", "cells": "AGP"},
+        quality_profile=_lenient_profile(),
+        acquisition_groups=groups,
+        trials=2,
+    )
+    assert result.status == "selected"
+    phase_ids = {
+        phase: {row.image_id for row in result.evaluations if row.phase == phase}
+        for phase in ("screen", "tuning", "held_out")
+    }
+    assert phase_ids["screen"] == phase_ids["tuning"] == set(result.tuning_ids)
+    assert phase_ids["held_out"] == set(result.validation_ids)
+    assert {groups[name] for name in result.tuning_ids}.isdisjoint(
+        groups[name] for name in result.validation_ids
+    )
+    assert all(row.runtime_seconds >= 0 for row in result.evaluations)
+
+
+def test_auto_rejects_candidates_that_exceed_the_runtime_limit() -> None:
+    result = autosegment.auto(
+        {"a": _synthetic_field(), "b": _synthetic_field()},
+        channels={"nuclei": "DNA", "cells": "AGP"},
+        quality_profile=_lenient_profile(),
+        max_field_seconds=1e-12,
+        trials=2,
+    )
+    assert result.status == "review_required"
+    assert result.evaluations
+    assert all("runtime limit" in " ".join(row.failures) for row in result.evaluations)
+
+
 def test_auto_select_is_reproducible_with_the_same_seed() -> None:
     images = {f"field-{i}": _synthetic_field() for i in range(3)}
     profile = _lenient_profile()

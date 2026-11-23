@@ -33,6 +33,7 @@ import hashlib
 import html
 import json
 import random
+import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from functools import cache
@@ -57,6 +58,7 @@ if TYPE_CHECKING:
 __all__ = [
     "AutoSegmentResult",
     "ClassicalPipeline",
+    "EvaluationRow",
     "ReviewState",
     "SegmentationOutcome",
     "StarDistPipeline",
@@ -327,6 +329,17 @@ def _sample_parameters(
     return {name: rng.uniform(low, high) for name, (low, high) in sorted(space.items())}
 
 
+@dataclass(frozen=True)
+class EvaluationRow:
+    """One candidate-pipeline run against one image in one selection phase."""
+
+    image_id: str
+    phase: str
+    pipeline_name: str
+    runtime_seconds: float
+    failures: list[str]
+
+
 @dataclass
 class _Trial:
     parameters: Mapping[str, float]
@@ -349,15 +362,76 @@ def _score_trial(outcomes: Mapping[str, SegmentationOutcome]) -> float:
     return float(sum(counts) / len(counts)) * balance
 
 
+def _split_tuning_validation(
+    image_ids: Sequence[str],
+    acquisition_groups: Mapping[str, str] | None,
+) -> tuple[list[str], list[str]]:
+    """Split accepted images into tuning and held-out sets (plan section 5).
+
+    Disjointness is enforced at the acquisition-group level: every image
+    sharing a group with a tuning image is kept out of held-out evidence,
+    so plate-to-plate drift cannot leak between selection and validation.
+    Without group metadata the split alternates the sorted image IDs,
+    which guarantees only image-level disjointness.
+    """
+    if acquisition_groups:
+        group_of = {
+            image_id: acquisition_groups.get(image_id, image_id)
+            for image_id in image_ids
+        }
+        tuning_groups = sorted(set(group_of.values()))[::2]
+        tuning = sorted(
+            image_id for image_id in image_ids if group_of[image_id] in tuning_groups
+        )
+        validation = sorted(
+            image_id
+            for image_id in image_ids
+            if group_of[image_id] not in tuning_groups
+        )
+    else:
+        ordered = sorted(image_ids)
+        tuning = ordered[::2]
+        validation = ordered[1::2]
+    return tuning, validation
+
+
 def _run_pipeline_on_sample(
     pipeline: ClassicalPipeline | StarDistPipeline,
     sample: Mapping[str, tuple[object, object]],
+    *,
+    phase: str,
+    rows: list[EvaluationRow],
+    max_field_seconds: float | None = None,
 ) -> tuple[dict[str, SegmentationOutcome], dict[str, list[str]]]:
+    """Run one configuration over a sample, timing each image.
+
+    Every run appends one ``EvaluationRow`` per image -- including images
+    that fail a hard constraint or the optional ``max_field_seconds``
+    runtime bound.
+    """
     outcomes: dict[str, SegmentationOutcome] = {}
     failures: dict[str, list[str]] = {}
     for image_id, (nuclei_image, cell_image) in sample.items():
+        started = time.perf_counter()
         outcome = pipeline.run(nuclei_image, cell_image)
+        runtime_seconds = time.perf_counter() - started
         problems = _hard_constraint_failures(outcome)
+        if max_field_seconds is not None and runtime_seconds > max_field_seconds:
+            problems = [
+                *problems,
+                "runtime limit exceeded: "
+                f"{runtime_seconds:.3g}s ran against the "
+                f"{max_field_seconds:.3g}s maximum",
+            ]
+        rows.append(
+            EvaluationRow(
+                image_id=image_id,
+                phase=phase,
+                pipeline_name=outcome.pipeline_name,
+                runtime_seconds=runtime_seconds,
+                failures=problems,
+            )
+        )
         if problems:
             failures[image_id] = problems
             continue
@@ -365,12 +439,15 @@ def _run_pipeline_on_sample(
     return outcomes, failures
 
 
-def _search_pipeline(
+def _search_pipeline(  # noqa: PLR0913
     name: str,
     sample: Mapping[str, tuple[object, object]],
     *,
     trials: int,
     seed: int,
+    phase: str,
+    rows: list[EvaluationRow],
+    max_field_seconds: float | None = None,
 ) -> _Trial | None:
     """Stage 2: a bounded, reproducible random search over one pipeline."""
     best: _Trial | None = None
@@ -382,7 +459,13 @@ def _search_pipeline(
             else _sample_parameters(seed + trial_index, _PARAMETER_SPACES[name])
         )
         pipeline = _PIPELINE_FACTORIES[name](name=name, overrides=overrides)
-        outcomes, failures = _run_pipeline_on_sample(pipeline, sample)
+        outcomes, failures = _run_pipeline_on_sample(
+            pipeline,
+            sample,
+            phase=phase,
+            rows=rows,
+            max_field_seconds=max_field_seconds,
+        )
         if not outcomes:
             continue
         score = _score_trial(outcomes)
@@ -447,6 +530,9 @@ class AutoSegmentResult:
     seed: int
     review: ReviewState
     cp_anywhere_version: str = field(default_factory=_cp_anywhere_version)
+    evaluations: list[EvaluationRow] = field(default_factory=list)
+    tuning_ids: tuple[str, ...] = ()
+    validation_ids: tuple[str, ...] = ()
 
     def segment(
         self, images: Mapping[str, Mapping[str, object]]
@@ -553,7 +639,7 @@ references not yet included in this reduced report.</p>
 """
 
 
-def auto(  # noqa: C901, PLR0913
+def auto(  # noqa: C901, PLR0912, PLR0913
     images: Mapping[str, Mapping[str, object]],
     *,
     channels: Mapping[str, str],
@@ -565,6 +651,8 @@ def auto(  # noqa: C901, PLR0913
     seed: int = 42,
     minimum_accepted: int = 1,
     review_mode: str = "optional",
+    acquisition_groups: Mapping[str, str] | None = None,
+    max_field_seconds: float | None = None,
 ) -> AutoSegmentResult:
     """Stage 0 through Stage 2: assess quality, select, and tune a pipeline.
 
@@ -576,6 +664,16 @@ def auto(  # noqa: C901, PLR0913
     specific gap. ``device`` only accepts ``"cpu"`` in this release --
     every underlying primitive is a native CPU Rust kernel; no GPU path
     exists to dispatch to.
+
+    ``acquisition_groups`` optionally maps image IDs to acquisition
+    groups (e.g. plates). The tuning and held-out splits never share a
+    group, so held-out evidence always comes from acquisitions unseen
+    during tuning (plan section 5); when it is omitted the split
+    alternates the sorted image IDs instead. Every candidate run's
+    per-image outcome, phase, and runtime is recorded on the result's
+    ``evaluations``, and ``max_field_seconds`` optionally bounds each
+    image's runtime: runs exceeding it fail with a "runtime limit"
+    failure and the image is excluded from that candidate's evidence.
     """
     if device != "cpu":
         raise NotImplementedError(
@@ -597,44 +695,72 @@ def auto(  # noqa: C901, PLR0913
 
     stage0 = assess(images, quality_profile)
     review = ReviewState(review_mode=review_mode, status="not_reviewed")
-
-    if len(stage0.accepted) < minimum_accepted:
-        return AutoSegmentResult(
-            status="review_required",
-            stage0=stage0,
-            selected_pipeline_name=None,
-            selected_parameters=None,
-            candidates={},
-            channels=dict(channels),
-            seed=seed,
-            review=review,
-        )
-
-    sample = {
+    tuning_ids, validation_ids = _split_tuning_validation(
+        stage0.accepted, acquisition_groups
+    )
+    accepted_sample = {
         image_id: (
             images[image_id][channels["nuclei"]],
             images[image_id][channels["cells"]],
         )
         for image_id in stage0.accepted
     }
+    tuning_sample = {image_id: accepted_sample[image_id] for image_id in tuning_ids}
+    validation_sample = {
+        image_id: accepted_sample[image_id] for image_id in validation_ids
+    }
 
+    def _result(
+        status: str,
+        *,
+        selected_name: str | None = None,
+        selected_parameters: Mapping[str, float] | None = None,
+        candidates: dict[str, _Trial] | None = None,
+        evaluations: list[EvaluationRow] | None = None,
+    ) -> AutoSegmentResult:
+        return AutoSegmentResult(
+            status=status,
+            stage0=stage0,
+            selected_pipeline_name=selected_name,
+            selected_parameters=selected_parameters,
+            candidates=candidates or {},
+            channels=dict(channels),
+            seed=seed,
+            review=review,
+            tuning_ids=tuple(tuning_ids),
+            validation_ids=tuple(validation_ids),
+            evaluations=evaluations or [],
+        )
+
+    if len(stage0.accepted) < minimum_accepted:
+        return _result("review_required")
+
+    evaluations: list[EvaluationRow] = []
     candidates: dict[str, _Trial] = {}
     for name in pipelines:
-        trial = _search_pipeline(name, sample, trials=trials, seed=seed)
+        # Stage 1 screens each candidate's published defaults, Stage 2 tunes.
+        screen_pipeline = _PIPELINE_FACTORIES[name](name=name, overrides={})
+        _run_pipeline_on_sample(
+            screen_pipeline,
+            tuning_sample,
+            phase="screen",
+            rows=evaluations,
+            max_field_seconds=max_field_seconds,
+        )
+        trial = _search_pipeline(
+            name,
+            tuning_sample,
+            trials=trials,
+            seed=seed,
+            phase="tuning",
+            rows=evaluations,
+            max_field_seconds=max_field_seconds,
+        )
         if trial is not None:
             candidates[name] = trial
 
     if not candidates:
-        return AutoSegmentResult(
-            status="review_required",
-            stage0=stage0,
-            selected_pipeline_name=None,
-            selected_parameters=None,
-            candidates={},
-            channels=dict(channels),
-            seed=seed,
-            review=review,
-        )
+        return _result("review_required", evaluations=evaluations)
 
     ranked = sorted(candidates.items(), key=lambda item: item[1].score, reverse=True)
     best_name, best_trial = ranked[: top_k or len(ranked)][0]
@@ -643,13 +769,28 @@ def auto(  # noqa: C901, PLR0913
     if review_mode == "required":
         status = "awaiting_approval"
 
-    return AutoSegmentResult(
-        status=status,
-        stage0=stage0,
-        selected_pipeline_name=best_name,
+    # Stage 2 validation: rerun the tuned configuration on held-out
+    # acquisitions so selection confidence rests on unseen evidence.
+    if validation_sample:
+        tuned_pipeline = _PIPELINE_FACTORIES[best_name](
+            name=best_name, overrides=dict(best_trial.parameters)
+        )
+        held_out, _held_out_failures = _run_pipeline_on_sample(
+            tuned_pipeline,
+            validation_sample,
+            phase="held_out",
+            rows=evaluations,
+            max_field_seconds=max_field_seconds,
+        )
+        if not held_out:
+            return _result(
+                "review_required", candidates=candidates, evaluations=evaluations
+            )
+
+    return _result(
+        status,
+        selected_name=best_name,
         selected_parameters=best_trial.parameters,
         candidates=candidates,
-        channels=dict(channels),
-        seed=seed,
-        review=review,
+        evaluations=evaluations,
     )
