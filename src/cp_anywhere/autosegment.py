@@ -17,14 +17,14 @@ search over the requested candidates. It returns ``review_required`` if
 none passes.
 
 M4 implements Stage 3 (apply the selected configuration) and a reduced
-Stage 4 (a self-contained, offline HTML report with the plan's section
-structure, plus ``review.json`` provenance for accept/override/reject
-decisions). It does not yet include response-surface plots, a failure
-gallery, or the full literature technique catalog.
+Stage 4 (a self-contained, offline HTML report, plus ``review.json``
+provenance for accept/override/reject decisions). It does not yet
+include response-surface plots, a failure gallery, or the full
+literature technique catalog.
 
 M5 (external scientific validation against expert-reviewed masks) is
-out of scope for this module; see the plan's own Stage 1 validation
-notes for what that would require.
+out of scope for this module; it needs real annotated data this release
+does not ship.
 """
 
 from __future__ import annotations
@@ -89,10 +89,14 @@ _IMAGE_NDIM = 2
 _STARDIST_DEFAULT_PROB_THRESH = 0.479071463157368
 _STARDIST_DEFAULT_NMS_THRESH = 0.3
 
-# Stage 2's search space (plan section 6): sensible method-specific ranges,
+# Stage 2's search space: sensible method-specific ranges,
 # not a Cartesian grid. Keys match ClassicalPipeline's own override names.
 CLASSICAL_PARAMETER_SPACE: dict[str, tuple[float, float]] = {
     "nuclei_threshold_correction_factor": (0.7, 1.3),
+    # Absolute floor on the computed threshold (RxRx19a-reanalysis PR#18
+    # calibrates 0.038 against DNA-channel bleedthrough; the range stays
+    # dataset-agnostic and the CellProfiler default 0.0 stays in it).
+    "nuclei_threshold_range_min": (0.0, 0.05),
     "nuclei_min_diameter": (4.0, 16.0),
     "cells_threshold_correction_factor": (0.7, 1.3),
     "cells_regularization_factor": (0.01, 0.2),
@@ -138,6 +142,7 @@ class ClassicalPipeline:
     def defaults(self) -> dict[str, float]:
         return {
             "nuclei_threshold_correction_factor": 1.0,
+            "nuclei_threshold_range_min": 0.0,
             "nuclei_min_diameter": 10.0,
             "cells_threshold_correction_factor": 1.0,
             "cells_regularization_factor": 0.05,
@@ -155,6 +160,7 @@ class ClassicalPipeline:
         primary = identify_primary_objects(
             nuclei_image,
             threshold_correction_factor=params["nuclei_threshold_correction_factor"],
+            threshold_range=(params["nuclei_threshold_range_min"], 1.0),
             min_diameter=params["nuclei_min_diameter"],
             unclump_method="shape",
             watershed_method="shape",
@@ -296,7 +302,7 @@ _PARAMETER_SPACES: dict[str, dict[str, tuple[float, float]]] = {
     "classical": CLASSICAL_PARAMETER_SPACE,
     # StarDist's architecture/weights are fixed (pretrained); only its two
     # decision thresholds are tunable, within a narrow band around the
-    # model's own calibrated defaults (plan section 6: "sensible,
+    # model's own calibrated defaults ("sensible,
     # method-specific ranges").
     "stardist": {
         "prob_thresh": (0.3, 0.7),
@@ -351,7 +357,7 @@ class _Trial:
 def _score_trial(outcomes: Mapping[str, SegmentationOutcome]) -> float:
     """Higher is better: more detected objects, less degenerate coverage.
 
-    A simple, documented ranking (plan section 7.2), not a literature-backed
+    A simple, documented ranking, not a literature-backed
     composite score.
     """
     counts = [o.stats["nuclei"]["object_count"] for o in outcomes.values()]
@@ -366,13 +372,13 @@ def _split_tuning_validation(
     image_ids: Sequence[str],
     acquisition_groups: Mapping[str, str] | None,
 ) -> tuple[list[str], list[str]]:
-    """Split accepted images into tuning and held-out sets (plan section 5).
+    """Split accepted images into tuning and held-out sets.
 
-    Disjointness is enforced at the acquisition-group level: every image
+    Disjointedness is enforced at the acquisition-group level: every image
     sharing a group with a tuning image is kept out of held-out evidence,
     so plate-to-plate drift cannot leak between selection and validation.
     Without group metadata the split alternates the sorted image IDs,
-    which guarantees only image-level disjointness.
+    which guarantees only image-level disjointedness.
     """
     if acquisition_groups:
         group_of = {
@@ -477,7 +483,7 @@ def _search_pipeline(  # noqa: PLR0913
 
 @dataclass
 class ReviewState:
-    """Stage 4's human-judgment provenance (plan section 9)."""
+    """Stage 4's human-judgment provenance."""
 
     review_mode: str
     status: str
@@ -576,7 +582,7 @@ class AutoSegmentResult:
         Path(path).write_text(json.dumps(self.review.to_dict(), indent=2))
 
     def report(self, path: str | Path) -> None:
-        """A self-contained, offline HTML report (plan section 9 structure)."""
+        """A self-contained, offline HTML report."""
         Path(path).write_text(_render_report(self))
 
 
@@ -631,9 +637,8 @@ Decisions: {_escape(len(result.review.decisions))}.</p>
 <h2>Reproducibility</h2>
 <p>cp-anywhere {_escape(result.cp_anywhere_version)}. Seed {_escape(result.seed)}.</p>
 {model_note}
-<p>This report embeds no remote resources; see
-cp-anywhere-autosegment-plan.md for the method catalog and literature
-references not yet included in this reduced report.</p>
+<p>This report embeds no remote resources. The method catalog and
+literature references are not yet included in this reduced report.</p>
 </body>
 </html>
 """
@@ -668,7 +673,7 @@ def auto(  # noqa: C901, PLR0912, PLR0913
     ``acquisition_groups`` optionally maps image IDs to acquisition
     groups (e.g. plates). The tuning and held-out splits never share a
     group, so held-out evidence always comes from acquisitions unseen
-    during tuning (plan section 5); when it is omitted the split
+    during tuning; when it is omitted the split
     alternates the sorted image IDs instead. Every candidate run's
     per-image outcome, phase, and runtime is recorded on the result's
     ``evaluations``, and ``max_field_seconds`` optionally bounds each

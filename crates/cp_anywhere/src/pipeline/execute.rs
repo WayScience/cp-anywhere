@@ -550,6 +550,7 @@ fn run_segmentation(plan: &Value, state: &mut State) -> Result<(), String> {
                 number(raw, "distance_to_dilate")?,
             ),
             "watershed_image" => (SecondaryMethod::WatershedImage, 0.05, 10.0),
+            "watershed_gradient" => (SecondaryMethod::WatershedGradient, 0.05, 10.0),
             other => return Err(format!("unsupported secondary method {other:?}")),
         };
         let result = identify_secondary_objects(

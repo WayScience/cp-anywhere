@@ -294,3 +294,24 @@ def test_image_watershed_matches_cellprofiler() -> None:
     )
     assert primary["Nuclei"].object_count == expected["nuclei_object_count"]
     np.testing.assert_array_equal(secondary["Cells"].labels, expected["cells_labels"])
+
+
+def test_watershed_gradient_matches_cellprofiler() -> None:
+    # The Watershed - Gradient fixture: real CellProfiler (pinned 4.2.8)
+    # dumped the pipeline and ran it for the expected labels; its
+    # IdentifySecondaryObjects settings (Minimum Cross-Entropy, smoothing
+    # scale 0.0, fill holes) are replayed here through load_pipeline.
+    directory = FIXTURE_DIR / "secondary"
+    base = directory / "identify_secondary_objects_watershed_gradient"
+    inputs = directory / "identify_secondary_objects_propagation"
+    expected = json.loads(base.with_suffix(".expected.json").read_text())
+    pipeline = load_pipeline(base.with_suffix(".cppipe"))
+    assert pipeline.secondary_steps[0].config["method"] == "watershed_gradient"
+    primary, secondary, _ = pipeline.run(
+        {
+            "DNA": np.load(inputs.with_suffix(".dna.npy")),
+            "Stain": np.load(inputs.with_suffix(".stain.npy")),
+        }
+    )
+    assert primary["Nuclei"].object_count == expected["nuclei_object_count"]
+    np.testing.assert_array_equal(secondary["Cells"].labels, expected["cells_labels"])

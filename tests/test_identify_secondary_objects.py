@@ -1,9 +1,13 @@
 """Tests for `identify_secondary_objects` (IdentifySecondaryObjects):
-Propagation (the module's own default) and Distance-N. Both verified
-against real, freshly-run CellProfiler 4.2.8 -- not guessed.
+Propagation (the module's own default), Distance-N, and Watershed -
+Gradient. All verified against real, freshly-run CellProfiler 4.2.8 --
+not guessed.
 """
 
 from __future__ import annotations
+
+import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -101,8 +105,38 @@ def test_distance_n_ignores_threshold_settings_entirely() -> None:
 
 
 def test_rejects_an_unsupported_method() -> None:
-    with pytest.raises(ValueError, match="watershed_gradient"):
-        identify_secondary_objects(_IMAGE, _PRIMARY, method="watershed_gradient")
+    with pytest.raises(ValueError, match="distance_b"):
+        identify_secondary_objects(_IMAGE, _PRIMARY, method="distance_b")
+
+
+def test_watershed_gradient_matches_the_real_oracle_exactly() -> None:
+    # Same inputs and CellProfiler-written expectations as the real
+    # IdentifyPrimaryObjects -> IdentifySecondaryObjects fixture replayed
+    # through load_pipeline; this exercises the Python wrapper's own
+    # argument mapping (threshold="li", smoothing scale 0.0) on the way in.
+    directory = Path(__file__).resolve().parents[1] / "fixtures/cppipe/secondary"
+    stain = np.load(directory / "identify_secondary_objects_propagation.stain.npy")
+    nuclei = np.load(
+        directory / "identify_secondary_objects_propagation.nuclei_labels.npy"
+    )
+    expected = json.loads(
+        (
+            directory / "identify_secondary_objects_watershed_gradient.expected.json"
+        ).read_text()
+    )
+    result = identify_secondary_objects(
+        stain,
+        nuclei,
+        method="watershed_gradient",
+        threshold="li",
+        rescale=False,
+        threshold_smoothing_scale=0.0,
+        fill_holes=True,
+    )
+    np.testing.assert_array_equal(
+        result.labels, np.asarray(expected["cells_labels"], dtype=result.labels.dtype)
+    )
+    assert result.threshold == pytest.approx(0.10862766577894337, rel=1e-12)
 
 
 def test_filters_out_a_secondary_object_whose_primary_was_not_kept() -> None:

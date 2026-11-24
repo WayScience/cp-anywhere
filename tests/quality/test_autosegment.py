@@ -12,6 +12,9 @@ from cp_anywhere import _native, autosegment, quality
 
 _OVERRIDE_THRESHOLD_FACTOR = 1.1
 _REPORT_SEED = 5
+_FLOOR_SEARCH_UPPER = 0.05
+_FLOOR_INERT = 0.038  # RxRx19a-reanalysis PR#18's calibrated floor
+_FLOOR_BINDING = 0.9
 _STARDIST_AVAILABLE = hasattr(_native, "stardist_segment")
 _STARDIST_CENTERS = [(24, 24), (24, 100), (100, 24), (64, 64), (100, 100)]
 
@@ -85,6 +88,42 @@ def test_classical_pipeline_reports_reproducible_parameters() -> None:
         == _OVERRIDE_THRESHOLD_FACTOR
     )
     assert outcome.pipeline_name == "classical"
+
+
+def test_classical_pipeline_defaults_to_and_searches_a_threshold_floor() -> None:
+    params = autosegment.ClassicalPipeline().parameters()
+    assert params["nuclei_threshold_range_min"] == 0.0
+    lower, upper = autosegment._PARAMETER_SPACES["classical"][
+        "nuclei_threshold_range_min"
+    ]
+    assert (lower, upper) == (0.0, _FLOOR_SEARCH_UPPER)
+    sampled = autosegment._sample_parameters(
+        42, autosegment._PARAMETER_SPACES["classical"]
+    )
+    assert 0.0 <= sampled["nuclei_threshold_range_min"] <= _FLOOR_SEARCH_UPPER
+
+
+def test_classical_pipeline_applies_the_threshold_floor_when_it_binds() -> None:
+    """A floor below the estimator's threshold is inert; above it, it binds.
+
+    RxRx19a-reanalysis PR#18's nuclei threshold uses a 0.038 floor to keep
+    perinuclear bleedthrough from passing a relative global threshold; the
+    floor clamps the computed threshold regardless of the method.
+    """
+    field = _synthetic_field()
+    pipeline = autosegment.ClassicalPipeline()
+    baseline = pipeline.run(field["DNA"], field["AGP"])
+    inert = autosegment.ClassicalPipeline(
+        overrides={"nuclei_threshold_range_min": _FLOOR_INERT}
+    ).run(field["DNA"], field["AGP"])
+    binding = autosegment.ClassicalPipeline(
+        overrides={"nuclei_threshold_range_min": _FLOOR_BINDING}
+    ).run(field["DNA"], field["AGP"])
+
+    assert (inert.nuclei != 0).sum() == (baseline.nuclei != 0).sum()
+    assert (binding.nuclei != 0).sum() < (baseline.nuclei != 0).sum()
+    assert np.unique(inert.nuclei).tolist() == np.unique(baseline.nuclei).tolist()
+    assert binding.parameters["nuclei_threshold_range_min"] == _FLOOR_BINDING
 
 
 def test_requesting_an_unknown_pipeline_name_is_a_documented_gap() -> None:

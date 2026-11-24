@@ -4,8 +4,9 @@
 //!
 //! # Declared scope (this increment)
 //!
-//! Supports `Propagation`, `Distance - N`, and `Watershed - Image`.
-//! Does not produce a new primary object set when discarding secondary objects.
+//! Supports `Propagation`, `Distance - N`, `Watershed - Image`, and
+//! `Watershed - Gradient`. Does not produce a new primary object set when
+//! discarding secondary objects.
 
 use super::declump::{neighbor, MaximaSuppression, Smoothing, UnclumpMethod, WatershedMethod};
 use super::{
@@ -24,6 +25,10 @@ pub enum SecondaryMethod {
     DistanceN,
     /// Flood inverted intensity within the threshold foreground and seed mask.
     WatershedImage,
+    /// `M_WATERSHED_G`: watershed the Sobel gradient magnitude within the
+    /// threshold foreground and seed mask. `Distance - B` is still an
+    /// explicit, unimplemented gap.
+    WatershedGradient,
 }
 
 /// Mirrors the supported subset of `IdentifySecondaryObjects` settings.
@@ -117,7 +122,9 @@ pub fn identify_secondary_objects(
         .collect();
     let primary_labels_in = seeds.as_slice();
     let (mut labels_out, threshold) = match config.method {
-        SecondaryMethod::Propagation | SecondaryMethod::WatershedImage => {
+        SecondaryMethod::Propagation
+        | SecondaryMethod::WatershedImage
+        | SecondaryMethod::WatershedGradient => {
             let threshold_config = IdentifyPrimaryObjectsConfig {
                 threshold_method: config.threshold_method,
                 threshold_correction_factor: config.threshold_correction_factor,
@@ -148,7 +155,7 @@ pub fn identify_secondary_objects(
                 &threshold_config,
             )?;
             let mask: Vec<bool> = thresholded.labels.iter().map(|&l| l > 0).collect();
-            let labels_out = if config.method == SecondaryMethod::WatershedImage {
+            let labels_out = if config.method != SecondaryMethod::Propagation {
                 let flood_mask: Vec<u32> = mask
                     .iter()
                     .zip(primary_labels_in)
@@ -157,10 +164,16 @@ pub fn identify_secondary_objects(
                         u32::from((foreground || seed != 0) && image_mask.is_none_or(|m| m[i]))
                     })
                     .collect();
-                let elevation: Vec<f64> = image
-                    .iter()
-                    .map(|&p| f64::from(1.0_f32 - p as f32))
-                    .collect();
+                let elevation: Vec<f64> = if config.method == SecondaryMethod::WatershedImage {
+                    // M_WATERSHED_I: CellProfiler's own `inverted_img = 1 - img`
+                    // on its float64 pixel data.
+                    image.iter().map(|&p| 1.0 - p).collect()
+                } else {
+                    // M_WATERSHED_G: numpy.abs(scipy.ndimage.sobel(img)) --
+                    // scipy's default axis (-1) and mode ("reflect"), on
+                    // CellProfiler's float64 pixel data.
+                    sobel_axis_last_abs(image, cols, rows)
+                };
                 super::declump::watershed(&elevation, &flood_mask, primary_labels_in, cols, rows)
             } else {
                 propagate_weighted(
@@ -556,9 +569,67 @@ fn edt_1d_indexed(f: &[f64], payload: &[usize]) -> (Vec<f64>, Vec<usize>) {
     (d, source)
 }
 
+/// `numpy.abs(scipy.ndimage.sobel(img))` with scipy's defaults: `axis=-1`
+/// (derivative only along the column axis -- CellProfiler's call passes no
+/// axis), `mode="reflect"` (symmetric edge clamp: the edge sample repeats
+/// beyond the array), unnormalized `[-1, 0, 1]` derivative then `[1, 2, 1]`
+/// smoothing, in CellProfiler's own float64 pixel data.
+pub(crate) fn sobel_axis_last_abs(image: &[f64], w: usize, h: usize) -> Vec<f64> {
+    let fetch = |i: isize, j: isize| -> f64 {
+        let i = i.clamp(0, h as isize - 1) as usize;
+        let j = j.clamp(0, w as isize - 1) as usize;
+        image[i * w + j]
+    };
+    // Pass 1: correlate with [-1, 0, 1] along columns, in scipy's own
+    // tap order (left-to-right incremental accumulation).
+    let mut pass1 = vec![0.0_f64; w * h];
+    for i in 0..h {
+        for j in 0..w {
+            let left = fetch(i as isize, j as isize - 1);
+            let right = fetch(i as isize, j as isize + 1);
+            pass1[i * w + j] = -left + right;
+        }
+    }
+    // Pass 2: correlate pass 1 with [1, 2, 1] along rows.
+    let mut pass2 = vec![0.0_f64; w * h];
+    for i in 0..h {
+        for j in 0..w {
+            let prev_index = ((i as isize - 1).clamp(0, h as isize - 1) as usize) * w + j;
+            let next_index = ((i as isize + 1).clamp(0, h as isize - 1) as usize) * w + j;
+            let cur = pass1[i * w + j];
+            // scipy's correlate1d kernel sums the two unit-weight taps
+            // before the doubled center tap; verified bit-for-bit against
+            // real scipy 1.9.3.
+            pass2[i * w + j] = pass1[prev_index] + pass1[next_index] + 2.0_f64 * cur;
+        }
+    }
+    pass2.into_iter().map(f64::abs).collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sobel_axis_last_abs_matches_real_scipy() {
+        // numpy.abs(scipy.ndimage.sobel(a)), scipy 1.9.3 defaults (axis=-1,
+        // mode="reflect"), verified by running real scipy -- not re-derived.
+        #[rustfmt::skip]
+        let image: Vec<f64> = vec![
+            0.1, 0.2, 0.3, 0.4, 0.5,
+            0.9, 0.9, 0.2, 0.2, 0.2,
+            0.7, 0.9, 0.2, 0.2, 0.4,
+            0.3, 0.3, 0.1, 0.1, 0.9,
+        ];
+        #[rustfmt::skip]
+        let expected: Vec<f64> = vec![
+            0.30000000000000004, 0.10000000000000003, 0.09999999999999992, 0.6000000000000001, 0.29999999999999993,
+            0.30000000000000004, 1.6999999999999997, 1.9, 0.4, 0.3,
+            0.40000000000000013, 1.9, 2.3, 1.2000000000000002, 1.2000000000000002,
+            0.20000000000000007, 1.0999999999999999, 1.2999999999999998, 2.6, 2.6,
+        ];
+        assert_eq!(sobel_axis_last_abs(&image, 5, 4), expected);
+    }
 
     #[test]
     fn propagate_weighted_preserves_real_centrosome_initial_seed_order() {

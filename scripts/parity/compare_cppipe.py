@@ -182,6 +182,7 @@ def _compartments() -> list[Case]:
     cases = [
         _fixture(SECONDARY, images),
         _fixture("secondary/identify_secondary_objects_watershed_image", images),
+        _fixture("secondary/identify_secondary_objects_watershed_gradient", images),
     ]
     for family in COMPARTMENTS:
         inputs = images if family in {"tertiary", "size_shape"} else narrowed

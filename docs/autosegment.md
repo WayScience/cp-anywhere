@@ -2,8 +2,7 @@
 
 AutoSegment picks and runs a segmentation pipeline with minimal manual
 tuning, after checking that each image meets a basic technical quality
-bar. It follows the five-stage design in the project's own
-`cp-anywhere-autosegment-plan.md` (repository root): Stage 0 image
+bar. It follows a five-stage design: Stage 0 image
 quality, Stage 1 pipeline selection, Stage 2 parameter search, Stage 3
 apply, Stage 4 report and optional human review.
 
@@ -12,8 +11,8 @@ Stage 1-4 (`cp_anywhere.autosegment`) wrap this project's own existing,
 oracle-verified classical segmentation (`identify_primary_objects` +
 `identify_secondary_objects` + `identify_tertiary_objects`) into one
 named pipeline and run real selection, search, apply, and reporting
-logic over it. A second, learned nuclei candidate -- `"stardist"`
-(plan milestone M2) -- is implemented against the real pretrained
+logic over it. A second, learned nuclei candidate -- `"stardist"` --
+is implemented against the real pretrained
 StarDist `2D_versatile_fluo` model, but is **off by default**: it
 needs the native extension rebuilt with cp-anywhere's `stardist-model`
 Cargo feature (`maturin develop --features stardist-model`). Without
@@ -149,5 +148,4 @@ Run the opt-in checks with `uv run --frozen poe test-stardist`.
   response-surface plots, or a failure-crop gallery.
 - No external validation against expert-reviewed ground-truth masks.
 
-See `cp-anywhere-autosegment-plan.md` for the full design and the
-remaining milestone checklist.
+See the Stage 1-2 notes above for what is and is not implemented.

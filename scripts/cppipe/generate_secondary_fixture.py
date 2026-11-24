@@ -23,6 +23,7 @@ cellprofiler_core.preferences.set_headless()
 from cellprofiler.modules.identifyprimaryobjects import IdentifyPrimaryObjects
 from cellprofiler.modules.identifysecondaryobjects import (
     M_PROPAGATION,
+    M_WATERSHED_G,
     M_WATERSHED_I,
     IdentifySecondaryObjects,
 )
@@ -52,9 +53,10 @@ STAIN_IMAGE = np.maximum(np.clip(1 - D1 / 7, 0, 1), np.clip(1 - D2 / 7, 0, 1))
 
 
 def build_and_run(method: str = M_PROPAGATION) -> None:
-    stem = "identify_secondary_objects_" + (
-        "watershed_image" if method == M_WATERSHED_I else "propagation"
-    )
+    stem = "identify_secondary_objects_" + {
+        M_WATERSHED_I: "watershed_image",
+        M_WATERSHED_G: "watershed_gradient",
+    }.get(method, "propagation")
     pipeline = Pipeline()
     m1 = IdentifyPrimaryObjects()
     m1.set_module_num(1)
@@ -135,3 +137,4 @@ def build_and_run(method: str = M_PROPAGATION) -> None:
 if __name__ == "__main__":
     build_and_run()
     build_and_run(M_WATERSHED_I)
+    build_and_run(M_WATERSHED_G)

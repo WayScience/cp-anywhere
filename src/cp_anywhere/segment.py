@@ -428,8 +428,10 @@ def identify_secondary_objects(
     ``"distance_n"`` (a fixed-radius Euclidean expansion bounded by
     ``distance_to_dilate``, with no image or threshold involved at
     all), or ``"watershed_image"`` (watershed on inverted intensity within
-    the threshold foreground and seed mask). ``"distance_b"`` and
-    ``"watershed_gradient"`` are not supported.
+    the threshold foreground and seed mask), or ``"watershed_gradient"``
+    (watershed on the Sobel gradient magnitude -- ``numpy.abs(
+    scipy.ndimage.sobel(img))`` with scipy's defaults -- within the same
+    flood mask). ``"distance_b"`` is not supported.
 
     ``threshold``/``rescale``/``threshold_correction_factor``/
     ``threshold_range``/``threshold_smoothing_scale``/``log_transform``/
@@ -463,10 +465,15 @@ def identify_secondary_objects(
         else _label_array(primary_labels_in, array.shape)
     )
 
-    if method not in ("propagation", "distance_n", "watershed_image"):
+    if method not in (
+        "propagation",
+        "distance_n",
+        "watershed_image",
+        "watershed_gradient",
+    ):
         msg = (
             f"Unsupported secondary method {method!r}; "
-            "use propagation, distance_n, or watershed_image"
+            "use propagation, distance_n, watershed_image, or watershed_gradient"
         )
         raise ValueError(msg)
 

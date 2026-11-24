@@ -105,6 +105,7 @@ pub(super) fn secondary(raw: &RawModule<'_>) -> Result<Value, String> {
             ("Propagation", "propagation"),
             ("Distance - N", "distance_n"),
             ("Watershed - Image", "watershed_image"),
+            ("Watershed - Gradient", "watershed_gradient"),
         ],
     )?;
     let discard_edge = raw.yes_no("wants_discard_edge", wants_discard_edge)?;

@@ -130,12 +130,16 @@ step's output in the same pipeline -- `CppipeError` naming the object
 set if it isn't one); `y_name` becomes `output_object`; `image_name`
 becomes `input_image`.
 
-`Propagation` and `Watershed - Image` both use the same threshold
-configuration as `IdentifyPrimaryObjects`. Only `Propagation` uses
-`regularization_factor`. `Watershed - Image` floods inverted intensity
-from the seeds within the threshold foreground and seed mask.
+`Propagation`, `Watershed - Image`, and `Watershed - Gradient` all use the
+same threshold configuration as `IdentifyPrimaryObjects`. Only
+`Propagation` uses `regularization_factor`. `Watershed - Image` floods
+inverted intensity and `Watershed - Gradient` floods the Sobel gradient
+magnitude (`numpy.abs(scipy.ndimage.sobel(img))` with scipy's defaults --
+axis `-1`, symmetric edge clamp, float64 pixel data) within the threshold
+foreground and seed mask, both reusing the crate's
+skimage-exact-FIFO watershed with the module's full 3x3 connectivity.
 `Distance - N` uses `distance_to_dilate` and does not threshold the image.
-`fill_holes` applies to all three methods.
+`fill_holes` applies to all four methods.
 
 `wants_discard_edge = Yes` maps to `discard_edge=True`. After mapping grown
 objects to retained primary IDs, the step removes every secondary object that
@@ -159,12 +163,14 @@ border competition, oversized primaries, renumbering, nested objects,
 and all neighbor measurement columns against real reference runs.
 `fixtures/cppipe/secondary_border_discard/` covers border removal and ID
 renumbering with Propagation and Watershed - Image, including mask borders.
+`fixtures/cppipe/secondary/identify_secondary_objects_watershed_gradient.*`
+replays the real Watershed - Gradient oracle run (Rust, wrapper, and
+`Pipeline.run()` levels).
 
 ### `IdentifySecondaryObjects` explicit gaps
 
-- **`method = "Watershed - Gradient"` /
-  `"Distance - B"`.** Not implemented by `cp_anywhere`'s segmentation
-  core at all; `CppipeError` names the unsupported method.
+- **`method = "Distance - B"`.** Not implemented by `cp_anywhere`'s
+  segmentation core at all; `CppipeError` names the unsupported method.
 - **`wants_discard_primary = Yes`** with **`wants_discard_edge = Yes`**.
   Import rejects this combination because creating the additional, filtered
   primary object set is not supported. When border discard is off, the

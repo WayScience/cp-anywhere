@@ -370,6 +370,7 @@ _SECONDARY_METHOD = {
     "Propagation": "propagation",
     "Distance - N": "distance_n",
     "Watershed - Image": "watershed_image",
+    "Watershed - Gradient": "watershed_gradient",
 }
 
 
@@ -966,8 +967,7 @@ def _translate_identify_secondary_objects(raw: _RawModule) -> SecondaryObjectsSt
     _require(
         values["method"] in _SECONDARY_METHOD,
         f"IdentifySecondaryObjects method {values['method']!r} is an "
-        "explicit, not-yet-implemented gap ('Watershed - Gradient' and "
-        "'Distance - B' are not yet supported)",
+        "explicit, not-yet-implemented gap ('Distance - B' is not supported)",
     )
     discard_edge = _YES_NO[values["wants_discard_edge"]]
     discard_primary = _YES_NO[values["wants_discard_primary"]]

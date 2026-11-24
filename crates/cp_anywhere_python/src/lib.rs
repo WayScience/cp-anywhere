@@ -394,10 +394,11 @@ fn identify_secondary_objects<'py>(
         "propagation" => SecondaryMethod::Propagation,
         "distance_n" => SecondaryMethod::DistanceN,
         "watershed_image" => SecondaryMethod::WatershedImage,
+        "watershed_gradient" => SecondaryMethod::WatershedGradient,
         other => {
             return Err(PyValueError::new_err(format!(
                 "unsupported IdentifySecondaryObjects method: {other:?}; \
-                 use 'propagation', 'distance_n', or 'watershed_image'"
+                 use 'propagation', 'distance_n', 'watershed_image', or 'watershed_gradient'"
             )))
         }
     };
