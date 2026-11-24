@@ -818,8 +818,10 @@
 <span class="sd">    ``&quot;distance_n&quot;`` (a fixed-radius Euclidean expansion bounded by</span>
 <span class="sd">    ``distance_to_dilate``, with no image or threshold involved at</span>
 <span class="sd">    all), or ``&quot;watershed_image&quot;`` (watershed on inverted intensity within</span>
-<span class="sd">    the threshold foreground and seed mask). ``&quot;distance_b&quot;`` and</span>
-<span class="sd">    ``&quot;watershed_gradient&quot;`` are not supported.</span>
+<span class="sd">    the threshold foreground and seed mask), or ``&quot;watershed_gradient&quot;``</span>
+<span class="sd">    (watershed on the Sobel gradient magnitude -- ``numpy.abs(</span>
+<span class="sd">    scipy.ndimage.sobel(img))`` with scipy&#39;s defaults -- within the same</span>
+<span class="sd">    flood mask). ``&quot;distance_b&quot;`` is not supported.</span>
 
 <span class="sd">    ``threshold``/``rescale``/``threshold_correction_factor``/</span>
 <span class="sd">    ``threshold_range``/``threshold_smoothing_scale``/``log_transform``/</span>
@@ -853,10 +855,15 @@
         <span class="k">else</span> <span class="n">_label_array</span><span class="p">(</span><span class="n">primary_labels_in</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span> <span class="s2">&quot;distance_n&quot;</span><span class="p">,</span> <span class="s2">&quot;watershed_image&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span>
+        <span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;distance_n&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;watershed_image&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;watershed_gradient&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Unsupported secondary method </span><span class="si">{</span><span class="n">method</span><span class="si">!r}</span><span class="s2">; &quot;</span>
-            <span class="s2">&quot;use propagation, distance_n, or watershed_image&quot;</span>
+            <span class="s2">&quot;use propagation, distance_n, watershed_image, or watershed_gradient&quot;</span>
         <span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 

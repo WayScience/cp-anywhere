@@ -936,8 +936,10 @@ intensity, larger values favor Euclidean geometry) or
 <code class="docutils literal notranslate"><span class="pre">&quot;distance_n&quot;</span></code> (a fixed-radius Euclidean expansion bounded by
 <code class="docutils literal notranslate"><span class="pre">distance_to_dilate</span></code>, with no image or threshold involved at
 all), or <code class="docutils literal notranslate"><span class="pre">&quot;watershed_image&quot;</span></code> (watershed on inverted intensity within
-the threshold foreground and seed mask). <code class="docutils literal notranslate"><span class="pre">&quot;distance_b&quot;</span></code> and
-<code class="docutils literal notranslate"><span class="pre">&quot;watershed_gradient&quot;</span></code> are not supported.</p>
+the threshold foreground and seed mask), or <code class="docutils literal notranslate"><span class="pre">&quot;watershed_gradient&quot;</span></code>
+(watershed on the Sobel gradient magnitude – <code class="docutils literal notranslate"><span class="pre">numpy.abs(</span>
+<span class="pre">scipy.ndimage.sobel(img))</span></code> with scipy’s defaults – within the same
+flood mask). <code class="docutils literal notranslate"><span class="pre">&quot;distance_b&quot;</span></code> is not supported.</p>
 <p><code class="docutils literal notranslate"><span class="pre">threshold</span></code>/<code class="docutils literal notranslate"><span class="pre">rescale</span></code>/<code class="docutils literal notranslate"><span class="pre">threshold_correction_factor</span></code>/
 <code class="docutils literal notranslate"><span class="pre">threshold_range</span></code>/<code class="docutils literal notranslate"><span class="pre">threshold_smoothing_scale</span></code>/<code class="docutils literal notranslate"><span class="pre">log_transform</span></code>/
 <code class="docutils literal notranslate"><span class="pre">threshold_scope</span></code>/<code class="docutils literal notranslate"><span class="pre">adaptive_window_size</span></code>/
@@ -2247,13 +2249,13 @@ requires the opt-in <code class="docutils literal notranslate"><span class="pre"
 search over the requested candidates. It returns <code class="docutils literal notranslate"><span class="pre">review_required</span></code> if
 none passes.</p>
 <p>M4 implements Stage 3 (apply the selected configuration) and a reduced
-Stage 4 (a self-contained, offline HTML report with the plan’s section
-structure, plus <code class="docutils literal notranslate"><span class="pre">review.json</span></code> provenance for accept/override/reject
-decisions). It does not yet include response-surface plots, a failure
-gallery, or the full literature technique catalog.</p>
+Stage 4 (a self-contained, offline HTML report, plus <code class="docutils literal notranslate"><span class="pre">review.json</span></code>
+provenance for accept/override/reject decisions). It does not yet
+include response-surface plots, a failure gallery, or the full
+literature technique catalog.</p>
 <p>M5 (external scientific validation against expert-reviewed masks) is
-out of scope for this module; see the plan’s own Stage 1 validation
-notes for what that would require.</p>
+out of scope for this module; it needs real annotated data this release
+does not ship.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.autosegment.AutoSegmentResult">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.autosegment.</span></span><span class="sig-name descname"><span class="pre">AutoSegmentResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">status:</span> <span class="pre">str,</span> <span class="pre">stage0:</span> <span class="pre">QualityGateResult,</span> <span class="pre">selected_pipeline_name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">selected_parameters:</span> <span class="pre">Mapping[str,</span> <span class="pre">float]</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">candidates:</span> <span class="pre">dict[str,</span> <span class="pre">_Trial],</span> <span class="pre">channels:</span> <span class="pre">dict[str,</span> <span class="pre">str],</span> <span class="pre">seed:</span> <span class="pre">int,</span> <span class="pre">review:</span> <span class="pre">ReviewState,</span> <span class="pre">cp_anywhere_version:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">evaluations:</span> <span class="pre">list[EvaluationRow]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">tuning_ids:</span> <span class="pre">tuple[str,</span> <span class="pre">...]</span> <span class="pre">=</span> <span class="pre">(),</span> <span class="pre">validation_ids:</span> <span class="pre">tuple[str,</span> <span class="pre">...]</span> <span class="pre">=</span> <span class="pre">()</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/autosegment.html#AutoSegmentResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.autosegment.AutoSegmentResult" title="Link to this definition">#</a></dt>
@@ -2261,7 +2263,7 @@ notes for what that would require.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="src.cp_anywhere.autosegment.AutoSegmentResult.report">
 <span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/src/cp_anywhere/autosegment.html#AutoSegmentResult.report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.autosegment.AutoSegmentResult.report" title="Link to this definition">#</a></dt>
-<dd><p>A self-contained, offline HTML report (plan section 9 structure).</p>
+<dd><p>A self-contained, offline HTML report.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2305,7 +2307,7 @@ notes for what that would require.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.autosegment.ReviewState">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.autosegment.</span></span><span class="sig-name descname"><span class="pre">ReviewState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decisions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list[dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object]]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/autosegment.html#ReviewState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.autosegment.ReviewState" title="Link to this definition">#</a></dt>
-<dd><p>Stage 4’s human-judgment provenance (plan section 9).</p>
+<dd><p>Stage 4’s human-judgment provenance.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -2340,7 +2342,7 @@ exists to dispatch to.</p>
 <p><code class="docutils literal notranslate"><span class="pre">acquisition_groups</span></code> optionally maps image IDs to acquisition
 groups (e.g. plates). The tuning and held-out splits never share a
 group, so held-out evidence always comes from acquisitions unseen
-during tuning (plan section 5); when it is omitted the split
+during tuning; when it is omitted the split
 alternates the sorted image IDs instead. Every candidate run’s
 per-image outcome, phase, and runtime is recorded on the result’s
 <code class="docutils literal notranslate"><span class="pre">evaluations</span></code>, and <code class="docutils literal notranslate"><span class="pre">max_field_seconds</span></code> optionally bounds each

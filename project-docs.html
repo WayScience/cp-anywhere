@@ -2816,8 +2816,7 @@ statically (<code class="docutils literal notranslate"><span class="pre">actionl
 <h1>AutoSegment: image quality, pipeline selection, and reporting<a class="headerlink" href="#autosegment-image-quality-pipeline-selection-and-reporting" title="Link to this heading">#</a></h1>
 <p>AutoSegment picks and runs a segmentation pipeline with minimal manual
 tuning, after checking that each image meets a basic technical quality
-bar. It follows the five-stage design in the project’s own
-<code class="docutils literal notranslate"><span class="pre">cp-anywhere-autosegment-plan.md</span></code> (repository root): Stage 0 image
+bar. It follows a five-stage design: Stage 0 image
 quality, Stage 1 pipeline selection, Stage 2 parameter search, Stage 3
 apply, Stage 4 report and optional human review.</p>
 <p><strong>Scope in this release:</strong> Stage 0 (<code class="docutils literal notranslate"><span class="pre">cp_anywhere.quality</span></code>) is complete.
@@ -2825,8 +2824,8 @@ Stage 1-4 (<code class="docutils literal notranslate"><span class="pre">cp_anywh
 oracle-verified classical segmentation (<code class="docutils literal notranslate"><span class="pre">identify_primary_objects</span></code> +
 <code class="docutils literal notranslate"><span class="pre">identify_secondary_objects</span></code> + <code class="docutils literal notranslate"><span class="pre">identify_tertiary_objects</span></code>) into one
 named pipeline and run real selection, search, apply, and reporting
-logic over it. A second, learned nuclei candidate – <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>
-(plan milestone M2) – is implemented against the real pretrained
+logic over it. A second, learned nuclei candidate – <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code> –
+is implemented against the real pretrained
 StarDist <code class="docutils literal notranslate"><span class="pre">2D_versatile_fluo</span></code> model, but is <strong>off by default</strong>: it
 needs the native extension rebuilt with cp-anywhere’s <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code>
 Cargo feature (<code class="docutils literal notranslate"><span class="pre">maturin</span> <span class="pre">develop</span> <span class="pre">--features</span> <span class="pre">stardist-model</span></code>). Without
@@ -2951,8 +2950,7 @@ reproducibility) but not yet the full literature technique catalog,
 response-surface plots, or a failure-crop gallery.</p></li>
 <li><p>No external validation against expert-reviewed ground-truth masks.</p></li>
 </ul>
-<p>See <code class="docutils literal notranslate"><span class="pre">cp-anywhere-autosegment-plan.md</span></code> for the full design and the
-remaining milestone checklist.</p>
+<p>See the Stage 1-2 notes above for what is and is not implemented.</p>
 </section>
 </section>
 

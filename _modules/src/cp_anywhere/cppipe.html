@@ -749,6 +749,7 @@
     <span class="s2">&quot;Propagation&quot;</span><span class="p">:</span> <span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Distance - N&quot;</span><span class="p">:</span> <span class="s2">&quot;distance_n&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Watershed - Image&quot;</span><span class="p">:</span> <span class="s2">&quot;watershed_image&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Watershed - Gradient&quot;</span><span class="p">:</span> <span class="s2">&quot;watershed_gradient&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 
@@ -1402,8 +1403,7 @@
     <span class="n">_require</span><span class="p">(</span>
         <span class="n">values</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">_SECONDARY_METHOD</span><span class="p">,</span>
         <span class="sa">f</span><span class="s2">&quot;IdentifySecondaryObjects method </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;method&#39;</span><span class="p">]</span><span class="si">!r}</span><span class="s2"> is an &quot;</span>
-        <span class="s2">&quot;explicit, not-yet-implemented gap (&#39;Watershed - Gradient&#39; and &quot;</span>
-        <span class="s2">&quot;&#39;Distance - B&#39; are not yet supported)&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;explicit, not-yet-implemented gap (&#39;Distance - B&#39; is not supported)&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">discard_edge</span> <span class="o">=</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;wants_discard_edge&quot;</span><span class="p">]]</span>
     <span class="n">discard_primary</span> <span class="o">=</span> <span class="n">_YES_NO</span><span class="p">[</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;wants_discard_primary&quot;</span><span class="p">]]</span>
