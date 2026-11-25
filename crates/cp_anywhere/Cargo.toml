@@ -15,6 +15,10 @@ exclude = [
     "tests/data/",
     "tests/stardist_decode.rs",
     "tests/stardist_fixtures/",
+    "tests/instanseg_parity.rs",
+    "tests/instanseg_fixtures/",
+    "tests/splinedist_parity.rs",
+    "tests/splinedist_fixtures/",
 ]
 
 [dependencies]
@@ -35,6 +39,16 @@ serde = ["dep:serde"]
 # algorithm in segmentation::stardist has no dependency on this
 # feature at all and is always available.
 stardist-model = ["dep:tract-onnx", "dep:getrandom"]
+# Optional InstanSeg: same tract ONNX runtime and the same wasm32
+# reasoning as `stardist-model` above -- see `segmentation::instanseg`
+# for what the feature gates (the model runner AND the postprocessing
+# port, which is only meaningful together with the model).
+instanseg-model = ["dep:tract-onnx", "dep:getrandom"]
+# Optional SplineDist: same tract ONNX runtime and the same wasm32
+# reasoning as `stardist-model` above -- see `segmentation::splinedist`
+# for what the feature gates (the model runner AND the spline decode
+# port, which is only meaningful together with the model).
+splinedist-model = ["dep:tract-onnx", "dep:getrandom"]
 
 [dev-dependencies]
 criterion = "0.7"

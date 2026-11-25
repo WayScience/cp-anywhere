@@ -16,7 +16,10 @@ _FLOOR_SEARCH_UPPER = 0.05
 _FLOOR_INERT = 0.038  # RxRx19a-reanalysis PR#18's calibrated floor
 _FLOOR_BINDING = 0.9
 _STARDIST_AVAILABLE = hasattr(_native, "stardist_segment")
+_INSTANSEG_AVAILABLE = hasattr(_native, "instanseg_segment")
+_SPLINEDIST_AVAILABLE = hasattr(_native, "splinedist_segment")
 _STARDIST_CENTERS = [(24, 24), (24, 100), (100, 24), (64, 64), (100, 100)]
+_INSTANSEG_CENTERS = [(28, 28), (28, 96), (96, 28), (64, 64), (96, 96)]
 
 
 def _blob_image(
@@ -235,6 +238,98 @@ def _stardist_field(shape: tuple[int, int]) -> dict[str, np.ndarray]:
     }
 
 
+def _instanseg_field(shape: tuple[int, int]) -> dict[str, np.ndarray]:
+    """A deterministic synthetic nuclei field for the InstanSeg pipeline."""
+    rows, cols = np.indices(shape)
+    dna = np.random.default_rng(7).normal(0.05, 0.02, size=shape)
+    for row, col in _INSTANSEG_CENTERS:
+        r2 = (rows - row) ** 2 + (cols - col) ** 2
+        dna += 0.9 * np.exp(-r2 / (2 * 8.0**2))
+    return {
+        "DNA": np.clip(dna, 0, 1).astype(np.float32),
+        "AGP": _blob_image(_INSTANSEG_CENTERS, radius=13.0, shape=shape),
+    }
+
+
+@pytest.mark.skipif(_INSTANSEG_AVAILABLE, reason="checks the default native build")
+def test_instanseg_requires_the_native_feature_even_if_no_field_passes_qc() -> None:
+    with pytest.raises(RuntimeError, match="instanseg-model"):
+        autosegment.auto(
+            {"a": _synthetic_field()},
+            channels={"nuclei": "DNA", "cells": "AGP"},
+            pipelines=["classical", "instanseg"],
+            quality_profile=_unsatisfiable_profile(),
+        )
+
+
+@pytest.mark.skipif(_SPLINEDIST_AVAILABLE, reason="checks the default native build")
+def test_splinedist_requires_the_native_feature_even_if_no_field_passes_qc() -> None:
+    with pytest.raises(RuntimeError, match="splinedist-model"):
+        autosegment.auto(
+            {"a": _synthetic_field()},
+            channels={"nuclei": "DNA", "cells": "AGP"},
+            pipelines=["classical", "splinedist"],
+            quality_profile=_unsatisfiable_profile(),
+        )
+
+
+@pytest.mark.skipif(not _INSTANSEG_AVAILABLE, reason="requires instanseg-model")
+@pytest.mark.parametrize("shape", [(128, 128), (127, 129)])
+def test_instanseg_detects_nuclei_and_preserves_the_image_grid(
+    shape: tuple[int, int],
+) -> None:
+    dna, cells = _instanseg_field(shape).values()
+    result = autosegment.InstanSegPipeline().run(dna, cells)
+
+    assert result.pipeline_name == "instanseg"
+    assert result.nuclei.shape == result.cells.shape == result.cytoplasm.shape == shape
+    assert result.nuclei.dtype == np.uint32
+    ids = {int(result.nuclei[point]) for point in _INSTANSEG_CENTERS}
+    assert ids == set(range(1, len(_INSTANSEG_CENTERS) + 1))
+    assert set(np.unique(result.nuclei)) == ids | {0}
+    nucleus_pixels = result.nuclei != 0
+    np.testing.assert_array_equal(
+        result.cells[nucleus_pixels], result.nuclei[nucleus_pixels]
+    )
+    assert not np.any(result.cytoplasm[nucleus_pixels])
+    assert np.any(result.cytoplasm)
+
+
+@pytest.mark.skipif(not _INSTANSEG_AVAILABLE, reason="requires instanseg-model")
+def test_instanseg_runs_a_deterministic_empty_search_space(tmp_path: Path) -> None:
+    """auto() selects InstanSeg and save() records its model provenance."""
+    images = {"field": _instanseg_field((128, 128))}
+    result = autosegment.auto(
+        images,
+        channels={"nuclei": "DNA", "cells": "AGP"},
+        pipelines=["instanseg"],
+        quality_profile=_lenient_profile(),
+        trials=2,
+    )
+    assert result.status == "selected"
+    assert result.selected_pipeline_name == "instanseg"
+    candidate = result.candidates["instanseg"]
+    # The parameter search space is intentionally empty (see the pipeline's
+    # docstring), so every trial carries no tunables.
+    assert autosegment._PARAMETER_SPACES["instanseg"] == {}
+    assert candidate.parameters == {}
+    reapplied = result.segment(images)["field"]
+    np.testing.assert_array_equal(reapplied.nuclei, candidate.outcomes["field"].nuclei)
+    destination = tmp_path / "config.json"
+    result.save(destination)
+    saved = json.loads(destination.read_text())
+    assert saved["model"]["name"] == "single_channel_nuclei"
+    assert saved["model"]["sha256"] == autosegment._INSTANSEG_FCN_SHA256
+    assert (
+        saved["model"]["torchscript_sha256"]
+        == autosegment._INSTANSEG_TORCHSCRIPT_SHA256
+    )
+    assert saved["model"]["source_url"].endswith("single_channel_nuclei.zip")
+    report = tmp_path / "report.html"
+    result.report(report)
+    assert saved["model"]["sha256"] in report.read_text()
+
+
 def test_requesting_a_gpu_device_is_a_documented_not_implemented_gap() -> None:
     with pytest.raises(NotImplementedError, match="cuda"):
         autosegment.auto(
@@ -243,6 +338,66 @@ def test_requesting_a_gpu_device_is_a_documented_not_implemented_gap() -> None:
             quality_profile=_lenient_profile(),
             device="cuda",
         )
+
+
+@pytest.mark.skipif(not _SPLINEDIST_AVAILABLE, reason="requires splinedist-model")
+@pytest.mark.parametrize("shape", [(128, 128), (127, 129)])
+def test_splinedist_preserves_the_image_grid_and_is_deterministic(
+    shape: tuple[int, int],
+) -> None:
+    dna, cells = _instanseg_field(shape).values()
+    outcome = autosegment.SplineDistPipeline().run(dna, cells)
+    repeat = autosegment.SplineDistPipeline().run(dna, cells)
+
+    assert outcome.pipeline_name == "splinedist"
+    assert (
+        outcome.nuclei.shape == outcome.cells.shape == outcome.cytoplasm.shape == shape
+    )
+    assert outcome.nuclei.dtype == np.uint32
+    np.testing.assert_array_equal(outcome.nuclei, repeat.nuclei)
+    ids = set(np.unique(outcome.nuclei)) - {0}
+    nuclei_pixels = outcome.nuclei != 0
+    if ids:
+        assert max(ids) == len(ids), "labels must stay 1..n after the native decode"
+    np.testing.assert_array_equal(
+        outcome.cells[nuclei_pixels], outcome.nuclei[nuclei_pixels]
+    )
+    assert not np.any(outcome.cytoplasm[nuclei_pixels])
+
+    # The shipped model freezes its own decode thresholds, so the
+    # parameter space is empty by design (see the pipeline's docstring).
+    assert autosegment._PARAMETER_SPACES["splinedist"] == {}
+    assert autosegment.SplineDistPipeline().parameters() == {}
+    assert autosegment._SPLINEDIST_DEFAULT_PROB_THRESH == 0.4775366187095642  # noqa: PLR2004
+    assert autosegment._SPLINEDIST_DEFAULT_NMS_THRESH == 0.3  # noqa: PLR2004
+
+
+@pytest.mark.skipif(not _SPLINEDIST_AVAILABLE, reason="requires splinedist-model")
+def test_splinedist_auto_selects_and_records_model_provenance(tmp_path: Path) -> None:
+    images = {"field": _instanseg_field((128, 128))}
+    result = autosegment.auto(
+        images,
+        channels={"nuclei": "DNA", "cells": "AGP"},
+        pipelines=["splinedist"],
+        quality_profile=_lenient_profile(),
+        trials=2,
+    )
+    assert result.status == "selected"
+    assert result.selected_pipeline_name == "splinedist"
+    candidate = result.candidates["splinedist"]
+    assert candidate.parameters == {}
+    reapplied = result.segment(images)["field"]
+    np.testing.assert_array_equal(reapplied.nuclei, candidate.outcomes["field"].nuclei)
+    destination = tmp_path / "config.json"
+    result.save(destination)
+    saved = json.loads(destination.read_text())
+    assert saved["model"]["name"] == autosegment._SPLINEDIST_MODEL_NAME
+    assert saved["model"]["sha256"] == autosegment._SPLINEDIST_MODEL_SHA256
+    assert saved["model"]["weights_sha256"] == autosegment._SPLINEDIST_WEIGHTS_SHA256
+    assert saved["model"]["source_url"].endswith("splinedist_models.zip")
+    report = tmp_path / "report.html"
+    result.report(report)
+    assert saved["model"]["sha256"] in report.read_text()
 
 
 def test_auto_select_runs_stage0_through_stage2_and_picks_classical() -> None:

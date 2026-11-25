@@ -94,6 +94,36 @@ jobs:
       - name: Run the opt-in StarDist tests
         run: uv run --frozen poe test-stardist
 
+  instanseg_native_check:
+    needs: pre_commit_checks
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run the opt-in InstanSeg tests
+        run: uv run --frozen poe test-instanseg
+
+  splinedist_native_check:
+    needs: pre_commit_checks
+    runs-on: ubuntu-26.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v10.3.3
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run the opt-in SplineDist tests
+        run: uv run --frozen poe test-splinedist
+
   wasm_build_and_browser_check:
     needs: pre_commit_checks
     runs-on: ubuntu-26.04

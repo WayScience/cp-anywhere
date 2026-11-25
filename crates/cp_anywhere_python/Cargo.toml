@@ -29,3 +29,5 @@ numpy = "0.29"
 # (crates/cp_anywhere/Cargo.toml) -- this adds the tract ONNX runtime
 # for the optional StarDist (M2) nuclei-detection candidate pipeline.
 stardist-model = ["cp-anywhere/stardist-model"]
+instanseg-model = ["cp-anywhere/instanseg-model"]
+splinedist-model = ["cp-anywhere/splinedist-model"]

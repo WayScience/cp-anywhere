@@ -99,8 +99,10 @@ held-out sets (never sharing an acquisition when ``acquisition_groups``
 is given), picks a candidate pipeline, tunes its parameters with a
 seeded search, re-checks the winner on held-out fields, applies the
 selected configuration to new images, and writes offline reports and
-review provenance. ``"classical"`` is always available; ``"stardist"``
-needs the opt-in ``stardist-model`` native build and raises rather than
+``"classical"`` is always available; ``"stardist"``, ``"instanseg"``,
+and ``"splinedist"`` need the opt-in ``stardist-model``,
+``instanseg-model``, and ``splinedist-model`` native builds
+respectively and raise rather than
 falling back silently.
 
 .. automodule:: src.cp_anywhere.autosegment

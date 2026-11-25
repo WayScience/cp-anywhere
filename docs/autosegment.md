@@ -138,6 +138,93 @@ supports native CPU builds only; the browser API does not expose StarDist.
 
 Run the opt-in checks with `uv run --frozen poe test-stardist`.
 
+## The InstanSeg nuclei candidate
+
+InstanSeg uses the pretrained `single_channel_nuclei` model (upstream
+instanseg/instanseg, `instanseg_models_v0.1.2` release pin, model id
+26423248\) on one 2D nuclei channel. It scales the image by its 0.1st and
+99.9th percentiles (the model's own bioimage-io `scale_range` pin, with
+eps 1e-6), then runs the ONNX fcn network in Rust on the CPU and applies
+a native port of upstream's deterministic postprocessing: peak
+local-maxima seeding on the seed map, per-centroid feature windows with
+the pixel classifier, fragment cleanup, and an
+intersection-over-minimum-area overlap merge. Cells and cytoplasm grow
+classically, exactly like the other pipelines.
+
+From a source checkout, enable the native feature:
+
+```sh
+uv run --frozen maturin develop --features instanseg-model
+```
+
+Use `pipelines=["instanseg"]` to evaluate only InstanSeg, or pass
+`["classical", "instanseg"]` (or all three) to compare. If the feature is
+absent, requesting InstanSeg raises `RuntimeError` naming the rebuild
+command; it does not fall back. The models are included in the Python
+package. Inference needs no network access, no torch, and no separate
+Python InstanSeg installation.
+
+InstanSeg's parameter search space is intentionally empty: the released
+model's own graph freezes all of its postprocessing parameters
+(`min_size`, `mask_threshold`, `seed_threshold`, `peak_distance`,
+`overlap_threshold`, `fg_threshold`, `window_size`, `cleanup_fragments`)
+to the model's saved v0.1.2 values, and the port reproduces upstream's
+own published test output label-for-label. The saved configuration
+records the model name, the shipped ONNX SHA-256, the upstream
+TorchScript SHA-256, and the release URL. See
+`src/cp_anywhere/data/instanseg/NOTICE.md` for the full provenance,
+licensing (Apache-2.0 code and weights; CC0/CC-BY training datasets),
+and the released-graph divergences from the v0.1.2 wheel sources the
+port documents. Declared gap: upstream's cells-and-nuclei model variant
+is not implemented; InstanSeg here always produces nuclei only.
+
+Run the opt-in checks with `uv run --frozen poe test-instanseg`.
+
+## The SplineDist nuclei candidate
+
+SplineDist ships the pretrained `bbbc038_10` fluorescence-nuclei model
+(upstream uhlmanngroup/splinedist, trained on DSB2018/BBBC038; weights
+pinned to Zenodo record 7193306) on one 2D nuclei channel. It scales
+the image by its 1st and 99.8th percentiles (upstream's csbdeep
+normalizer default that the training run used, with csbdeep's eps
+1e-20), reflect-pads to the network's 16-voxel divisibility exactly
+like `SplineDistPadAndCropResizer`, then runs the ONNX graph in Rust on
+the CPU (grid-(2,2)-compressed probability and 20-channel spline
+control-point heads) and applies a native port of upstream's decode:
+control points through the `phi` B3 basis into closed polygons,
+bbox-windowed intersection-over-min-area non-maximum suppression
+against the model's own thresholds, and probability-ordered
+rasterization where higher-probability objects overwrite. Cells and
+cytoplasm grow classically, exactly like the other pipelines.
+
+From a source checkout, enable the native feature:
+
+```sh
+uv run --frozen maturin develop --features splinedist-model
+```
+
+Use `pipelines=["splinedist"]` to evaluate only SplineDist, or include
+it alongside the other candidates. If the feature is absent, requesting
+SplineDist raises `RuntimeError` naming the rebuild command; it does
+not fall back. The model and its `phi` basis are included in the Python
+package. Inference needs no network access, no TensorFlow, and no
+Python splinedist installation.
+
+SplineDist's parameter search space is intentionally empty: the shipped
+model's own `thresholds.json` freezes the decode (`prob` 0.4775366187095642,
+`nms` 0.3), and the native port reproduces upstream's real
+`predict_instances` output label-for-label with those exact thresholds
+(123-instance oracle in `crates/cp_anywhere/tests/splinedist_fixtures/`).
+The saved configuration records the model name, the shipped ONNX
+SHA-256, the upstream weights SHA-256, and the Zenodo source URL. See
+`src/cp_anywhere/data/splinedist/NOTICE.md` for the full provenance
+and licensing (BSD-3-Clause code; CC-BY-4.0 weights; StarDist/BSD-3
+built). Declared gap: only the DSB2018 fluorescence-nuclei model is
+shipped; upstream's H&E `conic` model variants exist but are not
+implemented. SplineDist here always produces nuclei only.
+
+Run the opt-in checks with `uv run --frozen poe test-splinedist`.
+
 ## What this module intentionally does not do yet
 
 - No acquisition-group (plate/well/batch) calibration inside Stage 0 --

@@ -17,6 +17,33 @@ def stardist_segment(
     nms_thresh: float,
     border: int = 2,
 ) -> dict[str, Any]: ...
+
+# Only present in native builds that enable the instanseg-model feature.
+def instanseg_segment(
+    image: np.ndarray,
+    rows: int,
+    cols: int,
+    fcn_bytes: bytes,
+    classifier_bytes: bytes,
+    mask_threshold: float = 0.53,
+    peak_distance: int = 5,
+    seed_threshold: float = 0.1,
+    overlap_threshold: float = 0.5,
+    window_size: int = 32,
+    min_size: int = 20,
+    cleanup_fragments: bool = True,
+) -> dict[str, Any]: ...
+
+# Only present in native builds that enable the splinedist-model feature.
+def splinedist_segment(
+    image: np.ndarray,
+    rows: int,
+    cols: int,
+    model_bytes: bytes,
+    phi_bytes: bytes,
+    real_rows: int | None = None,
+    real_cols: int | None = None,
+) -> dict[str, Any]: ...
 def render_outline_overlay(
     background: np.ndarray | None,
     outlines: list[tuple[np.ndarray, tuple[int, int, int]]],

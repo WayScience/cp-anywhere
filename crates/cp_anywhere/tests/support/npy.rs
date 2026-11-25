@@ -41,6 +41,9 @@ pub fn read(path: &Path) -> Npy {
     Npy { shape, descr, data }
 }
 
+// Each test binary includes this module via `#[path]` and typically
+// uses only a subset of the readers, so silence per-binary dead_code.
+#[allow(dead_code)]
 pub fn read_f32(path: &Path) -> (Vec<usize>, Vec<f32>) {
     let npy = read(path);
     assert_eq!(npy.descr, "<f4", "{path:?} is not float32: {}", npy.descr);
@@ -52,6 +55,7 @@ pub fn read_f32(path: &Path) -> (Vec<usize>, Vec<f32>) {
     (npy.shape, values)
 }
 
+#[allow(dead_code)]
 pub fn read_u32(path: &Path) -> (Vec<usize>, Vec<u32>) {
     let npy = read(path);
     assert_eq!(npy.descr, "<i4", "{path:?} is not int32: {}", npy.descr);

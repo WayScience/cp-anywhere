@@ -1,0 +1,34 @@
+{
+  "model_url": "https://zenodo.org/api/records/7193306/files/splinedist_models.zip/content",
+  "zip_md5": "c121caf72e2c89acb98f7a60d6411f32",
+  "zip_sha256": "75b56f3d8f1741cb727db5bdd5c851184e3134d0f77501a2b9a48d46ab0081cc",
+  "model": "bbbc038_10",
+  "n_params": 20,
+  "grid": [
+    2,
+    2
+  ],
+  "contoursize_max": 399,
+  "thresholds": {
+    "prob": 0.4775366187095642,
+    "nms": 0.3
+  },
+  "weights_sha256": "4c1bf5547d91f95ebd9723a03a75ec605c0d117cdec0272c10936125a03b9995",
+  "phi_sha256": "fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c",
+  "control_points": 10,
+  "example_image": "bbbc038.png",
+  "normalizer": "csbdeep normalize percentile 1-99.8 axes (0,1)",
+  "onnx_sha256": "c36989c35bdbdcf42f2a750439316a1d109b64fba1cc3f64740089179cbb8953",
+  "opset": 13,
+  "axes_div_by": [
+    16,
+    16
+  ],
+  "network_input_shape": [
+    1,
+    528,
+    704,
+    1
+  ],
+  "note": "network_input/network_output_keras_* are the exact tensors that upstream _instances_from_prediction consumed to produce labels_oracle; the native port must turn network_input through the ONNX heads plus the ported spline decode into exactly labels_oracle."
+}

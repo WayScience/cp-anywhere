@@ -8,9 +8,15 @@ M1 wraps this project's existing, oracle-verified classical primitives
 algorithm is implemented here.**
 
 M2 uses the pretrained StarDist ``2D_versatile_fluo`` model for nuclei.
-ONNX inference and polygon decoding run in Rust. Both candidates use
-classical propagation and subtraction for cells and cytoplasm. StarDist
-requires the opt-in ``stardist-model`` feature in the native extension.
+ONNX inference and polygon decoding run in Rust. M2.5 adds the
+pretrained InstanSeg ``single_channel_nuclei`` model the same way
+(tract-run ONNX plus the native port of upstream's deterministic
+postprocessing). M3 adds the pretrained SplineDist ``bbbc038_10``
+model the same way (tract-run ONNX heads plus the native port of
+upstream's spline decode). All three candidates use classical
+propagation and subtraction for cells and cytoplasm, and all require
+opt-in native features: ``stardist-model``, ``instanseg-model``, and
+``splinedist-model`` respectively.
 
 The selector uses QC exclusion, hard constraints, and a seeded parameter
 search over the requested candidates. It returns ``review_required`` if
@@ -59,6 +65,7 @@ __all__ = [
     "AutoSegmentResult",
     "ClassicalPipeline",
     "EvaluationRow",
+    "InstanSegPipeline",
     "ReviewState",
     "SegmentationOutcome",
     "StarDistPipeline",
@@ -76,7 +83,7 @@ def _cp_anywhere_version() -> str:
 _DEFAULT_TRIALS = 16
 _DEFAULT_TOP_K = 2
 _REVIEW_MODES = ("optional", "required", "disabled")
-_SUPPORTED_PIPELINES = ("classical", "stardist")
+_SUPPORTED_PIPELINES = ("classical", "stardist", "instanseg", "splinedist")
 _MAX_CELL_COVERAGE = 0.98
 # From the shipped model's own thresholds.json/config.json -- not invented.
 _STARDIST_MODEL_NAME = "2D_versatile_fluo"
@@ -88,6 +95,59 @@ _STARDIST_GRID = (2, 2)
 _IMAGE_NDIM = 2
 _STARDIST_DEFAULT_PROB_THRESH = 0.479071463157368
 _STARDIST_DEFAULT_NMS_THRESH = 0.3
+
+# InstanSeg (opt-in `instanseg-model` build): sha256 values are pins of the
+# shipped ONNX files under data/instanseg/ (verified at first use), the
+# upstream TorchScript model inside the release ZIP, and the release URL.
+# See data/instanseg/NOTICE.md for the full provenance and licensing story.
+_INSTANSEG_MODEL_NAME = "single_channel_nuclei"
+# NOTE: the pinned fcn ONNX is the byte-exact shipped artifact; its sha256
+# matches data/instanseg/NOTICE.md and the parity fixture details.json.
+_INSTANSEG_FCN_SHA256 = (
+    "5707bb92e3ddc097f32498c4507a9739280c506ed0a4bf782561a77b9e8aaeb7"
+)
+_INSTANSEG_CLASSIFIER_SHA256 = (
+    "a77cde586576ab480d2e2f2dbeae3ba8bcc569494426fa77aa7590435e97c80d"
+)
+_INSTANSEG_TORCHSCRIPT_SHA256 = (
+    "118066231fb7753ffb048bcd2164186397bcc5c8fc4ad7f826efe928b515794c"
+)
+_INSTANSEG_SOURCE_URL = (
+    "https://github.com/instanseg/instanseg/releases/download/"
+    "instanseg_models_v0.1.2/single_channel_nuclei.zip"
+)
+
+# SplineDist (opt-in `splinedist-model` build): the uhlmanngroup/splinedist
+# "bbbc038_10" fluorescence-nuclei model (trained on DSB2018/BBBC038),
+# converted to ONNX from the pinned Zenodo record 7193306 weights. The
+# sha256 pins below are verified at first use (model + phi basis) and
+# mirror the fixtures' details.json provenance. See
+# data/splinedist/NOTICE.md for the full licensing story (BSD-3-Clause
+# code, CC-BY-4.0 weights, StarDist built).
+_SPLINEDIST_MODEL_NAME = "bbbc038_10"
+_SPLINEDIST_MODEL_SHA256 = (
+    "c36989c35bdbdcf42f2a750439316a1d109b64fba1cc3f64740089179cbb8953"
+)
+_SPLINEDIST_PHI_SHA256 = (
+    "fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c"
+)
+_SPLINEDIST_WEIGHTS_SHA256 = (
+    "4c1bf5547d91f95ebd9723a03a75ec605c0d117cdec0272c10936125a03b9995"
+)
+_SPLINEDIST_SOURCE_URL = (
+    "https://zenodo.org/records/7193306/files/splinedist_models.zip"
+)
+# Upstream-frozen decode thresholds, from the shipped model's own
+# thresholds.json (recorded in the fixtures' details.json and verified
+# against the real predict_instances oracle they produced). These are
+# calibration evidence pinned to this exact model -- not tunables -- so
+# the parameter search space for splinedist is empty by design.
+_SPLINEDIST_DEFAULT_PROB_THRESH = 0.4775366187095642
+_SPLINEDIST_DEFAULT_NMS_THRESH = 0.3
+# csbdeep's SplineDistPadAndCropResizer pads by reflection to a multiple
+# of the network's 16-voxel divisibility (axes_div_by 16x16) and crops
+# back after inference.
+_SPLINEDIST_AXES_DIV_BY = 16
 
 # Stage 2's search space: sensible method-specific ranges,
 # not a Cartesian grid. Keys match ClassicalPipeline's own override names.
@@ -211,12 +271,97 @@ def _require_stardist() -> Callable[..., dict[str, Any]]:
     return _native.stardist_segment
 
 
+def _instanseg_model_bytes(name: str, sha256: str) -> bytes:
+    model_dir = Path(__file__).with_name("data") / "instanseg"
+    path = model_dir / name
+    model = path.read_bytes()
+    if hashlib.sha256(model).hexdigest() != sha256:
+        raise RuntimeError(f"InstanSeg model checksum mismatch: {path}")
+    return model
+
+
+def _require_splinedist() -> Callable[..., dict[str, Any]]:
+    if not hasattr(_native, "splinedist_segment"):
+        raise RuntimeError(
+            "The native extension does not include SplineDist. "
+            "Rebuild it with `maturin develop --features splinedist-model`."
+        )
+    return _native.splinedist_segment
+
+
+def _splinedist_model_bytes(name: str, sha256: str) -> bytes:
+    model_dir = Path(__file__).with_name("data") / "splinedist"
+    path = model_dir / name
+    model = path.read_bytes()
+    if hashlib.sha256(model).hexdigest() != sha256:
+        raise RuntimeError(f"SplineDist model checksum mismatch: {path}")
+    return model
+
+
+def _splinedist_normalize(image: np.ndarray) -> np.ndarray:
+    """Scale an image by its 1st and 99.8th percentiles, csbdeep-style.
+
+    Mirrors upstream's default normalizer (``normalize_perc`` with the
+    shipped model's ``(1, 99.8)`` percentiles): ``axes=(0, 1)`` statistics
+    over the whole 2D frame and the ``max(eps, pmax - pmin)`` denominator
+    (csbdeep ``eps=1e-20``). Verified against the recorded network input
+    in the converter's parity run.
+    """
+    values = image.astype(np.float64, copy=False)
+    lo, hi = np.percentile(values, (1.0, 99.8))
+    return np.ascontiguousarray(
+        (values - lo) / np.maximum(1e-20, hi - lo), dtype=np.float32
+    )
+
+
+def _splinedist_normalize_and_pad(image: np.ndarray) -> tuple[np.ndarray, int, int]:
+    """Normalize, then reflect-pad to the network's 16-voxel divisibility.
+
+    Mirrors ``SplineDistPadAndCropResizer.before``: statistics BEFORE
+    padding (upstream normalizes the unpadded image), then reflect padding
+    by the minimal amount that makes both axes divisible by 16. The native
+    call receives the padded frame plus the real rows/cols and crops the
+    network output back itself, exactly like the resizer's ``.after``.
+    """
+    normalized = _splinedist_normalize(image)
+    rows, cols = normalized.shape
+    pad_rows = -rows % _SPLINEDIST_AXES_DIV_BY
+    pad_cols = -cols % _SPLINEDIST_AXES_DIV_BY
+    if pad_rows or pad_cols:
+        normalized = np.ascontiguousarray(
+            np.pad(normalized, ((0, pad_rows), (0, pad_cols)), mode="reflect")
+        )
+    return normalized, rows, cols
+
+
+def _require_instanseg() -> Callable[..., dict[str, Any]]:
+    if not hasattr(_native, "instanseg_segment"):
+        raise RuntimeError(
+            "The native extension does not include InstanSeg. "
+            "Rebuild it with `maturin develop --features instanseg-model`."
+        )
+    return _native.instanseg_segment
+
+
 def _percentile_normalize(image: np.ndarray) -> np.ndarray:
     """Scale a fluorescence image by its 1st and 99.8th percentiles."""
     values = image.astype(np.float64, copy=False)
     lo, hi = np.percentile(values, (1.0, 99.8))
     # Do not clip: pixels beyond the two percentiles retain their relative value.
     return np.ascontiguousarray((values - lo) / (hi - lo + 1e-20), dtype=np.float32)
+
+
+def _instanseg_normalize(image: np.ndarray) -> np.ndarray:
+    """Scale an image by its 0.1st and 99.9th percentiles.
+
+    Mirrors the shipped model's bioimage-io ``scale_range`` preprocessing
+    pin: 0.1/99.9 percentiles with eps 1e-6 (``max(eps, pmax - pmin)``).
+    Verified byte-exact against upstream's own preprocessed test input.
+    """
+    values = image.astype(np.float64, copy=False)
+    lo, hi = np.percentile(values, (0.1, 99.9))
+    scale = max(1e-6, hi - lo)
+    return np.ascontiguousarray((values - lo) / scale, dtype=np.float32)
 
 
 @dataclass(frozen=True)
@@ -297,7 +442,184 @@ class StarDistPipeline:
         )
 
 
-_PIPELINE_FACTORIES = {"classical": ClassicalPipeline, "stardist": StarDistPipeline}
+# Classical propagation/subtraction knobs for InstanSeg's Cells and
+# Cytoplasm compartments: InstanSeg itself only produces nuclei labels,
+# so the downstream compartments reuse the classical kernels with the
+# same frozen, non-searchable values StarDist's pipeline uses.
+_INSTANSEG_CELLS_THRESHOLD_CORRECTION = 1.0
+_INSTANSEG_CELLS_REGULARIZATION = 0.05
+_INSTANSEG_CELLS_DISTANCE_TO_DILATE = 10.0
+
+
+@dataclass(frozen=True)
+class InstanSegPipeline:
+    """Nuclei via the pretrained InstanSeg model; Cells/Cytoplasm stay classical.
+
+    Requires the native extension to have been built with
+    cp-anywhere's `instanseg-model` Cargo feature (off by default -- see
+    the module docstring). Raises ``RuntimeError`` naming that gap if it
+    was not, rather than silently falling back to the classical nuclei
+    threshold.
+
+    The parameter search space is intentionally empty: upstream
+    instanseg/instanseg's released ``single_channel_nuclei`` graph pins
+    its own postprocessing parameters (min_size, mask_threshold,
+    seed_threshold, peak_distance, overlap_threshold, fg_threshold,
+    window_size, cleanup_fragments -- frozen to the released model's
+    own saved values in v0.1.2), and exposing any of them as tunables
+    would break the oracle-verified parity proven in
+    ``crates/cp_anywhere/tests/instanseg_parity.rs``. Declared gap: the
+    upstream cells-and-nuclei model variant is not implemented; this
+    pipeline always produces nuclei only, then grows Cells/Cytoplasm
+    classically like every other pipeline here.
+    """
+
+    name: str = "instanseg"
+    overrides: dict[str, float] = field(default_factory=dict)
+
+    def defaults(self) -> dict[str, float]:
+        # See the class docstring: empty parameter space by design.
+        return {}
+
+    def parameters(self) -> dict[str, float]:
+        merged = self.defaults()
+        merged.update(self.overrides)
+        return merged
+
+    def run(self, nuclei_image: object, cell_image: object) -> SegmentationOutcome:
+        instanseg_segment = _require_instanseg()
+        params = self.parameters()
+        array = np.asarray(nuclei_image)
+        if array.ndim != _IMAGE_NDIM or array.size == 0:
+            raise ValueError("InstanSeg needs a nonempty 2D nuclei image")
+        if array.dtype.kind not in "buif" or not np.isfinite(array).all():
+            raise ValueError("InstanSeg needs a finite real-valued nuclei image")
+        rows, cols = array.shape
+        normalized = _instanseg_normalize(array)
+        raw = instanseg_segment(
+            normalized,
+            rows,
+            cols,
+            _instanseg_model_bytes("instanseg_fcn.onnx", _INSTANSEG_FCN_SHA256),
+            _instanseg_model_bytes(
+                "instanseg_pixel_classifier.onnx", _INSTANSEG_CLASSIFIER_SHA256
+            ),
+        )
+        nuclei_labels = raw["labels"].reshape(rows, cols).astype(np.uint32)
+        secondary = identify_secondary_objects(
+            cell_image,
+            nuclei_labels,
+            primary_labels_in=nuclei_labels,
+            method="propagation",
+            threshold_correction_factor=_INSTANSEG_CELLS_THRESHOLD_CORRECTION,
+            regularization_factor=_INSTANSEG_CELLS_REGULARIZATION,
+            distance_to_dilate=_INSTANSEG_CELLS_DISTANCE_TO_DILATE,
+        )
+        tertiary = identify_tertiary_objects(
+            nuclei_labels, secondary.labels, shrink_primary=False
+        )
+        stats = {
+            "nuclei": _compartment_stats(nuclei_labels),
+            "cells": _compartment_stats(secondary.labels),
+            "cytoplasm": _compartment_stats(tertiary.labels),
+        }
+        return SegmentationOutcome(
+            nuclei=nuclei_labels,
+            cells=secondary.labels,
+            cytoplasm=tertiary.labels,
+            pipeline_name=self.name,
+            parameters=params,
+            stats=stats,
+        )
+
+
+@dataclass(frozen=True)
+class SplineDistPipeline:
+    """Nuclei via the pretrained SplineDist model; Cells/Cytoplasm stay classical.
+
+    Requires the native extension to have been built with
+    cp-anywhere's `splinedist-model` Cargo feature (off by default -- see
+    the module docstring). Raises ``RuntimeError`` naming that gap if it
+    was not, rather than silently falling back to the classical nuclei
+    threshold.
+
+    The parameter search space is intentionally empty: the shipped
+    ``bbbc038_10`` model freezes its own decode thresholds
+    (``prob`` 0.4775366187095642, ``nms`` 0.3 -- the model's own
+    ``thresholds.json``, verified against the real `predict_instances`
+    oracle they produced in ``crates/cp_anywhere/tests/splinedist_parity.rs``),
+    and exposing them as tunables would break that oracle-verified
+    parity. Declared gap: only the DSB2018 fluorescence-nuclei model is
+    shipped; upstream's H&E ``conic`` model variants exist but are not
+    implemented. This pipeline always produces nuclei only, then grows
+    Cells/Cytoplasm classically like every other pipeline here.
+    """
+
+    name: str = "splinedist"
+    overrides: dict[str, float] = field(default_factory=dict)
+
+    def defaults(self) -> dict[str, float]:
+        # See the class docstring: empty parameter space by design. The
+        # shipped thresholds are constants inside the native decode.
+        return {}
+
+    def parameters(self) -> dict[str, float]:
+        merged = self.defaults()
+        merged.update(self.overrides)
+        return merged
+
+    def run(self, nuclei_image: object, cell_image: object) -> SegmentationOutcome:
+        splinedist_segment = _require_splinedist()
+        params = self.parameters()
+        array = np.asarray(nuclei_image)
+        if array.ndim != _IMAGE_NDIM or array.size == 0:
+            raise ValueError("SplineDist needs a nonempty 2D nuclei image")
+        if array.dtype.kind not in "buif" or not np.isfinite(array).all():
+            raise ValueError("SplineDist needs a finite real-valued nuclei image")
+        padded, rows, cols = _splinedist_normalize_and_pad(array)
+        raw = splinedist_segment(
+            padded,
+            padded.shape[0],
+            padded.shape[1],
+            _splinedist_model_bytes("splinedist.onnx", _SPLINEDIST_MODEL_SHA256),
+            _splinedist_model_bytes("phi_basis.npy", _SPLINEDIST_PHI_SHA256),
+            real_rows=rows,
+            real_cols=cols,
+        )
+        nuclei_labels = raw["labels"].reshape(rows, cols).astype(np.uint32)
+        secondary = identify_secondary_objects(
+            cell_image,
+            nuclei_labels,
+            primary_labels_in=nuclei_labels,
+            method="propagation",
+            threshold_correction_factor=_INSTANSEG_CELLS_THRESHOLD_CORRECTION,
+            regularization_factor=_INSTANSEG_CELLS_REGULARIZATION,
+            distance_to_dilate=_INSTANSEG_CELLS_DISTANCE_TO_DILATE,
+        )
+        tertiary = identify_tertiary_objects(
+            nuclei_labels, secondary.labels, shrink_primary=False
+        )
+        stats = {
+            "nuclei": _compartment_stats(nuclei_labels),
+            "cells": _compartment_stats(secondary.labels),
+            "cytoplasm": _compartment_stats(tertiary.labels),
+        }
+        return SegmentationOutcome(
+            nuclei=nuclei_labels,
+            cells=secondary.labels,
+            cytoplasm=tertiary.labels,
+            pipeline_name=self.name,
+            parameters=params,
+            stats=stats,
+        )
+
+
+_PIPELINE_FACTORIES = {
+    "classical": ClassicalPipeline,
+    "stardist": StarDistPipeline,
+    "instanseg": InstanSegPipeline,
+    "splinedist": SplineDistPipeline,
+}
 _PARAMETER_SPACES: dict[str, dict[str, tuple[float, float]]] = {
     "classical": CLASSICAL_PARAMETER_SPACE,
     # StarDist's architecture/weights are fixed (pretrained); only its two
@@ -308,6 +630,19 @@ _PARAMETER_SPACES: dict[str, dict[str, tuple[float, float]]] = {
         "prob_thresh": (0.3, 0.7),
         "nms_thresh": (0.1, 0.5),
     },
+    # InstanSeg's released single_channel_nuclei graph freezes every
+    # upstream postprocessing parameter (min_size, mask_threshold,
+    # seed_threshold, peak_distance, overlap_threshold, fg_threshold,
+    # window_size, cleanup_fragments) to the model's own saved v0.1.2
+    # values, so this search space is empty by design -- see
+    # InstanSegPipeline's docstring for the honest why.
+    "instanseg": {},
+    # SplineDist's shipped model freezes its own decode thresholds
+    # (prob 0.4775366187095642, nms 0.3 -- the model's own
+    # thresholds.json, verified against the real predict_instances
+    # oracle they produced), so this search space is empty by design --
+    # see SplineDistPipeline's docstring for the honest why.
+    "splinedist": {},
 }
 
 
@@ -402,7 +737,10 @@ def _split_tuning_validation(
 
 
 def _run_pipeline_on_sample(
-    pipeline: ClassicalPipeline | StarDistPipeline,
+    pipeline: ClassicalPipeline
+    | StarDistPipeline
+    | InstanSegPipeline
+    | SplineDistPipeline,
     sample: Mapping[str, tuple[object, object]],
     *,
     phase: str,
@@ -458,10 +796,12 @@ def _search_pipeline(  # noqa: PLR0913
     """Stage 2: a bounded, reproducible random search over one pipeline."""
     best: _Trial | None = None
     for trial_index in range(trials):
-        # Evaluate the published StarDist defaults before tuning its thresholds.
+        # Evaluate the published StarDist/InstanSeg/SplineDist defaults
+        # before tuning StarDist's thresholds; InstanSeg and SplineDist
+        # have no tunables at all.
         overrides = (
             {}
-            if name == "stardist" and trial_index == 0
+            if name in ("stardist", "instanseg", "splinedist") and trial_index == 0
             else _sample_parameters(seed + trial_index, _PARAMETER_SPACES[name])
         )
         pipeline = _PIPELINE_FACTORIES[name](name=name, overrides=overrides)
@@ -575,6 +915,20 @@ class AutoSegmentResult:
                 "name": _STARDIST_MODEL_NAME,
                 "sha256": _STARDIST_MODEL_SHA256,
             }
+        if self.selected_pipeline_name == "instanseg":
+            payload["model"] = {
+                "name": _INSTANSEG_MODEL_NAME,
+                "sha256": _INSTANSEG_FCN_SHA256,
+                "torchscript_sha256": _INSTANSEG_TORCHSCRIPT_SHA256,
+                "source_url": _INSTANSEG_SOURCE_URL,
+            }
+        if self.selected_pipeline_name == "splinedist":
+            payload["model"] = {
+                "name": _SPLINEDIST_MODEL_NAME,
+                "sha256": _SPLINEDIST_MODEL_SHA256,
+                "weights_sha256": _SPLINEDIST_WEIGHTS_SHA256,
+                "source_url": _SPLINEDIST_SOURCE_URL,
+            }
         Path(path).write_text(json.dumps(payload, indent=2))
 
     def save_review(self, path: str | Path) -> None:
@@ -606,6 +960,16 @@ def _render_report(result: AutoSegmentResult) -> str:
         model_note = (
             f"<p>StarDist model: {_escape(_STARDIST_MODEL_NAME)}. "
             f"SHA-256: {_escape(_STARDIST_MODEL_SHA256)}.</p>"
+        )
+    if "instanseg" in result.candidates:
+        model_note += (
+            f"<p>InstanSeg model: {_escape(_INSTANSEG_MODEL_NAME)}. "
+            f"SHA-256: {_escape(_INSTANSEG_FCN_SHA256)}.</p>"
+        )
+    if "splinedist" in result.candidates:
+        model_note += (
+            f"<p>SplineDist model: {_escape(_SPLINEDIST_MODEL_NAME)}. "
+            f"SHA-256: {_escape(_SPLINEDIST_MODEL_SHA256)}.</p>"
         )
     return f"""<!DOCTYPE html>
 <html lang="en">
@@ -663,11 +1027,13 @@ def auto(  # noqa: C901, PLR0912, PLR0913
 
     ``channels`` maps the segmentation roles ``"nuclei"`` and ``"cells"``
     to channel names present in every image's own mapping.
-    ``"classical"`` and ``"stardist"`` are implemented (see the module
-    docstring for ``"stardist"``'s native-build requirement); any other
-    name in ``pipelines`` raises ``NotImplementedError`` naming the
-    specific gap. ``device`` only accepts ``"cpu"`` in this release --
-    every underlying primitive is a native CPU Rust kernel; no GPU path
+    ``"classical"``, ``"stardist"``, ``"instanseg"``, and ``"splinedist"``
+    are implemented
+    (see the module docstring for the opt-in native-build requirements
+    of the learned pipelines); any other name in ``pipelines`` raises
+    ``NotImplementedError`` naming the specific gap. ``device`` only
+    accepts ``"cpu"`` in this release -- every underlying primitive is a
+    native CPU Rust kernel; no GPU path
     exists to dispatch to.
 
     ``acquisition_groups`` optionally maps image IDs to acquisition
@@ -694,6 +1060,10 @@ def auto(  # noqa: C901, PLR0912, PLR0913
         )
     if "stardist" in pipelines:
         _require_stardist()
+    if "instanseg" in pipelines:
+        _require_instanseg()
+    if "splinedist" in pipelines:
+        _require_splinedist()
     for role in ("nuclei", "cells"):
         if role not in channels:
             raise ValueError(f"channels must map {role!r} to a channel name")

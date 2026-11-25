@@ -2578,7 +2578,11 @@ mod tests {
 
 pub mod declump;
 mod holes;
+#[cfg(feature = "instanseg-model")]
+pub mod instanseg;
 pub mod secondary;
+#[cfg(feature = "splinedist-model")]
+pub mod splinedist;
 pub mod stardist;
 #[cfg(feature = "stardist-model")]
 pub mod stardist_model;

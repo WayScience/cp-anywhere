@@ -117,6 +117,18 @@ lint.per-file-ignores."scripts/cppipe/generate_granularity_pipeline.py" = [
   "ANN401",
   "PLC0415",
 ]
+# Ignore `E501` (the pinned-wheel install lines in the module docstring
+# cannot be wrapped) and `ANN001`/`ANN201`/`ANN202` (this finished,
+# verified conversion script keeps its loose signatures; it is not part
+# of the shipped package) for the InstanSeg model conversion script.
+lint.per-file-ignores."scripts/instanseg/convert.py" = [
+  "ANN001",
+  "ANN201",
+  "ANN202",
+  "E501",
+  "F841",
+  "PLC0415",
+]
 # Ignore `PLC0415`: this M2 comparison script imports `cp_measure` lazily
 # because it is not a project dependency -- it only exists in the
 # separate, isolated comparison environment this script is run inside.
@@ -256,6 +268,22 @@ cargo test --locked -p cp-anywhere --features stardist-model stardist &&
 maturin develop --uv --locked --features stardist-model &&
 python -c 'from cp_anywhere._native import stardist_segment' &&
 pytest --no-cov tests/quality/test_autosegment.py -k stardist
+"""
+# Exercise the opt-in InstanSeg pipeline with the real model, not the
+# feature-off skips.
+tasks.test-instanseg.shell = """
+cargo test --locked -p cp-anywhere --features instanseg-model instanseg &&
+maturin develop --uv --locked --features instanseg-model &&
+python -c 'from cp_anywhere._native import instanseg_segment' &&
+pytest --no-cov tests/quality/test_autosegment.py -k instanseg
+"""
+# Exercise the opt-in SplineDist pipeline with the real model, not the
+# feature-off skips.
+tasks.test-splinedist.shell = """
+cargo test --locked -p cp-anywhere --features splinedist-model splinedist &&
+maturin develop --uv --locked --features splinedist-model &&
+python -c 'from cp_anywhere._native import splinedist_segment' &&
+pytest --no-cov tests/quality/test_autosegment.py -k splinedist
 """
 tasks.lint.shell = """
 pre-commit run --all-files

@@ -6,7 +6,11 @@ use pyo3::prelude::*;
 use pyo3::types::{PyDict, PyList};
 
 mod image_quality;
+#[cfg(feature = "instanseg-model")]
+mod instanseg;
 mod outline_overlay;
+#[cfg(feature = "splinedist-model")]
+mod splinedist;
 #[cfg(feature = "stardist-model")]
 mod stardist;
 
@@ -813,6 +817,10 @@ fn _native(module: &Bound<'_, PyModule>) -> PyResult<()> {
         outline_overlay::render_outline_overlay,
         module
     )?)?;
+    #[cfg(feature = "instanseg-model")]
+    module.add_function(wrap_pyfunction!(instanseg::instanseg_segment, module)?)?;
+    #[cfg(feature = "splinedist-model")]
+    module.add_function(wrap_pyfunction!(splinedist::splinedist_segment, module)?)?;
     #[cfg(feature = "stardist-model")]
     module.add_function(wrap_pyfunction!(stardist::stardist_segment, module)?)?;
     Ok(())

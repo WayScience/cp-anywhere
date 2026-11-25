@@ -1,0 +1,21 @@
+{
+  "model_url": "https://github.com/instanseg/instanseg/releases/download/instanseg_models_v0.1.2/single_channel_nuclei.zip",
+  "zip_sha256": "6bc2e4cd8acd9bea64a04e926a74a53f922d76fd6c1dc633ca0bca335df4d4d7",
+  "torchscript_sha256": "118066231fb7753ffb048bcd2164186397bcc5c8fc4ad7f826efe928b515794c",
+  "torchscript_model": "single_channel_nuclei.pt",
+  "opset": 13,
+  "pad_x": 0,
+  "pad_y": 0,
+  "probe_shape": [
+    1,
+    1,
+    128,
+    208
+  ],
+  "pixel_classifier_width": 4,
+  "preprocess_percentile": 0.1,
+  "preprocess_eps": 1e-06,
+  "note": "fcn_input is the rdf scale_range-preprocessed (0.1/99.9 percentiles, eps 1e-06) test-input, padded exactly like InstanSeg_Torchscript's own forward; labels_oracle is upstream's test-output_instance_segmentation. The native postprocessing port must reproduce labels_oracle from fcn_input.",
+  "onnx_sha256_fcn": "5707bb92e3ddc097f32498c4507a9739280c506ed0a4bf782561a77b9e8aaeb7",
+  "onnx_sha256_pixel_classifier": "a77cde586576ab480d2e2f2dbeae3ba8bcc569494426fa77aa7590435e97c80d"
+}
