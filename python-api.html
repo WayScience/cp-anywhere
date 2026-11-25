@@ -2231,8 +2231,10 @@ held-out sets (never sharing an acquisition when <code class="docutils literal n
 is given), picks a candidate pipeline, tunes its parameters with a
 seeded search, re-checks the winner on held-out fields, applies the
 selected configuration to new images, and writes offline reports and
-review provenance. <code class="docutils literal notranslate"><span class="pre">&quot;classical&quot;</span></code> is always available; <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>
-needs the opt-in <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code> native build and raises rather than
+<code class="docutils literal notranslate"><span class="pre">&quot;classical&quot;</span></code> is always available; <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;instanseg&quot;</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">&quot;splinedist&quot;</span></code> need the opt-in <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code>,
+<code class="docutils literal notranslate"><span class="pre">instanseg-model</span></code>, and <code class="docutils literal notranslate"><span class="pre">splinedist-model</span></code> native builds
+respectively and raise rather than
 falling back silently.</p>
 <p id="module-src.cp_anywhere.autosegment">M1/M2/M3/M4: pipeline wrappers plus a two-stage AutoSegment selector.</p>
 <p>M1 wraps this project’s existing, oracle-verified classical primitives
@@ -2242,9 +2244,15 @@ falling back silently.</p>
 <code class="docutils literal notranslate"><span class="pre">Nuclei</span> <span class="pre">-&gt;</span> <span class="pre">Cells</span> <span class="pre">-&gt;</span> <span class="pre">Cytoplasm</span></code> pipeline. <strong>No new segmentation
 algorithm is implemented here.</strong></p>
 <p>M2 uses the pretrained StarDist <code class="docutils literal notranslate"><span class="pre">2D_versatile_fluo</span></code> model for nuclei.
-ONNX inference and polygon decoding run in Rust. Both candidates use
-classical propagation and subtraction for cells and cytoplasm. StarDist
-requires the opt-in <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code> feature in the native extension.</p>
+ONNX inference and polygon decoding run in Rust. M2.5 adds the
+pretrained InstanSeg <code class="docutils literal notranslate"><span class="pre">single_channel_nuclei</span></code> model the same way
+(tract-run ONNX plus the native port of upstream’s deterministic
+postprocessing). M3 adds the pretrained SplineDist <code class="docutils literal notranslate"><span class="pre">bbbc038_10</span></code>
+model the same way (tract-run ONNX heads plus the native port of
+upstream’s spline decode). All three candidates use classical
+propagation and subtraction for cells and cytoplasm, and all require
+opt-in native features: <code class="docutils literal notranslate"><span class="pre">stardist-model</span></code>, <code class="docutils literal notranslate"><span class="pre">instanseg-model</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">splinedist-model</span></code> respectively.</p>
 <p>The selector uses QC exclusion, hard constraints, and a seeded parameter
 search over the requested candidates. It returns <code class="docutils literal notranslate"><span class="pre">review_required</span></code> if
 none passes.</p>
@@ -2305,6 +2313,28 @@ does not ship.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="src.cp_anywhere.autosegment.InstanSegPipeline">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.autosegment.</span></span><span class="sig-name descname"><span class="pre">InstanSegPipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'instanseg'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/autosegment.html#InstanSegPipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.autosegment.InstanSegPipeline" title="Link to this definition">#</a></dt>
+<dd><p>Nuclei via the pretrained InstanSeg model; Cells/Cytoplasm stay classical.</p>
+<p>Requires the native extension to have been built with
+cp-anywhere’s <cite>instanseg-model</cite> Cargo feature (off by default – see
+the module docstring). Raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> naming that gap if it
+was not, rather than silently falling back to the classical nuclei
+threshold.</p>
+<p>The parameter search space is intentionally empty: upstream
+instanseg/instanseg’s released <code class="docutils literal notranslate"><span class="pre">single_channel_nuclei</span></code> graph pins
+its own postprocessing parameters (min_size, mask_threshold,
+seed_threshold, peak_distance, overlap_threshold, fg_threshold,
+window_size, cleanup_fragments – frozen to the released model’s
+own saved values in v0.1.2), and exposing any of them as tunables
+would break the oracle-verified parity proven in
+<code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere/tests/instanseg_parity.rs</span></code>. Declared gap: the
+upstream cells-and-nuclei model variant is not implemented; this
+pipeline always produces nuclei only, then grows Cells/Cytoplasm
+classically like every other pipeline here.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="src.cp_anywhere.autosegment.ReviewState">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">src.cp_anywhere.autosegment.</span></span><span class="sig-name descname"><span class="pre">ReviewState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">review_mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decisions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list[dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object]]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/cp_anywhere/autosegment.html#ReviewState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.cp_anywhere.autosegment.ReviewState" title="Link to this definition">#</a></dt>
 <dd><p>Stage 4’s human-judgment provenance.</p>
@@ -2333,11 +2363,13 @@ nuclei threshold.</p>
 <dd><p>Stage 0 through Stage 2: assess quality, select, and tune a pipeline.</p>
 <p><code class="docutils literal notranslate"><span class="pre">channels</span></code> maps the segmentation roles <code class="docutils literal notranslate"><span class="pre">&quot;nuclei&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cells&quot;</span></code>
 to channel names present in every image’s own mapping.
-<code class="docutils literal notranslate"><span class="pre">&quot;classical&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code> are implemented (see the module
-docstring for <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>’s native-build requirement); any other
-name in <code class="docutils literal notranslate"><span class="pre">pipelines</span></code> raises <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> naming the
-specific gap. <code class="docutils literal notranslate"><span class="pre">device</span></code> only accepts <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code> in this release –
-every underlying primitive is a native CPU Rust kernel; no GPU path
+<code class="docutils literal notranslate"><span class="pre">&quot;classical&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;stardist&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;instanseg&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;splinedist&quot;</span></code>
+are implemented
+(see the module docstring for the opt-in native-build requirements
+of the learned pipelines); any other name in <code class="docutils literal notranslate"><span class="pre">pipelines</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> naming the specific gap. <code class="docutils literal notranslate"><span class="pre">device</span></code> only
+accepts <code class="docutils literal notranslate"><span class="pre">&quot;cpu&quot;</span></code> in this release – every underlying primitive is a
+native CPU Rust kernel; no GPU path
 exists to dispatch to.</p>
 <p><code class="docutils literal notranslate"><span class="pre">acquisition_groups</span></code> optionally maps image IDs to acquisition
 groups (e.g. plates). The tuning and held-out splits never share a

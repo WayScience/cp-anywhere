@@ -2939,6 +2939,83 @@ fields. They do not establish accuracy on a new assay. This integration
 supports native CPU builds only; the browser API does not expose StarDist.</p>
 <p>Run the opt-in checks with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--frozen</span> <span class="pre">poe</span> <span class="pre">test-stardist</span></code>.</p>
 </section>
+<section id="the-instanseg-nuclei-candidate">
+<h2>The InstanSeg nuclei candidate<a class="headerlink" href="#the-instanseg-nuclei-candidate" title="Link to this heading">#</a></h2>
+<p>InstanSeg uses the pretrained <code class="docutils literal notranslate"><span class="pre">single_channel_nuclei</span></code> model (upstream
+instanseg/instanseg, <code class="docutils literal notranslate"><span class="pre">instanseg_models_v0.1.2</span></code> release pin, model id
+26423248) on one 2D nuclei channel. It scales the image by its 0.1st and
+99.9th percentiles (the model’s own bioimage-io <code class="docutils literal notranslate"><span class="pre">scale_range</span></code> pin, with
+eps 1e-6), then runs the ONNX fcn network in Rust on the CPU and applies
+a native port of upstream’s deterministic postprocessing: peak
+local-maxima seeding on the seed map, per-centroid feature windows with
+the pixel classifier, fragment cleanup, and an
+intersection-over-minimum-area overlap merge. Cells and cytoplasm grow
+classically, exactly like the other pipelines.</p>
+<p>From a source checkout, enable the native feature:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--features<span class="w"> </span>instanseg-model
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">pipelines=[&quot;instanseg&quot;]</span></code> to evaluate only InstanSeg, or pass
+<code class="docutils literal notranslate"><span class="pre">[&quot;classical&quot;,</span> <span class="pre">&quot;instanseg&quot;]</span></code> (or all three) to compare. If the feature is
+absent, requesting InstanSeg raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> naming the rebuild
+command; it does not fall back. The models are included in the Python
+package. Inference needs no network access, no torch, and no separate
+Python InstanSeg installation.</p>
+<p>InstanSeg’s parameter search space is intentionally empty: the released
+model’s own graph freezes all of its postprocessing parameters
+(<code class="docutils literal notranslate"><span class="pre">min_size</span></code>, <code class="docutils literal notranslate"><span class="pre">mask_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">seed_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">peak_distance</span></code>,
+<code class="docutils literal notranslate"><span class="pre">overlap_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">fg_threshold</span></code>, <code class="docutils literal notranslate"><span class="pre">window_size</span></code>, <code class="docutils literal notranslate"><span class="pre">cleanup_fragments</span></code>)
+to the model’s saved v0.1.2 values, and the port reproduces upstream’s
+own published test output label-for-label. The saved configuration
+records the model name, the shipped ONNX SHA-256, the upstream
+TorchScript SHA-256, and the release URL. See
+<code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/data/instanseg/NOTICE.md</span></code> for the full provenance,
+licensing (Apache-2.0 code and weights; CC0/CC-BY training datasets),
+and the released-graph divergences from the v0.1.2 wheel sources the
+port documents. Declared gap: upstream’s cells-and-nuclei model variant
+is not implemented; InstanSeg here always produces nuclei only.</p>
+<p>Run the opt-in checks with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--frozen</span> <span class="pre">poe</span> <span class="pre">test-instanseg</span></code>.</p>
+</section>
+<section id="the-splinedist-nuclei-candidate">
+<h2>The SplineDist nuclei candidate<a class="headerlink" href="#the-splinedist-nuclei-candidate" title="Link to this heading">#</a></h2>
+<p>SplineDist ships the pretrained <code class="docutils literal notranslate"><span class="pre">bbbc038_10</span></code> fluorescence-nuclei model
+(upstream uhlmanngroup/splinedist, trained on DSB2018/BBBC038; weights
+pinned to Zenodo record 7193306) on one 2D nuclei channel. It scales
+the image by its 1st and 99.8th percentiles (upstream’s csbdeep
+normalizer default that the training run used, with csbdeep’s eps
+1e-20), reflect-pads to the network’s 16-voxel divisibility exactly
+like <code class="docutils literal notranslate"><span class="pre">SplineDistPadAndCropResizer</span></code>, then runs the ONNX graph in Rust on
+the CPU (grid-(2,2)-compressed probability and 20-channel spline
+control-point heads) and applies a native port of upstream’s decode:
+control points through the <code class="docutils literal notranslate"><span class="pre">phi</span></code> B3 basis into closed polygons,
+bbox-windowed intersection-over-min-area non-maximum suppression
+against the model’s own thresholds, and probability-ordered
+rasterization where higher-probability objects overwrite. Cells and
+cytoplasm grow classically, exactly like the other pipelines.</p>
+<p>From a source checkout, enable the native feature:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>--frozen<span class="w"> </span>maturin<span class="w"> </span>develop<span class="w"> </span>--features<span class="w"> </span>splinedist-model
+</pre></div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">pipelines=[&quot;splinedist&quot;]</span></code> to evaluate only SplineDist, or include
+it alongside the other candidates. If the feature is absent, requesting
+SplineDist raises <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> naming the rebuild command; it does
+not fall back. The model and its <code class="docutils literal notranslate"><span class="pre">phi</span></code> basis are included in the Python
+package. Inference needs no network access, no TensorFlow, and no
+Python splinedist installation.</p>
+<p>SplineDist’s parameter search space is intentionally empty: the shipped
+model’s own <code class="docutils literal notranslate"><span class="pre">thresholds.json</span></code> freezes the decode (<code class="docutils literal notranslate"><span class="pre">prob</span></code> 0.4775366187095642,
+<code class="docutils literal notranslate"><span class="pre">nms</span></code> 0.3), and the native port reproduces upstream’s real
+<code class="docutils literal notranslate"><span class="pre">predict_instances</span></code> output label-for-label with those exact thresholds
+(123-instance oracle in <code class="docutils literal notranslate"><span class="pre">crates/cp_anywhere/tests/splinedist_fixtures/</span></code>).
+The saved configuration records the model name, the shipped ONNX
+SHA-256, the upstream weights SHA-256, and the Zenodo source URL. See
+<code class="docutils literal notranslate"><span class="pre">src/cp_anywhere/data/splinedist/NOTICE.md</span></code> for the full provenance
+and licensing (BSD-3-Clause code; CC-BY-4.0 weights; StarDist/BSD-3
+built). Declared gap: only the DSB2018 fluorescence-nuclei model is
+shipped; upstream’s H&amp;E <code class="docutils literal notranslate"><span class="pre">conic</span></code> model variants exist but are not
+implemented. SplineDist here always produces nuclei only.</p>
+<p>Run the opt-in checks with <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">run</span> <span class="pre">--frozen</span> <span class="pre">poe</span> <span class="pre">test-splinedist</span></code>.</p>
+</section>
 <section id="what-this-module-intentionally-does-not-do-yet">
 <h2>What this module intentionally does not do yet<a class="headerlink" href="#what-this-module-intentionally-does-not-do-yet" title="Link to this heading">#</a></h2>
 <ul class="simple">

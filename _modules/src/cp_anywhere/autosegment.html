@@ -387,9 +387,15 @@
 <span class="sd">algorithm is implemented here.**</span>
 
 <span class="sd">M2 uses the pretrained StarDist ``2D_versatile_fluo`` model for nuclei.</span>
-<span class="sd">ONNX inference and polygon decoding run in Rust. Both candidates use</span>
-<span class="sd">classical propagation and subtraction for cells and cytoplasm. StarDist</span>
-<span class="sd">requires the opt-in ``stardist-model`` feature in the native extension.</span>
+<span class="sd">ONNX inference and polygon decoding run in Rust. M2.5 adds the</span>
+<span class="sd">pretrained InstanSeg ``single_channel_nuclei`` model the same way</span>
+<span class="sd">(tract-run ONNX plus the native port of upstream&#39;s deterministic</span>
+<span class="sd">postprocessing). M3 adds the pretrained SplineDist ``bbbc038_10``</span>
+<span class="sd">model the same way (tract-run ONNX heads plus the native port of</span>
+<span class="sd">upstream&#39;s spline decode). All three candidates use classical</span>
+<span class="sd">propagation and subtraction for cells and cytoplasm, and all require</span>
+<span class="sd">opt-in native features: ``stardist-model``, ``instanseg-model``, and</span>
+<span class="sd">``splinedist-model`` respectively.</span>
 
 <span class="sd">The selector uses QC exclusion, hard constraints, and a seeded parameter</span>
 <span class="sd">search over the requested candidates. It returns ``review_required`` if</span>
@@ -438,6 +444,7 @@
     <span class="s2">&quot;AutoSegmentResult&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ClassicalPipeline&quot;</span><span class="p">,</span>
     <span class="s2">&quot;EvaluationRow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;InstanSegPipeline&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ReviewState&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SegmentationOutcome&quot;</span><span class="p">,</span>
     <span class="s2">&quot;StarDistPipeline&quot;</span><span class="p">,</span>
@@ -455,7 +462,7 @@
 <span class="n">_DEFAULT_TRIALS</span> <span class="o">=</span> <span class="mi">16</span>
 <span class="n">_DEFAULT_TOP_K</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">_REVIEW_MODES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;optional&quot;</span><span class="p">,</span> <span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
-<span class="n">_SUPPORTED_PIPELINES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;classical&quot;</span><span class="p">,</span> <span class="s2">&quot;stardist&quot;</span><span class="p">)</span>
+<span class="n">_SUPPORTED_PIPELINES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;classical&quot;</span><span class="p">,</span> <span class="s2">&quot;stardist&quot;</span><span class="p">,</span> <span class="s2">&quot;instanseg&quot;</span><span class="p">,</span> <span class="s2">&quot;splinedist&quot;</span><span class="p">)</span>
 <span class="n">_MAX_CELL_COVERAGE</span> <span class="o">=</span> <span class="mf">0.98</span>
 <span class="c1"># From the shipped model&#39;s own thresholds.json/config.json -- not invented.</span>
 <span class="n">_STARDIST_MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;2D_versatile_fluo&quot;</span>
@@ -467,6 +474,59 @@
 <span class="n">_IMAGE_NDIM</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">_STARDIST_DEFAULT_PROB_THRESH</span> <span class="o">=</span> <span class="mf">0.479071463157368</span>
 <span class="n">_STARDIST_DEFAULT_NMS_THRESH</span> <span class="o">=</span> <span class="mf">0.3</span>
+
+<span class="c1"># InstanSeg (opt-in `instanseg-model` build): sha256 values are pins of the</span>
+<span class="c1"># shipped ONNX files under data/instanseg/ (verified at first use), the</span>
+<span class="c1"># upstream TorchScript model inside the release ZIP, and the release URL.</span>
+<span class="c1"># See data/instanseg/NOTICE.md for the full provenance and licensing story.</span>
+<span class="n">_INSTANSEG_MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;single_channel_nuclei&quot;</span>
+<span class="c1"># NOTE: the pinned fcn ONNX is the byte-exact shipped artifact; its sha256</span>
+<span class="c1"># matches data/instanseg/NOTICE.md and the parity fixture details.json.</span>
+<span class="n">_INSTANSEG_FCN_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;5707bb92e3ddc097f32498c4507a9739280c506ed0a4bf782561a77b9e8aaeb7&quot;</span>
+<span class="p">)</span>
+<span class="n">_INSTANSEG_CLASSIFIER_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;a77cde586576ab480d2e2f2dbeae3ba8bcc569494426fa77aa7590435e97c80d&quot;</span>
+<span class="p">)</span>
+<span class="n">_INSTANSEG_TORCHSCRIPT_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;118066231fb7753ffb048bcd2164186397bcc5c8fc4ad7f826efe928b515794c&quot;</span>
+<span class="p">)</span>
+<span class="n">_INSTANSEG_SOURCE_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;https://github.com/instanseg/instanseg/releases/download/&quot;</span>
+    <span class="s2">&quot;instanseg_models_v0.1.2/single_channel_nuclei.zip&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># SplineDist (opt-in `splinedist-model` build): the uhlmanngroup/splinedist</span>
+<span class="c1"># &quot;bbbc038_10&quot; fluorescence-nuclei model (trained on DSB2018/BBBC038),</span>
+<span class="c1"># converted to ONNX from the pinned Zenodo record 7193306 weights. The</span>
+<span class="c1"># sha256 pins below are verified at first use (model + phi basis) and</span>
+<span class="c1"># mirror the fixtures&#39; details.json provenance. See</span>
+<span class="c1"># data/splinedist/NOTICE.md for the full licensing story (BSD-3-Clause</span>
+<span class="c1"># code, CC-BY-4.0 weights, StarDist built).</span>
+<span class="n">_SPLINEDIST_MODEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;bbbc038_10&quot;</span>
+<span class="n">_SPLINEDIST_MODEL_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;c36989c35bdbdcf42f2a750439316a1d109b64fba1cc3f64740089179cbb8953&quot;</span>
+<span class="p">)</span>
+<span class="n">_SPLINEDIST_PHI_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c&quot;</span>
+<span class="p">)</span>
+<span class="n">_SPLINEDIST_WEIGHTS_SHA256</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;4c1bf5547d91f95ebd9723a03a75ec605c0d117cdec0272c10936125a03b9995&quot;</span>
+<span class="p">)</span>
+<span class="n">_SPLINEDIST_SOURCE_URL</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;https://zenodo.org/records/7193306/files/splinedist_models.zip&quot;</span>
+<span class="p">)</span>
+<span class="c1"># Upstream-frozen decode thresholds, from the shipped model&#39;s own</span>
+<span class="c1"># thresholds.json (recorded in the fixtures&#39; details.json and verified</span>
+<span class="c1"># against the real predict_instances oracle they produced). These are</span>
+<span class="c1"># calibration evidence pinned to this exact model -- not tunables -- so</span>
+<span class="c1"># the parameter search space for splinedist is empty by design.</span>
+<span class="n">_SPLINEDIST_DEFAULT_PROB_THRESH</span> <span class="o">=</span> <span class="mf">0.4775366187095642</span>
+<span class="n">_SPLINEDIST_DEFAULT_NMS_THRESH</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="c1"># csbdeep&#39;s SplineDistPadAndCropResizer pads by reflection to a multiple</span>
+<span class="c1"># of the network&#39;s 16-voxel divisibility (axes_div_by 16x16) and crops</span>
+<span class="c1"># back after inference.</span>
+<span class="n">_SPLINEDIST_AXES_DIV_BY</span> <span class="o">=</span> <span class="mi">16</span>
 
 <span class="c1"># Stage 2&#39;s search space: sensible method-specific ranges,</span>
 <span class="c1"># not a Cartesian grid. Keys match ClassicalPipeline&#39;s own override names.</span>
@@ -599,12 +659,97 @@
     <span class="k">return</span> <span class="n">_native</span><span class="o">.</span><span class="n">stardist_segment</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_instanseg_model_bytes</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sha256</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;instanseg&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">name</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">!=</span> <span class="n">sha256</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;InstanSeg model checksum mismatch: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_splinedist</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_native</span><span class="p">,</span> <span class="s2">&quot;splinedist_segment&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;The native extension does not include SplineDist. &quot;</span>
+            <span class="s2">&quot;Rebuild it with `maturin develop --features splinedist-model`.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_native</span><span class="o">.</span><span class="n">splinedist_segment</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_splinedist_model_bytes</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">sha256</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">with_name</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;splinedist&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">model_dir</span> <span class="o">/</span> <span class="n">name</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_bytes</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span> <span class="o">!=</span> <span class="n">sha256</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SplineDist model checksum mismatch: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_splinedist_normalize</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale an image by its 1st and 99.8th percentiles, csbdeep-style.</span>
+
+<span class="sd">    Mirrors upstream&#39;s default normalizer (``normalize_perc`` with the</span>
+<span class="sd">    shipped model&#39;s ``(1, 99.8)`` percentiles): ``axes=(0, 1)`` statistics</span>
+<span class="sd">    over the whole 2D frame and the ``max(eps, pmax - pmin)`` denominator</span>
+<span class="sd">    (csbdeep ``eps=1e-20``). Verified against the recorded network input</span>
+<span class="sd">    in the converter&#39;s parity run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">99.8</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">values</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mf">1e-20</span><span class="p">,</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_splinedist_normalize_and_pad</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Normalize, then reflect-pad to the network&#39;s 16-voxel divisibility.</span>
+
+<span class="sd">    Mirrors ``SplineDistPadAndCropResizer.before``: statistics BEFORE</span>
+<span class="sd">    padding (upstream normalizes the unpadded image), then reflect padding</span>
+<span class="sd">    by the minimal amount that makes both axes divisible by 16. The native</span>
+<span class="sd">    call receives the padded frame plus the real rows/cols and crops the</span>
+<span class="sd">    network output back itself, exactly like the resizer&#39;s ``.after``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">normalized</span> <span class="o">=</span> <span class="n">_splinedist_normalize</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">normalized</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">pad_rows</span> <span class="o">=</span> <span class="o">-</span><span class="n">rows</span> <span class="o">%</span> <span class="n">_SPLINEDIST_AXES_DIV_BY</span>
+    <span class="n">pad_cols</span> <span class="o">=</span> <span class="o">-</span><span class="n">cols</span> <span class="o">%</span> <span class="n">_SPLINEDIST_AXES_DIV_BY</span>
+    <span class="k">if</span> <span class="n">pad_rows</span> <span class="ow">or</span> <span class="n">pad_cols</span><span class="p">:</span>
+        <span class="n">normalized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">normalized</span><span class="p">,</span> <span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad_rows</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">pad_cols</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reflect&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">normalized</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_require_instanseg</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_native</span><span class="p">,</span> <span class="s2">&quot;instanseg_segment&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;The native extension does not include InstanSeg. &quot;</span>
+            <span class="s2">&quot;Rebuild it with `maturin develop --features instanseg-model`.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_native</span><span class="o">.</span><span class="n">instanseg_segment</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_percentile_normalize</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale a fluorescence image by its 1st and 99.8th percentiles.&quot;&quot;&quot;</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">99.8</span><span class="p">))</span>
     <span class="c1"># Do not clip: pixels beyond the two percentiles retain their relative value.</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">((</span><span class="n">values</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span> <span class="o">+</span> <span class="mf">1e-20</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_instanseg_normalize</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scale an image by its 0.1st and 99.9th percentiles.</span>
+
+<span class="sd">    Mirrors the shipped model&#39;s bioimage-io ``scale_range`` preprocessing</span>
+<span class="sd">    pin: 0.1/99.9 percentiles with eps 1e-6 (``max(eps, pmax - pmin)``).</span>
+<span class="sd">    Verified byte-exact against upstream&#39;s own preprocessed test input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">99.9</span><span class="p">))</span>
+    <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span> <span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">((</span><span class="n">values</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="StarDistPipeline">
@@ -688,7 +833,187 @@
 
 
 
-<span class="n">_PIPELINE_FACTORIES</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;classical&quot;</span><span class="p">:</span> <span class="n">ClassicalPipeline</span><span class="p">,</span> <span class="s2">&quot;stardist&quot;</span><span class="p">:</span> <span class="n">StarDistPipeline</span><span class="p">}</span>
+<span class="c1"># Classical propagation/subtraction knobs for InstanSeg&#39;s Cells and</span>
+<span class="c1"># Cytoplasm compartments: InstanSeg itself only produces nuclei labels,</span>
+<span class="c1"># so the downstream compartments reuse the classical kernels with the</span>
+<span class="c1"># same frozen, non-searchable values StarDist&#39;s pipeline uses.</span>
+<span class="n">_INSTANSEG_CELLS_THRESHOLD_CORRECTION</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">_INSTANSEG_CELLS_REGULARIZATION</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">_INSTANSEG_CELLS_DISTANCE_TO_DILATE</span> <span class="o">=</span> <span class="mf">10.0</span>
+
+
+<div class="viewcode-block" id="InstanSegPipeline">
+<a class="viewcode-back" href="../../../python-api.html#src.cp_anywhere.autosegment.InstanSegPipeline">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InstanSegPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nuclei via the pretrained InstanSeg model; Cells/Cytoplasm stay classical.</span>
+
+<span class="sd">    Requires the native extension to have been built with</span>
+<span class="sd">    cp-anywhere&#39;s `instanseg-model` Cargo feature (off by default -- see</span>
+<span class="sd">    the module docstring). Raises ``RuntimeError`` naming that gap if it</span>
+<span class="sd">    was not, rather than silently falling back to the classical nuclei</span>
+<span class="sd">    threshold.</span>
+
+<span class="sd">    The parameter search space is intentionally empty: upstream</span>
+<span class="sd">    instanseg/instanseg&#39;s released ``single_channel_nuclei`` graph pins</span>
+<span class="sd">    its own postprocessing parameters (min_size, mask_threshold,</span>
+<span class="sd">    seed_threshold, peak_distance, overlap_threshold, fg_threshold,</span>
+<span class="sd">    window_size, cleanup_fragments -- frozen to the released model&#39;s</span>
+<span class="sd">    own saved values in v0.1.2), and exposing any of them as tunables</span>
+<span class="sd">    would break the oracle-verified parity proven in</span>
+<span class="sd">    ``crates/cp_anywhere/tests/instanseg_parity.rs``. Declared gap: the</span>
+<span class="sd">    upstream cells-and-nuclei model variant is not implemented; this</span>
+<span class="sd">    pipeline always produces nuclei only, then grows Cells/Cytoplasm</span>
+<span class="sd">    classically like every other pipeline here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;instanseg&quot;</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="c1"># See the class docstring: empty parameter space by design.</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuclei_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationOutcome</span><span class="p">:</span>
+        <span class="n">instanseg_segment</span> <span class="o">=</span> <span class="n">_require_instanseg</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nuclei_image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_IMAGE_NDIM</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;InstanSeg needs a nonempty 2D nuclei image&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;buif&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;InstanSeg needs a finite real-valued nuclei image&quot;</span><span class="p">)</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">normalized</span> <span class="o">=</span> <span class="n">_instanseg_normalize</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">instanseg_segment</span><span class="p">(</span>
+            <span class="n">normalized</span><span class="p">,</span>
+            <span class="n">rows</span><span class="p">,</span>
+            <span class="n">cols</span><span class="p">,</span>
+            <span class="n">_instanseg_model_bytes</span><span class="p">(</span><span class="s2">&quot;instanseg_fcn.onnx&quot;</span><span class="p">,</span> <span class="n">_INSTANSEG_FCN_SHA256</span><span class="p">),</span>
+            <span class="n">_instanseg_model_bytes</span><span class="p">(</span>
+                <span class="s2">&quot;instanseg_pixel_classifier.onnx&quot;</span><span class="p">,</span> <span class="n">_INSTANSEG_CLASSIFIER_SHA256</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">nuclei_labels</span> <span class="o">=</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">secondary</span> <span class="o">=</span> <span class="n">identify_secondary_objects</span><span class="p">(</span>
+            <span class="n">cell_image</span><span class="p">,</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">primary_labels_in</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+            <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_THRESHOLD_CORRECTION</span><span class="p">,</span>
+            <span class="n">regularization_factor</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_REGULARIZATION</span><span class="p">,</span>
+            <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_DISTANCE_TO_DILATE</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tertiary</span> <span class="o">=</span> <span class="n">identify_tertiary_objects</span><span class="p">(</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span> <span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">shrink_primary</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nuclei&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">nuclei_labels</span><span class="p">),</span>
+            <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+            <span class="s2">&quot;cytoplasm&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">SegmentationOutcome</span><span class="p">(</span>
+            <span class="n">nuclei</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">cells</span><span class="o">=</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">cytoplasm</span><span class="o">=</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">pipeline_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SplineDistPipeline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Nuclei via the pretrained SplineDist model; Cells/Cytoplasm stay classical.</span>
+
+<span class="sd">    Requires the native extension to have been built with</span>
+<span class="sd">    cp-anywhere&#39;s `splinedist-model` Cargo feature (off by default -- see</span>
+<span class="sd">    the module docstring). Raises ``RuntimeError`` naming that gap if it</span>
+<span class="sd">    was not, rather than silently falling back to the classical nuclei</span>
+<span class="sd">    threshold.</span>
+
+<span class="sd">    The parameter search space is intentionally empty: the shipped</span>
+<span class="sd">    ``bbbc038_10`` model freezes its own decode thresholds</span>
+<span class="sd">    (``prob`` 0.4775366187095642, ``nms`` 0.3 -- the model&#39;s own</span>
+<span class="sd">    ``thresholds.json``, verified against the real `predict_instances`</span>
+<span class="sd">    oracle they produced in ``crates/cp_anywhere/tests/splinedist_parity.rs``),</span>
+<span class="sd">    and exposing them as tunables would break that oracle-verified</span>
+<span class="sd">    parity. Declared gap: only the DSB2018 fluorescence-nuclei model is</span>
+<span class="sd">    shipped; upstream&#39;s H&amp;E ``conic`` model variants exist but are not</span>
+<span class="sd">    implemented. This pipeline always produces nuclei only, then grows</span>
+<span class="sd">    Cells/Cytoplasm classically like every other pipeline here.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;splinedist&quot;</span>
+    <span class="n">overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">defaults</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="c1"># See the class docstring: empty parameter space by design. The</span>
+        <span class="c1"># shipped thresholds are constants inside the native decode.</span>
+        <span class="k">return</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="n">merged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">()</span>
+        <span class="n">merged</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">overrides</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nuclei_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">cell_image</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SegmentationOutcome</span><span class="p">:</span>
+        <span class="n">splinedist_segment</span> <span class="o">=</span> <span class="n">_require_splinedist</span><span class="p">()</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">()</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">nuclei_image</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">_IMAGE_NDIM</span> <span class="ow">or</span> <span class="n">array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SplineDist needs a nonempty 2D nuclei image&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;buif&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">array</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;SplineDist needs a finite real-valued nuclei image&quot;</span><span class="p">)</span>
+        <span class="n">padded</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">_splinedist_normalize_and_pad</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">splinedist_segment</span><span class="p">(</span>
+            <span class="n">padded</span><span class="p">,</span>
+            <span class="n">padded</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">padded</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">_splinedist_model_bytes</span><span class="p">(</span><span class="s2">&quot;splinedist.onnx&quot;</span><span class="p">,</span> <span class="n">_SPLINEDIST_MODEL_SHA256</span><span class="p">),</span>
+            <span class="n">_splinedist_model_bytes</span><span class="p">(</span><span class="s2">&quot;phi_basis.npy&quot;</span><span class="p">,</span> <span class="n">_SPLINEDIST_PHI_SHA256</span><span class="p">),</span>
+            <span class="n">real_rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span>
+            <span class="n">real_cols</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">nuclei_labels</span> <span class="o">=</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+        <span class="n">secondary</span> <span class="o">=</span> <span class="n">identify_secondary_objects</span><span class="p">(</span>
+            <span class="n">cell_image</span><span class="p">,</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">primary_labels_in</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;propagation&quot;</span><span class="p">,</span>
+            <span class="n">threshold_correction_factor</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_THRESHOLD_CORRECTION</span><span class="p">,</span>
+            <span class="n">regularization_factor</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_REGULARIZATION</span><span class="p">,</span>
+            <span class="n">distance_to_dilate</span><span class="o">=</span><span class="n">_INSTANSEG_CELLS_DISTANCE_TO_DILATE</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tertiary</span> <span class="o">=</span> <span class="n">identify_tertiary_objects</span><span class="p">(</span>
+            <span class="n">nuclei_labels</span><span class="p">,</span> <span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span> <span class="n">shrink_primary</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;nuclei&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">nuclei_labels</span><span class="p">),</span>
+            <span class="s2">&quot;cells&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+            <span class="s2">&quot;cytoplasm&quot;</span><span class="p">:</span> <span class="n">_compartment_stats</span><span class="p">(</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">SegmentationOutcome</span><span class="p">(</span>
+            <span class="n">nuclei</span><span class="o">=</span><span class="n">nuclei_labels</span><span class="p">,</span>
+            <span class="n">cells</span><span class="o">=</span><span class="n">secondary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">cytoplasm</span><span class="o">=</span><span class="n">tertiary</span><span class="o">.</span><span class="n">labels</span><span class="p">,</span>
+            <span class="n">pipeline_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
+            <span class="n">stats</span><span class="o">=</span><span class="n">stats</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="n">_PIPELINE_FACTORIES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;classical&quot;</span><span class="p">:</span> <span class="n">ClassicalPipeline</span><span class="p">,</span>
+    <span class="s2">&quot;stardist&quot;</span><span class="p">:</span> <span class="n">StarDistPipeline</span><span class="p">,</span>
+    <span class="s2">&quot;instanseg&quot;</span><span class="p">:</span> <span class="n">InstanSegPipeline</span><span class="p">,</span>
+    <span class="s2">&quot;splinedist&quot;</span><span class="p">:</span> <span class="n">SplineDistPipeline</span><span class="p">,</span>
+<span class="p">}</span>
 <span class="n">_PARAMETER_SPACES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;classical&quot;</span><span class="p">:</span> <span class="n">CLASSICAL_PARAMETER_SPACE</span><span class="p">,</span>
     <span class="c1"># StarDist&#39;s architecture/weights are fixed (pretrained); only its two</span>
@@ -699,6 +1024,19 @@
         <span class="s2">&quot;prob_thresh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">),</span>
         <span class="s2">&quot;nms_thresh&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>
     <span class="p">},</span>
+    <span class="c1"># InstanSeg&#39;s released single_channel_nuclei graph freezes every</span>
+    <span class="c1"># upstream postprocessing parameter (min_size, mask_threshold,</span>
+    <span class="c1"># seed_threshold, peak_distance, overlap_threshold, fg_threshold,</span>
+    <span class="c1"># window_size, cleanup_fragments) to the model&#39;s own saved v0.1.2</span>
+    <span class="c1"># values, so this search space is empty by design -- see</span>
+    <span class="c1"># InstanSegPipeline&#39;s docstring for the honest why.</span>
+    <span class="s2">&quot;instanseg&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="c1"># SplineDist&#39;s shipped model freezes its own decode thresholds</span>
+    <span class="c1"># (prob 0.4775366187095642, nms 0.3 -- the model&#39;s own</span>
+    <span class="c1"># thresholds.json, verified against the real predict_instances</span>
+    <span class="c1"># oracle they produced), so this search space is empty by design --</span>
+    <span class="c1"># see SplineDistPipeline&#39;s docstring for the honest why.</span>
+    <span class="s2">&quot;splinedist&quot;</span><span class="p">:</span> <span class="p">{},</span>
 <span class="p">}</span>
 
 
@@ -796,7 +1134,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_run_pipeline_on_sample</span><span class="p">(</span>
-    <span class="n">pipeline</span><span class="p">:</span> <span class="n">ClassicalPipeline</span> <span class="o">|</span> <span class="n">StarDistPipeline</span><span class="p">,</span>
+    <span class="n">pipeline</span><span class="p">:</span> <span class="n">ClassicalPipeline</span>
+    <span class="o">|</span> <span class="n">StarDistPipeline</span>
+    <span class="o">|</span> <span class="n">InstanSegPipeline</span>
+    <span class="o">|</span> <span class="n">SplineDistPipeline</span><span class="p">,</span>
     <span class="n">sample</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span> <span class="nb">object</span><span class="p">]],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">phase</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -852,10 +1193,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Stage 2: a bounded, reproducible random search over one pipeline.&quot;&quot;&quot;</span>
     <span class="n">best</span><span class="p">:</span> <span class="n">_Trial</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">trial_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trials</span><span class="p">):</span>
-        <span class="c1"># Evaluate the published StarDist defaults before tuning its thresholds.</span>
+        <span class="c1"># Evaluate the published StarDist/InstanSeg/SplineDist defaults</span>
+        <span class="c1"># before tuning StarDist&#39;s thresholds; InstanSeg and SplineDist</span>
+        <span class="c1"># have no tunables at all.</span>
         <span class="n">overrides</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">{}</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;stardist&quot;</span> <span class="ow">and</span> <span class="n">trial_index</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;stardist&quot;</span><span class="p">,</span> <span class="s2">&quot;instanseg&quot;</span><span class="p">,</span> <span class="s2">&quot;splinedist&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">trial_index</span> <span class="o">==</span> <span class="mi">0</span>
             <span class="k">else</span> <span class="n">_sample_parameters</span><span class="p">(</span><span class="n">seed</span> <span class="o">+</span> <span class="n">trial_index</span><span class="p">,</span> <span class="n">_PARAMETER_SPACES</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
         <span class="p">)</span>
         <span class="n">pipeline</span> <span class="o">=</span> <span class="n">_PIPELINE_FACTORIES</span><span class="p">[</span><span class="n">name</span><span class="p">](</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="n">overrides</span><span class="p">)</span>
@@ -979,6 +1322,20 @@
                 <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">_STARDIST_MODEL_NAME</span><span class="p">,</span>
                 <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="n">_STARDIST_MODEL_SHA256</span><span class="p">,</span>
             <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span> <span class="o">==</span> <span class="s2">&quot;instanseg&quot;</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">_INSTANSEG_MODEL_NAME</span><span class="p">,</span>
+                <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="n">_INSTANSEG_FCN_SHA256</span><span class="p">,</span>
+                <span class="s2">&quot;torchscript_sha256&quot;</span><span class="p">:</span> <span class="n">_INSTANSEG_TORCHSCRIPT_SHA256</span><span class="p">,</span>
+                <span class="s2">&quot;source_url&quot;</span><span class="p">:</span> <span class="n">_INSTANSEG_SOURCE_URL</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_pipeline_name</span> <span class="o">==</span> <span class="s2">&quot;splinedist&quot;</span><span class="p">:</span>
+            <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">_SPLINEDIST_MODEL_NAME</span><span class="p">,</span>
+                <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="n">_SPLINEDIST_MODEL_SHA256</span><span class="p">,</span>
+                <span class="s2">&quot;weights_sha256&quot;</span><span class="p">:</span> <span class="n">_SPLINEDIST_WEIGHTS_SHA256</span><span class="p">,</span>
+                <span class="s2">&quot;source_url&quot;</span><span class="p">:</span> <span class="n">_SPLINEDIST_SOURCE_URL</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span></div>
 
 
@@ -1018,6 +1375,16 @@
         <span class="n">model_note</span> <span class="o">=</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;StarDist model: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_STARDIST_MODEL_NAME</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;SHA-256: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_STARDIST_MODEL_SHA256</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;instanseg&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidates</span><span class="p">:</span>
+        <span class="n">model_note</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;InstanSeg model: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_INSTANSEG_MODEL_NAME</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;SHA-256: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_INSTANSEG_FCN_SHA256</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;splinedist&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">candidates</span><span class="p">:</span>
+        <span class="n">model_note</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&lt;p&gt;SplineDist model: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_SPLINEDIST_MODEL_NAME</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;SHA-256: </span><span class="si">{</span><span class="n">_escape</span><span class="p">(</span><span class="n">_SPLINEDIST_MODEL_SHA256</span><span class="p">)</span><span class="si">}</span><span class="s2">.&lt;/p&gt;&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;&lt;!DOCTYPE html&gt;</span>
 <span class="s2">&lt;html lang=&quot;en&quot;&gt;</span>
@@ -1077,11 +1444,13 @@
 
 <span class="sd">    ``channels`` maps the segmentation roles ``&quot;nuclei&quot;`` and ``&quot;cells&quot;``</span>
 <span class="sd">    to channel names present in every image&#39;s own mapping.</span>
-<span class="sd">    ``&quot;classical&quot;`` and ``&quot;stardist&quot;`` are implemented (see the module</span>
-<span class="sd">    docstring for ``&quot;stardist&quot;``&#39;s native-build requirement); any other</span>
-<span class="sd">    name in ``pipelines`` raises ``NotImplementedError`` naming the</span>
-<span class="sd">    specific gap. ``device`` only accepts ``&quot;cpu&quot;`` in this release --</span>
-<span class="sd">    every underlying primitive is a native CPU Rust kernel; no GPU path</span>
+<span class="sd">    ``&quot;classical&quot;``, ``&quot;stardist&quot;``, ``&quot;instanseg&quot;``, and ``&quot;splinedist&quot;``</span>
+<span class="sd">    are implemented</span>
+<span class="sd">    (see the module docstring for the opt-in native-build requirements</span>
+<span class="sd">    of the learned pipelines); any other name in ``pipelines`` raises</span>
+<span class="sd">    ``NotImplementedError`` naming the specific gap. ``device`` only</span>
+<span class="sd">    accepts ``&quot;cpu&quot;`` in this release -- every underlying primitive is a</span>
+<span class="sd">    native CPU Rust kernel; no GPU path</span>
 <span class="sd">    exists to dispatch to.</span>
 
 <span class="sd">    ``acquisition_groups`` optionally maps image IDs to acquisition</span>
@@ -1108,6 +1477,10 @@
         <span class="p">)</span>
     <span class="k">if</span> <span class="s2">&quot;stardist&quot;</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
         <span class="n">_require_stardist</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;instanseg&quot;</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+        <span class="n">_require_instanseg</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s2">&quot;splinedist&quot;</span> <span class="ow">in</span> <span class="n">pipelines</span><span class="p">:</span>
+        <span class="n">_require_splinedist</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;nuclei&quot;</span><span class="p">,</span> <span class="s2">&quot;cells&quot;</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">role</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;channels must map </span><span class="si">{</span><span class="n">role</span><span class="si">!r}</span><span class="s2"> to a channel name&quot;</span><span class="p">)</span>
