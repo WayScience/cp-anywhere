@@ -22,13 +22,13 @@
   license): DSB2018 / BBBC038 (Broad Bioimage Benchmark Collection
   BBBC038v1, https://bbbc.broadinstitute.org/BBBC038).
 
-| Artifact                                              | SHA-256                                                            |
-| ----------------------------------------------------- | ------------------------------------------------------------------ |
-| `splinedist_models.zip` (Zenodo 7193306 archive)      | `75b56f3d8f1741cb727db5bdd5c851184e3134d0f77501a2b9a48d46ab0081cc` |
-| `bbbc038_10/weights_best.h5` (upstream weights)       | `4c1bf5547d91f95ebd9723a03a75ec605c0d117cdec0272c10936125a03b9995` |
-| `bbbc038_10/phi_10.npy` (upstream phi basis)          | `fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c` |
-| `splinedist.onnx` (bundled)                           | `c36989c35bdbdcf42f2a750439316a1d109b64fba1cc3f64740089179cbb8953` |
-| `phi_basis.npy` (bundled, copy of `phi_10.npy`)       | `fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c` |
+| Artifact                                         | SHA-256                                                            |
+| ------------------------------------------------ | ------------------------------------------------------------------ |
+| `splinedist_models.zip` (Zenodo 7193306 archive) | `75b56f3d8f1741cb727db5bdd5c851184e3134d0f77501a2b9a48d46ab0081cc` |
+| `bbbc038_10/weights_best.h5` (upstream weights)  | `4c1bf5547d91f95ebd9723a03a75ec605c0d117cdec0272c10936125a03b9995` |
+| `bbbc038_10/phi_10.npy` (upstream phi basis)     | `fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c` |
+| `splinedist.onnx` (bundled)                      | `c36989c35bdbdcf42f2a750439316a1d109b64fba1cc3f64740089179cbb8953` |
+| `phi_basis.npy` (bundled, copy of `phi_10.npy`)  | `fe1dc838c73a5a461b2bbc3432c74ae6059efcf03a676417f81a3c87e97e829c` |
 
 ## Conversion and verification
 

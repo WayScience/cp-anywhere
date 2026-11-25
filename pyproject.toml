@@ -168,6 +168,21 @@ lint.per-file-ignores."scripts/segmentation/generate_reference.py" = [
   "PLR0915",
   "PLR0917",
 ]
+# Ignore the same loose-signature set as the InstanSeg conversion script
+# above (plus `ANN003` for the **kwargs threading, `F601` for the Greek
+# letters in the sigma summary strings, `PLR0915` for the linear main
+# flow, and `RUF059` for the ignored predict_instances details return)
+# for the SplineDist model conversion script.
+lint.per-file-ignores."scripts/splinedist/convert.py" = [
+  "ANN001",
+  "ANN003",
+  "ANN202",
+  "E501",
+  "F601",
+  "PLC0415",
+  "PLR0915",
+  "RUF059",
+]
 # Ignore `PLC0415` (import not at top-level) for `api.py`, which defers the
 # native extension import so the pure-Python package stays importable, and
 # `PLR0913` (measure()'s parameters are each an independent, named part of
@@ -207,6 +222,12 @@ lint.per-file-ignores."src/cp_anywhere/intensity_distribution.py" = [
 # imports so loading one file format doesn't require the others, and
 # `measure_files` stays usable without pandas imported at module load.
 lint.per-file-ignores."src/cp_anywhere/io.py" = [ "PLC0415" ]
+# Ignore `PLC0415` for `object_export.py`, which defers `PIL`/`pyarrow`
+# imports into the export call path for the same reason `io.py` does:
+# the modules load only when an object-blob export actually runs, and
+# pyarrow import at module scope would tax every plain-MeasurementResult
+# import.
+lint.per-file-ignores."src/cp_anywhere/object_export.py" = [ "PLC0415" ]
 # Ignore `PLC0415` (deferred native-extension import, same reason as
 # api.py) and `PLR0913` (QcProfile.from_criteria's keyword arguments
 # each name one independent profile property -- name/version/criteria/

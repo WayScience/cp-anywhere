@@ -510,6 +510,291 @@ class MeasurementResult:
         finally:
             connection.close()
 
+    def to_objects_parquet(
+        self,
+        path: str | Path,
+        *,
+        images: Mapping[str, object],
+        objects: Mapping[str, object],
+        channels: Sequence[str] | None = None,
+        image_format: str = "jpeg",
+        jpeg_quality: int = 85,
+        if_exists: str = "append",
+        max_rows_per_file: int = 100_000,
+    ) -> None:
+        """Write one Parquet row per object carrying its own visual
+        evidence: a JPEG-encoded crop of the selected image channel(s)
+        and an exact, compressed mask shape overlayable on that crop.
+
+        One row per object id per measured scope. Each row stores:
+        ``image_id``/``scope``/``object_id``, the object's bounding box
+        (``row_min``/``row_max``/``col_min``/``col_max``, inclusive),
+        ``area_pixels``, the joined ``channels`` name
+        (``"DNA"``/``"DNA+Actin+ER"``), ``image_jpeg``, and ``mask_rle``.
+
+        ``image_jpeg`` is the JPEG-encoded crop of the named channel(s)
+        over the bounding box -- 1 channel writes grayscale, 3 channels
+        write RGB in list order (2 is rejected: JPEG supports neither a
+        2-channel nor a 5-channel image). Each channel is scaled to 8-bit
+        by its own min-max range, so the crop's contrast is maximized for
+        viewing; the crop's raw intensities stay available in the numeric
+        feature columns. ``jpeg_quality`` pins Pillow's JPEG quality.
+
+        ``image_format`` selects the crop encoding, which also names its
+        binary column (``image_jpeg``/``image_tiff``/``image_png``):
+        ``"jpeg"`` (default) is the space-efficient lossy choice above;
+        ``"tiff"`` (via tifffile) is the lossless alternative -- ANY
+        channel count (not just 1 or 3), the source dtype preserved
+        bit-for-bit (uint8/uint16 keep native depth, floats store as
+        IEEE), deflate-compressed; ``"png"`` (via Pillow) is lossless
+        for integer crops with 1-4 channels (grayscale/gray+alpha/RGB/
+        RGBA) and rejects float crops -- use ``"tiff"`` for those.
+        Both lossless formats stay exactly aligned with the exported
+        mask shapes: crop and mask come from the same bounding box, so
+        overlays need no rescaling or re-normalizing. The saved
+        column's binary blob decodes with that format's standard reader
+        (``tifffile.imread`` / ``PIL.Image.open`` / any JPEG reader).
+
+        ``mask_rle`` is the accuracy guarantee: the object's exact boolean
+        mask over the bounding box, bit-packed row-major and zlib
+        compressed (``cp_anywhere.object_export.decode_mask_rle``).
+        Decoding it yields the object's owned pixels pixel-for-pixel --
+        overlay :func:`decode_mask_rle`'s result on
+        ``image_jpeg`` at ``(row_min, col_min)`` (e.g. as a boolean alpha
+        layer) to reconstruct the segmentation exactly. Simplified
+        polygon/vector outlines are a declared gap; the mask is the
+        contract.
+
+        ``images`` maps the channel names passed to :func:`measure`;
+        ``objects`` maps every measured scope to its label array. Every
+        scope in this result must have its label array present and every
+        object id present in its labels -- a silently-skipped object
+        would misrepresent the stored segmentation, so missing labels
+        raise ``ValueError`` instead. 3-D label arrays are a declared
+        gap (``NotImplementedError``). ``channels`` may be omitted when
+        ``images`` has exactly one channel.
+
+        ``path`` accepts a single ``.parquet`` file or a directory (an
+        accumulating Parquet dataset -- one calling convention as
+        :meth:`to_parquet` itself, so repeated calls per image build one
+        multi-image dataset with ``if_exists="append"``; ``"replace"``
+        clears the directory first). Read rows back with
+        :func:`cp_anywhere.object_export.read_objects_parquet`.
+        """
+        from cp_anywhere.object_export import (
+            SUPPORTED_IMAGE_FORMATS,
+            build_object_rows,
+            write_objects_parquet,
+        )
+
+        if image_format not in SUPPORTED_IMAGE_FORMATS:
+            raise ValueError(
+                f"image_format must be one of {SUPPORTED_IMAGE_FORMATS}, got "
+                f"{image_format!r} ('jpeg' is the space-efficient default; "
+                "'tiff'/'png' are the lossless alternatives)"
+            )
+        channel_names = self._resolve_objects_parquet_channels(
+            images, channels, image_format
+        )
+        resolved_labels = self._resolve_objects_parquet_labels(objects)
+        rows = build_object_rows(
+            self.image_id,
+            {name: np.asarray(images[name]) for name in channel_names},
+            {scope: np.asarray(resolved_labels[scope]) for scope in resolved_labels},
+            channel_names,
+            self.object_ids,
+            image_format=image_format,
+            jpeg_quality=jpeg_quality,
+        )
+        write_objects_parquet(
+            rows,
+            path,
+            image_format=image_format,
+            if_exists=if_exists,
+            max_rows_per_file=max_rows_per_file,
+        )
+
+    def to_labels_parquet(
+        self,
+        path: str | Path,
+        *,
+        objects: Mapping[str, object],
+        if_exists: str = "append",
+        max_rows_per_file: int = 100_000,
+    ) -> None:
+        """Write one Parquet row per measured scope carrying the complete
+        label map as an exact, zlib-compressed run-length-encoded blob.
+
+        ``labels_rle`` is the whole-frame accuracy complement to
+        :meth:`to_objects_parquet`'s per-object crops: it decodes
+        (``cp_anywhere.object_export.decode_labels_rle``) to this scope's
+        complete 2-D label map pixel-for-pixel -- background and every
+        object id included, without the per-object bbox stitching that
+        composing ``to_objects_parquet`` masks would need. Each row
+        stores ``image_id``,
+        ``scope``, the frame ``rows``/``cols``, ``object_count``, and the
+        blob; ids are unsigned 32-bit on decode (cp_anywhere's own label
+        range), so id 0 (background) round-trips exactly.
+
+        ``objects`` maps every measured scope to its 2-D label array
+        (same rules as :meth:`to_objects_parquet`: all scopes must be
+        provided, unmeasured extras raise ``ValueError``, and 3-D label
+        arrays are a declared gap raising ``NotImplementedError``).
+        ``path`` follows the same file/dataset conventions as
+        :meth:`to_objects_parquet` (:func:`read_labels_parquet` reads it
+        back).
+        """
+        from cp_anywhere.object_export import (
+            build_labels_rows,
+            write_labels_parquet,
+        )
+
+        resolved_labels = self._resolve_objects_parquet_labels(objects)
+        for scope, labels in resolved_labels.items():
+            if np.asarray(labels).ndim not in (2,):
+                raise NotImplementedError(
+                    f"3-D label arrays are not supported by the labels "
+                    f"export (scope {scope!r}, ndim="
+                    f"{np.asarray(labels).ndim}); 3-D segmentations are a "
+                    "declared gap"
+                )
+        rows = build_labels_rows(
+            self.image_id,
+            {scope: np.asarray(resolved_labels[scope]) for scope in resolved_labels},
+            self.object_ids,
+        )
+        write_labels_parquet(
+            rows, path, if_exists=if_exists, max_rows_per_file=max_rows_per_file
+        )
+
+    def to_objects_duckdb(
+        self,
+        path: str | Path,
+        *,
+        images: Mapping[str, object],
+        objects: Mapping[str, object],
+        channels: Sequence[str] | None = None,
+        image_format: str = "jpeg",
+        jpeg_quality: int = 85,
+        if_exists: str = "append",
+    ) -> None:
+        """Write the same rows as :meth:`to_objects_parquet` directly into
+        a DuckDB database file's ``SegmentationObjects`` table, with the
+        same create/append/replace semantics as :meth:`to_duckdb` (which
+        needs the optional ``duckdb`` dependency).
+
+        The image/RLE blobs land as ``BLOB`` columns and stay decodable
+        exactly as documented for :meth:`to_objects_parquet`; see that
+        method for the blob contracts and validation behavior (all
+        arguments mean the same thing here). If you only need DuckDB
+        *querying* rather than a ``.duckdb`` file,
+        :meth:`to_objects_parquet` outputs are natively readable, too:
+        ``duckdb.read_parquet('objects.parquet')`` reads the same rows
+        with no extra step.
+        """
+        from cp_anywhere.object_export import (
+            SUPPORTED_IMAGE_FORMATS,
+            build_object_rows,
+            write_objects_duckdb,
+        )
+
+        if image_format not in SUPPORTED_IMAGE_FORMATS:
+            raise ValueError(
+                f"image_format must be one of {SUPPORTED_IMAGE_FORMATS}, got "
+                f"{image_format!r}"
+            )
+        channel_names = self._resolve_objects_parquet_channels(
+            images, channels, image_format
+        )
+        resolved_labels = self._resolve_objects_parquet_labels(objects)
+        rows = build_object_rows(
+            self.image_id,
+            {name: np.asarray(images[name]) for name in channel_names},
+            {scope: np.asarray(resolved_labels[scope]) for scope in resolved_labels},
+            channel_names,
+            self.object_ids,
+            image_format=image_format,
+            jpeg_quality=jpeg_quality,
+        )
+        write_objects_duckdb(rows, path, image_format=image_format, if_exists=if_exists)
+
+    def to_labels_duckdb(
+        self,
+        path: str | Path,
+        *,
+        objects: Mapping[str, object],
+        if_exists: str = "append",
+    ) -> None:
+        """Write the same rows as :meth:`to_labels_parquet` directly into
+        a DuckDB database file's ``SegmentationLabels`` table, with the
+        same create/append/replace semantics as :meth:`to_duckdb`. The
+        ``labels_rle`` blob lands as a ``BLOB`` column and decodes
+        exactly as documented for :meth:`to_labels_parquet`.
+        """
+        from cp_anywhere.object_export import (
+            build_labels_rows,
+            write_labels_duckdb,
+        )
+
+        resolved_labels = self._resolve_objects_parquet_labels(objects)
+        rows = build_labels_rows(
+            self.image_id,
+            {scope: np.asarray(resolved_labels[scope]) for scope in resolved_labels},
+            self.object_ids,
+        )
+        write_labels_duckdb(rows, path, if_exists=if_exists)
+
+    def _resolve_objects_parquet_channels(
+        self,
+        images: Mapping[str, object],
+        channels: Sequence[str] | None,
+        image_format: str,
+    ) -> list[str]:
+        available = list(images)
+        if channels is None:
+            if len(available) == 1:
+                return available
+            msg = (
+                "images provides more than one channel "
+                f"{available!r}; pass channels (the JPEG format accepts "
+                "exactly 1 or 3 of them; tiff/png accept any count)"
+            )
+            raise ValueError(msg)
+        selected = list(channels)
+        if image_format == "jpeg" and len(selected) not in (1, 3):
+            raise ValueError(
+                f"the JPEG image format needs exactly 1 or 3 channels for "
+                f"a crop, got {selected!r} -- use image_format='tiff' or "
+                "'png' for other channel counts"
+            )
+        if not selected:
+            raise ValueError("channels must name at least one provided channel")
+        missing = [name for name in selected if name not in images]
+        if missing:
+            raise ValueError(
+                f"channel(s) {missing!r} are not provided by images "
+                f"(available: {available!r})"
+            )
+        return selected
+
+    def _resolve_objects_parquet_labels(
+        self, objects: Mapping[str, object]
+    ) -> dict[str, np.ndarray]:
+        missing = [scope for scope in self.object_ids if scope not in objects]
+        if missing:
+            raise ValueError(
+                f"to_objects_parquet requires the label object set for "
+                f"scope(s) {missing!r} to store their masks and crops"
+            )
+        unknown = [scope for scope in objects if scope not in self.object_ids]
+        if unknown:
+            raise ValueError(
+                f"object scope(s) {unknown!r} are not aligned with this "
+                f"result's measured object ids "
+                f"{sorted(self.object_ids)!r}"
+            )
+        return {scope: np.asarray(objects[scope]) for scope in self.object_ids}
+
     def to_json(self, path: str | Path) -> None:
         """Write the reference-compatible feature and relationship structure."""
 

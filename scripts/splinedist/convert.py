@@ -74,14 +74,24 @@ def download_and_extract(workdir: Path) -> Path:
                 break
             subprocess.run(
                 [
-                    "curl", "-sL", "-C", "-", "--retry", "5", "--retry-delay", "5",
-                    "-o", str(archive_path), MODEL_URL,
+                    "curl",
+                    "-sL",
+                    "-C",
+                    "-",
+                    "--retry",
+                    "5",
+                    "--retry-delay",
+                    "5",
+                    "-o",
+                    str(archive_path),
+                    MODEL_URL,
                 ],
                 check=False,
             )
-    if _sha256_file(archive_path) != ZIP_SHA256 or hashlib.md5(
-        archive_path.read_bytes()
-    ).hexdigest() != ZIP_MD5:
+    if (
+        _sha256_file(archive_path) != ZIP_SHA256
+        or hashlib.md5(archive_path.read_bytes()).hexdigest() != ZIP_MD5
+    ):
         raise SystemExit(
             f"splinedist_models.zip checksums do not match "
             f"(md5 {ZIP_MD5}, sha256 {ZIP_SHA256})"
@@ -95,7 +105,9 @@ def download_and_extract(workdir: Path) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Export the SplineDist bbbc038_10 CNN to ONNX")
+    parser = argparse.ArgumentParser(
+        description="Export the SplineDist bbbc038_10 CNN to ONNX"
+    )
     parser.add_argument("--workdir", type=Path, required=True)
     parser.add_argument("--out-dir", type=Path, required=True)
     args = parser.parse_args()
@@ -103,10 +115,10 @@ def main() -> None:
     import numpy as np
     import onnx
     import onnxruntime as ort
-    import tf2onnx
     import tensorflow as tf
-    from PIL import Image
+    import tf2onnx
     from csbdeep.utils import normalize
+    from PIL import Image
     from splinedist.models import SplineDist2D
 
     model_dir = download_and_extract(args.workdir)
@@ -154,9 +166,7 @@ def main() -> None:
     )
     model.keras_model.predict = keras_predict
     np.save(out_dir / "labels_oracle.npy", labels.astype(np.int32))
-    print(
-        "oracle labels:", int(labels.max()), "instances over shape", labels.shape
-    )
+    print("oracle labels:", int(labels.max()), "instances over shape", labels.shape)
 
     # The spline basis ships with the model; its second axis gives the real
     # control-point count (config n_params counts the 2*points channels).
@@ -167,7 +177,9 @@ def main() -> None:
     phi_basis = np.load(phi_path)
     control_points = int(phi_basis.shape[1])
     contoursize = int(phi_basis.shape[0])
-    print(f"phi basis {phi_path.name}: {phi_basis.shape} -> {control_points} control points, {contoursize} contour samples")
+    print(
+        f"phi basis {phi_path.name}: {phi_basis.shape} -> {control_points} control points, {contoursize} contour samples"
+    )
     assert control_points * 2 == n_params, (control_points, n_params)
     np.save(out_dir / "phi_basis.npy", phi_basis)
 
@@ -192,7 +204,9 @@ def main() -> None:
     onnx.checker.check_model(onnx.load_model_from_string(onnx_path.read_bytes()))
     print("onnx check ok")
 
-    session = ort.InferenceSession(onnx_path.read_bytes(), providers=["CPUExecutionProvider"])
+    session = ort.InferenceSession(
+        onnx_path.read_bytes(), providers=["CPUExecutionProvider"]
+    )
     diffs = []
     for i, keras_out in enumerate(net_outputs):
         onnx_out = session.run(None, {"image": net_input})[i]
@@ -202,7 +216,9 @@ def main() -> None:
         diffs.append(diff)
     print("per-head max|keras-onnx| on the recorded input:", diffs)
     if max(diffs) > _MAX_OUTPUT_DIFF:
-        raise SystemExit(f"keras/ONNX parity beyond the {_MAX_OUTPUT_DIFF} limit: {diffs}")
+        raise SystemExit(
+            f"keras/ONNX parity beyond the {_MAX_OUTPUT_DIFF} limit: {diffs}"
+        )
 
     # Second probe at a different size (divisible by the unet's axes_div_by),
     # recorded straight from real keras predictions.
@@ -210,11 +226,14 @@ def main() -> None:
     probe_h = _PROBE_H - (_PROBE_H % div_by[0])
     probe_w = _PROBE_W - (_PROBE_W % div_by[1])
     probe_input = np.zeros((1, probe_h, probe_w, 1), dtype=np.float32)
-    probe_input[0, :, :, 0] = np.sin(
-        np.linspace(0.0, 12.0, probe_h)[:, None]
-    ) + np.cos(np.linspace(0.0, 9.0, probe_w))[None, :]
+    probe_input[0, :, :, 0] = (
+        np.sin(np.linspace(0.0, 12.0, probe_h)[:, None])
+        + np.cos(np.linspace(0.0, 9.0, probe_w))[None, :]
+    )
     probe_outputs = model.keras_model.predict(probe_input, verbose=0)
-    probe_outputs = probe_outputs if isinstance(probe_outputs, list) else [probe_outputs]
+    probe_outputs = (
+        probe_outputs if isinstance(probe_outputs, list) else [probe_outputs]
+    )
     recorded["probe_input"] = probe_input.copy()
     recorded["probe_outputs"] = [np.asarray(o).copy() for o in probe_outputs]
     for i, out in enumerate(recorded["probe_outputs"]):
@@ -232,7 +251,9 @@ def main() -> None:
     ]
     print("per-head max|keras-onnx| on the probe:", probe_diffs)
     if max(probe_diffs) > _MAX_OUTPUT_DIFF:
-        raise SystemExit(f"keras/ONNX probe parity beyond the {_MAX_OUTPUT_DIFF} limit: {probe_diffs}")
+        raise SystemExit(
+            f"keras/ONNX probe parity beyond the {_MAX_OUTPUT_DIFF} limit: {probe_diffs}"
+        )
     print("keras/ONNX parity within limits")
 
     (out_dir / "details.json").write_text(
